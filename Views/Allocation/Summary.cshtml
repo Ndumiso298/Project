@@ -1,0 +1,127 @@
+﻿@model AllocationVM
+@{
+    Layout = "_CustomerLayout";
+}
+
+<form method="post">
+    <input asp-for="RequestHeader.RequestHeaderId" type="hidden" />
+
+    <div class="container py-5">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+            <!-- Header -->
+            <div class="card-header bg-primary text-light py-4 position-relative">
+                <div class="row align-items-center">
+                    <div class="col-12 text-center">
+                        <h2 class="text-white fw-bold mb-1">Order Summary</h2>
+                        <p class="text-light mb-0 opacity-75">Review your shipping details & order before checkout</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body p-4 p-md-5">
+                <!-- Back Button -->
+                <div class="row mb-4">
+                    <div class="col-12 col-md-3">
+                        <a asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Cart
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-5">
+                    <!-- Shipping Details -->
+                    <div class="col-12 col-lg-6">
+                        <h3 class="section-title mb-3 text-primary fw-bold">
+                            <i class="bi bi-truck me-2"></i> Shipping Details
+                        </h3>
+
+                        <div class="specs-container mb-4">
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.FirstName" class="form-label fw-semibold text-dark">Name</label>
+                                <input asp-for="RequestHeader.FirstName" class="form-control" />
+                                <span asp-validation-for="RequestHeader.FirstName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.LastName" class="form-label fw-semibold text-dark">Surname</label>
+                                <input asp-for="RequestHeader.LastName" class="form-control" />
+                                <span asp-validation-for="RequestHeader.LastName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.CellNumber" class="form-label fw-semibold text-dark">Phone</label>
+                                <input asp-for="RequestHeader.CellNumber" class="form-control" />
+                                <span asp-validation-for="RequestHeader.CellNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.StreetAddress" class="form-label fw-semibold text-dark">Street Address</label>
+                                <input asp-for="RequestHeader.StreetAddress" class="form-control" />
+                                <span asp-validation-for="RequestHeader.StreetAddress" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.City" class="form-label fw-semibold text-dark">City</label>
+                                <input asp-for="RequestHeader.City" class="form-control" />
+                                <span asp-validation-for="RequestHeader.City" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.State" class="form-label fw-semibold text-dark">State</label>
+                                <input asp-for="RequestHeader.State" class="form-control" />
+                                <span asp-validation-for="RequestHeader.State" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.PostalCode" class="form-label fw-semibold text-dark">Postal Code</label>
+                                <input asp-for="RequestHeader.PostalCode" class="form-control" />
+                                <span asp-validation-for="RequestHeader.PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="col-12 col-lg-6">
+                        <h3 class="section-title mb-3 text-primary fw-bold">
+                            <i class="bi bi-receipt me-2"></i> Order Summary
+                        </h3>
+
+                        <ul class="list-group mb-4 shadow-sm rounded-3 overflow-hidden">
+                            @foreach (var details in Model.AllocationList)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="fw-semibold mb-1">@details.Fridge.FridgeNo</h6>
+                                        <small class="text-muted">Quantity: @details.Count</small>
+                                    </div>
+                                    <span class="fw-bold text-primary">@((details.Price * details.Count).ToString("c"))</span>
+                                </li>
+                            }
+
+                            <li class="list-group-item d-flex justify-content-between bg-light">
+                                <small class="text-muted">Total</small>
+                                <strong class="text-primary fs-5">@Model.RequestHeader.RequestTotal.ToString("c")</strong>
+                            </li>
+                        </ul>
+
+                        <div class="bg-light p-3 rounded-3 shadow-sm mb-3">
+                            <p class="mb-0 small text-muted">
+                                <i class="bi bi-calendar-event me-2"></i>
+                                Estimate Arrival: <strong>@DateTime.Now.AddDays(7).ToShortDateString()</strong> - <strong>@DateTime.Now.AddDays(14).ToShortDateString()</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer bg-white border-0 p-4">
+                <button type="submit" value="Place Order" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
+                    <i class="bi bi-check-circle me-2"></i> Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

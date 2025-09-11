@@ -5,11 +5,12 @@ namespace Project.Models.ViewModel
 {
     public class AllocationVM
     {
-        public Allocation Allocation { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> UserList { get; set; }
-        [ValidateNever]
-        public IEnumerable<SelectListItem> FridgeList { get; set; }
+
+     
+        public IEnumerable<Allocation> AllocationList { get; set; }
+        public RequestHeader RequestHeader { get; set; }
+        //[ValidateNever]
+        //public IEnumerable<SelectListItem> FridgeList { get; set; }
     }
 }

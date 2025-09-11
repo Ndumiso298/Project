@@ -37,8 +37,14 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link " asp-area="" asp-controller="Allocation" asp-action="Index">
+                                    <i class="bi bi-cart"></i>&nbsp;(0)
+                                </a>
+                            </li>
                         }
                     </ul>
+                  
                     <partial name="_LoginPartial" />
                 </div>
             </div>

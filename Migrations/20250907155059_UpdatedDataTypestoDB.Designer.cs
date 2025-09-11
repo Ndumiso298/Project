@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250907155059_UpdatedDataTypestoDB")]
+    partial class UpdatedDataTypestoDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -611,91 +614,6 @@ namespace Project.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Project.Models.RequestDetails", b =>
-                {
-                    b.Property<int>("RequestDetailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestDetailId"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FridgeId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<int>("RequestHeaderId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RequestDetailId");
-
-                    b.HasIndex("FridgeId");
-
-                    b.HasIndex("RequestHeaderId");
-
-                    b.ToTable("tblRequestDetail");
-                });
-
-            modelBuilder.Entity("Project.Models.RequestHeader", b =>
-                {
-                    b.Property<int>("RequestHeaderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestHeaderId"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CellNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("RequestTotal")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("ShippingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RequestHeaderId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("tblRequestHeader");
-                });
-
             modelBuilder.Entity("Project.Models.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -794,36 +712,6 @@ namespace Project.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Fridge");
-                });
-
-            modelBuilder.Entity("Project.Models.RequestDetails", b =>
-                {
-                    b.HasOne("Project.Models.Fridge", "Fridge")
-                        .WithMany()
-                        .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
-                        .WithMany()
-                        .HasForeignKey("RequestHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fridge");
-
-                    b.Navigation("RequestHeader");
-                });
-
-            modelBuilder.Entity("Project.Models.RequestHeader", b =>
-                {
-                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
                 });
 #pragma warning restore 612, 618
         }

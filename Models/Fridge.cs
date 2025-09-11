@@ -21,7 +21,7 @@ namespace Project.Models
         [Required]
         public string Description { get; set; }
         [Required]
-        public decimal RentalPricePerMonth { get; set; }
+        public double RentalPricePerMonth { get; set; }
         
         [Required]
         public DateTime LastMaintenanceDate { get; set; }
