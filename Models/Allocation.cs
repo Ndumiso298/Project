@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project.Models
@@ -8,6 +10,8 @@ namespace Project.Models
         public int AllocationId { get; set; } // Unique ID for each allocation
 
 
+
+        [ForeignKey("ApplicationUserId")]
         public string ApplicationUserId { get; set; }
         [ForeignKey("ApplicationUserId")]
         [ValidateNever]
@@ -15,13 +19,33 @@ namespace Project.Models
 
 
         [ForeignKey("FridgeId")]
-        public int FridgeId { get; set; }
+        public string FridgeId { get; set; }
         [ValidateNever]
         public Fridge Fridge { get; set; }
         public int Count { get; set; }
         // Rental Period
 
-        [NotMapped]
-        public double Price { get; set; }
+        [Required]
+        public DateTime StartDate { get; set; }
+        [Required]
+        public DateTime EndDate { get; set; }
+        [Required]
+        public int Quantity { get; set; }
+        [Required]
+        public string Status { get; set; }
+   
+        public string? Notes { get; set; }
+
+
+        public string FirstName { get; set; }
+
+        [Required]
+        public string LastName { get; set; }
+        public string? StreetAddress { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? PostalCode { get; set; }
+        public string? CellNumber { get; set; }
+
     }
 }

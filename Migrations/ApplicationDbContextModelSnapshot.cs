@@ -192,68 +192,564 @@ namespace Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("Employees");
+
+                    b.HasDiscriminator().HasValue("Employee");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Project.Models.Allocation", b =>
-                {
-                    b.Property<int>("AllocationId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AllocationId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<int>("CapacityLiters")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Condition")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EnergyRating")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Manufacturer")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StockControllerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("WarrantyExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StockControllerId");
+
+                    b.ToTable("Fridges");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CapacityLiters = 520,
+                            Condition = "Used - Good",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7700),
+                            EnergyRating = "B",
+                            ImageUrl = "Images/Fridges/beverage-cooler-886lt-double-door-sliding.jpg",
+                            Manufacturer = "Defy",
+                            Model = "DCR520 Commercial Beverage Cooler",
+                            PurchaseDate = new DateTime(2024, 3, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7685),
+                            SerialNumber = "FRG-2023-001",
+                            Status = "In Stock",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2026, 3, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7694)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CapacityLiters = 780,
+                            Condition = "New",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7708),
+                            EnergyRating = "A",
+                            ImageUrl = "Images/Fridges/single-glass-door-freezer-carbon-edition-.jpg",
+                            Manufacturer = "LG",
+                            Model = "LC-321CV Glass Door Merchandiser",
+                            PurchaseDate = new DateTime(2025, 6, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7706),
+                            SerialNumber = "FRG-2023-002",
+                            Status = "In Stock",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 6, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7707)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CapacityLiters = 702,
+                            Condition = "Used - Excellent",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7712),
+                            EnergyRating = "A+",
+                            ImageUrl = "Images/Fridges/beverage-cooler-730l-2-door-swing-door-.jpg",
+                            Manufacturer = "Hisense",
+                            Model = "HC-702D Commercial Display Freezer",
+                            PurchaseDate = new DateTime(2025, 7, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7711),
+                            SerialNumber = "FRG-2023-003",
+                            Status = "Allocated",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 7, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7711)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CapacityLiters = 500,
+                            Condition = "Needs Repair",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7717),
+                            EnergyRating = "A+",
+                            ImageUrl = "Images/Fridges/za-t-style-french-door-see-thru-door-rf71db975012fa-543388220.avif",
+                            Manufacturer = "Samsung",
+                            Model = "RR-500M Commercial Series Freezer",
+                            PurchaseDate = new DateTime(2023, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7715),
+                            SerialNumber = "FRG-2023-004",
+                            Status = "Needs Repair",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2025, 3, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7716)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CapacityLiters = 680,
+                            Condition = "Used - Fair",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7723),
+                            EnergyRating = "B",
+                            ImageUrl = "Images/Fridges/single-glass-door-freezer-carbon-edition-.jpg",
+                            Manufacturer = "Kelvinator",
+                            Model = "KCR-680GL Glass Door Beverage Cooler",
+                            PurchaseDate = new DateTime(2022, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7722),
+                            SerialNumber = "FRG-2023-005",
+                            Status = "In Service",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2024, 3, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7722)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CapacityLiters = 600,
+                            Condition = "Refurbished",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7727),
+                            EnergyRating = "A",
+                            ImageUrl = "Images/Fridges/za-rs90f-f-hub-rs90f64a2ffa-545559499.avif",
+                            Manufacturer = "Smeg",
+                            Model = "FAB60RCR Retro Commercial Fridge",
+                            PurchaseDate = new DateTime(2025, 5, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7726),
+                            SerialNumber = "FRG-2023-006",
+                            Status = "Allocated",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 5, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7726)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CapacityLiters = 280,
+                            Condition = "New",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7732),
+                            EnergyRating = "A++",
+                            ImageUrl = "Images/Fridges/display-unit-fridge-salvadore-csunk-azelio-1200mm-.jpg",
+                            Manufacturer = "Bosch",
+                            Model = "GIC08A15 Commercial UnderCounter Freezer",
+                            PurchaseDate = new DateTime(2025, 2, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7729),
+                            SerialNumber = "FRG-2023-007",
+                            Status = "In Stock",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 2, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7731)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CapacityLiters = 429,
+                            Condition = "Used - Excellent",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7732),
+                            EnergyRating = "A",
+                            ImageUrl = "Images/Fridges/juice-dispenser-3-bowl.jpg",
+                            Manufacturer = "Whirlpool",
+                            Model = "WIO429IY Commercial Ice Maker & Beverage Cooler",
+                            PurchaseDate = new DateTime(2024, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7734),
+                            SerialNumber = "FRG-2023-008",
+                            Status = "In Service",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2027, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7734)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CapacityLiters = 836,
+                            Condition = "Used - Good",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7738),
+                            EnergyRating = "A+",
+                            ImageUrl = "Images/Fridges/wall-chiller-35m-single-glaze-unit.jpg",
+                            Manufacturer = "AEG",
+                            Model = "RCB836E4MW Commercial Multi-Door Freezer",
+                            PurchaseDate = new DateTime(2025, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7737),
+                            SerialNumber = "FRG-2023-009",
+                            Status = "In Stock",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7738)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CapacityLiters = 920,
+                            Condition = "New",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7742),
+                            EnergyRating = "A++",
+                            ImageUrl = "Images/Fridges/double-glass-door-freezer-carbon-edition-.jpg",
+                            Manufacturer = "Siemens",
+                            Model = "KI92RA70 Commercial FrostFree Freezer",
+                            PurchaseDate = new DateTime(2025, 4, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7741),
+                            SerialNumber = "FRG-2023-010",
+                            Status = "In Stock",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 4, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7741)
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CapacityLiters = 492,
+                            Condition = "Faulty",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7746),
+                            EnergyRating = "C",
+                            ImageUrl = "Images/Fridges/za-4-door-french-door-beverage-center-rf29bb8600mtfa-533983040.avif",
+                            Manufacturer = "Defy",
+                            Model = "DTD492 Commercial Top Mount Freezer",
+                            PurchaseDate = new DateTime(2019, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7744),
+                            SerialNumber = "FRG-2023-011",
+                            Status = "Decommissioned",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2021, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7745)
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CapacityLiters = 552,
+                            Condition = "Used - Good",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7895),
+                            EnergyRating = "A+",
+                            ImageUrl = "Images/Fridges/wall-chiller-35m-single-glaze-unit.jpg",
+                            Manufacturer = "LG",
+                            Model = "GL-D552CRL Commercial Drawer Freezer",
+                            PurchaseDate = new DateTime(2024, 12, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7893),
+                            SerialNumber = "FRG-2023-012",
+                            Status = "Needs Repair",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2027, 12, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7894)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CapacityLiters = 790,
+                            Condition = "Used - Excellent",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7900),
+                            EnergyRating = "A",
+                            ImageUrl = "Images/Fridges/upright-freezer-double-solid-ssteel-hinged-door-shd1140f.jpg",
+                            Manufacturer = "Hisense",
+                            Model = "HR-790D4 Commercial Reach-In Freezer",
+                            PurchaseDate = new DateTime(2025, 3, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7899),
+                            SerialNumber = "FRG-2023-013",
+                            Status = "In Stock",
+                            StockControllerId = 2,
+                            WarrantyExpiryDate = new DateTime(2028, 3, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7900)
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeAllocation", b =>
+                {
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Count")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ActualReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("AllocationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("CustomerLiaisonId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpectedReturnDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.HasKey("AllocationId");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.Property<DateTime?>("LastServiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextServiceDue")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ServiceIntervalMonths")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StockControllerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("CustomerLiaisonId");
 
                     b.HasIndex("FridgeId");
 
-                    b.ToTable("tblAllocation");
+                    b.HasIndex("StockControllerId");
+
+                    b.ToTable("FridgeAllocations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AllocationDate = new DateTime(2025, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8020),
+                            CreatedAt = new DateTime(2025, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8038),
+                            CustomerId = 1,
+                            CustomerLiaisonId = 1,
+                            ExpectedReturnDate = new DateTime(2026, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8022),
+                            FridgeId = 3,
+                            IsDeleted = false,
+                            LastServiceDate = new DateTime(2025, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8023),
+                            NextServiceDue = new DateTime(2025, 11, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8024),
+                            Notes = "High-usage establishment, requires more frequent servicing",
+                            ServiceIntervalMonths = 3,
+                            Status = "Active",
+                            UpdatedAt = new DateTime(2025, 8, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8039)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AllocationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8041),
+                            CustomerId = 1,
+                            CustomerLiaisonId = 1,
+                            FridgeId = 10,
+                            IsDeleted = false,
+                            Notes = "New customer application under review",
+                            ServiceIntervalMonths = 6,
+                            Status = "Pending"
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeFault", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AssignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Diagnosis")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("FaultTechnicianId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FridgeAllocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FridgeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaintenanceTechnicianId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReportedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ReportedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("ResolvedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("FaultTechnicianId");
+
+                    b.HasIndex("FridgeAllocationId");
+
+                    b.HasIndex("FridgeId");
+
+                    b.HasIndex("MaintenanceTechnicianId");
+
+                    b.HasIndex("ReportedById");
+
+                    b.ToTable("FaultRecords");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AssignedDate = new DateTime(2025, 9, 11, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8257),
+                            CreatedAt = new DateTime(2025, 9, 10, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8258),
+                            Description = "Fridge not cooling properly - temperature reading shows 15°C when set to 4°C",
+                            Diagnosis = "Preliminary diagnosis suggests possible compressor issue or refrigerant leak",
+                            FaultTechnicianId = 3,
+                            FridgeAllocationId = 1,
+                            IsDeleted = false,
+                            Priority = "High",
+                            ReportedById = "6",
+                            ReportedDate = new DateTime(2025, 9, 10, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8256),
+                            ResolutionNotes = "Technician dispatched for on-site inspection. Parts may need ordering.",
+                            Status = "InProgress",
+                            UpdatedAt = new DateTime(2025, 9, 12, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8258)
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeMaintenance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CustomerConfirmationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("FridgeAllocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FridgeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaintenanceTechnicianId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ScheduledDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ServiceNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("FridgeAllocationId");
+
+                    b.HasIndex("FridgeId");
+
+                    b.HasIndex("MaintenanceTechnicianId");
+
+                    b.ToTable("MaintenanceRecords");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CompletedDate = new DateTime(2025, 9, 8, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8319),
+                            CreatedAt = new DateTime(2025, 9, 3, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8321),
+                            CustomerConfirmationDate = new DateTime(2025, 9, 7, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8317),
+                            Description = "Routine preventive maintenance service",
+                            FridgeAllocationId = 1,
+                            IsDeleted = false,
+                            MaintenanceTechnicianId = 4,
+                            ScheduledDate = new DateTime(2025, 9, 6, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8311),
+                            ServiceNotes = "Performed comprehensive maintenance: cleaned condenser coils, checked refrigerant levels, calibrated thermostat, inspected door seals, and lubricated moving parts. Fridge is operating at optimal efficiency.",
+                            Status = "Completed",
+                            UpdatedAt = new DateTime(2025, 9, 8, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8321)
+                        });
                 });
 
             modelBuilder.Entity("Project.Models.Fridge", b =>
@@ -297,425 +793,597 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("RentalPricePerMonth")
-                        .HasColumnType("float");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("FridgeId");
+                    b.Property<string>("AddressLine2")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SuburbId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SuburbId");
 
                     b.ToTable("tblFridge");
 
                     b.HasData(
                         new
                         {
+                            Id = 1,
+                            AddressLine1 = "123 Vilakazi Street",
+                            AddressLine2 = "Orlando West",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7170),
+                            IsDeleted = false,
+                            SuburbId = 7
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AddressLine1 = "45 Victoria Road",
+                            AddressLine2 = "Victoria and Alfred Waterfront",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7173),
+                            IsDeleted = false,
+                            SuburbId = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AddressLine1 = "78 Steve Biko Road",
+                            AddressLine2 = "Berea Centre",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7174),
+                            IsDeleted = false,
+                            SuburbId = 5
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AddressLine1 = "12 Main Road",
+                            AddressLine2 = "Sandton City",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7176),
+                            IsDeleted = false,
+                            SuburbId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AddressLine1 = "8 4th Avenue",
+                            AddressLine2 = "Parkhurst Village",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7178),
+                            IsDeleted = false,
+                            SuburbId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AddressLine1 = "101 Beach Road",
+                            AddressLine2 = "Beachfront Plaza",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7179),
+                            IsDeleted = false,
+                            SuburbId = 4
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AddressLine1 = "22 Marine Drive",
+                            AddressLine2 = "Umhlanga Rocks",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7180),
+                            IsDeleted = false,
+                            SuburbId = 8
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AddressLine1 = "5 University Way",
+                            AddressLine2 = "Campus Square",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7181),
+                            IsDeleted = false,
+                            SuburbId = 6
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AddressLine1 = "14 Paul Kruger Avenue",
+                            AddressLine2 = "Fichardt Park Mall",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7182),
+                            IsDeleted = false,
+                            SuburbId = 9
+                        },
+                        new
+                        {
+                            Id = 1,
                             FridgeId = 1,
-                            AvailabilityStatus = "Available",
-                            Brand = "Samsung",
-                            CapacityLiters = 253,
-                            Condition = "Excellent",
-                            Description = "Energy-efficient double door fridge with frost-free technology.",
-                            FridgeNo = "FRG-001",
-                            ImageUrl = "https://example.com/images/fridge1.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "RT28T",
-                            RentalPricePerMonth = 1200.0,
-                            Type = "Double Door"
-                        },
-                        new
-                        {
-                            FridgeId = 2,
-                            AvailabilityStatus = "Rented",
-                            Brand = "LG",
-                            CapacityLiters = 190,
-                            Condition = "Good",
-                            Description = "Compact single door fridge ideal for small apartments.",
-                            FridgeNo = "FRG-002",
-                            ImageUrl = "https://example.com/images/fridge2.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "GL-B201",
-                            RentalPricePerMonth = 900.0,
-                            Type = "Single Door"
-                        },
-                        new
-                        {
-                            FridgeId = 3,
-                            AvailabilityStatus = "Available",
-                            Brand = "Whirlpool",
-                            CapacityLiters = 500,
-                            Condition = "Excellent",
-                            Description = "Spacious fridge with advanced cooling technology.",
-                            FridgeNo = "FRG-003",
-                            ImageUrl = "https://example.com/images/fridge3.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "WRT518",
-                            RentalPricePerMonth = 1500.0,
-                            Type = "Double Door"
-                        },
-                        new
-                        {
-                            FridgeId = 4,
-                            AvailabilityStatus = "Available",
-                            Brand = "Defy",
-                            CapacityLiters = 350,
-                            Condition = "Good",
-                            Description = "Durable fridge with energy-saving features.",
-                            FridgeNo = "FRG-004",
-                            ImageUrl = "https://example.com/images/fridge4.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "DAC700",
-                            RentalPricePerMonth = 1100.0,
-                            Type = "Double Door"
-                        },
-                        new
-                        {
-                            FridgeId = 5,
-                            AvailabilityStatus = "Rented",
-                            Brand = "Hisense",
-                            CapacityLiters = 310,
-                            Condition = "Good",
-                            Description = "Compact fridge with adjustable shelves.",
-                            FridgeNo = "FRG-005",
-                            ImageUrl = "https://example.com/images/fridge5.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "H310BI",
-                            RentalPricePerMonth = 800.0,
-                            Type = "Single Door"
-                        },
-                        new
-                        {
-                            FridgeId = 6,
-                            AvailabilityStatus = "Available",
-                            Brand = "Bosch",
-                            CapacityLiters = 420,
-                            Condition = "Excellent",
-                            Description = "Premium fridge with no-frost technology.",
-                            FridgeNo = "FRG-006",
-                            ImageUrl = "https://example.com/images/fridge6.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "KDN42",
-                            RentalPricePerMonth = 1600.0,
-                            Type = "Double Door"
-                        },
-                        new
-                        {
-                            FridgeId = 7,
-                            AvailabilityStatus = "Available",
-                            Brand = "Kelvinator",
-                            CapacityLiters = 250,
-                            Condition = "Fair",
-                            Description = "Affordable fridge with basic features.",
-                            FridgeNo = "FRG-007",
-                            ImageUrl = "https://example.com/images/fridge7.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 2, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "KEL250",
-                            RentalPricePerMonth = 700.0,
-                            Type = "Single Door"
-                        },
-                        new
-                        {
-                            FridgeId = 8,
-                            AvailabilityStatus = "Available",
-                            Brand = "Smeg",
-                            CapacityLiters = 281,
-                            Condition = "Excellent",
-                            Description = "Retro-style fridge with modern cooling.",
-                            FridgeNo = "FRG-008",
-                            ImageUrl = "https://example.com/images/fridge8.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "FAB28",
-                            RentalPricePerMonth = 2000.0,
-                            Type = "Single Door"
-                        },
-                        new
-                        {
-                            FridgeId = 9,
-                            AvailabilityStatus = "Rented",
-                            Brand = "AEG",
-                            CapacityLiters = 300,
-                            Condition = "Excellent",
-                            Description = "Built-in fridge with adjustable compartments.",
-                            FridgeNo = "FRG-009",
-                            ImageUrl = "https://example.com/images/fridge9.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "SKE818",
-                            RentalPricePerMonth = 1800.0,
-                            Type = "Single Door"
-                        },
-                        new
-                        {
-                            FridgeId = 10,
-                            AvailabilityStatus = "Available",
-                            Brand = "Panasonic",
-                            CapacityLiters = 347,
-                            Condition = "Good",
-                            Description = "Fridge with inverter technology for energy saving.",
-                            FridgeNo = "FRG-010",
-                            ImageUrl = "https://example.com/images/fridge10.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "NR-BL347",
-                            RentalPricePerMonth = 1300.0,
-                            Type = "Double Door"
-                        },
-                        new
-                        {
-                            FridgeId = 11,
-                            AvailabilityStatus = "Available",
-                            Brand = "Haier",
-                            CapacityLiters = 565,
-                            Condition = "Excellent",
-                            Description = "Large capacity fridge with twin inverter technology.",
-                            FridgeNo = "FRG-011",
-                            ImageUrl = "https://example.com/images/fridge11.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "HRF-619",
-                            RentalPricePerMonth = 2200.0,
-                            Type = "Side by Side"
-                        },
-                        new
-                        {
-                            FridgeId = 12,
-                            AvailabilityStatus = "Available",
-                            Brand = "Hitachi",
-                            CapacityLiters = 640,
-                            Condition = "Excellent",
-                            Description = "Premium French door fridge with eco-friendly features.",
-                            FridgeNo = "FRG-012",
-                            ImageUrl = "https://example.com/images/fridge12.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "R-WB640",
-                            RentalPricePerMonth = 2500.0,
-                            Type = "French Door"
-                        },
-                        new
-                        {
-                            FridgeId = 13,
-                            AvailabilityStatus = "Rented",
-                            Brand = "Electrolux",
-                            CapacityLiters = 370,
-                            Condition = "Good",
-                            Description = "Fridge with taste guard deodorizer.",
-                            FridgeNo = "FRG-013",
-                            ImageUrl = "https://example.com/images/fridge13.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 4, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "ETB3700",
-                            RentalPricePerMonth = 1400.0,
-                            Type = "Top Freezer"
-                        },
-                        new
-                        {
-                            FridgeId = 14,
-                            AvailabilityStatus = "Available",
-                            Brand = "Sharp",
-                            CapacityLiters = 600,
-                            Condition = "Excellent",
-                            Description = "Fridge with plasmacluster ion technology.",
-                            FridgeNo = "FRG-014",
-                            ImageUrl = "https://example.com/images/fridge14.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "SJ-GX60",
-                            RentalPricePerMonth = 2300.0,
-                            Type = "French Door"
-                        },
-                        new
-                        {
-                            FridgeId = 15,
-                            AvailabilityStatus = "Available",
-                            Brand = "Midea",
-                            CapacityLiters = 400,
-                            Condition = "Good",
-                            Description = "Affordable fridge with large freezer compartment.",
-                            FridgeNo = "FRG-015",
-                            ImageUrl = "https://example.com/images/fridge15.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "HD-400",
-                            RentalPricePerMonth = 1000.0,
-                            Type = "Double Door"
-                        },
-                        new
-                        {
-                            FridgeId = 16,
-                            AvailabilityStatus = "Available",
-                            Brand = "Gorenje",
-                            CapacityLiters = 326,
-                            Condition = "Good",
-                            Description = "Stylish bottom freezer fridge with crisp zone for vegetables.",
-                            FridgeNo = "FRG-016",
-                            ImageUrl = "https://example.com/images/fridge16.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 3, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "NRK6192",
-                            RentalPricePerMonth = 1250.0,
-                            Type = "Bottom Freezer"
-                        },
-                        new
-                        {
-                            FridgeId = 17,
-                            AvailabilityStatus = "Available",
-                            Brand = "Westinghouse",
-                            CapacityLiters = 528,
-                            Condition = "Excellent",
-                            Description = "Family-sized fridge with humidity-controlled crisper.",
-                            FridgeNo = "FRG-017",
-                            ImageUrl = "https://example.com/images/fridge17.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "WBE5300",
-                            RentalPricePerMonth = 1700.0,
-                            Type = "Top Freezer"
-                        },
-                        new
-                        {
-                            FridgeId = 18,
-                            AvailabilityStatus = "Rented",
-                            Brand = "Fisher & Paykel",
-                            CapacityLiters = 519,
-                            Condition = "Excellent",
-                            Description = "Premium French door fridge with active smart technology.",
-                            FridgeNo = "FRG-018",
-                            ImageUrl = "https://example.com/images/fridge18.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 4, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "RF522",
-                            RentalPricePerMonth = 2400.0,
-                            Type = "French Door"
-                        },
-                        new
-                        {
-                            FridgeId = 19,
-                            AvailabilityStatus = "Available",
-                            Brand = "Ariston",
-                            CapacityLiters = 383,
-                            Condition = "Good",
-                            Description = "Reliable fridge with antibacterial coating.",
-                            FridgeNo = "FRG-019",
-                            ImageUrl = "https://example.com/images/fridge19.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "MBA3832",
-                            RentalPricePerMonth = 1150.0,
-                            Type = "Top Freezer"
-                        },
-                        new
-                        {
-                            FridgeId = 20,
-                            AvailabilityStatus = "Available",
-                            Brand = "Beko",
-                            CapacityLiters = 560,
-                            Condition = "Excellent",
-                            Description = "Spacious bottom freezer fridge with NeoFrost cooling.",
-                            FridgeNo = "FRG-020",
-                            ImageUrl = "https://example.com/images/fridge20.jpg",
-                            LastMaintenanceDate = new DateTime(2025, 2, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "RCNE560",
-                            RentalPricePerMonth = 1850.0,
-                            Type = "Bottom Freezer"
+                            OrderHeaderId = 1,
+                            Price = 15399.99m,
+                            Quantity = 4
                         });
                 });
 
-            modelBuilder.Entity("Project.Models.RequestDetails", b =>
+            modelBuilder.Entity("Project.Models.OrderHeader", b =>
                 {
-                    b.Property<int>("RequestDetailId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestDetailId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Count")
+                    b.Property<string>("Carrier")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliveryAddressId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("OrderTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PaymentDueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RecipientFirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("RecipientLastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ShippingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DeliveryAddressId");
+
+                    b.ToTable("OrderHeaders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Carrier = "Fastway Couriers",
+                            CustomerId = 1,
+                            DeliveryAddressId = 1,
+                            OrderDate = new DateTime(2025, 9, 6, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8155),
+                            OrderStatus = "Completed",
+                            OrderTotal = 16999.99m,
+                            PaymentDate = new DateTime(2025, 9, 7, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8175),
+                            PaymentDueDate = new DateTime(2025, 9, 12, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8175),
+                            PaymentStatus = "Paid",
+                            RecipientFirstName = "Nathan",
+                            RecipientLastName = "Robertson",
+                            ShippingDate = new DateTime(2025, 9, 8, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8169),
+                            TrackingNumber = "TRK123456789"
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.Province", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("Provinces");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "GP",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Gauteng"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "WC",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Western Cape"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "KZN",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "KwaZulu-Natal"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "EC",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Eastern Cape"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "FS",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Free State"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "LP",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Limpopo"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "MP",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Mpumalanga"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Code = "NW",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "North West"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Code = "NC",
+                            CountryId = 1,
+                            IsDeleted = false,
+                            Name = "Northern Cape"
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.PurchaseRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FridgeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProcessingNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StockControllerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FridgeId");
+
+                    b.HasIndex("StockControllerId");
+
+                    b.ToTable("PurchaseRequests");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 9, 10, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8362),
+                            FridgeId = 5,
+                            IsDeleted = false,
+                            Quantity = 24,
+                            Reason = "Increase stock levels for upcoming summer beverage promotions in Gauteng region.",
+                            RequestDate = new DateTime(2025, 9, 10, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(8360),
+                            Status = "Pending",
+                            StockControllerId = 2
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.ShoppingCart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("RequestHeaderId")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("RequestDetailId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("FridgeId");
 
-                    b.HasIndex("RequestHeaderId");
+                    b.ToTable("ShoppingCarts");
 
-                    b.ToTable("tblRequestDetail");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CustomerId = 1,
+                            FridgeId = 1,
+                            Price = 15399.99m,
+                            Quantity = 4
+                        });
                 });
 
-            modelBuilder.Entity("Project.Models.RequestHeader", b =>
+            modelBuilder.Entity("Project.Models.Suburb", b =>
                 {
-                    b.Property<int>("RequestHeaderId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestHeaderId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("CellNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
+                    b.HasKey("Id");
 
-                    b.Property<double>("RequestTotal")
-                        .HasColumnType("float");
+                    b.HasIndex("CityId");
 
-                    b.Property<DateTime>("ShippingDate")
-                        .HasColumnType("datetime2");
+                    b.ToTable("Suburbs");
 
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RequestHeaderId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("tblRequestHeader");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CityId = 1,
+                            IsDeleted = false,
+                            Name = "Sandton",
+                            PostalCode = "2196"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CityId = 1,
+                            IsDeleted = false,
+                            Name = "Parkhurst",
+                            PostalCode = "2193"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CityId = 2,
+                            IsDeleted = false,
+                            Name = "Sea Point",
+                            PostalCode = "8060"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CityId = 2,
+                            IsDeleted = false,
+                            Name = "Claremont",
+                            PostalCode = "7735"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CityId = 3,
+                            IsDeleted = false,
+                            Name = "Berea",
+                            PostalCode = "4001"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CityId = 3,
+                            IsDeleted = false,
+                            Name = "Umhlanga",
+                            PostalCode = "4319"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CityId = 4,
+                            IsDeleted = false,
+                            Name = "Summerstrand",
+                            PostalCode = "6001"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CityId = 5,
+                            IsDeleted = false,
+                            Name = "Orlando East",
+                            PostalCode = "1804"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CityId = 6,
+                            IsDeleted = false,
+                            Name = "Fichardt Park",
+                            PostalCode = "9301"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CityId = 7,
+                            IsDeleted = false,
+                            Name = "Flora Park",
+                            PostalCode = "0699"
+                        });
                 });
 
-            modelBuilder.Entity("Project.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Project.Models.CustomerSupport", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+                    b.HasBaseType("Project.Models.Employee");
 
-                    b.Property<string>("CellNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasDiscriminator().HasValue("CustomerSupport");
 
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7341),
+                            EmployeeNumber = "CS001",
+                            EmployeeType = "CustomerSupport",
+                            IsActive = true,
+                            UserId = "2"
+                        });
+                });
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+            modelBuilder.Entity("Project.Models.FaultTechnician", b =>
+                {
+                    b.HasBaseType("Project.Models.Employee");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasDiscriminator().HasValue("FaultTechnician");
 
-                    b.Property<string>("PostalCode")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasData(
+                        new
+                        {
+                            Id = 3,
+                            AvailabilityStatus = "Available",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7492),
+                            EmployeeNumber = "FT001",
+                            EmployeeType = "FaultTechnician",
+                            IsActive = true,
+                            UserId = "4"
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.MaintenanceTechnician", b =>
+                {
+                    b.HasBaseType("Project.Models.Employee");
+
+                    b.HasDiscriminator().HasValue("MaintenanceTechnician");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 4,
+                            AvailabilityStatus = "Available",
+                            CreatedAt = new DateTime(2025, 9, 13, 8, 5, 0, 989, DateTimeKind.Utc).AddTicks(7581),
+                            EmployeeNumber = "MT001",
+                            EmployeeType = "MaintenanceTechnician",
+                            IsActive = true,
+                            UserId = "5"
+                        });
+                });
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
@@ -777,26 +1445,207 @@ namespace Project.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project.Models.Allocation", b =>
+            modelBuilder.Entity("Project.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Project.Models.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("ApplicationUserId")
+                        .HasForeignKey("LocationId");
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Project.Models.City", b =>
+                {
+                    b.HasOne("Project.Models.Province", "Province")
+                        .WithMany()
+                        .HasForeignKey("ProvinceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Province");
+                });
+
+            modelBuilder.Entity("Project.Models.Employee", b =>
+                {
+                    b.HasOne("Project.Models.ApplicationUser", "UserAccount")
+                        .WithOne("EmployeeProfile")
+                        .HasForeignKey("Project.Models.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Project.Models.Fridge", b =>
+                {
+                    b.HasOne("Project.Models.StockController", "StockController")
+                        .WithMany("ManagedFridges")
+                        .HasForeignKey("StockControllerId");
+
+                    b.Navigation("StockController");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeAllocation", b =>
+                {
+                    b.HasOne("Project.Models.FridgeManagementSystem.Models.Customer", "Customer")
+                        .WithMany("FridgeAllocations")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.CustomerSupport", "CustomerLiaison")
+                        .WithMany("FridgeAllocations")
+                        .HasForeignKey("CustomerLiaisonId");
+
                     b.HasOne("Project.Models.Fridge", "Fridge")
-                        .WithMany()
+                        .WithMany("AllocationHistory")
                         .HasForeignKey("FridgeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.HasOne("Project.Models.StockController", null)
+                        .WithMany("ProcessedFridgeAllocations")
+                        .HasForeignKey("StockControllerId");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("CustomerLiaison");
 
                     b.Navigation("Fridge");
                 });
 
-            modelBuilder.Entity("Project.Models.RequestDetails", b =>
+            modelBuilder.Entity("Project.Models.FridgeFault", b =>
+                {
+                    b.HasOne("Project.Models.FridgeManagementSystem.Models.Customer", null)
+                        .WithMany("FaultReports")
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("Project.Models.FaultTechnician", "FaultTechnician")
+                        .WithMany("AssignedFaults")
+                        .HasForeignKey("FaultTechnicianId");
+
+                    b.HasOne("Project.Models.FridgeAllocation", "FaultyFridge")
+                        .WithMany()
+                        .HasForeignKey("FridgeAllocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.Fridge", null)
+                        .WithMany("FaultHistory")
+                        .HasForeignKey("FridgeId");
+
+                    b.HasOne("Project.Models.MaintenanceTechnician", null)
+                        .WithMany("FaultReports")
+                        .HasForeignKey("MaintenanceTechnicianId");
+
+                    b.HasOne("Project.Models.ApplicationUser", "ReportedBy")
+                        .WithMany()
+                        .HasForeignKey("ReportedById");
+
+                    b.Navigation("FaultTechnician");
+
+                    b.Navigation("FaultyFridge");
+
+                    b.Navigation("ReportedBy");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeMaintenance", b =>
+                {
+                    b.HasOne("Project.Models.FridgeManagementSystem.Models.Customer", null)
+                        .WithMany("MaintenanceSchedules")
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("Project.Models.FridgeAllocation", "AllocatedFridge")
+                        .WithMany()
+                        .HasForeignKey("FridgeAllocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.Fridge", null)
+                        .WithMany("MaintenanceHistory")
+                        .HasForeignKey("FridgeId");
+
+                    b.HasOne("Project.Models.MaintenanceTechnician", "MaintenanceTechnician")
+                        .WithMany("ScheduledMaintenances")
+                        .HasForeignKey("MaintenanceTechnicianId");
+
+                    b.Navigation("AllocatedFridge");
+
+                    b.Navigation("MaintenanceTechnician");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeManagementSystem.Models.Customer", b =>
+                {
+                    b.HasOne("Project.Models.Location", "BusinessAddress")
+                        .WithMany()
+                        .HasForeignKey("BusinessAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.CustomerSupport", "CustomerLiaison")
+                        .WithMany("ManagedCustomers")
+                        .HasForeignKey("CustomerLiaisonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.ApplicationUser", "UserAccount")
+                        .WithOne("CustomerProfile")
+                        .HasForeignKey("Project.Models.FridgeManagementSystem.Models.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusinessAddress");
+
+                    b.Navigation("CustomerLiaison");
+
+                    b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeRequest", b =>
+                {
+                    b.HasOne("Project.Models.Employee", "AssignedEmployee")
+                        .WithMany()
+                        .HasForeignKey("AssignedEmployeeId");
+
+                    b.HasOne("Project.Models.FridgeManagementSystem.Models.Customer", null)
+                        .WithMany("FridgeRequests")
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("Project.Models.FridgeFault", "FaultRecord")
+                        .WithMany()
+                        .HasForeignKey("FaultRecordId");
+
+                    b.HasOne("Project.Models.FridgeAllocation", "FridgeAllocation")
+                        .WithMany()
+                        .HasForeignKey("FridgeAllocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.FridgeMaintenance", "MaintenanceRecord")
+                        .WithMany()
+                        .HasForeignKey("MaintenanceRecordId");
+
+                    b.Navigation("AssignedEmployee");
+
+                    b.Navigation("FaultRecord");
+
+                    b.Navigation("FridgeAllocation");
+
+                    b.Navigation("MaintenanceRecord");
+                });
+
+            modelBuilder.Entity("Project.Models.Location", b =>
+                {
+                    b.HasOne("Project.Models.Suburb", "Suburb")
+                        .WithMany()
+                        .HasForeignKey("SuburbId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Suburb");
+                });
+
+            modelBuilder.Entity("Project.Models.OrderDetail", b =>
                 {
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
@@ -804,26 +1653,151 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
+                    b.HasOne("Project.Models.OrderHeader", "OrderHeader")
                         .WithMany()
-                        .HasForeignKey("RequestHeaderId")
+                        .HasForeignKey("OrderHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Fridge");
+
+                    b.Navigation("OrderHeader");
+                });
+
+            modelBuilder.Entity("Project.Models.OrderHeader", b =>
+                {
+                    b.HasOne("Project.Models.FridgeManagementSystem.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.Location", "DeliveryAddress")
+                        .WithMany()
+                        .HasForeignKey("DeliveryAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("DeliveryAddress");
+                });
+
+            modelBuilder.Entity("Project.Models.Province", b =>
+                {
+                    b.HasOne("Project.Models.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("Project.Models.PurchaseRequest", b =>
+                {
+                    b.HasOne("Project.Models.Fridge", "Fridge")
+                        .WithMany()
+                        .HasForeignKey("FridgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.StockController", "StockController")
+                        .WithMany("CreatedPurchaseRequests")
+                        .HasForeignKey("StockControllerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fridge");
+
+                    b.Navigation("StockController");
+                });
+
+            modelBuilder.Entity("Project.Models.ShoppingCart", b =>
+                {
+                    b.HasOne("Project.Models.FridgeManagementSystem.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.Fridge", "Fridge")
+                        .WithMany()
+                        .HasForeignKey("FridgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
 
                     b.Navigation("Fridge");
 
                     b.Navigation("RequestHeader");
                 });
 
-            modelBuilder.Entity("Project.Models.RequestHeader", b =>
+            modelBuilder.Entity("Project.Models.Suburb", b =>
                 {
-                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Project.Models.City", "City")
                         .WithMany()
-                        .HasForeignKey("ApplicationUserId")
+                        .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.Navigation("City");
+                });
+
+            modelBuilder.Entity("Project.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("CustomerProfile");
+
+                    b.Navigation("EmployeeProfile");
+                });
+
+            modelBuilder.Entity("Project.Models.Fridge", b =>
+                {
+                    b.Navigation("AllocationHistory");
+
+                    b.Navigation("FaultHistory");
+
+                    b.Navigation("MaintenanceHistory");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeManagementSystem.Models.Customer", b =>
+                {
+                    b.Navigation("FaultReports");
+
+                    b.Navigation("FridgeAllocations");
+
+                    b.Navigation("FridgeRequests");
+
+                    b.Navigation("MaintenanceSchedules");
+                });
+
+            modelBuilder.Entity("Project.Models.CustomerSupport", b =>
+                {
+                    b.Navigation("FridgeAllocations");
+
+                    b.Navigation("ManagedCustomers");
+                });
+
+            modelBuilder.Entity("Project.Models.FaultTechnician", b =>
+                {
+                    b.Navigation("AssignedFaults");
+                });
+
+            modelBuilder.Entity("Project.Models.MaintenanceTechnician", b =>
+                {
+                    b.Navigation("FaultReports");
+
+                    b.Navigation("ScheduledMaintenances");
+                });
+
+            modelBuilder.Entity("Project.Models.StockController", b =>
+                {
+                    b.Navigation("CreatedPurchaseRequests");
+
+                    b.Navigation("ManagedFridges");
+
+                    b.Navigation("ProcessedFridgeAllocations");
                 });
 #pragma warning restore 612, 618
         }

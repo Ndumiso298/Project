@@ -16,17 +16,177 @@ namespace Project.Models
         public string Model { get; set; }
         [Required]
         public int CapacityLiters { get; set; }
-        [Required]
-        public string Type { get; set; } // e.g., "Single Door", "Double Door", etc
-        [Required]
-        public string Description { get; set; }
-        [Required]
-        public double RentalPricePerMonth { get; set; }
-        
-        [Required]
-        public DateTime LastMaintenanceDate { get; set; }
-        [Required]
-        public string Condition { get; set; }
+
+        [Display(Name = "Energy Rating")]
+        [StringLength(10, ErrorMessage = "Energy Rating cannot exceed 10 characters.")]
+        public string? EnergyRating { get; set; }
+
+        [Required(ErrorMessage = "Condition is required.")]
+        [Display(Name = "Condition*")]
+        public string Condition { get; set; }// Could be an enum, but using string for flexibility
+
+        [Required(ErrorMessage = "Status is required.")]
+        [Display(Name = "Status*")]
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Purchase Date is required.")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Purchase Date*")]
+        public DateTime PurchaseDate { get; set; }
+
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Warranty Expiry Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? WarrantyExpiryDate { get; set; }
         //[Required]
         public string? ImageUrl { get; set; }
         [Required]

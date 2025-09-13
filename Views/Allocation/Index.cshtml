@@ -7,40 +7,64 @@
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-            <!-- Header -->
-            <div class="card-header bg-primary text-light py-4">
-                <div class="row align-items-center">
-                    <div class="col-12 text-center">
-                        <h2 class="fw-bold text-white mb-0">Shopping Cart</h2>
-                        <p class="opacity-75 mb-0">Review your items before checkout</p>
-                    </div>
-                </div>
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-primary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Allocations</h2>
             </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="Allocation" asp-action="Upsert" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>  Create New Allocation
+                </a>
+            </div>
+        </div>
 
-            <!-- Body -->
-            <div class="card-body p-4 p-md-5">
-                <!-- Continue Shopping -->
-                <div class="row mb-4">
-                    <div class="col-12 col-md-3">
-                        <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill">
-                            <i class="bi bi-arrow-left me-1"></i> Continue Shopping
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Cart Items -->
-                <div class="row">
-                    <div class="col-12">
-                        @if (Model.AllocationList != null && Model.AllocationList.Any())
-                        {
-                            @foreach (var item in Model.AllocationList)
-                            {
-                                <div class="row align-items-center border-bottom py-3 mb-3">
-                                    <!-- Image -->
-                                    <div class="col-12 col-md-2 text-center mb-3 mb-md-0">
-                                        <img src="@item.Fridge.ImageUrl" alt="@item.Fridge.Brand @item.Fridge.Model"
-                                             class="img-fluid rounded shadow-sm" style="max-height:120px;" />
-                                    </div>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Fridge Maanufacure
+                    </th>
+                    <th>
+                        Sirial Number
+                    </th>
+                    <th>
+                        Fridge Number
+                    </th>
+                    <th>
+                        Fridge Type
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            @*     @foreach (var obj in Model.OrderBy(u => u.AllocationId))
+                {
+                    <tr>
+                        <td>
+                            @obj.Fridge.FridgeNo+<br />+@obj.Fridge.FridgeManufacture+<br />+@obj.Fridge.FridgeType
+                        </td>
+                        <td>
+                            @obj.ApplicationUser.FirstName + " " + @obj.ApplicationUser.LastName
+                        </td>
+                        <td>
+                            @obj.AllocationDate
+                        </td>
+                        <td>
+                            @obj.ReturnDate
+                        </td>
 
                                     <!-- Details -->
                                     <div class="col-12 col-md-5">
@@ -52,36 +76,20 @@
                                         </div>
                                     </div>
 
-                                    <!-- Actions -->
-                                    <div class="col-12 col-md-5 d-flex justify-content-md-end align-items-center mt-3 mt-md-0">
-                                        <div class="btn-group me-3" role="group">
-                                            <a asp-action="Plus" asp-route-id="@item.AllocationId"
-                                               class="btn btn-outline-primary rounded-pill px-3">
-                                                <i class="bi bi-plus-lg"></i>
-                                            </a>
-                                            <a asp-action="Minus" asp-route-id="@item.AllocationId"
-                                               class="btn btn-outline-primary rounded-pill px-3">
-                                                <i class="bi bi-dash-lg"></i>
-                                            </a>
-                                        </div>
-                                        <a asp-action="Remove" asp-route-id="@item.AllocationId"
-                                           class="btn btn-danger rounded-pill px-3">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="alert alert-info text-center rounded-3 shadow-sm">
-                                <i class="bi bi-cart-x fs-3 d-block mb-2"></i>
-                                Your cart is empty.
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+                                <a asp-controller="Allocation" asp-action="Index" asp-route-id="@obj.AllocationId" class="btn btn-primary mx-2">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a asp-controller="Allocation" asp-action="Index" asp-route-id="@obj.AllocationId" class="btn btn-danger mx-2">
+                                    <i class="bi bi-trash-fill"></i> Delete
+                                </a>
                             </div>
-                        }
-                    </div>
-                </div>
-            </div>
+                        </td>
+                    </tr>
+                } *@
+            </tbody>
+        </table>
 
             <!-- Footer -->
             <div class="card-footer bg-light border-0 p-4">
@@ -105,8 +113,8 @@
                             </button>
                         }
                     </div>
-                </div>
-            </div>
+    </div>
+</div>
 
 </form>
 

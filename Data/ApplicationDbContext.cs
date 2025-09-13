@@ -14,8 +14,6 @@ namespace Project.Data
         public DbSet<ApplicationUser> AppUser { get; set; }
         public DbSet<Fridge> tblFridge { get; set; }
         public DbSet<Allocation> tblAllocation { get; set; }
-        public DbSet<RequestHeader> tblRequestHeader { get; set; }
-        public DbSet<RequestDetails> tblRequestDetail { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,198 +21,147 @@ namespace Project.Data
             modelBuilder.Entity<Fridge>().HasData(
                 new Fridge
                 {
-                    FridgeId = 1,
-                    Brand = "Samsung",
-                    FridgeNo = "FRG-001",
-                    Model = "RT28T",
-                    CapacityLiters = 253,
-                    Type = "Double Door",
-                    Description = "Energy-efficient double door fridge with frost-free technology.",
-                    RentalPricePerMonth = 1200.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 15),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge1.jpg",
-                    AvailabilityStatus = "Available"
+                    Id = 1,
+                    AddressLine1 = "123 Vilakazi Street",
+                    AddressLine2 = "Orlando West",
+                    SuburbId = 7, // Orlando East (Soweto, Gauteng)
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Fridge
                 {
-                    FridgeId = 2,
-                    Brand = "LG",
-                    FridgeNo = "FRG-002",
-                    Model = "GL-B201",
-                    CapacityLiters = 190,
-                    Type = "Single Door",
-                    Description = "Compact single door fridge ideal for small apartments.",
-                    RentalPricePerMonth = 900.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 10),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge2.jpg",
-                    AvailabilityStatus = "Rented"
+                    Id = 2,
+                    AddressLine1 = "45 Victoria Road",
+                    AddressLine2 = "Victoria and Alfred Waterfront",
+                    SuburbId = 3, // Sea Point (Cape Town, Western Cape)
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Fridge
                 {
-                    FridgeId = 3,
-                    Brand = "Whirlpool",
-                    FridgeNo = "FRG-003",
-                    Model = "WRT518",
+                    Id = 3,
+                    AddressLine1 = "78 Steve Biko Road",
+                    AddressLine2 = "Berea Centre",
+                    SuburbId = 5, // Berea (Durban, KZN)
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Fridge
+                {
+                    Id = 4,
+                    AddressLine1 = "12 Main Road",
+                    AddressLine2 = "Sandton City",
+                    SuburbId = 1, // Sandton (Johannesburg, Gauteng)
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Fridge
+                {
+                    Id = 5,
+                    AddressLine1 = "8 4th Avenue",
+                    AddressLine2 = "Parkhurst Village",
+                    SuburbId = 2, // Parkhurst (Johannesburg, Gauteng)
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Fridge
+                {
+                    Id = 6,
+                    AddressLine1 = "101 Beach Road",
+                    AddressLine2 = "Beachfront Plaza",
+                    SuburbId = 4, // Claremont (Cape Town, Western Cape)
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Fridge
+                {
+                    Id = 7,
+                    AddressLine1 = "22 Marine Drive",
+                    AddressLine2 = "Umhlanga Rocks",
+                    SuburbId = 8, // Umhlanga (Durban, KZN)
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Fridge
+                {
+                    Id = 8,
+                    AddressLine1 = "5 University Way",
+                    AddressLine2 = "Campus Square",
+                    SuburbId = 6, // Summerstrand (Gqeberha, Eastern Cape)
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Fridge
+                {
+                    Id = 1,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-001",
+                    Manufacturer = "Defy",
+                    Model = "DCR520 Commercial Beverage Cooler",
+                    CapacityLiters = 520,
+                    EnergyRating = "B",
+                    Condition = "Used - Good",
+                    Status = "In Stock",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-18),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(6),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/beverage-cooler-886lt-double-door-sliding.jpg"
+                },
+                new Fridge
+                {
+                    Id = 2,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-002",
+                    Manufacturer = "LG",
+                    Model = "LC-321CV Glass Door Merchandiser",
+                    CapacityLiters = 780,
+                    EnergyRating = "A",
+                    Condition = "New",
+                    Status = "In Stock",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-3),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(33),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/single-glass-door-freezer-carbon-edition-.jpg"
+                },
+                new Fridge
+                {
+                    Id = 3,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-003",
+                    Manufacturer = "Hisense",
+                    Model = "HC-702D Commercial Display Freezer",
+                    CapacityLiters = 702,
+                    EnergyRating = "A+",
+                    Condition = "Used - Excellent",
+                    Status = "Allocated",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-2),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(34),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/beverage-cooler-730l-2-door-swing-door-.jpg"
+                },
+                new Fridge
+                {
+                    Id = 4,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-004",
+                    Manufacturer = "Samsung",
+                    Model = "RR-500M Commercial Series Freezer",
                     CapacityLiters = 500,
-                    Type = "Double Door",
-                    Description = "Spacious fridge with advanced cooling technology.",
-                    RentalPricePerMonth = 1500.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 5),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge3.jpg",
-                    AvailabilityStatus = "Available"
+                    EnergyRating = "A+",
+                    Condition = "Needs Repair",
+                    Status = "Needs Repair",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-24),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(-6),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/za-t-style-french-door-see-thru-door-rf71db975012fa-543388220.avif"
                 },
                 new Fridge
                 {
-                    FridgeId = 4,
-                    Brand = "Defy",
-                    FridgeNo = "FRG-004",
-                    Model = "DAC700",
-                    CapacityLiters = 350,
-                    Type = "Double Door",
-                    Description = "Durable fridge with energy-saving features.",
-                    RentalPricePerMonth = 1100.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 1),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge4.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 5,
-                    Brand = "Hisense",
-                    FridgeNo = "FRG-005",
-                    Model = "H310BI",
-                    CapacityLiters = 310,
-                    Type = "Single Door",
-                    Description = "Compact fridge with adjustable shelves.",
-                    RentalPricePerMonth = 800.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 20),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge5.jpg",
-                    AvailabilityStatus = "Rented"
-                },
-                new Fridge
-                {
-                    FridgeId = 6,
-                    Brand = "Bosch",
-                    FridgeNo = "FRG-006",
-                    Model = "KDN42",
-                    CapacityLiters = 420,
-                    Type = "Double Door",
-                    Description = "Premium fridge with no-frost technology.",
-                    RentalPricePerMonth = 1600.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 15),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge6.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 7,
-                    Brand = "Kelvinator",
-                    FridgeNo = "FRG-007",
-                    Model = "KEL250",
-                    CapacityLiters = 250,
-                    Type = "Single Door",
-                    Description = "Affordable fridge with basic features.",
-                    RentalPricePerMonth = 700.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 25),
-                    Condition = "Fair",
-                    ImageUrl = "https://example.com/images/fridge7.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 8,
-                    Brand = "Smeg",
-                    FridgeNo = "FRG-008",
-                    Model = "FAB28",
-                    CapacityLiters = 281,
-                    Type = "Single Door",
-                    Description = "Retro-style fridge with modern cooling.",
-                    RentalPricePerMonth = 2000.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 5),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge8.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 9,
-                    Brand = "AEG",
-                    FridgeNo = "FRG-009",
-                    Model = "SKE818",
-                    CapacityLiters = 300,
-                    Type = "Single Door",
-                    Description = "Built-in fridge with adjustable compartments.",
-                    RentalPricePerMonth = 1800.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 1),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge9.jpg",
-                    AvailabilityStatus = "Rented"
-                },
-                new Fridge
-                {
-                    FridgeId = 10,
-                    Brand = "Panasonic",
-                    FridgeNo = "FRG-010",
-                    Model = "NR-BL347",
-                    CapacityLiters = 347,
-                    Type = "Double Door",
-                    Description = "Fridge with inverter technology for energy saving.",
-                    RentalPricePerMonth = 1300.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 10),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge10.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 11,
-                    Brand = "Haier",
-                    FridgeNo = "FRG-011",
-                    Model = "HRF-619",
-                    CapacityLiters = 565,
-                    Type = "Side by Side",
-                    Description = "Large capacity fridge with twin inverter technology.",
-                    RentalPricePerMonth = 2200.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 5),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge11.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 12,
-                    Brand = "Hitachi",
-                    FridgeNo = "FRG-012",
-                    Model = "R-WB640",
-                    CapacityLiters = 640,
-                    Type = "French Door",
-                    Description = "Premium French door fridge with eco-friendly features.",
-                    RentalPricePerMonth = 2500.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 20),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge12.jpg",
-                    AvailabilityStatus = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 13,
-                    Brand = "Electrolux",
-                    FridgeNo = "FRG-013",
-                    Model = "ETB3700",
-                    CapacityLiters = 370,
-                    Type = "Top Freezer",
-                    Description = "Fridge with taste guard deodorizer.",
-                    RentalPricePerMonth = 1400.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 2),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge13.jpg",
-                    AvailabilityStatus = "Rented"
+                    Id = 5,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-005",
+                    Manufacturer = "Kelvinator",
+                    Model = "KCR-680GL Glass Door Beverage Cooler",
+                    CapacityLiters = 680,
+                    EnergyRating = "B",
+                    Condition = "Used - Fair",
+                    Status = "In Service",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-36),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(-18),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/single-glass-door-freezer-carbon-edition-.jpg"
                 },
                 new Fridge
                 {
@@ -223,103 +170,244 @@ namespace Project.Data
                     FridgeNo = "FRG-014",
                     Model = "SJ-GX60",
                     CapacityLiters = 600,
-                    Type = "French Door",
-                    Description = "Fridge with plasmacluster ion technology.",
-                    RentalPricePerMonth = 2300.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 18),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge14.jpg",
-                    AvailabilityStatus = "Available"
+                    EnergyRating = "A",
+                    Condition = "Refurbished",
+                    Status = "Allocated",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-4),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(32),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/za-rs90f-f-hub-rs90f64a2ffa-545559499.avif"
                 },
                 new Fridge
                 {
-                    FridgeId = 15,
-                    Brand = "Midea",
-                    FridgeNo = "FRG-015",
-                    Model = "HD-400",
-                    CapacityLiters = 400,
-                    Type = "Double Door",
-                    Description = "Affordable fridge with large freezer compartment.",
-                    RentalPricePerMonth = 1000.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 28),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge15.jpg",
-                    AvailabilityStatus = "Available"
+                    Id = 7,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-007",
+                    Manufacturer = "Bosch",
+                    Model = "GIC08A15 Commercial UnderCounter Freezer",
+                    CapacityLiters = 280,
+                    EnergyRating = "A++",
+                    Condition = "New",
+                    Status = "In Stock",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-7),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(29),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/display-unit-fridge-salvadore-csunk-azelio-1200mm-.jpg"
                 },
                 new Fridge
                 {
-                    FridgeId = 16,
-                    Brand = "Gorenje",
-                    FridgeNo = "FRG-016",
-                    Model = "NRK6192",
-                    CapacityLiters = 326,
-                    Type = "Bottom Freezer",
-                    Description = "Stylish bottom freezer fridge with crisp zone for vegetables.",
-                    RentalPricePerMonth = 1250.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 8),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge16.jpg",
-                    AvailabilityStatus = "Available"
+                    Id = 8,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-008",
+                    Manufacturer = "Whirlpool",
+                    Model = "WIO429IY Commercial Ice Maker & Beverage Cooler",
+                    CapacityLiters = 429,
+                    EnergyRating = "A",
+                    Condition = "Used - Excellent",
+                    Status = "In Service",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-12),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(24),
+                    ImageUrl = "Images/Fridges/juice-dispenser-3-bowl.jpg"
                 },
                 new Fridge
                 {
-                    FridgeId = 17,
-                    Brand = "Westinghouse",
-                    FridgeNo = "FRG-017",
-                    Model = "WBE5300",
-                    CapacityLiters = 528,
-                    Type = "Top Freezer",
-                    Description = "Family-sized fridge with humidity-controlled crisper.",
-                    RentalPricePerMonth = 1700.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 12),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge17.jpg",
-                    AvailabilityStatus = "Available"
+                    Id = 9,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-009",
+                    Manufacturer = "AEG",
+                    Model = "RCB836E4MW Commercial Multi-Door Freezer",
+                    CapacityLiters = 836,
+                    EnergyRating = "A+",
+                    Condition = "Used - Good",
+                    Status = "In Stock",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-1),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(35),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/wall-chiller-35m-single-glaze-unit.jpg"
                 },
                 new Fridge
                 {
-                    FridgeId = 18,
-                    Brand = "Fisher & Paykel",
-                    FridgeNo = "FRG-018",
-                    Model = "RF522",
-                    CapacityLiters = 519,
-                    Type = "French Door",
-                    Description = "Premium French door fridge with active smart technology.",
-                    RentalPricePerMonth = 2400.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 7),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge18.jpg",
-                    AvailabilityStatus = "Rented"
+                    Id = 10,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-010",
+                    Manufacturer = "Siemens",
+                    Model = "KI92RA70 Commercial FrostFree Freezer",
+                    CapacityLiters = 920,
+                    EnergyRating = "A++",
+                    Condition = "New",
+                    Status = "In Stock",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-5),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(31),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/double-glass-door-freezer-carbon-edition-.jpg"
                 },
                 new Fridge
                 {
-                    FridgeId = 19,
-                    Brand = "Ariston",
-                    FridgeNo = "FRG-019",
-                    Model = "MBA3832",
-                    CapacityLiters = 383,
-                    Type = "Top Freezer",
-                    Description = "Reliable fridge with antibacterial coating.",
-                    RentalPricePerMonth = 1150.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 30),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge19.jpg",
-                    AvailabilityStatus = "Available"
+                    Id = 11,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-011",
+                    Manufacturer = "Defy",
+                    Model = "DTD492 Commercial Top Mount Freezer",
+                    CapacityLiters = 492,
+                    EnergyRating = "C",
+                    Condition = "Faulty",
+                    Status = "Decommissioned",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-72),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(-48),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/za-4-door-french-door-beverage-center-rf29bb8600mtfa-533983040.avif"
                 },
                 new Fridge
                 {
-                    FridgeId = 20,
-                    Brand = "Beko",
-                    FridgeNo = "FRG-020",
-                    Model = "RCNE560",
-                    CapacityLiters = 560,
-                    Type = "Bottom Freezer",
-                    Description = "Spacious bottom freezer fridge with NeoFrost cooling.",
-                    RentalPricePerMonth = 1850.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 22),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge20.jpg",
-                    AvailabilityStatus = "Available"
+                    Id = 12,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-012",
+                    Manufacturer = "LG",
+                    Model = "GL-D552CRL Commercial Drawer Freezer",
+                    CapacityLiters = 552,
+                    EnergyRating = "A+",
+                    Condition = "Used - Good",
+                    Status = "Needs Repair",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-9),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(27),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/wall-chiller-35m-single-glaze-unit.jpg"
+                },
+                new Fridge
+                {
+                    Id = 13,
+                    StockControllerId = 2,
+                    SerialNumber = "FRG-2023-013",
+                    Manufacturer = "Hisense",
+                    Model = "HR-790D4 Commercial Reach-In Freezer",
+                    CapacityLiters = 790,
+                    EnergyRating = "A",
+                    Condition = "Used - Excellent",
+                    Status = "In Stock",
+                    PurchaseDate = DateTime.UtcNow.AddMonths(-6),
+                    WarrantyExpiryDate = DateTime.UtcNow.AddMonths(30),
+                    CreatedAt = DateTime.UtcNow,
+                    ImageUrl = "Images/Fridges/upright-freezer-double-solid-ssteel-hinged-door-shd1140f.jpg"
+                }
+            );
+            modelBuilder.Entity<ShoppingCart>().HasData(
+                new ShoppingCart
+                {
+                    Id = 1, // Unique ID
+                    FridgeId = 1, // Reference to the Defy DCR520 Commercial Beverage Cooler
+                    CustomerId = 1, // Nathan Robertson's user ID
+                    Quantity = 4,
+                    Price = 15399.99m
+                });
+            modelBuilder.Entity<FridgeAllocation>().HasData(
+                new FridgeAllocation
+                {
+                    Id = 1,
+                    FridgeId = 3,
+                    CustomerId = 1,
+                    CustomerLiaisonId = 1,
+                    Status = "Active",
+                    AllocationDate = DateTime.UtcNow.AddMonths(-1),
+                    ExpectedReturnDate = DateTime.UtcNow.AddMonths(11),
+                    ServiceIntervalMonths = 3,
+                    LastServiceDate = DateTime.UtcNow.AddMonths(-1),
+                    NextServiceDue = DateTime.UtcNow.AddMonths(2),
+                    Notes = "High-usage establishment, requires more frequent servicing",
+                    CreatedAt = DateTime.UtcNow.AddMonths(-1),
+                    UpdatedAt = DateTime.UtcNow.AddMonths(-1),
+                    IsDeleted = false
+                },
+                // Pending allocation (awaiting approval)
+                new FridgeAllocation
+                {
+                    Id = 2,
+                    FridgeId = 10,
+                    CustomerId = 1,
+                    CustomerLiaisonId = 1,
+                    Status = "Pending",
+                    Notes = "New customer application under review",
+                    CreatedAt = DateTime.UtcNow,
+                    IsDeleted = false
+                }
+                );
+            modelBuilder.Entity<OrderHeader>().HasData(
+                new OrderHeader
+                {
+                Id = 1,
+                CustomerId = 1, // Reference to Customer Id
+                OrderDate = DateTime.UtcNow.AddDays(-7),
+                ShippingDate = DateTime.UtcNow.AddDays(-5),
+                OrderTotal = 16999.99m, // Sum of order details
+                OrderStatus = "Completed",
+                PaymentStatus = "Paid",
+                TrackingNumber = "TRK123456789",
+                Carrier = "Fastway Couriers",
+                PaymentDate = DateTime.UtcNow.AddDays(-6),
+                PaymentDueDate = DateTime.UtcNow.AddDays(-1),
+                DeliveryAddressId = 1, // FK to Location
+                RecipientFirstName = "Nathan",
+                RecipientLastName = "Robertson",
+                }
+                );
+            modelBuilder.Entity<OrderDetail>().HasData(
+                new OrderDetail
+                {
+                    Id = 1,
+                    OrderHeaderId = 1, // Reference to OrderHeader
+                    FridgeId = 1, // Defy DCR520 Commercial Beverage Cooler
+                    Quantity = 4,
+                    Price = 15399.99m
+                });
+            modelBuilder.Entity<FridgeFault>().HasData(
+               new FridgeFault
+               {
+                   Id = 1,
+                   FridgeAllocationId = 1,
+                   FaultTechnicianId = 3,
+                   ReportedById = "6",
+                   Status = "InProgress",
+                   Priority = "High",
+                   Description = "Fridge not cooling properly - temperature reading shows 15°C when set to 4°C",
+                   Diagnosis = "Preliminary diagnosis suggests possible compressor issue or refrigerant leak",
+                   ReportedDate = DateTime.UtcNow.AddDays(-3),
+                   AssignedDate = DateTime.UtcNow.AddDays(-2),
+                   ResolutionNotes = "Technician dispatched for on-site inspection. Parts may need ordering.",
+                   CreatedAt = DateTime.UtcNow.AddDays(-3),
+                   UpdatedAt = DateTime.UtcNow.AddDays(-1),
+                   IsDeleted = false
+               }
+               );
+            modelBuilder.Entity<FridgeMaintenance>().HasData(
+                new FridgeMaintenance
+                {
+                    Id = 1,
+                    FridgeAllocationId = 1,
+                    MaintenanceTechnicianId = 4,
+                    Description = "Routine preventive maintenance service",
+                    ScheduledDate = DateTime.UtcNow.AddDays(-7),
+                    Status = "Completed",
+                    CustomerConfirmationDate = DateTime.UtcNow.AddDays(-6),
+                    CompletedDate = DateTime.UtcNow.AddDays(-5),
+                    ServiceNotes = "Performed comprehensive maintenance: cleaned condenser coils, checked refrigerant levels, calibrated thermostat, inspected door seals, and lubricated moving parts. Fridge is operating at optimal efficiency.",
+                    CreatedAt = DateTime.UtcNow.AddDays(-10),
+                    UpdatedAt = DateTime.UtcNow.AddDays(-5),
+                    IsDeleted = false
+                }
+            );
+            modelBuilder.Entity<PurchaseRequest>().HasData(
+                new PurchaseRequest
+                {
+                    Id = 1,
+                    FridgeId = 5,
+                    StockControllerId = 2, // StockController employee linked to ApplicationUser.Id = "3"
+                    Quantity = 24,
+                    Reason = "Increase stock levels for upcoming summer beverage promotions in Gauteng region.",
+                    RequestDate = DateTime.UtcNow.AddDays(-3), // Requested 3 days ago
+                    Status = "Pending",
+                    ProcessedDate = null,
+                    ProcessingNotes = null,
+                    CreatedAt = DateTime.UtcNow.AddDays(-3),
+                    IsDeleted = false
                 }
             );
         }

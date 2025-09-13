@@ -22,39 +22,8 @@ namespace Project.Controllers
         }
         public IActionResult Details(int id)
         {
-            Allocation allocation = new()
-            {
-                Fridge = _db.tblFridge.FirstOrDefault(u => u.FridgeId == id),
-                Count= 1,
-                FridgeId=id
-            };
-          return View(allocation);
-        
-        }
-        [HttpPost]
-        [Authorize]
-        public IActionResult Details(Allocation allocation)
-        {
-            var claimsIdedity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            allocation.ApplicationUserId = userId;
-
-            Allocation allocationFromDb = _db.tblAllocation.FirstOrDefault(u => u.ApplicationUserId == userId &&
-            u.FridgeId == allocation.FridgeId);
-
-            if (allocationFromDb != null)
-            {
-                allocationFromDb.Count += allocation.Count;
-                _db.tblAllocation.Update(allocationFromDb);
-            }
-            else
-            {
-                _db.tblAllocation.Add(allocation);
-            }
-            TempData["success"] = "cart updated successfully";
-            _db.SaveChanges();
-
-            return RedirectToAction(nameof(Index));
+           Fridge objFridge = _db.tblFridge.FirstOrDefault(u=>u.FridgeId==id);
+           return View(objFridge);
         }
 
     }
