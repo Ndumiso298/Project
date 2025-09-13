@@ -1,0 +1,140 @@
+﻿@model IEnumerable<Project.Models.Fault>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold text-primary">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> Fault Management Dashboard
+            </h2>
+            <p class="text-muted">Track and manage fridge faults reported by customers</p>
+        </div>
+    </div>
+
+    @* Filter Bar *@
+    <form method="get" asp-action="Index" class="mb-4">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Customer Name</label>
+                <input type="text" name="customerName" value="@ViewBag.CustomerName" class="form-control" placeholder="Search by name">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Location</label>
+                <input type="text" name="location" value="@ViewBag.Location" class="form-control" placeholder="Search by location">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    <option value="Pending" selected="@(ViewBag.Status == "Pending")">Pending</option>
+                    <option value="In Progress" selected="@(ViewBag.Status == "In Progress")">In Progress</option>
+                    <option value="Resolved" selected="@(ViewBag.Status == "Resolved")">Resolved</option>
+                </select>
+            </div>
+            <div class="col-md-3 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Filter
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-x-circle me-1"></i> Reset
+                </a>
+            </div>
+        </div>
+    </form>
+
+    @* Status Summary Cards *@
+    @{
+        var resolvedCount = Model.Count(f => f.Status == "Resolved");
+        var inProgressCount = Model.Count(f => f.Status == "In Progress");
+        var pendingCount = Model.Count(f => f.Status == "Pending");
+    }
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-white bg-success h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Resolved</h5>
+                    <h2 class="fw-bold">@resolvedCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-dark bg-warning h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">In Progress</h5>
+                    <h2 class="fw-bold">@inProgressCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-white bg-danger h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pending</h5>
+                    <h2 class="fw-bold">@pendingCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Fault Table *@
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Customer Note</th>
+                    <th>Fridge</th>
+                    <th>Status</th>
+                    <th>Customer Name</th>
+                    <th>Location</th>
+                    <th>Reported Date</th>
+                    <th>Resolved Date</th>
+                    <th>Technician</th>
+                    <th>Technician Notes</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                    <tr>
+                        <td>@obj.ReportedByCustomer?.CustomerNote</td>
+                        <td>
+                            @obj.Fridge?.Model
+                            <br />
+                            <small class="text-muted">@obj.Fridge?.FridgeNo</small>
+                        </td>
+
+                        <td>
+                            @if (obj.Status == "Resolved")
+                            {
+                                <span class="badge bg-success">@obj.Status</span>
+                            }
+                            else if (obj.Status == "In Progress")
+                            {
+                                <span class="badge bg-warning text-dark">@obj.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@obj.Status</span>
+                            }
+                        </td>
+                        <td>@obj.ReportedByCustomer?.Name</td>
+                        <td>@obj.ReportedByCustomer?.Address</td>
+                        <td>@obj.ReportedAt.ToString("dd MMM yyyy")</td>
+                        <td>@obj.ResolvedAt?.ToString("dd MMM yyyy")</td>
+                        <td>@obj.ResolvedByTechnician?.Name</td>
+                        <td>@obj.Notes</td>
+                        <td class="text-center">
+                            <a asp-controller="Fault" asp-action="Details" asp-route-id="@obj.FaultId"
+                               class="btn btn-sm btn-outline-info me-1" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-controller="Fault" asp-action="Edit" asp-route-id="@obj.FaultId"
+                               class="btn btn-sm btn-outline-warning" title="Edit Fault">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

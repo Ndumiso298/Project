@@ -127,9 +127,24 @@ namespace Project.Areas.Identity.Pages.Account
                     }
                     else if (await _userManager.IsInRoleAsync(user, "Customer"))
                     {
-                        return RedirectToAction("Index", "Customer");
+                        return RedirectToAction("Dashboard", "Customer");
                     }
-
+                    else if (await _userManager.IsInRoleAsync(user, "CustomerLiaison"))
+                    {
+                        return RedirectToAction("Dashboard", "CustomerLiaison");
+                    }
+                    else if(await _userManager.IsInRoleAsync(user, "InventoryLiaison"))
+                    {
+                        return RedirectToAction("Dashboard", "InventoryLiaison");
+                    }
+                    else if(await _userManager.IsInRoleAsync(user, "FaultTech"))
+                    {
+                        return RedirectToAction("Dashboard", "FaultTech");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Dashboard", "MaintenanceTech");
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

@@ -1,0 +1,37 @@
+﻿@model Project.Models.ProcessFault
+
+<form asp-action="Create">
+    <input type="hidden" asp-for="FaultId" />
+
+    <div class="mb-3">
+        <label asp-for="TechnicianId" class="form-label">Technician ID</label>
+        <input asp-for="TechnicianId" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ScheduleFault" class="form-label">Schedule Fault</label>
+        <input asp-for="ScheduleFault" type="datetime-local" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label">Technician Notes</label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PriorityLevel" class="form-label">Priority</label>
+        <select asp-for="PriorityLevel" class="form-select">
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+        </select>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsConfirmed" class="form-check-input" />
+        <label asp-for="IsConfirmed" class="form-check-label">Confirmed</label>
+    </div>
+    
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index"  class="btn btn-outline-secondary">Cancel</a>
+</form>

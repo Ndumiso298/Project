@@ -19,7 +19,7 @@ namespace Project.Controllers
         }
         public IActionResult Index()
         {
-            List<Fridge> fridges=_db.tblFridge.ToList();
+            List<Fridge> fridges=_db.tblFridges.ToList();
             return View(fridges);
         }
         public IActionResult Upsert(int? id)
@@ -31,7 +31,7 @@ namespace Project.Controllers
             else
             {
 
-                Fridge fridgeFromDb = _db.tblFridge.FirstOrDefault(u => u.FridgeId == id);
+                Fridge fridgeFromDb = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id);
                 return View(fridgeFromDb);
             }
 
@@ -69,12 +69,12 @@ namespace Project.Controllers
 
                 if (objfridge.FridgeId == 0)
                 {
-                    _db.tblFridge.Add(objfridge);
+                    _db.tblFridges.Add(objfridge);
 
                 }
                 else
                 {
-                    _db.tblFridge.Update(objfridge);
+                    _db.tblFridges.Update(objfridge);
                 }
                 _db.SaveChanges();
                 return RedirectToAction("Index");
@@ -86,7 +86,7 @@ namespace Project.Controllers
         
         public IActionResult Delete(int? id)
         {
-            Fridge fridgeFromDb = _db.tblFridge.FirstOrDefault(u => u.FridgeId == id);
+            Fridge fridgeFromDb = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id);
             if (fridgeFromDb.FridgeId == null || fridgeFromDb.FridgeId == 0)
             {
                 return NotFound();
@@ -105,7 +105,7 @@ namespace Project.Controllers
             }
 
 
-            _db.tblFridge.Remove(objfridge);
+            _db.tblFridges.Remove(objfridge);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }

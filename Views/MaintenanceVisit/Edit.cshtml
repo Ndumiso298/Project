@@ -1,0 +1,93 @@
+﻿@model Project.Models.MaintenanceVisit
+@{
+    ViewBag.Title = "Edit Maintenance Visit";
+
+    var daysUntilDue = (Model.ScheduledDate - DateTime.Now).Days;
+    var showDueNotification = Model.Status == "In Progress" && daysUntilDue >= 0;
+    var showOverdueAlert = Model.Status == "In Progress" && Model.ScheduledDate < DateTime.Now;
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Edit Maintenance Visit</h4>
+        </div>
+        <div class="card-body">
+            
+                <form asp-action="Edit" method="post">
+                  @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="MaintenanceVisitId" />
+
+                <!-- Scheduled Date -->
+                <div class="mb-4">
+                    <label asp-for="ScheduledDate" class="form-label fw-semibold">Scheduled Date & Time</label>
+                    <input asp-for="ScheduledDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+                    <small class="text-muted">Adjust the visit date if rescheduling is required.</small>
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="mb-4">
+                    <label asp-for="Status" class="form-label fw-semibold">Visit Status</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="Pending" selected="@(Model.Status == "Pending" ? "selected" : null)">Pending</option>
+                        <option value="Scheduled" selected="@(Model.Status == "Scheduled" ? "selected" : null)">Scheduled</option>
+                        <option value="In Progress" selected="@(Model.Status == "In Progress" ? "selected" : null)">In Progress</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <!-- Due Soon Notification -->
+                @if (showDueNotification)
+                {
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>
+                            This visit is <strong>In Progress</strong> and is due in <strong>@daysUntilDue days</strong>.
+                        </div>
+                    </div>
+                }
+
+                <!-- Overdue Alert -->
+                @if (showOverdueAlert)
+                {
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        <div>
+                            ⚠️ This visit is <strong>overdue</strong>. Scheduled for <strong>@Model.ScheduledDate.ToString("yyyy-MM-dd HH:mm")</strong>.
+                        </div>
+                    </div>
+                }
+
+                <!-- Technician Dropdown -->
+<div class="mb-4">
+    <label asp-for="TechnicianId" class="form-label fw-semibold">Assigned Technician</label>
+    <select asp-for="TechnicianId" class="form-select" asp-items="ViewBag.TechnicianList">
+        <option value="">-- Select Technician --</option>
+    </select>
+    <span asp-validation-for="TechnicianId" class="text-danger"></span>
+</div>
+
+
+                <!-- Fridge Info -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Fridge Details</label>
+                    <input class="form-control mb-2" value="Serial: @Model.Fridge?.FridgeNo" readonly />
+                    <input class="form-control" value="Model: @Model.Fridge?.Model" readonly />
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Save Changes</button>
+
+                    <button type="button" class="btn btn-primary no-print" onclick="window.print()">🖨️ Print</button>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">↩ Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+

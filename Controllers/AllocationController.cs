@@ -27,7 +27,7 @@ namespace Project.Controllers
             var userId= claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             AllocationVM = new()
             {
-                    AllocationList = _db.tblAllocation
+                    AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
                     .Where(a => a.ApplicationUserId == userId)
                     .ToList(),
@@ -47,7 +47,7 @@ namespace Project.Controllers
 
             AllocationVM = new()
             {
-                AllocationList = _db.tblAllocation
+                AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
                     .Where(a => a.ApplicationUserId == userId)
                     .ToList(),
@@ -80,7 +80,7 @@ namespace Project.Controllers
             var claimsIdedity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            AllocationVM.AllocationList = _db.tblAllocation
+            AllocationVM.AllocationList = _db.tblAllocations
                      .Include(a => a.Fridge)
                      .Where(a => a.ApplicationUserId == userId)
                      .ToList();
@@ -99,7 +99,7 @@ namespace Project.Controllers
             }
 
            
-            _db.tblRequestHeader.Add(AllocationVM.RequestHeader);
+            _db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
             _db.SaveChanges();
 
             foreach (var allocation in AllocationVM.AllocationList)
@@ -111,7 +111,7 @@ namespace Project.Controllers
                     Price = allocation.Price,
                     Count = allocation.Count,
                 };
-                _db.tblRequestDetail.Add(requestDetail);
+                _db.tblRequestDetais.Add(requestDetail);
                 _db.SaveChanges();
 
             }
@@ -132,23 +132,23 @@ namespace Project.Controllers
         }
         public IActionResult Plus(int id)
         {
-            var allocationFromDb = _db.tblAllocation.FirstOrDefault(u => u.AllocationId == id);
+            var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
             allocationFromDb.Count += 1;
-            _db.tblAllocation.Update(allocationFromDb);
+            _db.tblAllocations.Update(allocationFromDb);
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
         public IActionResult Minus(int id)
         {
-            var allocationFromDb = _db.tblAllocation.FirstOrDefault(u => u.AllocationId == id);
+            var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
             if (allocationFromDb.Count >= 0)
             {
-                _db.tblAllocation.Remove(allocationFromDb);
+                _db.tblAllocations.Remove(allocationFromDb);
             }
             else
             {
                 allocationFromDb.Count -= 1;
-                _db.tblAllocation.Update(allocationFromDb);
+                _db.tblAllocations.Update(allocationFromDb);
             }
 
 
@@ -157,9 +157,9 @@ namespace Project.Controllers
         }
         public IActionResult Remove(int id)
         {
-            var allocationFromDb = _db.tblAllocation.FirstOrDefault(u => u.AllocationId == id);
+            var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
 
-            _db.tblAllocation.Remove(allocationFromDb);
+            _db.tblAllocations.Remove(allocationFromDb);
 
 
 

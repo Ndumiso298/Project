@@ -17,14 +17,14 @@ namespace Project.Controllers
       
         public IActionResult Index()
         {
-            IEnumerable<Fridge> fridgesList=_db.tblFridge.ToList();
+            IEnumerable<Fridge> fridgesList=_db.tblFridges.ToList();
             return View(fridgesList);
         }
         public IActionResult Details(int id)
         {
             Allocation allocation = new()
             {
-                Fridge = _db.tblFridge.FirstOrDefault(u => u.FridgeId == id),
+                Fridge = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id),
                 Count= 1,
                 FridgeId=id
             };
@@ -39,17 +39,17 @@ namespace Project.Controllers
             var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
             allocation.ApplicationUserId = userId;
 
-            Allocation allocationFromDb = _db.tblAllocation.FirstOrDefault(u => u.ApplicationUserId == userId &&
+            Allocation allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.ApplicationUserId == userId &&
             u.FridgeId == allocation.FridgeId);
 
             if (allocationFromDb != null)
             {
                 allocationFromDb.Count += allocation.Count;
-                _db.tblAllocation.Update(allocationFromDb);
+                _db.tblAllocations.Update(allocationFromDb);
             }
             else
             {
-                _db.tblAllocation.Add(allocation);
+                _db.tblAllocations.Add(allocation);
             }
             TempData["success"] = "cart updated successfully";
             _db.SaveChanges();

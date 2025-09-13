@@ -31,6 +31,7 @@ namespace Project.Models
         public string? ImageUrl { get; set; }
         [Required]
         public string AvailabilityStatus { get; set; } // e.g., "Available", "Rented", "Under Maintenance"
+        public string Location { get; internal set; }
     }
 
 }
