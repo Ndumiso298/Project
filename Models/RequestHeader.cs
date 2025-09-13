@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Project.Models
 {
@@ -16,11 +17,13 @@ namespace Project.Models
         public ApplicationUser ApplicationUser { get; set; }
 
         public DateTime RequestDate { get; set; }
-        public DateTime ShippingDate { get; set; }
+       
         public double RequestTotal { get; set; }
+      
+                                                                                                                         
+        public string RequestStatus { get; set; } = "Pending";
 
-
-        [Required]
+       [Required]
         public string FirstName { get; set; }
 
         [Required]

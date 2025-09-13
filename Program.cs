@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Utility;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
