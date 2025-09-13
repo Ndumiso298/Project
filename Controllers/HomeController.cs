@@ -1,10 +1,13 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Models;
+using Project.Utility;
 
 namespace Project.Controllers
 {
-    
+    //[Authorize(Roles = StaticDetails.CustomerRole)]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -19,6 +22,22 @@ namespace Project.Controllers
             return View();
         }
 
+        public IActionResult AboutUs()
+        {
+            return View();
+        }
+        public IActionResult OurServices()
+        {
+            return View();
+        }
+        public IActionResult Products()
+        {
+            return View();
+        }
+        public IActionResult ContactUs()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

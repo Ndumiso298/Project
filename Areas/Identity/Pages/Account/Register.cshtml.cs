@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -19,30 +20,37 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Project.Data;
 using Project.Models;
 using Project.Utility;
-
+/// <summary>
+///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+///     directly from your code. This API may change or be removed in future releases.
+/// </summary>
 namespace Project.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
-        private readonly IUserEmailStore<IdentityUser> _emailStore;
+        private readonly ApplicationDbContext _db;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserStore<ApplicationUser> _userStore;
+        private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RegisterModel(
-            UserManager<IdentityUser> userManager,
+        public RegisterModel(ApplicationDbContext db,
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IUserStore<IdentityUser> userStore,
-            SignInManager<IdentityUser> signInManager,
+            IUserStore<ApplicationUser> userStore,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _db = db;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -51,99 +59,96 @@ namespace Project.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _roleManager = roleManager;
         }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            public string? Role { get; set; }
+            //[NotMapped]
+            [Display(Name = "User Role")]
+            public string? UserRole { get; set; }
+
+            [PersonalData]
+            [Required(ErrorMessage = "First Name is required.")]
+            [StringLength(100, ErrorMessage = "First Name cannot exceed 100 characters.")]
+            [Display(Name = "First Name*")]
+            public string FirstName { get; set; }
+
+            [PersonalData]
+            [Required(ErrorMessage = "Last Name is required.")]
+            [StringLength(100, ErrorMessage = "Last Name cannot exceed 100 characters.")]
+            [Display(Name = "Last Name*")]
+            public string LastName { get; set; }
+
+            [StringLength(100, ErrorMessage = "Cell/Tel Number cannot exceed 100 characters.")]
+            [Display(Name = "Cell/Tel Number*")]
+            public string? PhoneNumber { get; set; }
+
+            [PersonalData]
+            [Display(Name = "Primary Address")]
+            public int? LocationId { get; set; }
+
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
-            [Required]
-            public string FirstName { get; set; }
-
-            [Required]
-            public string LastName { get; set; }
-            public string? StreetAddress { get; set; }
-            public string? City { get; set; }
-            public string? State { get; set; }
-            public string? PostalCode { get; set; }
-            public string? CellNumber { get; set; }
+            [ValidateNever]
+            public IEnumerable<SelectListItem> LocationList { get; set; }
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             // Check and create roles if they do not exist
-            if ((!_roleManager.RoleExistsAsync(SD.CustomerRole).GetAwaiter().GetResult()))
+            if ((!_roleManager.RoleExistsAsync(StaticDetails.CustomerRole).GetAwaiter().GetResult()))
 
             {
-                await _roleManager.CreateAsync(new IdentityRole(SD.AdminRole));
-                await _roleManager.CreateAsync(new IdentityRole(SD.StockController));
-                await _roleManager.CreateAsync(new IdentityRole(SD.CustomerSupport));
-                await _roleManager.CreateAsync(new IdentityRole(SD.FaultTechnician));
-                await _roleManager.CreateAsync(new IdentityRole(SD.MaintenanceTechnician));
-                await _roleManager.CreateAsync(new IdentityRole(SD.CustomerRole));
+                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.AdminRole));
+                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.CustomerRole));
+                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.CustomerSupportRole));
+                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.StockControllerRole));
+                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.FaultTechnicianRole));
+                await _roleManager.CreateAsync(new IdentityRole(StaticDetails.MaintenanceTechnicianRole));
             }
 
             Input = new InputModel
             {
-                RoleList = _roleManager.Roles.Select(r => r.Name).Select(r => new SelectListItem
+                RoleList = _roleManager.Roles.OrderBy(r => r.Name).Select(r => new SelectListItem
                 {
-                    Text = r,
-                    Value = r
-                })
+                    Text = r.Name,
+                    Value = r.Name
+                }).ToList(),
+
+            LocationList = _db.Locations
+                .Where(l => !l.IsDeleted)
+                .OrderBy(l => l.Suburb.City.Name)
+                .ThenBy(l => l.Suburb.Name)
+                .Select(l => new SelectListItem
+                {
+                    Text = $"{l.Suburb.City.Name} - {l.Suburb.Name} - {l.AddressLine1}",
+                    Value = l.Id.ToString()
+                }).ToList()
             };
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
        }
@@ -158,12 +163,9 @@ namespace Project.Areas.Identity.Pages.Account
           
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
-                user.StreetAddress = Input.StreetAddress;
-                user.City = Input.City;
-                user.State = Input.State;
-                user.PostalCode = Input.PostalCode;
-                user.CellNumber = Input.CellNumber;
-
+                user.PhoneNumber = Input.PhoneNumber;
+                user.LocationId = Input.LocationId;
+        
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -172,13 +174,13 @@ namespace Project.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    if (!String.IsNullOrEmpty(Input.Role))
+                    if (!String.IsNullOrEmpty(Input.UserRole))
                     {
-                        await _userManager.AddToRoleAsync(user, Input.Role);
+                        await _userManager.AddToRoleAsync(user, Input.UserRole);
                     }
                     else
                     {
-                        await _userManager.AddToRoleAsync(user, SD.CustomerRole);
+                        await _userManager.AddToRoleAsync(user, StaticDetails.CustomerRole);
                     }
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -211,11 +213,23 @@ namespace Project.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
-            Input.RoleList = _roleManager.Roles.Select(r => r.Name).Select(r => new SelectListItem
-            {
-                Text = r,
-                Value = r
-            });
+            Input.RoleList = _roleManager.Roles
+               .OrderBy(r => r.Name)
+               .Select(r => new SelectListItem
+               {
+                   Text = r.Name,
+                   Value = r.Name
+               }).ToList();
+
+            Input.LocationList = _db.Locations
+                .Where(l => !l.IsDeleted)
+                .OrderBy(l => l.Suburb.City.Name)
+                .ThenBy(l => l.Suburb.Name)
+                .Select(l => new SelectListItem
+                {
+                    Text = $"{l.Suburb.City.Name} - {l.Suburb.Name} - {l.AddressLine1}",
+                    Value = l.Id.ToString()
+                }).ToList();
 
             return Page();
         }
@@ -228,19 +242,19 @@ namespace Project.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<IdentityUser> GetEmailStore()
+        private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<IdentityUser>)_userStore;
+            return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
 }

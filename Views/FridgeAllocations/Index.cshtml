@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Project.Models.FridgeAllocation>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Fridge)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerLiaison)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllocationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpectedReturnDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActualReturnDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceIntervalMonths)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastServiceDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NextServiceDue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fridge.Condition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.BusinessEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerLiaison.EmployeeType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AllocationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpectedReturnDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActualReturnDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceIntervalMonths)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastServiceDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NextServiceDue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
