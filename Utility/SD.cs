@@ -9,5 +9,13 @@
         public const string FaultTechnician = "FaultTech";
         public const string MaintenanceTechnician = "MaintenanceTech";
 
+
+
+        public const string StatusPending = "Pending";
+        public const string StatusApproved = "Approved";
+        public const string StatusInProcess = "Processing";
+        public const string StatusShipped = "Shipped";
+        public const string PaymentStatusDelayedPayment = "Payment Delay";
+
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250918225758_RemovingRequestStatusFromDB")]
+    partial class RemovingRequestStatusFromDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,16 +250,11 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RequestHeaderId")
-                        .HasColumnType("int");
-
                     b.HasKey("AllocationId");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("FridgeId");
-
-                    b.HasIndex("RequestHeaderId");
 
                     b.ToTable("tblAllocations");
                 });
@@ -819,32 +817,6 @@ namespace Project.Migrations
                     b.ToTable("tblFridgeRequests");
                 });
 
-            modelBuilder.Entity("Project.Models.FridgeVisit", b =>
-                {
-                    b.Property<int>("FridgeVisitId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FridgeVisitId"));
-
-                    b.Property<int>("AllocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("VisitDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("FridgeVisitId");
-
-                    b.HasIndex("AllocationId");
-
-                    b.ToTable("tblFridgeVisits");
-                });
-
             modelBuilder.Entity("Project.Models.MaintenanceRecord", b =>
                 {
                     b.Property<int>("MaintenanceRecordId")
@@ -1169,10 +1141,6 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.RequestHeader", null)
-                        .WithMany("Allocations")
-                        .HasForeignKey("RequestHeaderId");
-
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Fridge");
@@ -1239,17 +1207,6 @@ namespace Project.Migrations
                     b.Navigation("FaultyFridge");
 
                     b.Navigation("ReplacementFridge");
-                });
-
-            modelBuilder.Entity("Project.Models.FridgeVisit", b =>
-                {
-                    b.HasOne("Project.Models.Allocation", "Allocation")
-                        .WithMany("FridgeVisits")
-                        .HasForeignKey("AllocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Allocation");
                 });
 
             modelBuilder.Entity("Project.Models.MaintenanceRecord", b =>
@@ -1320,7 +1277,7 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.HasOne("Project.Models.RequestHeader", "RequestHeader")
-                        .WithMany("RequestFridges")
+                        .WithMany()
                         .HasForeignKey("RequestHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1339,11 +1296,6 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("Project.Models.Allocation", b =>
-                {
-                    b.Navigation("FridgeVisits");
                 });
 
             modelBuilder.Entity("Project.Models.Customer", b =>
@@ -1369,13 +1321,6 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.MaintenanceVisit", b =>
                 {
                     b.Navigation("MaintenanceRecords");
-                });
-
-            modelBuilder.Entity("Project.Models.RequestHeader", b =>
-                {
-                    b.Navigation("Allocations");
-
-                    b.Navigation("RequestFridges");
                 });
 #pragma warning restore 612, 618
         }

@@ -18,6 +18,10 @@ public class MaintenanceVisitController : Controller
     {
         _db = db;
     }
+    public IActionResult Dashboard()
+    {
+        return View();
+    }
 
     // GET: MaintenanceVisit
     public IActionResult Index(string search, string status, DateTime? fromDate, DateTime? toDate)

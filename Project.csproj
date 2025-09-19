@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="Views\FaultTechnician\" />
     <Folder Include="Views\Fault\" />
-    <Folder Include="Views\MaintenanceVisit\" />
     <Folder Include="wwwroot\Images\Fridges\" />
   </ItemGroup>
 

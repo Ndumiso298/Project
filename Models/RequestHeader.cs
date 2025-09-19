@@ -21,8 +21,7 @@ namespace Project.Models
         public double RequestTotal { get; set; }
       
                                                                                                                          
-        public string RequestStatus { get; set; } = "Pending";
-
+       
        [Required]
         public string FirstName { get; set; }
 
@@ -38,6 +37,11 @@ namespace Project.Models
         public string PostalCode { get; set; }
         [Required]
         public string CellNumber { get; set; }
-
+        public string? Carrier { get; set; }
+        public string? Status { get; set; } = "Waiting For Payment";
+        public DateTime? ShippingDate { get; set; }
+        public DateTime? PaymentDueDate { get; set; }
+        public ICollection<Allocation> Allocations { get; set; }
+        public ICollection<RequestDetails> RequestFridges { get; set; }
     }
 }

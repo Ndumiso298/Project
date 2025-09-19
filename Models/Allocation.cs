@@ -20,6 +20,7 @@ namespace Project.Models
         public Fridge Fridge { get; set; }
         public int Count { get; set; }
         // Rental Period
+        public ICollection<FridgeVisit> FridgeVisits { get; set; }
 
         [NotMapped]
         public double Price { get; set; }

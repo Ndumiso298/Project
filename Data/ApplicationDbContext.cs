@@ -25,6 +25,8 @@ namespace Project.Data
         public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }
         public DbSet<FridgeRequest> tblFridgeRequests { get; set; }
+        public DbSet<FridgeVisit> tblFridgeVisits { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

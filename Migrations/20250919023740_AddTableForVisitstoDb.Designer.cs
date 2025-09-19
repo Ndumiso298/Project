@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250919023740_AddTableForVisitstoDb")]
+    partial class AddTableForVisitstoDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,16 +250,11 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RequestHeaderId")
-                        .HasColumnType("int");
-
                     b.HasKey("AllocationId");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("FridgeId");
-
-                    b.HasIndex("RequestHeaderId");
 
                     b.ToTable("tblAllocations");
                 });
@@ -1169,10 +1167,6 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.RequestHeader", null)
-                        .WithMany("Allocations")
-                        .HasForeignKey("RequestHeaderId");
-
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Fridge");
@@ -1373,8 +1367,6 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>
                 {
-                    b.Navigation("Allocations");
-
                     b.Navigation("RequestFridges");
                 });
 #pragma warning restore 612, 618
