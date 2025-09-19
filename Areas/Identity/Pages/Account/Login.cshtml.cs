@@ -143,7 +143,7 @@ namespace Project.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        return RedirectToAction("Dashboard", "MaintenanceTech");
+                        return RedirectToAction("Dashboard", "MaintenanceVisit");
                     }
                     return LocalRedirect(returnUrl);
                 }

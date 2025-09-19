@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Project.Data
+@{
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.ApplicationUserId == userId);
+    var cartCount = _db.tblAllocations.Count(a => a.ApplicationUserId == userId);
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -30,18 +43,37 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Index">Fridge</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Total Fridge Request</a>
+                            </li>
                         }
                         else if(User.IsInRole(SD.CustomerRole))
                         {
-                           
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
                             </li>
-                           
+
+                            @if (hasRequestedItems)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Requested Fridge</a>
+                                </li>
+                            }
+
                             <li class="nav-item">
-                                <a class="nav-link " asp-area="" asp-controller="Allocation" asp-action="Index">
-                                    <i class="bi bi-cart"></i>&nbsp;(0)
+                                <a class="nav-link" asp-area="" asp-controller="Allocation" asp-action="Index">
+                                    <i class="bi bi-cart"></i>&nbsp;(@cartCount)
                                 </a>
+                            </li>
+                        }
+                        else if (User.IsInRole(SD.MaintenanceTechnician))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Dashboard</a>
+                            </li>
+                              <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Dashboard</a>
                             </li>
                         }
                     </ul>

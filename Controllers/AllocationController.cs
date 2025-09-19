@@ -29,7 +29,7 @@ namespace Project.Controllers
             {
                     AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId == userId)
+                    .Where(a => a.ApplicationUserId==userId)
                     .ToList(),
                      RequestHeader = new()
             };
