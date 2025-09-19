@@ -21,7 +21,7 @@ namespace Project.Models
         public double RequestTotal { get; set; }
       
                                                                                                                          
-        public string RequestStatus { get; set; } = "Pending";
+        public string? RequestStatus { get; set; } = "Pending";
 
        [Required]
         public string FirstName { get; set; }
