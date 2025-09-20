@@ -368,6 +368,16 @@ namespace Project.Data
                 }
             ) ;
         }
+
+        internal string? GetAllFridges()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal string? GetFridges()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -1109,7 +1109,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1118,7 +1118,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1127,7 +1127,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1136,13 +1136,13 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1151,7 +1151,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1160,13 +1160,13 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.RequestHeader", null)
@@ -1183,13 +1183,13 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.MaintenanceVisit", "MaintenanceVisit")
                         .WithMany()
                         .HasForeignKey("MaintenanceVisitId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Customer", "ReportedByCustomer")
@@ -1221,13 +1221,13 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany("Requests")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "FaultyFridge")
                         .WithMany()
                         .HasForeignKey("FaultyFridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "ReplacementFridge")
@@ -1257,7 +1257,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.MaintenanceVisit", "MaintenanceVisit")
@@ -1267,7 +1267,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.FaultTechnician", "Technician")
                         .WithMany("MaintenanceRecords")
                         .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Fridge");
@@ -1282,7 +1282,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany("MaintenanceVisits")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "Fridge")
@@ -1305,7 +1305,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Fault", "Fault")
                         .WithMany()
                         .HasForeignKey("FaultId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Fault");
@@ -1316,13 +1316,13 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.RequestHeader", "RequestHeader")
                         .WithMany("RequestFridges")
                         .HasForeignKey("RequestHeaderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Fridge");
@@ -1335,7 +1335,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");

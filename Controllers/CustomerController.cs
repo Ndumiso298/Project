@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
@@ -14,12 +15,30 @@ namespace Project.Controllers
         {
             _db = db;
         }
-      
-        public IActionResult Index()
+
+        public IActionResult Index(string sortBy)
         {
-            IEnumerable<Fridge> fridgesList=_db.tblFridges.ToList();
-            return View(fridgesList);
+            var fridges = _db.tblFridges.AsQueryable();
+
+            switch (sortBy)
+            {
+                case "price_asc":
+                    fridges = fridges.OrderBy(f => f.RentalPricePerMonth);
+                    break;
+                case "price_desc":
+                    fridges = fridges.OrderByDescending(f => f.RentalPricePerMonth);
+                    break;
+                case "capacity":
+                    fridges = fridges.OrderByDescending(f => f.CapacityLiters);
+                    break;
+                //case "newest":
+                //    fridges = fridges.OrderByDescending(f => f.CreatedAt); // or UpdatedAt, or FridgeId
+                //    break;
+            }
+
+            return View(fridges.ToList());
         }
+
         public IActionResult Details(int id)
         {
             Allocation allocation = new()

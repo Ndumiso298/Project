@@ -12,8 +12,8 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250919030647_adgjlkn")]
-    partial class adgjlkn
+    [Migration("20250920201748_updatestables")]
+    partial class updatestables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
