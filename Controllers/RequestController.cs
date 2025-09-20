@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
-using Project.Models.ViewModel;
-using Project.Utility;
+using Project.Models.ViewModels;
+using Project.Utilities;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -27,7 +27,7 @@ namespace Project.Controllers
 
             if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
             {
-                objRequestHeaders = _db.tblRequestHeaders.Include(a=>a.ApplicationUser).ToList();
+                objRequestHeaders = _db.RequestHeaders.Include(a=>a.Customer).ToList();
             }
             else
             {
@@ -35,9 +35,9 @@ namespace Project.Controllers
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                objRequestHeaders = _db.tblRequestHeaders
-                    .Include(u => u.ApplicationUser)
-                    .Where(r => r.ApplicationUserId == userId)
+                objRequestHeaders = _db.RequestHeaders
+                    .Include(u => u.Customer)
+                    .Where(r => r.Customer.UserAccount.Id == userId)
                     .ToList();
 
             }
@@ -49,11 +49,11 @@ namespace Project.Controllers
         {
             RequestVM = new()
             {
-                RequstHeader = _db.tblRequestHeaders
-                               .Include(a => a.ApplicationUser)
-                               .FirstOrDefault(o => o.RequestHeaderId == id),
+                RequstHeader = _db.RequestHeaders
+                               .Include(a => a.Customer)
+                               .FirstOrDefault(o => o.Id == id),
 
-                RequstDetail = _db.tblRequestDetais
+                RequestDetails = _db.RequestDetails
                                .Include(d => d.Fridge)
                                .Where(d => d.RequestHeaderId == id)
                                .ToList()
@@ -71,8 +71,8 @@ namespace Project.Controllers
                 return BadRequest("Invalid request data.");
             }
 
-            var RequestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var RequestHeaderFromDb = _db.RequestHeaders
+                .FirstOrDefault(u => u.Id == RequestVM.RequstHeader.Id);
 
             if (RequestHeaderFromDb == null)
             {
@@ -83,9 +83,10 @@ namespace Project.Controllers
             RequestHeaderFromDb.FirstName = RequestVM.RequstHeader.FirstName;
             RequestHeaderFromDb.LastName = RequestVM.RequstHeader.LastName;
             RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
-            RequestHeaderFromDb.StreetAddress = RequestVM.RequstHeader.StreetAddress;
+            RequestHeaderFromDb.AddressLine1 = RequestVM.RequstHeader.AddressLine1;
+            RequestHeaderFromDb.AddressLine2 = RequestVM.RequstHeader.AddressLine2;
             RequestHeaderFromDb.City = RequestVM.RequstHeader.City;
-            RequestHeaderFromDb.State = RequestVM.RequstHeader.State;
+            RequestHeaderFromDb.Province = RequestVM.RequstHeader.Province;
             RequestHeaderFromDb.PostalCode = RequestVM.RequstHeader.PostalCode;
             RequestHeaderFromDb.Status = "Allocated";
 
@@ -95,30 +96,30 @@ namespace Project.Controllers
             }
 
             if (RequestVM.RequestFridgeNo?.Fridge != null &&
-                !string.IsNullOrEmpty(RequestVM.RequestFridgeNo.Fridge.FridgeNo))
+                !string.IsNullOrEmpty(RequestVM.RequestFridgeNo.Fridge.SerialNumber))
             {
-                RequestHeaderFromDb.Carrier = RequestVM.RequestFridgeNo.Fridge.FridgeNo;
+                RequestHeaderFromDb.Carrier = RequestVM.RequestFridgeNo.Fridge.SerialNumber;
             }
 
-            _db.tblRequestHeaders.Update(RequestHeaderFromDb);
+            _db.RequestHeaders.Update(RequestHeaderFromDb);
             _db.SaveChanges();
 
             TempData["Success"] = "Order Details Updated Successfully.";
 
-            return RedirectToAction(nameof(Details), new { id = RequestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { id = RequestHeaderFromDb.Id });
         }
 
         [HttpPost]
         
         public IActionResult StartProcessing()
         {
-            var requestHeader = _db.tblRequestHeaders
-            .FirstOrDefault(r => r.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var requestHeader = _db.RequestHeaders
+            .FirstOrDefault(r => r.Id == RequestVM.RequstHeader.Id);
 
            
 
             TempData["Success"] = "Request Details Updated Successfully.";
-            return RedirectToAction(nameof(Details), new { orderId = RequestVM.RequstHeader.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { orderId = RequestVM.RequstHeader.Id });
 
         }
 
@@ -126,7 +127,7 @@ namespace Project.Controllers
         public IActionResult ShipOrder()
         {
 
-            var RequestHeader = _db.tblRequestHeaders.FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var RequestHeader = _db.RequestHeaders.FirstOrDefault(u => u.Id == RequestVM.RequstHeader.Id);
             //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
             RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
             RequestHeader.ShippingDate = DateTime.Now;
@@ -135,16 +136,10 @@ namespace Project.Controllers
                 RequestHeader.PaymentDueDate = DateTime.Now.AddDays(30);
             }
 
-            _db.tblRequestHeaders.Update(RequestHeader);
+            _db.RequestHeaders.Update(RequestHeader);
             _db.SaveChanges();
             TempData["Success"] = "Order Shipped Successfully.";
-            return RedirectToAction(nameof(Details), new { requesId = RequestVM.RequstHeader.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { requesId = RequestVM.RequstHeader.Id });
         }
-
-
-
-
-
-
     }
 }

@@ -4,7 +4,7 @@
 }
 
 <form method="post">
-    <input asp-for="RequstHeader.RequestHeaderId" type="hidden" />
+    <input asp-for="RequstHeader.Id" type="hidden" />
 
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
@@ -64,10 +64,17 @@
 
                             <!-- Address -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.StreetAddress" class="form-label fw-semibold text-dark">Street Address</label>
-                                <input asp-for="RequstHeader.StreetAddress" class="form-control"
+                                <label asp-for="RequstHeader.AddressLine1" class="form-label fw-semibold text-dark">Address Line 1</label>
+                                <input asp-for="RequstHeader.AddressLine1" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.StreetAddress" class="text-danger"></span>
+                                <span asp-validation-for="RequstHeader.AddressLine1" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RequstHeader.AddressLine2" class="form-label fw-semibold text-dark">Address Line 2</label>
+                                <input asp-for="RequstHeader.AddressLine2" class="form-control"
+                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
+                                <span asp-validation-for="RequstHeader.AddressLine2" class="text-danger"></span>
                             </div>
 
                             <!-- City -->
@@ -79,8 +86,8 @@
 
                             <!-- State -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.State" class="form-label fw-semibold text-dark">State</label>
-                                <input asp-for="RequstHeader.State" class="form-control"
+                                <label asp-for="RequstHeader.Province" class="form-label fw-semibold text-dark">State</label>
+                                <input asp-for="RequstHeader.Province" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
                             </div>
 
@@ -94,7 +101,7 @@
                             <!-- Email -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Email</label>
-                                <input asp-for="RequstHeader.ApplicationUser.Email" class="form-control" readonly />
+                                <input asp-for="RequstHeader.Customer.BusinessEmail" class="form-control" readonly />
                             </div>
 
                             <!-- Order Date -->
@@ -139,11 +146,11 @@
                         </h3>
 
                         <ul class="list-group mb-4 shadow-sm rounded-3 overflow-hidden">
-                            @foreach (var detail in Model.RequstDetail)
+                            @foreach (var detail in Model.RequestDetails)
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="fw-semibold mb-1 text-primary">@detail.Fridge.Brand</h6>
+                                        <h6 class="fw-semibold mb-1 text-primary">@detail.Fridge.Manufacturer</h6>
                                         <small class="text-muted">Price Per Month: @detail.Price.ToString("c")</small><br />
                                         <small class="text-muted">Quantity: @detail.Count</small>
                                     </div>

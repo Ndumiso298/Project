@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\FaultTechnician\**" />
+    <Content Remove="Views\FaultTechnician\**" />
+    <EmbeddedResource Remove="Views\FaultTechnician\**" />
+    <None Remove="Views\FaultTechnician\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.12" />
@@ -18,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\FaultTechnician\" />
     <Folder Include="Views\Fault\" />
     <Folder Include="wwwroot\Images\Fridges\" />
+    <Folder Include="wwwroot\Images\Logo\" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Project.Models.Fault>
+﻿@using Project.Utilities.Enums
+@model IEnumerable<Project.Models.FridgeFault>
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
@@ -42,9 +43,9 @@
 
     @* Status Summary Cards *@
     @{
-        var resolvedCount = Model.Count(f => f.Status == "Resolved");
-        var inProgressCount = Model.Count(f => f.Status == "In Progress");
-        var pendingCount = Model.Count(f => f.Status == "Pending");
+        var resolvedCount = Model.Count(f => f.Status == FaultStatus.Resolved);
+        var inProgressCount = Model.Count(f => f.Status == FaultStatus.InProgress);
+        var pendingCount = Model.Count(f => f.Status == FaultStatus.Reported);
     }
 
     <div class="row g-3 mb-4">
@@ -95,19 +96,19 @@
                 @foreach (var obj in Model)
                 {
                     <tr>
-                        <td>@obj.ReportedByCustomer?.CustomerNote</td>
+                        <td>@obj.ReportedBy?.UserRole</td>
                         <td>
                             @obj.Fridge?.Model
                             <br />
-                            <small class="text-muted">@obj.Fridge?.FridgeNo</small>
+                            <small class="text-muted">@obj.Fridge?.SerialNumber</small>
                         </td>
 
                         <td>
-                            @if (obj.Status == "Resolved")
+                            @if (obj.Status == FaultStatus.Resolved)
                             {
                                 <span class="badge bg-success">@obj.Status</span>
                             }
-                            else if (obj.Status == "In Progress")
+                            else if (obj.Status == FaultStatus.InProgress)
                             {
                                 <span class="badge bg-warning text-dark">@obj.Status</span>
                             }
@@ -116,18 +117,25 @@
                                 <span class="badge bg-danger">@obj.Status</span>
                             }
                         </td>
-                        <td>@obj.ReportedByCustomer?.Name</td>
-                        <td>@obj.ReportedByCustomer?.Address</td>
-                        <td>@obj.ReportedAt.ToString("dd MMM yyyy")</td>
-                        <td>@obj.ResolvedAt?.ToString("dd MMM yyyy")</td>
-                        <td>@obj.ResolvedByTechnician?.Name</td>
-                        <td>@obj.Notes</td>
+                        <td>@obj.ReportedBy?.FirstName</td>
+                        <td>@obj.ReportedBy?.LastName</td>
+                        <td>@obj.ReportedBy?.AddressLine1</td>
+                        <td>@obj.ReportedBy?.AddressLine2</td>
+                        <td>@obj.ReportedBy?.City</td>
+                        <td>@obj.ReportedBy?.Province</td>
+                        <td>@obj.ReportedBy?.PostalCode</td>
+                        <td>@obj.ReportedDate.ToString("dd MMM yyyy")</td>
+                        <td>@obj.ResolvedDate?.ToString("dd MMM yyyy")</td>
+                        <td>@obj.AssignedTechnician?.UserAccount.Id</td>
+                        <td>@obj.AssignedTechnician?.UserAccount.FirstName</td>
+                        <td>@obj.AssignedTechnician?.UserAccount.LastName</td>
+                        <td>@obj.ResolutionNotes</td>
                         <td class="text-center">
-                            <a asp-controller="Fault" asp-action="Details" asp-route-id="@obj.FaultId"
+                            <a asp-controller="Fault" asp-action="Details" asp-route-id="@obj.Id"
                                class="btn btn-sm btn-outline-info me-1" title="View Details">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a asp-controller="Fault" asp-action="Edit" asp-route-id="@obj.FaultId"
+                            <a asp-controller="Fault" asp-action="Edit" asp-route-id="@obj.Id"
                                class="btn btn-sm btn-outline-warning" title="Edit Fault">
                                 <i class="bi bi-pencil-square"></i>
                             </a>

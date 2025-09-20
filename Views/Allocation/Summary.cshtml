@@ -4,7 +4,7 @@
 }
 
 <form method="post">
-    <input asp-for="RequestHeader.RequestHeaderId" type="hidden" />
+    <input asp-for="RequestHeader.Id" type="hidden" />
 
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
@@ -57,11 +57,16 @@
                             </div>
 
                             <div class="mb-3">
-                                <label asp-for="RequestHeader.StreetAddress" class="form-label fw-semibold text-dark">Street Address</label>
-                                <input asp-for="RequestHeader.StreetAddress" class="form-control" />
-                                <span asp-validation-for="RequestHeader.StreetAddress" class="text-danger"></span>
+                                <label asp-for="RequestHeader.AddressLine1" class="form-label fw-semibold text-dark">Address Line 1</label>
+                                <input asp-for="RequestHeader.AddressLine2" class="form-control" />
+                                <span asp-validation-for="RequestHeader.AddressLine1" class="text-danger"></span>
                             </div>
 
+                            <div class="mb-3">
+                                <label asp-for="RequestHeader.AddressLine2" class="form-label fw-semibold text-dark">Address Line 2</label>
+                                <input asp-for="RequestHeader.AddressLine2" class="form-control" />
+                                <span asp-validation-for="RequestHeader.AddressLine2" class="text-danger"></span>
+                            </div>
                             <div class="mb-3">
                                 <label asp-for="RequestHeader.City" class="form-label fw-semibold text-dark">City</label>
                                 <input asp-for="RequestHeader.City" class="form-control" />
@@ -69,9 +74,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label asp-for="RequestHeader.State" class="form-label fw-semibold text-dark">State</label>
-                                <input asp-for="RequestHeader.State" class="form-control" />
-                                <span asp-validation-for="RequestHeader.State" class="text-danger"></span>
+                                <label asp-for="RequestHeader.Province" class="form-label fw-semibold text-dark">State</label>
+                                <input asp-for="RequestHeader.Province" class="form-control" />
+                                <span asp-validation-for="RequestHeader.Province" class="text-danger"></span>
                             </div>
 
                             <div class="mb-3">
@@ -93,10 +98,10 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="fw-semibold mb-1">@details.Fridge.FridgeNo</h6>
-                                        <small class="text-muted">Quantity: @details.Count</small>
+                                        <h6 class="fw-semibold mb-1">@details.Fridge.SerialNumber</h6>
+                                        <small class="text-muted">Quantity: @details.Quantity</small>
                                     </div>
-                                    <span class="fw-bold text-primary">@((details.Price * details.Count).ToString("c"))</span>
+                                    <span class="fw-bold text-primary">@((details.Price * details.Quantity).ToString("c"))</span>
                                 </li>
                             }
 

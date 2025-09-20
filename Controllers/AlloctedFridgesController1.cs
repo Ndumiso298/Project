@@ -18,8 +18,8 @@ namespace Project.Controllers
        
         public  IActionResult Index()
         {
-            var allocatedRequests =  _db.tblRequestHeaders
-                .Include(r => r.ApplicationUser)
+            var allocatedRequests =  _db.RequestHeaders
+                .Include(r => r.Customer)
                 .Include(r => r.RequestFridges) 
                     .ThenInclude(f => f.Fridge)
                 .Where(r => r.Status == "Allocated")
@@ -31,11 +31,11 @@ namespace Project.Controllers
        
         public  IActionResult Details(int id)
         {
-            var request =  _db.tblRequestHeaders
-                .Include(r => r.ApplicationUser)
+            var request =  _db.RequestHeaders
+                .Include(r => r.Customer)
                 .Include(r => r.RequestFridges)
                     .ThenInclude(f => f.Fridge)
-                .FirstOrDefault(r => r.RequestHeaderId == id && r.Status == "Allocated");
+                .FirstOrDefault(r => r.Id == id && r.Status == "Allocated");
 
             if (request == null)
             {
@@ -48,15 +48,15 @@ namespace Project.Controllers
        
         public  IActionResult BookVisit(int allocationId)
         {
-            var allocation =  _db.tblAllocations
+            var allocation =  _db.FridgeAllocations
                 .Include(a => a.Fridge)
-                .FirstOrDefault(a => a.AllocationId == allocationId);
+                .FirstOrDefault(a => a.Id == allocationId);
 
             if (allocation == null)
                 return NotFound();
 
             var visit = new FridgeVisit { AllocationId = allocationId };
-            ViewBag.FridgeInfo = allocation.Fridge.Brand + " - " + allocation.Fridge.FridgeNo;
+            ViewBag.FridgeInfo = allocation.Fridge.Manufacturer + " - " + allocation.Fridge.SerialNumber;
 
             return View(visit);
         }
@@ -67,13 +67,13 @@ namespace Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.tblFridgeVisits.Add(visit);
+                _db.FridgeVisits.Add(visit);
                  _db.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-            var allocation =  _db.tblAllocations.Include(a => a.Fridge)
-             .FirstOrDefault(a => a.AllocationId == visit.AllocationId);
-            ViewBag.FridgeInfo = allocation?.Fridge.Brand + " - " + allocation?.Fridge.FridgeNo;
+            var allocation =  _db.FridgeAllocations.Include(a => a.Fridge)
+             .FirstOrDefault(a => a.Id == visit.AllocationId);
+            ViewBag.FridgeInfo = allocation?.Fridge.Manufacturer + " - " + allocation?.Fridge.SerialNumber;
             return View(visit);
         }
 

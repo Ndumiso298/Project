@@ -18,7 +18,7 @@ public class FridgeRequestController : Controller
     // GET: FridgeRequest
     public IActionResult Index()
     {
-        List<FridgeRequest> requests = _db.tblFridgeRequests.ToList();
+        List<FridgeRequest> requests = _db.ReplacementRequests.ToList();
         return View(requests);
     }
 
@@ -35,7 +35,7 @@ public class FridgeRequestController : Controller
     {
         if (ModelState.IsValid)
         {
-            _db.tblFridgeRequests.Add(request);
+            _db.ReplacementRequests.Add(request);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -45,7 +45,7 @@ public class FridgeRequestController : Controller
     // GET: FridgeRequest/Details/5
     public IActionResult Details(int id)
     {
-        var request = _db.tblFridgeRequests.FirstOrDefault(r => r.FridgeRequestId == id);
+        var request = _db.ReplacementRequests.FirstOrDefault(r => r.Id == id);
         if (request == null)
         {
             return NotFound();
@@ -56,7 +56,7 @@ public class FridgeRequestController : Controller
     // GET: FridgeRequest/Edit/5
     public IActionResult Edit(int id)
     {
-        var request = _db.tblFridgeRequests.FirstOrDefault(r => r.FridgeRequestId == id);
+        var request = _db.ReplacementRequests.FirstOrDefault(r => r.Id == id);
         if (request == null)
         {
             return NotFound();
@@ -71,7 +71,7 @@ public class FridgeRequestController : Controller
     {
         if (ModelState.IsValid)
         {
-            _db.tblFridgeRequests.Update(request);
+            _db.ReplacementRequests.Update(request);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -81,7 +81,7 @@ public class FridgeRequestController : Controller
     // GET: FridgeRequest/Delete/5
     public IActionResult Delete(int id)
     {
-        var request = _db.tblFridgeRequests.FirstOrDefault(r => r.FridgeRequestId == id);
+        var request = _db.ReplacementRequests.FirstOrDefault(r => r.Id == id);
         if (request == null)
         {
             return NotFound();
@@ -94,13 +94,13 @@ public class FridgeRequestController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)
     {
-        var request = _db.tblFridgeRequests.FirstOrDefault(r => r.FridgeRequestId == id);
+        var request = _db.ReplacementRequests.FirstOrDefault(r => r.Id == id);
         if (request == null)
         {
             return NotFound();
         }
 
-        _db.tblFridgeRequests.Remove(request);
+        _db.ReplacementRequests.Remove(request);
         _db.SaveChanges();
         return RedirectToAction("Index");
     }

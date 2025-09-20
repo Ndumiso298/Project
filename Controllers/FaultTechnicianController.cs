@@ -18,7 +18,7 @@ public class FaultTechnicianController : Controller
     // GET: FaultTechnician
     public IActionResult Index()
     {
-        List<FaultTechnician> technicians = _db.tblFaultTechnicians.ToList();
+        List<Employee> technicians = _db.Employees.ToList();
         return View(technicians);
     }
 
@@ -31,11 +31,11 @@ public class FaultTechnicianController : Controller
     // POST: FaultTechnician/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(FaultTechnician technician)
+    public IActionResult Create(Employee technician)
     {
         if (ModelState.IsValid)
         {
-            _db.tblFaultTechnicians.Add(technician);
+            _db.Employees.Add(technician);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -45,7 +45,7 @@ public class FaultTechnicianController : Controller
     // GET: FaultTechnician/Details/5
     public IActionResult Details(int id)
     {
-        var technician = _db.tblFaultTechnicians.FirstOrDefault(t => t.TechnicianId == id);
+        var technician = _db.Employees.FirstOrDefault(t => t.Id == id);
         if (technician == null)
         {
             return NotFound();
@@ -56,7 +56,7 @@ public class FaultTechnicianController : Controller
     // GET: FaultTechnician/Edit/5
     public IActionResult Edit(int id)
     {
-        var technician = _db.tblFaultTechnicians.FirstOrDefault(t => t.TechnicianId == id);
+        var technician = _db.Employees.FirstOrDefault(t => t.Id == id);
         if (technician == null)
         {
             return NotFound();
@@ -67,11 +67,11 @@ public class FaultTechnicianController : Controller
     // POST: FaultTechnician/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(FaultTechnician technician)
+    public IActionResult Edit(Employee technician)
     {
         if (ModelState.IsValid)
         {
-            _db.tblFaultTechnicians.Update(technician);
+            _db.Employees.Update(technician);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -81,7 +81,7 @@ public class FaultTechnicianController : Controller
     // GET: FaultTechnician/Delete/5
     public IActionResult Delete(int id)
     {
-        var technician = _db.tblFaultTechnicians.FirstOrDefault(t => t.TechnicianId == id);
+        var technician = _db.Employees.FirstOrDefault(t => t.Id == id);
         if (technician == null)
         {
             return NotFound();
@@ -94,13 +94,13 @@ public class FaultTechnicianController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)
     {
-        var technician = _db.tblFaultTechnicians.FirstOrDefault(t => t.TechnicianId == id);
+        var technician = _db.Employees.FirstOrDefault(t => t.Id == id);
         if (technician == null)
         {
             return NotFound();
         }
 
-        _db.tblFaultTechnicians.Remove(technician);
+        _db.Employees.Remove(technician);
         _db.SaveChanges();
         return RedirectToAction("Index");
     }

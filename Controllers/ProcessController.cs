@@ -19,17 +19,17 @@ namespace FridgeSystem.Controllers
             }
             public IActionResult Create(int faultId)
             {
-                var process = new ProcessFault { FaultId = faultId };
+                var process = new FridgeFault { Id = faultId };
                 return View(process);
             }
 
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public IActionResult Create(ProcessFault processFault)
+            public IActionResult Create(FridgeFault processFault)
             {
                 if (ModelState.IsValid)
                 {
-                    _db.tblProcessFaults.Add(processFault);
+                    _db.FaultRecords.Add(processFault);
                     _db.SaveChangesAsync();
                     return RedirectToAction("Index", "ProcessFault");
                 }

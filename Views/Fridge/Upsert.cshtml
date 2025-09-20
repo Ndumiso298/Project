@@ -11,7 +11,7 @@
                         <div class="col">
                             <h2 class="h4 mb-0 text-primary">
                                 <i class="bi bi-refrigerator me-2"></i>
-                                @(Model.FridgeId != 0 ? "Update Fridge Details" : "Add New Fridge")
+                                @(Model.Id != 0 ? "Update Fridge Details" : "Add New Fridge")
                             </h2>
                         </div>
                         <div class="col-auto">
@@ -25,7 +25,7 @@
                 <!-- Card Body -->
                 <div class="card-body p-4">
                     <form method="post" class="row g-4" enctype="multipart/form-data">
-                        <input asp-for="FridgeId" type="hidden" />
+                        <input asp-for="Id" type="hidden" />
                         <input asp-for="ImageUrl" type="hidden" />
 
                         <div class="col-12">
@@ -43,8 +43,8 @@
                                         <div class="card-body">
                                             <div class="row g-3">
                                                 <div class="col-md-6">
-                                                    <label asp-for="Brand" class="form-label fw-semibold"></label>
-                                                    <select asp-for="Brand" class="form-select">
+                                                    <label asp-for="Manufacturer" class="form-label fw-semibold"></label>
+                                                    <select asp-for="Manufacturer" class="form-select">
                                                         <option value="">-- Select Brand --</option>
                                                         <option value="Samsung">Samsung</option>
                                                         <option value="LG">LG</option>
@@ -52,7 +52,7 @@
                                                         <option value="Bosch">Bosch</option>
                                                         <option value="Defy">Defy</option>
                                                     </select>
-                                                    <span asp-validation-for="Brand" class="text-danger small"></span>
+                                                    <span asp-validation-for="Manufacturer" class="text-danger small"></span>
                                                 </div>
 
                                                 <div class="col-md-6">
@@ -69,9 +69,9 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <label asp-for="FridgeNo" class="form-label fw-semibold"></label>
-                                                    <input asp-for="FridgeNo" class="form-control" />
-                                                    <span asp-validation-for="FridgeNo" class="text-danger small"></span>
+                                                    <label asp-for="SerialNumber" class="form-label fw-semibold"></label>
+                                                    <input asp-for="SerialNumber" class="form-control" />
+                                                    <span asp-validation-for="SerialNumber" class="text-danger small"></span>
                                                 </div>
 
                                                 <div class="col-md-6">
@@ -138,15 +138,15 @@
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <label asp-for="AvailabilityStatus" class="form-label fw-semibold"></label>
-                                                    <select asp-for="AvailabilityStatus" class="form-select">
+                                                    <label asp-for="Status" class="form-label fw-semibold"></label>
+                                                    <select asp-for="Status" class="form-select">
                                                         <option value="">-- Select Availability Status --</option>
                                                         <option value="Available">Available</option>
                                                         <option value="Unavailable">Unavailable</option>
                                                         <option value="Maintenance">Under Maintenance</option>
                                                         <option value="Out of Order">Out of Order</option>
                                                     </select>
-                                                    <span asp-validation-for="AvailabilityStatus" class="text-danger small"></span>
+                                                    <span asp-validation-for="Status" class="text-danger small"></span>
                                                 </div>
 
                                              @*    <div class="col-md-6">
@@ -230,7 +230,7 @@
 
                                 <!-- Action Buttons -->
                                 <div class="d-grid gap-2">
-                                    @if (Model.FridgeId != 0)
+                                    @if (Model.Id != 0)
                                     {
                                         <button type="submit" class="btn btn-primary btn-lg">
                                             <i class="bi bi-check-circle me-2"></i> Update Fridge

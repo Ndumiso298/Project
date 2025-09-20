@@ -1,7 +1,7 @@
-﻿@model Project.Models.Fault
+﻿@model Project.Models.FridgeFault
 
 @{
-    ViewData["Title"] = "Process Fault";
+    ViewData["Title"] = "Process FridgeFault";
 }
 
 <div class="container mt-4">
@@ -18,9 +18,13 @@
                     <i class="bi bi-person-fill me-2"></i> Customer Information
                 </div>
                 <div class="card-body">
-                    <p class="mb-2"><strong>Name:</strong> @Model.ReportedByCustomer?.Name</p>
-                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedByCustomer?.Address</p>
-                    <p class="mb-0"><strong>Customer Note:</strong> @Model.ReportedByCustomer?.CustomerNote</p>
+                    <p class="mb-2"><strong>Name:</strong> @Model.ReportedBy?.FirstName</p>
+                    <p class="mb-2"><strong>Name:</strong> @Model.ReportedBy?.LastName</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.AddressLine1</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.AddressLine2</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.City</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.Province</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PostalCode</p>
                 </div>
             </div>
         </div>
@@ -32,8 +36,7 @@
                 </div>
                 <div class="card-body">
                     <p class="mb-2"><strong>Model:</strong> @Model.Fridge?.Model</p>
-                    <p class="mb-2"><strong>Serial:</strong> @Model.Fridge?.FridgeNo</p>
-                    <p class="mb-0"><strong>Location:</strong> @Model.Location</p>
+                    <p class="mb-2"><strong>Serial:</strong> @Model.Fridge?.SerialNumber</p>
                 </div>
             </div>
         </div>
@@ -42,7 +45,7 @@
     <!-- Processing Form -->
     <form asp-action="Process" method="post" class="card border-0 shadow-sm">
         @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="FaultId" />
+        <input type="hidden" asp-for="Id" />
 
         <div class="card-body">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -60,23 +63,23 @@
 
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Assign Technician</label>
-                    <select asp-for="ResolvedByTechnicianId" class="form-select"
+                    <select asp-for="AssignedTechnician" class="form-select"
                             asp-items="@(ViewBag.Technicians as IEnumerable<SelectListItem>)">
                         <option value="">Select technician</option>
                     </select>
                 </div>
 
                 <div class="col-md-4">
-                    <label asp-for="ResolvedAt" class="form-label fw-semibold">Resolved Date</label>
-                    <input asp-for="ResolvedAt" type="date" class="form-control" />
-                    <span asp-validation-for="ResolvedAt" class="text-danger"></span>
+                    <label asp-for="ResolvedDate" class="form-label fw-semibold">Resolved Date</label>
+                    <input asp-for="ResolvedDate" type="date" class="form-control" />
+                    <span asp-validation-for="ResolvedDate" class="text-danger"></span>
                 </div>
 
                 <div class="col-12">
-                    <label asp-for="Notes" class="form-label fw-semibold">Technician Notes</label>
-                    <textarea asp-for="Notes" rows="4" class="form-control"
+                    <label asp-for="ResolutionNotes" class="form-label fw-semibold">Technician Notes</label>
+                    <textarea asp-for="ResolutionNotes" rows="4" class="form-control"
                               placeholder="Describe diagnostics, parts replaced, and outcome"></textarea>
-                    <span asp-validation-for="Notes" class="text-danger"></span>
+                    <span asp-validation-for="ResolutionNotes" class="text-danger"></span>
                 </div>
             </div>
         </div>
@@ -85,7 +88,7 @@
             <a asp-controller="Fault" asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Back
             </a>
-            <a asp-action="Print" asp-route-id="@Model.FaultId" class="btn btn-outline-primary">
+            <a asp-action="Print" asp-route-id="@Model.Id" class="btn btn-outline-primary">
                 <i class="bi bi-printer me-1"></i> Print Fault Details
             </a>
 

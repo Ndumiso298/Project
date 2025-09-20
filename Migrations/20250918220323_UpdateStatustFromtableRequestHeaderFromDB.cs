@@ -12,7 +12,7 @@ namespace Project.Migrations
         {
             migrationBuilder.RenameColumn(
                 name: "PaymentStatus",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 newName: "Status");
         }
 
@@ -21,7 +21,7 @@ namespace Project.Migrations
         {
             migrationBuilder.RenameColumn(
                 name: "Status",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 newName: "PaymentStatus");
         }
     }

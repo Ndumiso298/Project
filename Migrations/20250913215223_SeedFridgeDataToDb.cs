@@ -15,15 +15,15 @@ namespace Project.Migrations
         {
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
-                table: "tblFridges",
+                table: "FridgeAllocations",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
             migrationBuilder.InsertData(
-                table: "tblFridges",
-                columns: new[] { "FridgeId", "AvailabilityStatus", "Brand", "CapacityLiters", "Condition", "CustomerId", "Description", "FridgeNo", "ImageUrl", "LastMaintenanceDate", "Location", "Model", "RentalPricePerMonth", "Type" },
+                table: "FridgeAllocations",
+                columns: new[] { "Id", "AvailabilityStatus", "Manufacturer", "CapacityLiters", "Condition", "CustomerId", "Description", "SerialNumber", "ImageUrl", "LastMaintenanceDate", "Location", "Model", "RentalPricePerMonth", "Type" },
                 values: new object[,]
                 {
                     { 1, "Available", "Samsung", 253, "Excellent", null, "Energy-efficient double door fridge with frost-free technology.", "FRG-001", "https://example.com/images/fridge1.jpg", new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", "RT28T", 1200.0, "Double Door" },
@@ -53,108 +53,108 @@ namespace Project.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 1);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 4);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 5);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 6);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 7);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 8);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 9);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 10);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 11);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 12);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 13);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 14);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 15);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 16);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 17);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 18);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 19);
 
             migrationBuilder.DeleteData(
-                table: "tblFridges",
-                keyColumn: "FridgeId",
+                table: "FridgeAllocations",
+                keyColumn: "Id",
                 keyValue: 20);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
-                table: "tblFridges",
+                table: "FridgeAllocations",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

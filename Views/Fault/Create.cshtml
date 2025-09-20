@@ -1,37 +1,75 @@
-﻿@model Project.Models.ProcessFault
+﻿@using Project.Utilities.Enums
+@model Project.Models.FridgeFault
 
 <form asp-action="Create">
-    <input type="hidden" asp-for="FaultId" />
+    <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-        <label asp-for="TechnicianId" class="form-label">Technician ID</label>
-        <input asp-for="TechnicianId" class="form-control" />
+        <label asp-for="FridgeAllocationId" class="form-label"></label>
+        <input asp-for="FridgeAllocationId" class="form-control" />
+        <span asp-validation-for="FridgeAllocationId" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="ScheduleFault" class="form-label">Schedule Fault</label>
-        <input asp-for="ScheduleFault" type="datetime-local" class="form-control" />
+        <label asp-for="FridgeId" class="form-label"></label>
+        <input asp-for="FridgeId" class="form-control" />
+        <span asp-validation-for="FridgeId" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Notes" class="form-label">Technician Notes</label>
-        <textarea asp-for="Notes" class="form-control"></textarea>
+        <label asp-for="FaultTechnicianId" class="form-label"></label>
+        <input asp-for="FaultTechnicianId" class="form-control" />
+        <span asp-validation-for="FaultTechnicianId" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="PriorityLevel" class="form-label">Priority</label>
-        <select asp-for="PriorityLevel" class="form-select">
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
+        <label asp-for="Category" class="form-label"></label>
+        <select asp-for="Category" class="form-select"
+                asp-items="Html.GetEnumSelectList<FaultCategory>()">
+            <option value="">-- Select Category --</option>
         </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
     </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="IsConfirmed" class="form-check-input" />
-        <label asp-for="IsConfirmed" class="form-check-label">Confirmed</label>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-    
+
+    <div class="mb-3">
+        <label asp-for="Priority" class="form-label"></label>
+        <select asp-for="Priority" class="form-select"
+                asp-items="Html.GetEnumSelectList<FaultPriority>()">
+            <option value="">-- Select Priority --</option>
+        </select>
+        <span asp-validation-for="Priority" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ReportedDate" class="form-label"></label>
+        <input asp-for="ReportedDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ReportedDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ScheduledDate" class="form-label"></label>
+        <input asp-for="ScheduledDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Diagnosis" class="form-label"></label>
+        <textarea asp-for="Diagnosis" class="form-control"></textarea>
+        <span asp-validation-for="Diagnosis" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FaultPhotoUrl" class="form-label"></label>
+        <input asp-for="FaultPhotoUrl" class="form-control" />
+        <span asp-validation-for="FaultPhotoUrl" class="text-danger"></span>
+    </div>
+
     <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Index"  class="btn btn-outline-secondary">Cancel</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
 </form>

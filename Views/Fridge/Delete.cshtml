@@ -10,20 +10,20 @@
     </div>
     <div class="card-body p-4">
         <form method="post">
-            <input asp-for="FridgeId" type="hidden" />
+            <input asp-for="Id" type="hidden" />
             <div class="row">
                 <div class="col-10">
                     <div class="border p-3">
                         <div asp-validation-summary="ModelOnly"></div>
                         <div class="form-floating py-2 col-12">
-                            <input asp-for="Brand" class="form-control border-0 shadow" disabled/>
-                            <label asp-for="Brand" class="ms-2"></label>
-                            <span asp-validation-for="Brand" class="text-danger"></span>
+                            <input asp-for="Manufacturer" class="form-control border-0 shadow" disabled/>
+                            <label asp-for="Manufacturer" class="ms-2"></label>
+                            <span asp-validation-for="Manufacturer" class="text-danger"></span>
                         </div>
                         <div class="form-floating py-2 col-12">
-                            <input asp-for="FridgeNo" class="form-control border-0 shadow" disabled />
-                            <label asp-for="FridgeNo" class="ms-2"></label>
-                            <span asp-validation-for="FridgeNo" class="text-danger"></span>
+                            <input asp-for="SerialNumber" class="form-control border-0 shadow" disabled />
+                            <label asp-for="SerialNumber" class="ms-2"></label>
+                            <span asp-validation-for="SerialNumber" class="text-danger"></span>
                         </div>
                         <div class="form-floating py-2 col-12">
                             <input asp-for="Model" class="form-control border-0 shadow" disabled />
@@ -77,9 +77,9 @@
                             <span asp-validation-for="ImageUrl" class="text-danger"></span>
                         </div>
                         <div class="form-floating py-2 col-12">
-                            <input asp-for="AvailabilityStatus" class="form-control border-0 shadow" disabled />
-                            <label asp-for="AvailabilityStatus" class="ms-2"></label>
-                            <span asp-validation-for="AvailabilityStatus" class="text-danger"></span>
+                            <input asp-for="Status" class="form-control border-0 shadow" disabled />
+                            <label asp-for="Status" class="ms-2"></label>
+                            <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
 

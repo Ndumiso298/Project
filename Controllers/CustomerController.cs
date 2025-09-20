@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
-using Project.Models.ViewModel;
+using Project.Models.ViewModels;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -17,15 +17,15 @@ namespace Project.Controllers
       
         public IActionResult Index()
         {
-            IEnumerable<Fridge> fridgesList=_db.tblFridges.ToList();
+            IEnumerable<Fridge> fridgesList=_db.Fridges.ToList();
             return View(fridgesList);
         }
         public IActionResult Details(int id)
         {
-            Allocation allocation = new()
+            FridgeAllocation allocation = new()
             {
-                Fridge = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id),
-                Count= 1,
+                Fridge = _db.Fridges.FirstOrDefault(u => u.Id == id),
+                Quantity= 1,
                 FridgeId=id
             };
           return View(allocation);
@@ -33,23 +33,23 @@ namespace Project.Controllers
         }
         [HttpPost]
         [Authorize]
-        public IActionResult Details(Allocation allocation)
+        public IActionResult Details(FridgeAllocation allocation)
         {
             var claimsIdedity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            allocation.ApplicationUserId = userId;
+            allocation.Customer.UserId = userId;
 
-            Allocation allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.ApplicationUserId == userId &&
+            FridgeAllocation allocationFromDb = _db.FridgeAllocations.FirstOrDefault(u => u.Customer.UserId == userId &&
             u.FridgeId == allocation.FridgeId);
 
             if (allocationFromDb != null)
             {
-                allocationFromDb.Count += allocation.Count;
-                _db.tblAllocations.Update(allocationFromDb);
+                allocationFromDb.Quantity += allocation.Quantity;
+                _db.FridgeAllocations.Update(allocationFromDb);
             }
             else
             {
-                _db.tblAllocations.Add(allocation);
+                _db.FridgeAllocations.Add(allocation);
             }
             TempData["success"] = "cart updated successfully";
             _db.SaveChanges();

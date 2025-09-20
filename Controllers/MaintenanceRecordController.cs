@@ -17,7 +17,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord
     public IActionResult Index()
     {
-        List<MaintenanceRecord> records = _db.tblMaintenanceRecords.ToList();
+        List<MaintenanceRecord> records = _db.MaintenanceRecords.ToList();
         return View(records);
     }
 
@@ -34,7 +34,7 @@ public class MaintenanceRecordController : Controller
     {
         if (ModelState.IsValid)
         {
-            _db.tblMaintenanceRecords.Add(record);
+            _db.MaintenanceRecords.Add(record);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -44,7 +44,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord/Details/5
     public IActionResult Details(int id)
     {
-        var record = _db.tblMaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
         if (record == null)
         {
             return NotFound();
@@ -55,7 +55,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord/Edit/5
     public IActionResult Edit(int id)
     {
-        var record = _db.tblMaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
         if (record == null)
         {
             return NotFound();
@@ -70,7 +70,7 @@ public class MaintenanceRecordController : Controller
     {
         if (ModelState.IsValid)
         {
-            _db.tblMaintenanceRecords.Update(record);
+            _db.MaintenanceRecords.Update(record);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -80,7 +80,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord/Delete/5
     public IActionResult Delete(int id)
     {
-        var record = _db.tblMaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
         if (record == null)
         {
             return NotFound();
@@ -93,13 +93,13 @@ public class MaintenanceRecordController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)
     {
-        var record = _db.tblMaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
         if (record == null)
         {
             return NotFound();
         }
 
-        _db.tblMaintenanceRecords.Remove(record);
+        _db.MaintenanceRecords.Remove(record);
         _db.SaveChanges();
         return RedirectToAction("Index");
     }

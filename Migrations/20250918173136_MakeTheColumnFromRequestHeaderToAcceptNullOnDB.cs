@@ -13,7 +13,7 @@ namespace Project.Migrations
         {
             migrationBuilder.AlterColumn<DateTime>(
                 name: "ShippingDate",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "datetime2",
                 nullable: true,
                 oldClrType: typeof(DateTime),
@@ -21,7 +21,7 @@ namespace Project.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "PaymentStatus",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -29,7 +29,7 @@ namespace Project.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PaymentDueDate",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "datetime2",
                 nullable: true,
                 oldClrType: typeof(DateTime),
@@ -37,7 +37,7 @@ namespace Project.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "Carrier",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -49,7 +49,7 @@ namespace Project.Migrations
         {
             migrationBuilder.AlterColumn<DateTime>(
                 name: "ShippingDate",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -59,7 +59,7 @@ namespace Project.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "PaymentStatus",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -69,7 +69,7 @@ namespace Project.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PaymentDueDate",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -79,7 +79,7 @@ namespace Project.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "Carrier",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

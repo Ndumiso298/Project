@@ -113,8 +113,9 @@
                                     @visit.Status
                                 </span>
                             </td>
-                            <td>@visit.Customer?.Name</td>
-                            <td>@visit.Customer?.Address</td>
+                            <td>@visit.Customer?.TradingName</td>
+                            <td>@visit.Customer?.AddressLine1</td>
+                            <td>@visit.Customer?.AddressLine2</td>
                         <td>
                            
                             <span class="text-secondary">@visit.CustomerNote</span>
@@ -122,13 +123,13 @@
 
 
             
-                       <td> @visit.Technician?.Name
+                       <td> @visit.Technician?.UserAccount.FirstName
                         <br />
                                                    
-                        <small class="text-muted">@visit.Technician?.Phone</small>
+                        <small class="text-muted">@visit.Technician?.UserAccount.PhoneNumber</small>
                         </td>
 
-                            <td>@visit.Fridge?.FridgeNo</td>
+                            <td>@visit.Fridge?.SerialNumber</td>
                             <td>@visit.Fridge?.Model</td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center flex-wrap gap-2">

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
-using Project.Utility;
+using Project.Utilities;
 
 namespace Project.Controllers
 {
@@ -19,7 +19,7 @@ namespace Project.Controllers
         }
         public IActionResult Index()
         {
-            List<Fridge> fridges=_db.tblFridges.ToList();
+            List<Fridge> fridges=_db.Fridges.ToList();
             return View(fridges);
         }
         public IActionResult Upsert(int? id)
@@ -31,7 +31,7 @@ namespace Project.Controllers
             else
             {
 
-                Fridge fridgeFromDb = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id);
+                Fridge fridgeFromDb = _db.Fridges.FirstOrDefault(u => u.Id == id);
                 return View(fridgeFromDb);
             }
 
@@ -47,9 +47,9 @@ namespace Project.Controllers
                 if (file != null)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string fridgePath = Path.Combine(wwwRootPath, @"Images/Fridges/");
+                    string fridgePath = Path.Combine(wwwRootPath, @"Images/FridgeAllocations/");
 
-                    if (objfridge.FridgeId != 0 && !string.IsNullOrEmpty(objfridge.ImageUrl))
+                    if (objfridge.Id != 0 && !string.IsNullOrEmpty(objfridge.ImageUrl))
                     {
                         var oldImagePath = Path.Combine(wwwRootPath, objfridge.ImageUrl.TrimStart('\\'));
 
@@ -62,19 +62,19 @@ namespace Project.Controllers
                         {
                             file.CopyTo(fileStream);
                         }
-                        objfridge.ImageUrl = @"/Images/Fridges/" + fileName;
+                        objfridge.ImageUrl = @"/Images/FridgeAllocations/" + fileName;
                     }
                 }
 
 
-                if (objfridge.FridgeId == 0)
+                if (objfridge.Id == 0)
                 {
-                    _db.tblFridges.Add(objfridge);
+                    _db.Fridges.Add(objfridge);
 
                 }
                 else
                 {
-                    _db.tblFridges.Update(objfridge);
+                    _db.Fridges.Update(objfridge);
                 }
                 _db.SaveChanges();
                 return RedirectToAction("Index");
@@ -86,8 +86,8 @@ namespace Project.Controllers
         
         public IActionResult Delete(int? id)
         {
-            Fridge fridgeFromDb = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id);
-            if (fridgeFromDb.FridgeId == null || fridgeFromDb.FridgeId == 0)
+            Fridge fridgeFromDb = _db.Fridges.FirstOrDefault(u => u.Id == id);
+            if (fridgeFromDb.Id == null || fridgeFromDb.Id == 0)
             {
                 return NotFound();
             }
@@ -105,7 +105,7 @@ namespace Project.Controllers
             }
 
 
-            _db.tblFridges.Remove(objfridge);
+            _db.Fridges.Remove(objfridge);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }

@@ -1,4 +1,5 @@
-﻿@model List<Fridge>
+﻿@using Project.Utilities.Enums
+@model List<Fridge>
 @{
     Layout = "_CustomerLayout";
   
@@ -49,7 +50,7 @@
                                 Available
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                @Model.Count(f => f.AvailabilityStatus == "Available")
+                                @Model.Count(f => f.Status == FridgeStatus.Available)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -69,7 +70,7 @@
                                 Maintenance
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                @Model.Count(f => f.AvailabilityStatus == "Maintenance")
+                                @Model.Count(f => f.Status == FridgeStatus.UnderMaintenance)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -89,7 +90,7 @@
                                 Unavailable
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                @Model.Count(f => f.AvailabilityStatus == "Unavailable")
+                                @Model.Count(f => f.Status == FridgeStatus.Quarantined)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -133,13 +134,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var obj in Model.OrderBy(u => u.FridgeId))
+                        @foreach (var obj in Model.OrderBy(u => u.Id))
                         {
                             <tr>
-                                <td class="ps-4 fw-semibold align-middle">@obj.Brand</td>
+                                <td class="ps-4 fw-semibold align-middle">@obj.Manufacturer</td>
                                 <td class="align-middle">@obj.Model</td>
                                 <td class="align-middle">
-                                    <span class="badge bg-light text-dark">@obj.FridgeNo</span>
+                                    <span class="badge bg-light text-dark">@obj.SerialNumber</span>
                                 </td>
                                 <td class="align-middle">@obj.Type</td>
                                 <td class="align-middle">
@@ -150,38 +151,38 @@
                                     </div>
                                 </td>
                                 <td class="align-middle">
-                                    @if (obj.AvailabilityStatus == "Available")
+                                    @if (obj.Status == FridgeStatus.Available)
                                     {
                                         <span class="badge bg-success bg-opacity-10 text-success">
-                                            <i class="bi bi-check-circle-fill me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-check-circle-fill me-1"></i> @obj.Status
                                         </span>
                                     }
-                                    else if (obj.AvailabilityStatus == "Unavailable")
+                                    else if (obj.Status == FridgeStatus.Quarantined)
                                     {
                                         <span class="badge bg-danger bg-opacity-10 text-danger">
-                                            <i class="bi bi-x-circle-fill me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-x-circle-fill me-1"></i> @obj.Status
                                         </span>
                                     }
-                                    else if (obj.AvailabilityStatus == "Maintenance")
+                                    else if (obj.Status == FridgeStatus.UnderMaintenance)
                                     {
                                         <span class="badge bg-warning bg-opacity-10 text-warning">
-                                            <i class="bi bi-tools me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-tools me-1"></i> @obj.Status
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-secondary bg-opacity-10 text-secondary">
-                                            <i class="bi bi-question-circle me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-question-circle me-1"></i> @obj.Status
                                         </span>
                                     }
                                 </td>
                                 <td class="text-end pe-4 align-middle">
                                     <div class="btn-group" role="group">
-                                        <a asp-controller="Fridge" asp-action="Upsert" asp-route-id="@obj.FridgeId"
+                                        <a asp-controller="Fridge" asp-action="Upsert" asp-route-id="@obj.Id"
                                            class="btn btn-sm btn-outline-primary rounded me-2 d-flex align-items-center">
                                             <i class="bi bi-pencil me-1"></i> Edit
                                         </a>
-                                        <a asp-controller="Fridge" asp-action="Delete" asp-route-id="@obj.FridgeId"
+                                        <a asp-controller="Fridge" asp-action="Delete" asp-route-id="@obj.Id"
                                            class="btn btn-sm btn-outline-danger rounded d-flex align-items-center">
                                             <i class="bi bi-trash me-1"></i> Delete
                                         </a>

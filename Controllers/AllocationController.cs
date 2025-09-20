@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
-using Project.Models.ViewModel;
-using Project.Utility;
+using Project.Models.ViewModels;
+using Project.Utilities;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -27,47 +27,67 @@ namespace Project.Controllers
             var userId= claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             AllocationVM = new()
             {
-                    AllocationList = _db.tblAllocations
+                    AllocationList = _db.FridgeAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId==userId)
+                    .Where(a => a.Customer.UserId==userId)
                     .ToList(),
                      RequestHeader = new()
             };
             foreach (var allocation in AllocationVM.AllocationList)
             {
                allocation.Price=GetPriceBasedOnQuantity(allocation);
-               AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
+               AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Quantity);
             }
             return View(AllocationVM);          
         }
         public IActionResult Summary()
         {
-            var claimsIdedity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            // Get the customer with their related UserAccount
+            var customer = _db.Customers
+                .Include(c => c.UserAccount)  // Important: Include the UserAccount
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (customer == null)
+            {
+                // Handle the case where customer is not found
+                return NotFound();
+            }
+
 
             AllocationVM = new()
             {
-                AllocationList = _db.tblAllocations
+                AllocationList = _db.FridgeAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId == userId)
+                    .Where(a => a.Customer.UserId == userId)
                     .ToList(),
                 RequestHeader = new()
             };
-            AllocationVM.RequestHeader.ApplicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
 
+            AllocationVM.RequestHeader.Customer = customer;
+            AllocationVM.RequestHeader.CustomerId = customer.Id;
 
+            // Get properties from UserAccount instead of Customer
+            AllocationVM.RequestHeader.FirstName = customer.UserAccount?.FirstName ?? "";
+            AllocationVM.RequestHeader.LastName = customer.UserAccount?.LastName ?? "";
 
-            AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.ApplicationUser.FirstName;
-            AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.ApplicationUser.LastName;
-            AllocationVM.RequestHeader.StreetAddress = AllocationVM.RequestHeader.ApplicationUser.StreetAddress;
-            AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.ApplicationUser.City;
-            AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.ApplicationUser.State;
-            AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.ApplicationUser.PostalCode;
+            // Use Customer's address properties (not UserAccount's)
+            AllocationVM.RequestHeader.AddressLine1 = customer.AddressLine1;
+            AllocationVM.RequestHeader.AddressLine2 = customer.AddressLine2;
+            AllocationVM.RequestHeader.City = customer.City;
+            AllocationVM.RequestHeader.Province = customer.Province;
+            AllocationVM.RequestHeader.PostalCode = customer.PostalCode;
+
+            // Use BusinessPhoneNumber from Customer
+            AllocationVM.RequestHeader.CellNumber = customer.BusinessPhoneNumber;
+
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
                 allocation.Price = GetPriceBasedOnQuantity(allocation);
-                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
+                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Quantity);
             }
             return View(AllocationVM);
         }
@@ -80,38 +100,38 @@ namespace Project.Controllers
             var claimsIdedity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            AllocationVM.AllocationList = _db.tblAllocations
+            AllocationVM.AllocationList = _db.FridgeAllocations
                      .Include(a => a.Fridge)
-                     .Where(a => a.ApplicationUserId == userId)
+                     .Where(a => a.Customer.UserId == userId)
                      .ToList();
 
             AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
-            AllocationVM.RequestHeader.ApplicationUserId = userId;
+            AllocationVM.RequestHeader.Customer.UserId = userId;
 
-            ApplicationUser applicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            ApplicationUser applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
 
 
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
                 allocation.Price = GetPriceBasedOnQuantity(allocation);
-                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
+                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Quantity);
             }
 
            
-            _db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
+            _db.RequestHeaders.Add(AllocationVM.RequestHeader);
             _db.SaveChanges();
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
-                RequestDetails requestDetail = new()
+                RequestDetail requestDetail = new()
                 {
                     FridgeId = allocation.FridgeId,
-                    RequestHeaderId = AllocationVM.RequestHeader.RequestHeaderId,
+                    RequestHeaderId = AllocationVM.RequestHeader.Id,
                     Price = allocation.Price,
-                    Count = allocation.Count,
+                    Count = allocation.Quantity,
                 };
-                _db.tblRequestDetais.Add(requestDetail);
+                _db.RequestDetails.Add(requestDetail);
                 _db.SaveChanges();
 
             }
@@ -123,7 +143,7 @@ namespace Project.Controllers
         {
             return View(id);
         }
-        private double GetPriceBasedOnQuantity(Allocation Allocation)
+        private decimal GetPriceBasedOnQuantity(FridgeAllocation Allocation)
         {
             
             
@@ -132,40 +152,34 @@ namespace Project.Controllers
         }
         public IActionResult Plus(int id)
         {
-            var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
-            allocationFromDb.Count += 1;
-            _db.tblAllocations.Update(allocationFromDb);
+            var allocationFromDb = _db.FridgeAllocations.FirstOrDefault(u => u.Id == id);
+            allocationFromDb.Quantity += 1;
+            _db.FridgeAllocations.Update(allocationFromDb);
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
         public IActionResult Minus(int id)
         {
-            var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
-            if (allocationFromDb.Count >= 0)
+            var allocationFromDb = _db.FridgeAllocations.FirstOrDefault(u => u.Id == id);
+            if (allocationFromDb.Quantity >= 0)
             {
-                _db.tblAllocations.Remove(allocationFromDb);
+                _db.FridgeAllocations.Remove(allocationFromDb);
             }
             else
             {
-                allocationFromDb.Count -= 1;
-                _db.tblAllocations.Update(allocationFromDb);
+                allocationFromDb.Quantity -= 1;
+                _db.FridgeAllocations.Update(allocationFromDb);
             }
-
-
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
         public IActionResult Remove(int id)
         {
-            var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
+            var allocationFromDb = _db.FridgeAllocations.FirstOrDefault(u => u.Id == id);
 
-            _db.tblAllocations.Remove(allocationFromDb);
-
-
-
+            _db.FridgeAllocations.Remove(allocationFromDb);
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

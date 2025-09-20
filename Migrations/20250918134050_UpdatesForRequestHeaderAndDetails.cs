@@ -13,28 +13,28 @@ namespace Project.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "Carrier",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "PaymentDueDate",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<string>(
                 name: "PaymentStatus",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "ShippingDate",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
@@ -45,19 +45,19 @@ namespace Project.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Carrier",
-                table: "tblRequestHeaders");
+                table: "RequestHeaders");
 
             migrationBuilder.DropColumn(
                 name: "PaymentDueDate",
-                table: "tblRequestHeaders");
+                table: "RequestHeaders");
 
             migrationBuilder.DropColumn(
                 name: "PaymentStatus",
-                table: "tblRequestHeaders");
+                table: "RequestHeaders");
 
             migrationBuilder.DropColumn(
                 name: "ShippingDate",
-                table: "tblRequestHeaders");
+                table: "RequestHeaders");
         }
     }
 }

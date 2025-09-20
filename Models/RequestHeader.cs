@@ -8,19 +8,17 @@ namespace Project.Models
     public class RequestHeader
     {
         [Key]
-        public int RequestHeaderId { get; set; }
+        public int Id { get; set; }
 
-        public string ApplicationUserId { get; set; }
+        public int CustomerId { get; set; }
 
-        [ForeignKey("ApplicationUserId")]
+        [ForeignKey(nameof(CustomerId))]
         [ValidateNever]
-        public ApplicationUser ApplicationUser { get; set; }
+        public Customer Customer { get; set; }
 
         public DateTime RequestDate { get; set; }
        
-        public double RequestTotal { get; set; }
-      
-                                                                                                                         
+        public decimal RequestTotal { get; set; }                                                                          
        
        [Required]
         public string FirstName { get; set; }
@@ -28,11 +26,15 @@ namespace Project.Models
         [Required]
         public string LastName { get; set; }
         [Required]
-        public string StreetAddress { get; set; }
+        public string AddressLine1 { get; set; }
+
+        [Required]
+        public string AddressLine2 { get; set; }
+
         [Required]
         public string City { get; set; }
         [Required]
-        public string State { get; set; }
+        public string Province { get; set; }
         [Required]
         public string PostalCode { get; set; }
         [Required]
@@ -41,7 +43,10 @@ namespace Project.Models
         public string? Status { get; set; } = "Waiting For Payment";
         public DateTime? ShippingDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
-        public ICollection<Allocation> Allocations { get; set; }
-        public ICollection<RequestDetails> RequestFridges { get; set; }
+
+        [ValidateNever]
+        public ICollection<FridgeAllocation> Allocations { get; set; }
+        [ValidateNever] 
+        public ICollection<RequestDetail> RequestFridges { get; set; }
     }
 }

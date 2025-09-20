@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using Project.Utilities.Enums;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,20 +20,20 @@ namespace Project.Controllers
         }
         public IActionResult Index(string customerName, string location, string status)
         {
-            var faults = _db.tblFaults
-                .Include(f => f.ReportedByCustomer)
-                .Include(f => f.ResolvedByTechnician)
+            var faults = _db.FaultRecords
+                .Include(f => f.ReportedBy)
+                .Include(f => f.AssignedTechnician)
                 .Include(f => f.Fridge)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(customerName))
-                faults = faults.Where(f => f.ReportedByCustomer.Name.Contains(customerName));
+                faults = faults.Where(f => f.ReportedBy.Customer.UserAccount.FirstName.Contains(customerName));
 
             if (!string.IsNullOrEmpty(location))
-                faults = faults.Where(f => f.ReportedByCustomer.Address.Contains(location));
+                faults = faults.Where(f => f.ReportedBy.Customer.TradingName.Contains(location));
 
             if (!string.IsNullOrEmpty(status))
-                faults = faults.Where(f => f.Status == status);
+                faults = faults.Where(f => f.Status == Utilities.Enums.FaultStatus.Reported);
 
             ViewBag.CustomerName = customerName;
             ViewBag.Location = location;
@@ -47,11 +48,11 @@ namespace Project.Controllers
         }
         public IActionResult Details(int id)
         {
-            var fault = _db.tblFaults
-                .Include(f => f.ReportedByCustomer)
-                .Include(f => f.ResolvedByTechnician)
+            var fault = _db.FaultRecords
+                .Include(f => f.ReportedBy)
+                .Include(f => f.AssignedTechnician)
                 .Include(f => f.Fridge)
-                .FirstOrDefault(f => f.FaultId == id);
+                .FirstOrDefault(f => f.Id == id);
 
             if (fault == null)
             {
@@ -64,18 +65,18 @@ namespace Project.Controllers
         [HttpGet]
         public IActionResult Process(int id)
         {
-            var fault = _db.tblFaults
-                .Include(f => f.ReportedByCustomer)
+            var fault = _db.FaultRecords
+                .Include(f => f.ReportedBy)
                 .Include(f => f.Fridge)
-                .FirstOrDefault(f => f.FaultId == id);
+                .FirstOrDefault(f => f.Id == id);
 
             if (fault == null) return NotFound();
 
-            ViewBag.Technicians = _db.tblFaultTechnicians
+            ViewBag.Technicians = _db.Employees
                 .Select(t => new SelectListItem
                 {
-                    Value = t.TechnicianId.ToString(),
-                    Text = t.Name
+                    Value = t.Id.ToString(),
+                    Text = t.UserAccount.FirstName,
                 }).ToList();
 
             return View(fault);
@@ -84,32 +85,32 @@ namespace Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Process(Fault input)
+        public IActionResult Process(FridgeFault input)
         {
-            var fault = _db.tblFaults.FirstOrDefault(f => f.FaultId == input.FaultId);
+            var fault = _db.FaultRecords.FirstOrDefault(f => f.Id == input.Id);
             if (fault == null) return NotFound();
 
             fault.Status = input.Status;
-            fault.Notes = input.Notes;
-            fault.ResolvedByTechnicianId = input.ResolvedByTechnicianId;
-            if (fault.Status == "Resolved")
-                fault.ResolvedAt = DateTime.Now;
+            fault.ResolutionNotes = input.ResolutionNotes;
+            fault.AssignedTechnician = input.AssignedTechnician;
+            if (fault.Status == FaultStatus.Resolved)
+                fault.ResolvedDate = DateTime.Now;
             else
-                fault.ResolvedAt = null;
+                fault.ResolvedDate = null;
 
 
             _db.SaveChanges();
-            TempData["SuccessMessage"] = "Fault processed successfully.";
+            TempData["SuccessMessage"] = "FridgeFault processed successfully.";
 
             return RedirectToAction("Index");
         }
         public IActionResult Print(int id)
         {
-            var fault = _db.tblFaults
-                .Include(f => f.ReportedByCustomer)
+            var fault = _db.FaultRecords
+                .Include(f => f.ReportedBy)
                 .Include(f => f.Fridge)
-                .Include(f => f.ResolvedByTechnician)
-                .FirstOrDefault(f => f.FaultId == id);
+                .Include(f => f.AssignedTechnician)
+                .FirstOrDefault(f => f.Id == id);
 
             if (fault == null)
             {

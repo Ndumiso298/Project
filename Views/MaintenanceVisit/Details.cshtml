@@ -9,9 +9,10 @@
 <div>
     <strong>Scheduled Date:</strong> @Model.ScheduledDate.ToString("yyyy-MM-dd")<br />
     <strong>Status:</strong> @Model.Status<br />
-    <strong>Customer:</strong> @Model.Customer?.Name<br />
-    <strong>Technician:</strong> @Model.Technician?.Name<br />
-    <strong>Fridge Serial:</strong> @Model.Fridge?.FridgeNo<br />
+    <strong>Customer:</strong> @Model.Customer?.TradingName<br />
+    <strong>Technician:</strong> @Model.Technician?.UserAccount.FirstName<br />
+    <strong>Technician:</strong> @Model.Technician?.UserAccount.LastName<br />
+    <strong>Fridge Serial:</strong> @Model.Fridge?.SerialNumber<br />
     <strong>Fridge Model:</strong> @Model.Fridge?.Model<br />
 </div>
 

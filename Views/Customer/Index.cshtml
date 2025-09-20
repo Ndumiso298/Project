@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Fridge>
+﻿@using Project.Utilities.Enums
+@model IEnumerable<Fridge>
 @{
     Layout = "_CustomerLayout";
 }
@@ -40,19 +41,19 @@
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="card h-100 border-0 shadow-sm rental-card">
                     <!-- Status Badge -->
-                    @if (fridge.AvailabilityStatus == "Available")
+                    @if (fridge.Status == FridgeStatus.Available)
                     {
                         <span class="badge bg-success position-absolute top-0 end-0 m-2">
                             <i class="bi bi-check-circle me-1"></i> Available
                         </span>
                     }
-                    else if (fridge.AvailabilityStatus == "Unavailable")
+                    else if (fridge.Status == FridgeStatus.Quarantined)
                     {
                         <span class="badge bg-danger position-absolute top-0 end-0 m-2">
                             <i class="bi bi-x-circle me-1"></i> Unavailable
                         </span>
                     }
-                    else if (fridge.AvailabilityStatus == "Maintenance")
+                    else if (fridge.Status == FridgeStatus.UnderMaintenance)
                     {
                         <span class="badge bg-warning position-absolute top-0 end-0 m-2">
                             <i class="bi bi-tools me-1"></i> Maintenance
@@ -61,7 +62,7 @@
 
                     <!-- Fridge Image -->
                     <div class="rental-image-container">
-                        <img src="@fridge.ImageUrl" class="card-img-top rental-image" alt="@fridge.Brand @fridge.Model">
+                        <img src="@fridge.ImageUrl" class="card-img-top rental-image" alt="@fridge.Manufacturer @fridge.Model">
                         <div class="image-overlay"></div>
                     </div>
 
@@ -72,7 +73,7 @@
                             <span class="badge bg-light text-dark ms-1">@fridge.CapacityLiters L</span>
                         </div>
 
-                        <h5 class="card-title text-dark">@fridge.Brand @fridge.Model</h5>
+                        <h5 class="card-title text-dark">@fridge.Manufacturer @fridge.Model</h5>
 
                         <p class="card-text text-muted small flex-grow-1">
                             @if (!string.IsNullOrEmpty(fridge.Description) && fridge.Description.Length > 100)
@@ -95,13 +96,13 @@
                                 </div>
                                 <div class="text-center">
                                     <span class="badge bg-light text-dark">
-                                        <i class="bi bi-upc-scan me-1"></i> #@fridge.FridgeNo
+                                        <i class="bi bi-upc-scan me-1"></i> #@fridge.SerialNumber
                                     </span>
                                 </div>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <a asp-controller="Customer" asp-action="Details" asp-route-id="@fridge.FridgeId"
+                                <a asp-controller="Customer" asp-action="Details" asp-route-id="@fridge.Id"
                                    class="btn btn-outline-primary">
                                     <i class="bi bi-info-circle me-2"></i> View Details
                                 </a>

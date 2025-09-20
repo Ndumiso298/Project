@@ -18,7 +18,7 @@ public class ProcessFaultController : Controller
     // GET: ProcessFault
     public IActionResult Index()
     {
-        List<ProcessFault> faults = _db.tblProcessFaults.ToList();
+        List<FridgeFault> faults = _db.FaultRecords.ToList();
         return View(faults);
     }
 
@@ -31,11 +31,11 @@ public class ProcessFaultController : Controller
     // POST: ProcessFault/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(ProcessFault fault)
+    public IActionResult Create(FridgeFault fault)
     {
         if (ModelState.IsValid)
         {
-            _db.tblProcessFaults.Add(fault);
+            _db.FaultRecords.Add(fault);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -45,7 +45,7 @@ public class ProcessFaultController : Controller
     // GET: ProcessFault/Details/5
     public IActionResult Details(int id)
     {
-        var fault = _db.tblProcessFaults.FirstOrDefault(f => f.Id == id);
+        var fault = _db.FaultRecords.FirstOrDefault(f => f.Id == id);
         if (fault == null)
         {
             return NotFound();
@@ -56,7 +56,7 @@ public class ProcessFaultController : Controller
     // GET: ProcessFault/Edit/5
     public IActionResult Edit(int id)
     {
-        var fault = _db.tblProcessFaults.FirstOrDefault(f => f.Id == id);
+        var fault = _db.FaultRecords.FirstOrDefault(f => f.Id == id);
         if (fault == null)
         {
             return NotFound();
@@ -67,11 +67,11 @@ public class ProcessFaultController : Controller
     // POST: ProcessFault/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(ProcessFault fault)
+    public IActionResult Edit(FridgeFault fault)
     {
         if (ModelState.IsValid)
         {
-            _db.tblProcessFaults.Update(fault);
+            _db.FaultRecords.Update(fault);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -81,7 +81,7 @@ public class ProcessFaultController : Controller
     // GET: ProcessFault/Delete/5
     public IActionResult Delete(int id)
     {
-        var fault = _db.tblProcessFaults.FirstOrDefault(f => f.Id == id);
+        var fault = _db.FaultRecords.FirstOrDefault(f => f.Id == id);
         if (fault == null)
         {
             return NotFound();
@@ -94,13 +94,13 @@ public class ProcessFaultController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)
     {
-        var fault = _db.tblProcessFaults.FirstOrDefault(f => f.Id == id);
+        var fault = _db.FaultRecords.FirstOrDefault(f => f.Id == id);
         if (fault == null)
         {
             return NotFound();
         }
 
-        _db.tblProcessFaults.Remove(fault);
+        _db.FaultRecords.Remove(fault);
         _db.SaveChanges();
         return RedirectToAction("Index");
     }

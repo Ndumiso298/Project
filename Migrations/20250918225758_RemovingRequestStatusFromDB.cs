@@ -12,7 +12,7 @@ namespace Project.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "RequestStatus",
-                table: "tblRequestHeaders");
+                table: "RequestHeaders");
         }
 
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Project.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "RequestStatus",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");

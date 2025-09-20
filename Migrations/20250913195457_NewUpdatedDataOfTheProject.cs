@@ -59,7 +59,7 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblCustomerS",
+                name: "Customers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -200,7 +200,7 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblRequestHeaders",
+                name: "RequestHeaders",
                 columns: table => new
                 {
                     RequestHeaderId = table.Column<int>(type: "int", nullable: false)
@@ -229,7 +229,7 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblFridges",
+                name: "FridgeAllocations",
                 columns: table => new
                 {
                     FridgeId = table.Column<int>(type: "int", nullable: false)
@@ -254,12 +254,12 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFridges_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "Customers",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblAllocations",
+                name: "FridgeAllocations",
                 columns: table => new
                 {
                     AllocationId = table.Column<int>(type: "int", nullable: false)
@@ -280,8 +280,8 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblAllocations_tblFridges_FridgeId",
                         column: x => x.FridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId",
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -307,24 +307,24 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblFridges_FaultyFridgeId",
                         column: x => x.FaultyFridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId",
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblFridges_ReplacementFridgeId",
                         column: x => x.ReplacementFridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId");
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblMaintenanceVisits",
+                name: "MaintenanceVisits",
                 columns: table => new
                 {
                     MaintenanceVisitId = table.Column<int>(type: "int", nullable: false)
@@ -344,7 +344,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblMaintenanceVisits_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -355,12 +355,12 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblMaintenanceVisits_tblFridges_FridgeId",
                         column: x => x.FridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId");
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblRequestDetais",
+                name: "RequestDetail",
                 columns: table => new
                 {
                     RequestDetailId = table.Column<int>(type: "int", nullable: false)
@@ -376,19 +376,19 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblRequestDetais_tblFridges_FridgeId",
                         column: x => x.FridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId",
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
                         column: x => x.RequestHeaderId,
-                        principalTable: "tblRequestHeaders",
-                        principalColumn: "RequestHeaderId",
+                        principalTable: "RequestHeaders",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblFaults",
+                name: "FaultRecords",
                 columns: table => new
                 {
                     FaultId = table.Column<int>(type: "int", nullable: false)
@@ -410,7 +410,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFaults_tblCustomerS_ReportedByCustomerId",
                         column: x => x.ReportedByCustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "Customers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_tblFaults_tblFaultTechnicians_ResolvedByTechnicianId",
@@ -420,19 +420,19 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFaults_tblFridges_FridgeId",
                         column: x => x.FridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId",
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblFaults_tblMaintenanceVisits_MaintenanceVisitId",
                         column: x => x.MaintenanceVisitId,
-                        principalTable: "tblMaintenanceVisits",
+                        principalTable: "MaintenanceVisits",
                         principalColumn: "MaintenanceVisitId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblMaintenanceRecords",
+                name: "MaintenanceRecords",
                 columns: table => new
                 {
                     MaintenanceRecordId = table.Column<int>(type: "int", nullable: false)
@@ -458,13 +458,13 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblMaintenanceRecords_tblFridges_FridgeId",
                         column: x => x.FridgeId,
-                        principalTable: "tblFridges",
-                        principalColumn: "FridgeId",
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblMaintenanceRecords_tblMaintenanceVisits_MaintenanceVisitId",
                         column: x => x.MaintenanceVisitId,
-                        principalTable: "tblMaintenanceVisits",
+                        principalTable: "MaintenanceVisits",
                         principalColumn: "MaintenanceVisitId");
                 });
 
@@ -489,8 +489,8 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblProcessFaults_tblFaults_FaultId",
                         column: x => x.FaultId,
-                        principalTable: "tblFaults",
-                        principalColumn: "FaultId",
+                        principalTable: "FaultRecords",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -535,32 +535,32 @@ namespace Project.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblAllocations_ApplicationUserId",
-                table: "tblAllocations",
+                table: "FridgeAllocations",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblAllocations_FridgeId",
-                table: "tblAllocations",
-                column: "FridgeId");
+                table: "FridgeAllocations",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFaults_FridgeId",
-                table: "tblFaults",
-                column: "FridgeId");
+                table: "FaultRecords",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFaults_MaintenanceVisitId",
-                table: "tblFaults",
+                table: "FaultRecords",
                 column: "MaintenanceVisitId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFaults_ReportedByCustomerId",
-                table: "tblFaults",
+                table: "FaultRecords",
                 column: "ReportedByCustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFaults_ResolvedByTechnicianId",
-                table: "tblFaults",
+                table: "FaultRecords",
                 column: "ResolvedByTechnicianId");
 
             migrationBuilder.CreateIndex(
@@ -580,57 +580,57 @@ namespace Project.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFridges_CustomerId",
-                table: "tblFridges",
+                table: "FridgeAllocations",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblMaintenanceRecords_FridgeId",
-                table: "tblMaintenanceRecords",
-                column: "FridgeId");
+                table: "MaintenanceRecords",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblMaintenanceRecords_MaintenanceVisitId",
-                table: "tblMaintenanceRecords",
+                table: "MaintenanceRecords",
                 column: "MaintenanceVisitId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblMaintenanceRecords_TechnicianId",
-                table: "tblMaintenanceRecords",
+                table: "MaintenanceRecords",
                 column: "TechnicianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblMaintenanceVisits_CustomerId",
-                table: "tblMaintenanceVisits",
+                table: "MaintenanceVisits",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblMaintenanceVisits_FridgeId",
-                table: "tblMaintenanceVisits",
-                column: "FridgeId");
+                table: "MaintenanceVisits",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblMaintenanceVisits_TechnicianId",
-                table: "tblMaintenanceVisits",
+                table: "MaintenanceVisits",
                 column: "TechnicianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblProcessFaults_FaultId",
                 table: "tblProcessFaults",
-                column: "FaultId");
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_FridgeId",
-                table: "tblRequestDetais",
-                column: "FridgeId");
+                table: "RequestDetail",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_RequestHeaderId",
-                table: "tblRequestDetais",
-                column: "RequestHeaderId");
+                table: "RequestDetail",
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestHeaders_ApplicationUserId",
-                table: "tblRequestHeaders",
+                table: "RequestHeaders",
                 column: "ApplicationUserId");
         }
 
@@ -653,31 +653,31 @@ namespace Project.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "tblAllocations");
+                name: "FridgeAllocations");
 
             migrationBuilder.DropTable(
                 name: "tblFridgeRequests");
 
             migrationBuilder.DropTable(
-                name: "tblMaintenanceRecords");
+                name: "MaintenanceRecords");
 
             migrationBuilder.DropTable(
                 name: "tblProcessFaults");
 
             migrationBuilder.DropTable(
-                name: "tblRequestDetais");
+                name: "RequestDetail");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "tblFaults");
+                name: "FaultRecords");
 
             migrationBuilder.DropTable(
-                name: "tblRequestHeaders");
+                name: "RequestHeaders");
 
             migrationBuilder.DropTable(
-                name: "tblMaintenanceVisits");
+                name: "MaintenanceVisits");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -686,10 +686,10 @@ namespace Project.Migrations
                 name: "tblFaultTechnicians");
 
             migrationBuilder.DropTable(
-                name: "tblFridges");
+                name: "FridgeAllocations");
 
             migrationBuilder.DropTable(
-                name: "tblCustomerS");
+                name: "Customers");
         }
     }
 }

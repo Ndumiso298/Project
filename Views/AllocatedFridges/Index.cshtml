@@ -41,8 +41,8 @@
                         @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
                         {
                             <tr>
-                                <td class="ps-4 fw-semibold align-middle">@item.ApplicationUser?.FirstName</td>
-                                <td class="align-middle">@item.ApplicationUser?.LastName</td>
+                                <td class="ps-4 fw-semibold align-middle">@item.Customer.UserAccount?.FirstName</td>
+                                <td class="align-middle">@item.Customer.UserAccount?.LastName</td>
                                 <td class="align-middle">@item.RequestDate.ToString("yyyy-MM-dd")</td>
                                 <t class="align-middle">
                                     @* Show allocated fridge details *@
@@ -51,15 +51,15 @@
                                         @foreach (var allocation in item.Allocations)
                                         {
                                             <div class="mb-1 p-1 border rounded bg-light">
-                                                <strong>Fridge No:</strong> @allocation.Fridge.FridgeNo <br />
+                                                <strong>Fridge No:</strong> @allocation.Fridge.SerialNumber <br />
                                                 <strong>Type:</strong> @allocation.Fridge.Type<br />
-                                                <strong>Brand:</strong> @allocation.Fridge.Brand<br />
+                                                <strong>Brand:</strong> @allocation.Fridge.Manufacturer<br />
                                             </div>
                                         }
                                     }
                                 </t>
                                 <td class="text-end pe-4 align-middle">
-                                    <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
+                                    <a asp-action="Details" asp-route-id="@item.Id"
                                        class="btn btn-sm btn-outline-primary rounded d-flex align-items-center">
                                         <i class="bi bi-eye me-1"></i> View Details
                                     </a>

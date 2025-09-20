@@ -27,7 +27,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFridgeVisits_tblAllocations_AllocationId",
                         column: x => x.AllocationId,
-                        principalTable: "tblAllocations",
+                        principalTable: "FridgeAllocations",
                         principalColumn: "AllocationId",
                         onDelete: ReferentialAction.Cascade);
                 });

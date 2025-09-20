@@ -39,15 +39,16 @@
         <div class="mb-3">
             <h5>Technician</h5>
             <p>
-                <strong>Name:</strong> @Model.Technician?.Name<br />
-                <strong>Phone:</strong> @Model.Technician?.Phone
+                <strong>Name:</strong> @Model.Technician?.UserAccount.FirstName<br />
+                <strong>Name:</strong> @Model.Technician?.UserAccount.LastName<br />
+                <strong>Phone:</strong> @Model.Technician?.UserAccount.PhoneNumber
             </p>
         </div>
 
         <div class="mb-3">
             <h5>Fridge Details</h5>
             <p>
-                <strong>Serial Number:</strong> @Model.Fridge?.FridgeNo<br />
+                <strong>Serial Number:</strong> @Model.Fridge?.SerialNumber<br />
                 <strong>Model:</strong> @Model.Fridge?.Model
             </p>
         </div>

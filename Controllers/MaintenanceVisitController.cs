@@ -26,7 +26,7 @@ public class MaintenanceVisitController : Controller
     // GET: MaintenanceVisit
     public IActionResult Index(string search, string status, DateTime? fromDate, DateTime? toDate)
     {
-        var visits = _db.tblMaintenanceVisits
+        var visits = _db.MaintenanceVisits
             .Include(v => v.Customer)
             .Include(v => v.Technician)
             .Include(v => v.Fridge)
@@ -35,9 +35,9 @@ public class MaintenanceVisitController : Controller
         if (!string.IsNullOrEmpty(search))
         {
             visits = visits.Where(v =>
-                v.Customer.Name.Contains(search) ||
-                v.Technician.Name.Contains(search) ||
-                v.Fridge.FridgeNo.Contains(search) ||
+                v.Customer.UserAccount.FirstName.Contains(search) ||
+                v.Technician.UserAccount.FirstName.Contains(search) ||
+                v.Fridge.SerialNumber.Contains(search) ||
                 v.Fridge.Model.Contains(search));
         }
 
@@ -68,7 +68,7 @@ public class MaintenanceVisitController : Controller
     // GET: MaintenanceVisit/Create
     public IActionResult Create(int maintenanceVisitId)
     {
-        var visit = _db.tblMaintenanceVisits
+        var visit = _db.MaintenanceVisits
             .Include(v => v.Fridge)
             .Include(v => v.Customer)
             .Include(v => v.Technician)
@@ -79,19 +79,18 @@ public class MaintenanceVisitController : Controller
             return NotFound();
         }
 
-        var fault = new Fault
+        var fault = new FridgeFault
         {
             MaintenanceVisitId = maintenanceVisitId,
-            FridgeId = visit.Fridge.FridgeId,              
-            ReportedByCustomerId = visit.Customer.Id, 
-            ReportedByCustomer = visit.Customer,
+            FridgeId = visit.Fridge.Id,              
+            ReportedById = visit.Customer.UserAccount.Id, 
+            ReportedBy = visit.Customer.UserAccount,
             Fridge = visit.Fridge,
-            Location = visit.Fridge?.Location,
-            ReportedAt = DateTime.Now
+            ReportedDate = DateTime.Now
         };
 
 
-        ViewBag.Technicians = new SelectList(_db.tblFaultTechnicians, "TechnicianId", "Name");
+        ViewBag.Technicians = new SelectList(_db.Employees, "TechnicianId", "Name");
 
         return View(visit);
     }
@@ -100,17 +99,17 @@ public class MaintenanceVisitController : Controller
     // POST: MaintenanceVisit/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(Fault fault)
+    public IActionResult Create(FridgeFault fault)
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Technicians = new SelectList(_db.tblFaultTechnicians, "TechnicianId", "Name", fault.ResolvedByTechnicianId);
+            ViewBag.Technicians = new SelectList(_db.Employees, "TechnicianId", "Name", fault.AssignedTechnician);
             return View(fault);
         }
 
-        fault.ReportedAt = DateTime.Now;
+        fault.ReportedDate = DateTime.Now;
 
-        _db.tblFaults.Add(fault);
+        _db.FaultRecords.Add(fault);
         _db.SaveChanges();
 
         return RedirectToAction("Details", "MaintenanceVisit", new { id = fault.MaintenanceVisitId });
@@ -120,7 +119,7 @@ public class MaintenanceVisitController : Controller
     // GET: MaintenanceVisit/Details/5
     public IActionResult Details(int id)
     {
-        var visit = _db.tblMaintenanceVisits.FirstOrDefault(v => v.MaintenanceVisitId == id);
+        var visit = _db.MaintenanceVisits.FirstOrDefault(v => v.MaintenanceVisitId == id);
         if (visit == null)
         {
             return NotFound();
@@ -131,7 +130,7 @@ public class MaintenanceVisitController : Controller
     // GET: MaintenanceVisit/Edit/5
     public IActionResult Edit(int id)
     {
-        var visit = _db.tblMaintenanceVisits
+        var visit = _db.MaintenanceVisits
             .Include(v => v.Fridge)
             .Include(v => v.Technician)
             .FirstOrDefault(v => v.MaintenanceVisitId == id);
@@ -141,7 +140,7 @@ public class MaintenanceVisitController : Controller
             return NotFound();
         }
 
-        ViewBag.TechnicianList = new SelectList(_db.tblFaultTechnicians, "TechnicianId", "Name", visit.TechnicianId);
+        ViewBag.TechnicianList = new SelectList(_db.Employees, "TechnicianId", "Name", visit.TechnicianId);
 
         return View(visit);
     }
@@ -157,11 +156,11 @@ public class MaintenanceVisitController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.TechnicianList = new SelectList(_db.tblFaultTechnicians, "TechnicianId", "Name", visit.TechnicianId);
+            ViewBag.TechnicianList = new SelectList(_db.Employees, "TechnicianId", "Name", visit.TechnicianId);
             return View(visit);
         }
 
-        var existingVisit = _db.tblMaintenanceVisits
+        var existingVisit = _db.MaintenanceVisits
             .FirstOrDefault(v => v.MaintenanceVisitId == visit.MaintenanceVisitId);
 
         if (existingVisit == null)
@@ -184,7 +183,7 @@ public class MaintenanceVisitController : Controller
     // GET: MaintenanceVisit/Delete/5
     public IActionResult Delete(int id)
     {
-        var visit = _db.tblMaintenanceVisits
+        var visit = _db.MaintenanceVisits
             .Include(v => v.Customer)
             .FirstOrDefault(v => v.MaintenanceVisitId == id);
 
@@ -202,7 +201,7 @@ public class MaintenanceVisitController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)
     {
-        var visit = _db.tblMaintenanceVisits
+        var visit = _db.MaintenanceVisits
             .FirstOrDefault(v => v.MaintenanceVisitId == id);
 
         if (visit == null)
@@ -218,7 +217,7 @@ public class MaintenanceVisitController : Controller
 
     public IActionResult Print(int id)
     {
-        var visit = _db.tblMaintenanceVisits
+        var visit = _db.MaintenanceVisits
             .Include(v => v.Technician)
             .Include(v => v.Fridge)
             .FirstOrDefault(v => v.MaintenanceVisitId == id);

@@ -38,33 +38,33 @@
                                 <div class="row align-items-center border-bottom py-3 mb-3">
                                     <!-- Image -->
                                     <div class="col-12 col-md-2 text-center mb-3 mb-md-0">
-                                        <img src="@item.Fridge.ImageUrl" alt="@item.Fridge.Brand @item.Fridge.Model"
+                                        <img src="@item.Fridge.ImageUrl" alt="@item.Fridge.Manufacturer @item.Fridge.Model"
                                              class="img-fluid rounded shadow-sm" style="max-height:120px;" />
                                     </div>
 
                                     <!-- Details -->
                                     <div class="col-12 col-md-5">
-                                        <h5 class="fw-bold text-dark mb-1">@item.Fridge.Brand</h5>
+                                        <h5 class="fw-bold text-dark mb-1">@item.Fridge.Manufacturer</h5>
                                         <p class="text-muted small mb-2">@Html.Raw(item.Fridge.Description)</p>
                                         <div class="fw-semibold text-primary">
                                             @item.Fridge.RentalPricePerMonth.ToString("c")
-                                            <span class="text-muted">&nbsp;x&nbsp;</span>@item.Count
+                                            <span class="text-muted">&nbsp;x&nbsp;</span>@item.Quantity
                                         </div>
                                     </div>
 
                                     <!-- Actions -->
                                     <div class="col-12 col-md-5 d-flex justify-content-md-end align-items-center mt-3 mt-md-0">
                                         <div class="btn-group me-3" role="group">
-                                            <a asp-action="Plus" asp-route-id="@item.AllocationId"
+                                            <a asp-action="Plus" asp-route-id="@item.Id"
                                                class="btn btn-outline-primary rounded-pill px-3">
                                                 <i class="bi bi-plus-lg"></i>
                                             </a>
-                                            <a asp-action="Minus" asp-route-id="@item.AllocationId"
+                                            <a asp-action="Minus" asp-route-id="@item.Id"
                                                class="btn btn-outline-primary rounded-pill px-3">
                                                 <i class="bi bi-dash-lg"></i>
                                             </a>
                                         </div>
-                                        <a asp-action="Remove" asp-route-id="@item.AllocationId"
+                                        <a asp-action="Remove" asp-route-id="@item.Id"
                                            class="btn btn-danger rounded-pill px-3">
                                             <i class="bi bi-trash-fill"></i>
                                         </a>

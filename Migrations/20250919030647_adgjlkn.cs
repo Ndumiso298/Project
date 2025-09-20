@@ -11,22 +11,22 @@ namespace Project.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "RequestHeaderId",
-                table: "tblAllocations",
+                name: "Id",
+                table: "FridgeAllocations",
                 type: "int",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblAllocations_RequestHeaderId",
-                table: "tblAllocations",
-                column: "RequestHeaderId");
+                table: "FridgeAllocations",
+                column: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblAllocations_tblRequestHeaders_RequestHeaderId",
-                table: "tblAllocations",
-                column: "RequestHeaderId",
-                principalTable: "tblRequestHeaders",
-                principalColumn: "RequestHeaderId");
+                table: "FridgeAllocations",
+                column: "Id",
+                principalTable: "RequestHeaders",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
@@ -34,15 +34,15 @@ namespace Project.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_tblAllocations_tblRequestHeaders_RequestHeaderId",
-                table: "tblAllocations");
+                table: "FridgeAllocations");
 
             migrationBuilder.DropIndex(
                 name: "IX_tblAllocations_RequestHeaderId",
-                table: "tblAllocations");
+                table: "FridgeAllocations");
 
             migrationBuilder.DropColumn(
-                name: "RequestHeaderId",
-                table: "tblAllocations");
+                name: "Id",
+                table: "FridgeAllocations");
         }
     }
 }

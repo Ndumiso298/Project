@@ -6,8 +6,8 @@
     var claimsIdentity = (ClaimsIdentity)User.Identity;
     var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-    var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.ApplicationUserId == userId);
-    var cartCount = _db.tblAllocations.Count(a => a.ApplicationUserId == userId);
+    var hasRequestedItems = _db.RequestHeaders.Any(r => r.Customer.UserId == userId);
+    var cartCount = _db.FridgeAllocations.Count(a => a.Customer.UserId == userId);
 }
 
 

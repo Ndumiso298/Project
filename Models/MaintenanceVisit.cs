@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 namespace Project.Models
 {
     public class MaintenanceVisit
@@ -21,8 +22,10 @@ namespace Project.Models
 
         // Navigation properties
         public virtual Customer Customer { get; set; }
-        public virtual FaultTechnician Technician { get; set; }
+        public virtual Employee Technician { get; set; }
         public virtual Fridge Fridge { get; set; }
+
+        [ValidateNever] 
         public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
     }
 }
