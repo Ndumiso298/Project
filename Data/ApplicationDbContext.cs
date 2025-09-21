@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project.Models;
+using static Project.Models.WishList;
 
 namespace Project.Data
 {
@@ -20,7 +21,9 @@ namespace Project.Data
         public DbSet<Fault> tblFaults { get; set; }
         public DbSet<ProcessFault> tblProcessFaults { get; set; }
         public DbSet<Customer> tblCustomerS { get; set; }
-     
+        public DbSet<Wishlist> Wishlists { get; set; }
+
+
         public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }
@@ -369,15 +372,7 @@ namespace Project.Data
             ) ;
         }
 
-        internal string? GetAllFridges()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal string? GetFridges()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
 

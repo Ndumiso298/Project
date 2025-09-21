@@ -5,6 +5,7 @@ using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
 using System.Security.Claims;
+using static Project.Models.WishList;
 
 namespace Project.Controllers
 {
@@ -76,5 +77,70 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [HttpPost]
+        public IActionResult AddToWishlist(int fridgeId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var exists = _db.Wishlists.Any(w => w.FridgeId == fridgeId && w.CustomerId == userId);
+            if (exists)
+            {
+                TempData["Info"] = "This fridge is already in your wishlist.";
+                return RedirectToAction("Wishlist");
+            }
+
+            var wishlistItem = new Wishlist
+            {
+                FridgeId = fridgeId,
+                CustomerId = userId,
+                AddedOn = DateTime.Now
+            };
+
+            _db.Wishlists.Add(wishlistItem);
+            _db.SaveChanges();
+
+            TempData["Success"] = "Fridge added to your wishlist.";
+            return RedirectToAction("Wishlist");
+        }
+
+        public IActionResult Wishlist()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var wishlist = _db.Wishlists
+                .Where(w => w.CustomerId == userId)
+                .Include(w => w.Fridge)
+                .ToList();
+
+            return View(wishlist);
+        }
+
+        [HttpPost]
+        public IActionResult RentFridge(int fridgeId)
+        {
+            var fridge = _db.tblFridges.FirstOrDefault(f => f.FridgeId == fridgeId);
+
+            if (fridge == null)
+            {
+                return NotFound();
+            }
+
+            // Check availability
+            if (fridge.AvailabilityStatus != "Available")
+            {
+                // If not available, return an error message
+                TempData["Error"] = "This fridge is currently unavailable for rent.";
+                return RedirectToAction("Index");  // or wherever you want to redirect
+            }
+
+            // Update the fridge availability status to "Rented"
+            fridge.AvailabilityStatus = "Rented";
+            _db.SaveChanges();
+
+
+
+            return RedirectToAction("Cart");
+        }
     }
 }
