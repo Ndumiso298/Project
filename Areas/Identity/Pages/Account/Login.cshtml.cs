@@ -127,7 +127,7 @@ namespace Project.Areas.Identity.Pages.Account
                     }
                     else if (await _userManager.IsInRoleAsync(user, "Customer"))
                     {
-                        return RedirectToAction("Dashboard", "Customer");
+                        return RedirectToAction("Index", "Customer");
                     }
                     else if (await _userManager.IsInRoleAsync(user, "CustomerLiaison"))
                     {
@@ -139,7 +139,7 @@ namespace Project.Areas.Identity.Pages.Account
                     }
                     else if(await _userManager.IsInRoleAsync(user, "FaultTech"))
                     {
-                        return RedirectToAction("Dashboard", "FaultTech");
+                        return RedirectToAction("Index", "FaultTech");
                     }
                     else
                     {

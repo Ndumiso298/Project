@@ -12,8 +12,8 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250919023740_AddTableForVisitstoDb")]
-    partial class AddTableForVisitstoDb
+    [Migration("20250920201748_updatestables")]
+    partial class updatestables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -250,11 +250,16 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RequestHeaderId")
+                        .HasColumnType("int");
+
                     b.HasKey("AllocationId");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("FridgeId");
+
+                    b.HasIndex("RequestHeaderId");
 
                     b.ToTable("tblAllocations");
                 });
@@ -1167,6 +1172,10 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Project.Models.RequestHeader", null)
+                        .WithMany("Allocations")
+                        .HasForeignKey("RequestHeaderId");
+
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Fridge");
@@ -1367,6 +1376,8 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>
                 {
+                    b.Navigation("Allocations");
+
                     b.Navigation("RequestFridges");
                 });
 #pragma warning restore 612, 618
