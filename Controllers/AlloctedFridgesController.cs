@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 
-
 namespace Project.Controllers
 {
     public class AllocatedFridgesController : Controller
@@ -55,7 +54,7 @@ namespace Project.Controllers
             if (allocation == null)
                 return NotFound();
 
-            var visit = new FridgeVisit { AllocationId = allocationId };
+            var visit = new MaintenanceVisit { AllocationId = allocationId };
             ViewBag.FridgeInfo = allocation.Fridge.Manufacturer + " - " + allocation.Fridge.SerialNumber;
 
             return View(visit);
@@ -63,11 +62,11 @@ namespace Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult BookVisit(FridgeVisit visit)
+        public IActionResult BookVisit(MaintenanceVisit visit)
         {
             if (ModelState.IsValid)
             {
-                _db.FridgeVisits.Add(visit);
+                _db.MaintenanceVisits.Add(visit);
                  _db.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }

@@ -20,11 +20,11 @@
                 <div class="card-body">
                     <p class="mb-2"><strong>Name:</strong> @Model.ReportedBy?.FirstName</p>
                     <p class="mb-2"><strong>Name:</strong> @Model.ReportedBy?.LastName</p>
-                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.AddressLine1</p>
-                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.AddressLine2</p>
-                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.City</p>
-                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.Province</p>
-                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PostalCode</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PrimaryLocation.AddressLine1</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PrimaryLocation.AddressLine2</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PrimaryLocation.City</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PrimaryLocation.Province</p>
+                    <p class="mb-2"><strong>Address:</strong> @Model.ReportedBy?.PrimaryLocation.PostalCode</p>
                 </div>
             </div>
         </div>

@@ -5,7 +5,6 @@ using Project.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-
 public class FaultTechnicianController : Controller
 {
     private readonly ApplicationDbContext _db;

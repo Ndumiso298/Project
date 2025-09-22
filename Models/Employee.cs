@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Data.SqlClient;
+using Project.Utilities.Enums;
 
 namespace Project.Models
 {
@@ -24,11 +25,10 @@ namespace Project.Models
         public string EmployeeNumber { get; set; } = string.Empty;
 
         [Display(Name = "Availability Status")]
-        public string? AvailabilityStatus { get; set; }
+        public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Available;
 
         [Required]
-        [MaxLength(21)]
-        public string EmployeeType { get; set; }
+        public EmployeeType EmployeeType { get; set; }
         // Metadata
         [Display(Name = "Created At")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]

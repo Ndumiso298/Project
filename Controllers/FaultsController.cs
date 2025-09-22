@@ -8,13 +8,12 @@ using Project.Utilities.Enums;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace Project.Controllers
 {
-    public class FaultController : Controller
+    public class FaultsController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public FaultController(ApplicationDbContext db)
+        public FaultsController(ApplicationDbContext db)
         {
             _db = db;
         }

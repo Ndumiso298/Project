@@ -23,7 +23,6 @@ namespace Project.Models
         [ValidateNever]
         public virtual Employee? AssignedEmployee { get; set; } = null!;
 
-
         [Required(ErrorMessage = "Trading Name is required.")]
         [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
         [Display(Name = "Trading Name")]
@@ -44,32 +43,33 @@ namespace Project.Models
         [Display(Name = "Business Phone")]
         public string BusinessPhoneNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Trading Name is required.")]
-        [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
-        [Display(Name = "Trading Name")]
+        [Required(ErrorMessage = "Address Line 1 is required.")]
+        [StringLength(200, ErrorMessage = "Address Line 1 cannot exceed 200 characters.")]
+        [Display(Name = "Address Line 1")]
         public string AddressLine1 { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Trading Name is required.")]
-        [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
-        [Display(Name = "Trading Name")]
-        public string AddressLine2 { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Trading Name is required.")]
-        [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
-        [Display(Name = "Trading Name")]
+
+        [StringLength(200, ErrorMessage = "Address Line 2 cannot exceed 200 characters.")]
+        [Display(Name = "Address Line 2")]
+        public string? AddressLine2 { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "City is required.")]
+        [StringLength(200, ErrorMessage = "City cannot exceed 200 characters.")]
+        [Display(Name = "City")]
         public string City { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Trading Name is required.")]
-        [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
-        [Display(Name = "Trading Name")]
+        [Required(ErrorMessage = "Province is required.")]
+        [StringLength(200, ErrorMessage = "Province cannot exceed 200 characters.")]
+        [Display(Name = "Province")]
         public string Province { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Trading Name is required.")]
-        [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
-        [Display(Name = "Postal Name")]
+        [Required(ErrorMessage = "Postal Code is required.")]
+        [StringLength(10, ErrorMessage = "Postal Code cannot exceed 10 characters.")]
+        [Display(Name = "Postal Code")]
         public string PostalCode { get; set; } = string.Empty;
 
         // Navigation properties
         [ValidateNever]
-        public virtual ICollection<Fridge> Fridges { get; set; }
+        public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
 
         [ValidateNever]
         [Display(Name = "FridgeAllocation History")]

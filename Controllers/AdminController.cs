@@ -11,7 +11,19 @@ namespace Project.Controllers
         {
             return View();
         }
-        public IActionResult Dashboard()
+        public IActionResult Customers()
+        {
+            return View();
+        }
+        public IActionResult Employees()
+        {
+            return View();
+        }
+        public IActionResult Locations()
+        {
+            return View();
+        }
+        public IActionResult Suppliers()
         {
             return View();
         }

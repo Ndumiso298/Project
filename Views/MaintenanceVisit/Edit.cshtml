@@ -1,10 +1,11 @@
-﻿@model Project.Models.MaintenanceVisit
+﻿@using Project.Utilities.Enums
+@model Project.Models.MaintenanceVisit
 @{
     ViewBag.Title = "Edit Maintenance Visit";
 
     var daysUntilDue = (Model.ScheduledDate - DateTime.Now).Days;
-    var showDueNotification = Model.Status == "In Progress" && daysUntilDue >= 0;
-    var showOverdueAlert = Model.Status == "In Progress" && Model.ScheduledDate < DateTime.Now;
+    var showDueNotification = Model.Status == ServicingStatus.InProgress && daysUntilDue >= 0;
+    var showOverdueAlert = Model.Status == ServicingStatus.InProgress && Model.ScheduledDate < DateTime.Now;
 }
 
 <div class="container mt-5">
@@ -16,7 +17,7 @@
             
                 <form asp-action="Edit" method="post">
                   @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="MaintenanceVisitId" />
+                <input type="hidden" asp-for="Id" />
 
                 <!-- Scheduled Date -->
                 <div class="mb-4">
@@ -30,9 +31,9 @@
                 <div class="mb-4">
                     <label asp-for="Status" class="form-label fw-semibold">Visit Status</label>
                     <select asp-for="Status" class="form-select">
-                        <option value="Pending" selected="@(Model.Status == "Pending" ? "selected" : null)">Pending</option>
-                        <option value="Scheduled" selected="@(Model.Status == "Scheduled" ? "selected" : null)">Scheduled</option>
-                        <option value="In Progress" selected="@(Model.Status == "In Progress" ? "selected" : null)">In Progress</option>
+                        <option value="Pending" selected="@(Model.Status == ServicingStatus.OnHold ? "selected" : null)">Pending</option>
+                        <option value="Scheduled" selected="@(Model.Status == ServicingStatus.Scheduled ? "selected" : null)">Scheduled</option>
+                        <option value="In Progress" selected="@(Model.Status == ServicingStatus.InProgress ? "selected" : null)">In Progress</option>
                     </select>
                     <span asp-validation-for="Status" class="text-danger"></span>
                 </div>

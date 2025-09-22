@@ -6,8 +6,6 @@ namespace Project.Utilities.Enums
     {
         [Display(Name = "Draft")]
         Draft,
-        [Display(Name = "Submitted")]
-        Submitted,
         [Display(Name = "Under Review")]
         UnderReview,
         [Display(Name = "Approved")]

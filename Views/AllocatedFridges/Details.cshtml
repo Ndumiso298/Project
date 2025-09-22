@@ -40,10 +40,10 @@
                                     <h6 class="fw-semibold mb-1">@item.Fridge.SerialNumber</h6>
                                     <h6 class="fw-semibold mb-1">@item.Fridge.Type</h6>
 
-                                    <small class="text-muted">Quantity: @item.Count</small><br />
+                                    <small class="teQuantityted">Quantity: @item.Quantity</small><br />
                                     <small class="text-muted">Price per month: @item.Price.ToString("c")</small>
                                 </div>
-                                <span class="fw-bold text-primary">@((item.Count * item.Price).ToString("c"))</span>
+                                <span class="fw-bQuantityext-primary">@((item.Quantity * item.Price).ToString("c"))</span>
                             </li>
                         }
                         <li class="list-group-item d-flex justify-content-between bg-light">

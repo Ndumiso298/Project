@@ -10,8 +10,9 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        [StringLength(10, ErrorMessage = "Location code cannot exceed 10 characters.")]
-        [Display(Name = "Location Code")]
+        [StringLength(10, ErrorMessage = "TradingLocation code cannot exceed 10 characters.")]
+        [Display(Name = "TradingLocation Code")]
+        [RegularExpression(@"^[A-Z0-9]{2,10}$", ErrorMessage = "TradingLocation code must be 2-10 alphanumeric characters in uppercase.")]
         public string? LocationCode { get; set; } // Short code for internal reference
 
         // Address information
@@ -45,9 +46,9 @@ namespace Project.Models
         [StringLength(50, ErrorMessage = "Country cannot exceed 50 characters.")]
         public string Country { get; set; } = "South Africa"; // Default value
 
-        // Location characteristics
-        [Required(ErrorMessage = "Location type is required.")]
-        [Display(Name = "Location Type")]
+        // TradingLocation characteristics
+        [Required(ErrorMessage = "TradingLocation type is required.")]
+        [Display(Name = "TradingLocation Type")]
         public LocationType Type { get; set; }
 
         // Type-specific properties
@@ -61,27 +62,33 @@ namespace Project.Models
 
         // Contact information
         [Phone(ErrorMessage = "Invalid phone number format")]
-        [Display(Name = "Location Phone")]
+        [Display(Name = "TradingLocation Phone")]
+        [RegularExpression(@"^(\+27|0)[0-9]{9}$", ErrorMessage = "Please enter a valid South African phone number.")]
         public string? PhoneNumber { get; set; }
 
         [EmailAddress(ErrorMessage = "Invalid email format")]
-        [Display(Name = "Location Email")]
+        [Display(Name = "TradingLocation Email")]
+        [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
         public string? Email { get; set; }
 
         // Manager/contact person at this location
-        [Display(Name = "Location Manager")]
+        [Display(Name = "TradingLocation Manager")]
+        [StringLength(100, ErrorMessage = "Manager name cannot exceed 100 characters.")]
         public string? ManagerName { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number format")]
         [Display(Name = "Manager Phone")]
+        [RegularExpression(@"^(\+27|0)[0-9]{9}$", ErrorMessage = "Please enter a valid South African phone number.")]
         public string? ManagerPhone { get; set; }
 
         [EmailAddress(ErrorMessage = "Invalid email format")]
         [Display(Name = "Manager Email")]
+        [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
         public string? ManagerEmail { get; set; }
 
         // Operational details
         [Display(Name = "Operating Hours")]
+        [StringLength(100, ErrorMessage = "Operating hours cannot exceed 100 characters.")]
         public string? OperatingHours { get; set; }
 
         [Display(Name = "Service Area Radius (km)")]
@@ -109,25 +116,31 @@ namespace Project.Models
 
         // Metadata
         [Display(Name = "Created At")]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Updated At")]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
         [ValidateNever]
+        [Display(Name = "Employees")]
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 
         [ValidateNever]
+        [Display(Name = "Customers")]
         public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
         [ValidateNever]
+        [Display(Name = "Fridges")]
         public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
 
         // Computed properties
         [NotMapped]
+        [Display(Name = "Full Address")]
         public string FullAddress
         {
             get

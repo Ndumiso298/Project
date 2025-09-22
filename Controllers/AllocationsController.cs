@@ -11,13 +11,13 @@ using System.Security.Claims;
 namespace Project.Controllers
 {
     [Authorize]
-    public class AllocationController : Controller
+    public class AllocationsController : Controller
     {
         private readonly ApplicationDbContext _db;
         [BindProperty]
         public AllocationVM AllocationVM { get; set; }
       
-        public AllocationController(ApplicationDbContext db)
+        public AllocationsController(ApplicationDbContext db)
         {
             _db = db;
         }
@@ -35,7 +35,7 @@ namespace Project.Controllers
             };
             foreach (var allocation in AllocationVM.AllocationList)
             {
-               allocation.Price=GetPriceBasedOnQuantity(allocation);
+               allocation.StoredPrice = GetPriceBasedOnQuantity(allocation);
                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Quantity);
             }
             return View(AllocationVM);          
@@ -73,7 +73,7 @@ namespace Project.Controllers
             AllocationVM.RequestHeader.FirstName = customer.UserAccount?.FirstName ?? "";
             AllocationVM.RequestHeader.LastName = customer.UserAccount?.LastName ?? "";
 
-            // Use Customer's address properties (not UserAccount's)
+            // Use Customer'CustomersController address properties (not UserAccount'CustomersController)
             AllocationVM.RequestHeader.AddressLine1 = customer.AddressLine1;
             AllocationVM.RequestHeader.AddressLine2 = customer.AddressLine2;
             AllocationVM.RequestHeader.City = customer.City;
@@ -81,12 +81,12 @@ namespace Project.Controllers
             AllocationVM.RequestHeader.PostalCode = customer.PostalCode;
 
             // Use BusinessPhoneNumber from Customer
-            AllocationVM.RequestHeader.CellNumber = customer.BusinessPhoneNumber;
+            AllocationVM.RequestHeader.PhoneNumber = customer.BusinessPhoneNumber;
 
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
-                allocation.Price = GetPriceBasedOnQuantity(allocation);
+                allocation.StoredPrice = GetPriceBasedOnQuantity(allocation);
                 AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Quantity);
             }
             return View(AllocationVM);
@@ -114,7 +114,7 @@ namespace Project.Controllers
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
-                allocation.Price = GetPriceBasedOnQuantity(allocation);
+                allocation.StoredPrice = GetPriceBasedOnQuantity(allocation);
                 AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Quantity);
             }
 
@@ -129,7 +129,7 @@ namespace Project.Controllers
                     FridgeId = allocation.FridgeId,
                     RequestHeaderId = AllocationVM.RequestHeader.Id,
                     Price = allocation.Price,
-                    Count = allocation.Quantity,
+                    Quantity = allocation.Quantity,
                 };
                 _db.RequestDetails.Add(requestDetail);
                 _db.SaveChanges();
@@ -153,6 +153,10 @@ namespace Project.Controllers
         public IActionResult Plus(int id)
         {
             var allocationFromDb = _db.FridgeAllocations.FirstOrDefault(u => u.Id == id);
+            if (allocationFromDb == null)
+            {
+                return NotFound();
+            }
             allocationFromDb.Quantity += 1;
             _db.FridgeAllocations.Update(allocationFromDb);
             _db.SaveChanges();

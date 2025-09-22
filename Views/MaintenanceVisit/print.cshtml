@@ -1,4 +1,5 @@
-﻿@model Project.Models.MaintenanceVisit
+﻿@using Project.Utilities.Enums
+@model Project.Models.MaintenanceVisit
 @{
     Layout = null; // Optional: remove layout for clean print
     var daysUntilDue = (Model.ScheduledDate - DateTime.Now).Days;
@@ -21,14 +22,14 @@
         </div>
 
         <div class="mb-3">
-            <strong>Visit ID:</strong> @Model.MaintenanceVisitId<br />
+            <strong>Visit ID:</strong> @Model.Id<br />
             <strong>Scheduled Date:</strong> @Model.ScheduledDate.ToString("yyyy-MM-dd HH:mm")<br />
             <strong>Status:</strong> @Model.Status
             @if (isOverdue)
             {
                 <span class="badge bg-danger ms-2">Overdue</span>
             }
-            else if (Model.Status == "In Progress" && daysUntilDue <= 2)
+            else if (Model.Status == ServicingStatus.InProgress && daysUntilDue <= 2)
             {
                 <span class="badge bg-warning text-dark ms-2">Due in @daysUntilDue days</span>
             }

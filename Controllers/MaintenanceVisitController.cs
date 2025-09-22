@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using Project.Utilities.Enums;
 using System.Collections.Generic;
 using System.Linq;
-
-
-
 
 public class MaintenanceVisitController : Controller
 {
@@ -43,7 +41,7 @@ public class MaintenanceVisitController : Controller
 
         if (!string.IsNullOrEmpty(status))
         {
-            visits = visits.Where(v => v.Status == status);
+            visits = visits.Where(v => v.Status == ServicingStatus.Scheduled);
         }
 
         if (fromDate.HasValue)
@@ -72,7 +70,7 @@ public class MaintenanceVisitController : Controller
             .Include(v => v.Fridge)
             .Include(v => v.Customer)
             .Include(v => v.Technician)
-            .FirstOrDefault(v => v.MaintenanceVisitId == maintenanceVisitId);
+            .FirstOrDefault(v => v.Id == maintenanceVisitId);
 
         if (visit == null)
         {
@@ -119,7 +117,7 @@ public class MaintenanceVisitController : Controller
     // GET: MaintenanceVisit/Details/5
     public IActionResult Details(int id)
     {
-        var visit = _db.MaintenanceVisits.FirstOrDefault(v => v.MaintenanceVisitId == id);
+        var visit = _db.MaintenanceVisits.FirstOrDefault(v => v.Id == id);
         if (visit == null)
         {
             return NotFound();
@@ -133,7 +131,7 @@ public class MaintenanceVisitController : Controller
         var visit = _db.MaintenanceVisits
             .Include(v => v.Fridge)
             .Include(v => v.Technician)
-            .FirstOrDefault(v => v.MaintenanceVisitId == id);
+            .FirstOrDefault(v => v.Id == id);
 
         if (visit == null)
         {
@@ -161,7 +159,7 @@ public class MaintenanceVisitController : Controller
         }
 
         var existingVisit = _db.MaintenanceVisits
-            .FirstOrDefault(v => v.MaintenanceVisitId == visit.MaintenanceVisitId);
+            .FirstOrDefault(v => v.Id == visit.Id);
 
         if (existingVisit == null)
         {
@@ -185,7 +183,7 @@ public class MaintenanceVisitController : Controller
     {
         var visit = _db.MaintenanceVisits
             .Include(v => v.Customer)
-            .FirstOrDefault(v => v.MaintenanceVisitId == id);
+            .FirstOrDefault(v => v.Id == id);
 
         if (visit == null)
         {
@@ -202,7 +200,7 @@ public class MaintenanceVisitController : Controller
     public IActionResult DeleteConfirmed(int id)
     {
         var visit = _db.MaintenanceVisits
-            .FirstOrDefault(v => v.MaintenanceVisitId == id);
+            .FirstOrDefault(v => v.Id == id);
 
         if (visit == null)
         {
@@ -220,7 +218,7 @@ public class MaintenanceVisitController : Controller
         var visit = _db.MaintenanceVisits
             .Include(v => v.Technician)
             .Include(v => v.Fridge)
-            .FirstOrDefault(v => v.MaintenanceVisitId == id);
+            .FirstOrDefault(v => v.Id == id);
 
         if (visit == null) return NotFound();
 

@@ -54,6 +54,8 @@ namespace Project.Models
         [ValidateNever]
         public virtual ApplicationUser? ReportedBy { get; set; }
 
+        [ForeignKey(nameof(MaintenanceVisitId))]
+        [ValidateNever]
         public virtual MaintenanceVisit MaintenanceVisit { get; set; }
 
         [Required]

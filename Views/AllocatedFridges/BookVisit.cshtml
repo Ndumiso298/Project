@@ -1,4 +1,4 @@
-﻿@model Project.Models.FridgeVisit
+﻿@model Project.Models.MaintenanceVisit
 @{
     Layout = "_CustomerLayout";
 }
@@ -8,13 +8,14 @@
 
         <!-- Header -->
         <div class="card-header bg-primary text-light py-4 text-center">
-            <h2 class="text-white fw-bold mb-1">Book Monthly Visit</h2>
-            <p class="text-light mb-0 opacity-75">Schedule a maintenance check for the allocated fridge</p>
+            <h2 class="text-white fw-bold mb-1">Book Maintenance Visit</h2>
+            <p class="text-light mb-0 opacity-75">Schedule a maintenance check for your allocated fridge</p>
         </div>
 
         <!-- Body -->
         <div class="card-body p-4 p-md-5">
             <form asp-action="BookVisit" method="post">
+                @* AllocationId comes from the fridge allocation *@
                 <input asp-for="AllocationId" type="hidden" />
 
                 <div class="mb-4">
@@ -23,15 +24,15 @@
                 </div>
 
                 <div class="mb-4">
-                    <label asp-for="VisitDate" class="form-label fw-semibold text-dark">Select Visit Date</label>
-                    <input asp-for="VisitDate" type="date" class="form-control" />
-                    <span asp-validation-for="VisitDate" class="text-danger"></span>
+                    <label asp-for="ScheduledDate" class="form-label fw-semibold text-dark">Select Visit Date</label>
+                    <input asp-for="ScheduledDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="ScheduledDate" class="text-danger"></span>
                 </div>
 
                 <div class="mb-4">
-                    <label asp-for="Notes" class="form-label fw-semibold text-dark">Notes</label>
-                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Notes" class="text-danger"></span>
+                    <label asp-for="CustomerNote" class="form-label fw-semibold text-dark">Notes (optional)</label>
+                    <textarea asp-for="CustomerNote" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="CustomerNote" class="text-danger"></span>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">

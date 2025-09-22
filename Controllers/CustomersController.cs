@@ -3,14 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModels;
+using Project.Utilities;
 using System.Security.Claims;
 
 namespace Project.Controllers
 {
-    public class CustomerController : Controller
+    [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
+    public class CustomersController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public CustomerController(ApplicationDbContext db)
+        public CustomersController(ApplicationDbContext db)
         {
             _db = db;
         }
@@ -51,7 +53,7 @@ namespace Project.Controllers
             {
                 _db.FridgeAllocations.Add(allocation);
             }
-            TempData["success"] = "cart updated successfully";
+            TempData["success"] = "Cart updated successfully";
             _db.SaveChanges();
 
             return RedirectToAction(nameof(Index));

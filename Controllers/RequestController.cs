@@ -25,7 +25,7 @@ namespace Project.Controllers
             IEnumerable<RequestHeader> objRequestHeaders;
 
 
-            if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
+            if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole))
             {
                 objRequestHeaders = _db.RequestHeaders.Include(a=>a.Customer).ToList();
             }
@@ -82,7 +82,7 @@ namespace Project.Controllers
             // Update properties safely
             RequestHeaderFromDb.FirstName = RequestVM.RequstHeader.FirstName;
             RequestHeaderFromDb.LastName = RequestVM.RequstHeader.LastName;
-            RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
+            RequestHeaderFromDb.PhoneNumber = RequestVM.RequstHeader.PhoneNumber;
             RequestHeaderFromDb.AddressLine1 = RequestVM.RequstHeader.AddressLine1;
             RequestHeaderFromDb.AddressLine2 = RequestVM.RequstHeader.AddressLine2;
             RequestHeaderFromDb.City = RequestVM.RequstHeader.City;

@@ -44,7 +44,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord/Details/5
     public IActionResult Details(int id)
     {
-        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.Id == id);
         if (record == null)
         {
             return NotFound();
@@ -55,7 +55,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord/Edit/5
     public IActionResult Edit(int id)
     {
-        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.Id == id);
         if (record == null)
         {
             return NotFound();
@@ -80,7 +80,7 @@ public class MaintenanceRecordController : Controller
     // GET: MaintenanceRecord/Delete/5
     public IActionResult Delete(int id)
     {
-        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.Id == id);
         if (record == null)
         {
             return NotFound();
@@ -93,7 +93,7 @@ public class MaintenanceRecordController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)
     {
-        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.MaintenanceRecordId == id);
+        var record = _db.MaintenanceRecords.FirstOrDefault(r => r.Id == id);
         if (record == null)
         {
             return NotFound();
