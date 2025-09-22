@@ -10,7 +10,6 @@
     var cartCount = _db.tblAllocations.Count(a => a.ApplicationUserId == userId);
 }
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +19,268 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        color: #343a40;
+        line-height: 1.6;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+        flex: 1; /* pushes footer down */
+    }
+
+    .demo-content {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    h1 {
+        color: #008cba;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2.5rem;
+    }
+
+    p {
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
+    .highlight {
+        color: #008cba;
+        font-weight: 600;
+    }
+
+    /* Enhanced Footer Styles */
+    .enhanced-footer {
+        background-color: #008cba;
+        color: white;
+        padding: 60px 0 30px;
+        margin-top: auto; /* keeps footer at bottom */
+        border-top: 5px solid #ff7e30;
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+        color: white;
+        font-size: 1.3rem;
+        margin-bottom: 25px;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .footer-column h3:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background-color: #ff7e30;
+    }
+
+    .footer-column p {
+        margin-bottom: 20px;
+        color: #e8f4fd;
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 15px;
+    }
+
+    .footer-links a {
+        color: #e8f4fd;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .footer-links a:hover {
+        color: #ff7e30;
+        transform: translateX(5px);
+    }
+
+    .footer-links i {
+        margin-right: 10px;
+        color: #ff7e30;
+    }
+
+    .contact-info {
+        list-style: none;
+    }
+
+    .contact-info li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .contact-info i {
+        margin-right: 15px;
+        color: #ff7e30;
+        margin-top: 5px;
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-icons a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-icons a:hover {
+        background-color: #ff7e30;
+        transform: translateY(-3px);
+    }
+
+    .newsletter-form {
+        display: flex;
+        margin-top: 15px;
+    }
+
+    .newsletter-form input {
+        flex: 1;
+        padding: 12px 15px;
+        border: none;
+        border-radius: 4px 0 0 4px;
+        outline: none;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .newsletter-form button {
+        background-color: #ff7e30;
+        color: white;
+        border: none;
+        padding: 0 20px;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .newsletter-form button:hover {
+        background-color: #e5722a;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 25px;
+        text-align: center;
+        color: #e8f4fd;
+        font-size: 0.9rem;
+    }
+
+    .footer-bottom a {
+        color: #ff7e30;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .footer-bottom a:hover {
+        text-decoration: underline;
+    }
+
+    .payment-methods {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .payment-methods i {
+        font-size: 1.8rem;
+        color: #e8f4fd;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+    }
+
+    .payment-methods i:hover {
+        opacity: 1;
+    }
+
+    /* Responsive Design */
+    media (max-width: 992px) {
+        .footer-content {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    media (max-width: 576px) {
+        .footer-content {
+            grid-template-columns: 1fr;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+
+        .newsletter-form input {
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .newsletter-form button {
+            border-radius: 4px;
+            padding: 12px;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
 </head>
 <body>
     <header>
@@ -43,8 +303,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Index">Fridge</a>
                             </li>
-                            <li class="nav-item">
+                          @*   <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Total Fridge Request</a>
+                            </li> *@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">
+                                    Register User
+                                </a>
                             </li>
                         }
                         else if(User.IsInRole(SD.CustomerRole))
@@ -67,15 +332,44 @@
                                 </a>
                             </li>
                         }
-                        else if (User.IsInRole(SD.MaintenanceTechnician))
+                        else if (User.IsInRole(SD.CustomerSupport))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Dashboard</a>
                             </li>
-                              <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Dashboard</a>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Request</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
                             </li>
                         }
+                        else if (User.IsInRole(SD.StockController))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CustomerSupport" asp-action="Dashboard">Home</a>
+                            </li>
+                           
+                        }
+                        else if(User.IsInRole(SD.FaultTechnician))
+                        {
+                           
+
+                        }
+                        else if (User.IsInRole(SD.MaintenanceTechnician))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="FaultTech" asp-action="Dashboard">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Index">Schedule Booking</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Calendar Schedules</a>
+                            </li>
+                          
+                        }
+
                     </ul>
                   
                     <partial name="_LoginPartial" />
@@ -89,9 +383,64 @@
         </main>
     </div>
 
-    <footer class="border-top bg-primary footer text-muted">
+
+  
+
+
+
+    <!-- Enhanced Footer -->
+    <footer class="enhanced-footer">
         <div class="container">
-            &copy; 2025 - Project - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About Us</h3>
+                    <p>Smart & Chill Solutions provides innovative rental management software to simplify property management, tenant relationships, and payment processing.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Features</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Pricing</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Testimonials</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Rental Street, Property City, PC 10001</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@smartchillsolutions.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 9AM-5PM</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter to get updates on our latest features and special offers.</p>
+                  
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="payment-methods">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-amex"></i>
+                    <i class="fab fa-cc-paypal"></i>
+                    <i class="fab fa-cc-apple-pay"></i>
+                </div>
+                <p>&copy; 2025 Smart & Chill Solutions - Rental Management System | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

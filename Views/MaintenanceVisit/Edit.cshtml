@@ -1,6 +1,9 @@
 ﻿@model Project.Models.MaintenanceVisit
 @{
     ViewBag.Title = "Edit Maintenance Visit";
+    
+
+    Layout = "_CustomerLayout";
 
     var daysUntilDue = (Model.ScheduledDate - DateTime.Now).Days;
     var showDueNotification = Model.Status == "In Progress" && daysUntilDue >= 0;

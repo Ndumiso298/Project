@@ -2,7 +2,12 @@
 
 @{
     ViewBag.Title = "Maintenance Visits";
+    
+
+    Layout = "_CustomerLayout";
+
     var visits = Model.ToList();
+
 
     var totalMaintenanceVisits = visits.Count();
     var completedVisits = visits.Count(v => v.Status == "Completed");

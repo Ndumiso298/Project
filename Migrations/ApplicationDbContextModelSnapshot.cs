@@ -821,26 +821,34 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.FridgeVisit", b =>
                 {
-                    b.Property<int>("FridgeVisitId")
+                    b.Property<int>("VisitId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FridgeVisitId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VisitId"));
 
-                    b.Property<int>("AllocationId")
+                    b.Property<int?>("AllocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RequestHeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TechnicianName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("VisitDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("FridgeVisitId");
+                    b.HasKey("VisitId");
 
                     b.HasIndex("AllocationId");
+
+                    b.HasIndex("RequestHeaderId");
 
                     b.ToTable("tblFridgeVisits");
                 });
@@ -1243,13 +1251,17 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.FridgeVisit", b =>
                 {
-                    b.HasOne("Project.Models.Allocation", "Allocation")
+                    b.HasOne("Project.Models.Allocation", null)
                         .WithMany("FridgeVisits")
-                        .HasForeignKey("AllocationId")
+                        .HasForeignKey("AllocationId");
+
+                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
+                        .WithMany()
+                        .HasForeignKey("RequestHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Allocation");
+                    b.Navigation("RequestHeader");
                 });
 
             modelBuilder.Entity("Project.Models.MaintenanceRecord", b =>

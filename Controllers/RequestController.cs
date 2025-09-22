@@ -108,19 +108,9 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Details), new { id = RequestHeaderFromDb.RequestHeaderId });
         }
 
-        [HttpPost]
         
-        public IActionResult StartProcessing()
-        {
-            var requestHeader = _db.tblRequestHeaders
-            .FirstOrDefault(r => r.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
-
-           
-
-            TempData["Success"] = "Request Details Updated Successfully.";
-            return RedirectToAction(nameof(Details), new { orderId = RequestVM.RequstHeader.RequestHeaderId });
-
-        }
+        
+      
 
         [HttpPost]
         public IActionResult ShipOrder()
@@ -130,10 +120,10 @@ namespace Project.Controllers
             //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
             RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
             RequestHeader.ShippingDate = DateTime.Now;
-            if (RequestHeader.Status == SD.PaymentStatusDelayedPayment)
-            {
-                RequestHeader.PaymentDueDate = DateTime.Now.AddDays(30);
-            }
+            //if (RequestHeader.Status == SD.PaymentStatusDelayedPayment)
+            //{
+            //    RequestHeader.PaymentDueDate = DateTime.Now.AddDays(30);
+            //}
 
             _db.tblRequestHeaders.Update(RequestHeader);
             _db.SaveChanges();

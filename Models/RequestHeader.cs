@@ -43,5 +43,8 @@ namespace Project.Models
         public DateTime? PaymentDueDate { get; set; }
         public ICollection<Allocation> Allocations { get; set; }
         public ICollection<RequestDetails> RequestFridges { get; set; }
+        public ICollection<FridgeVisit> FridgeVisits { get; set; } = new List<FridgeVisit>();
+
+
     }
 }

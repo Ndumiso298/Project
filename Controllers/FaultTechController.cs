@@ -2,13 +2,13 @@
 
 namespace Project.Controllers
 {
-    public class CustomerLiaisonController : Controller
+    public class FaultTechController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Dashboard()
         {
             return View();
         }
-        public IActionResult Dashboard()
+        public IActionResult Index()
         {
             return View();
         }

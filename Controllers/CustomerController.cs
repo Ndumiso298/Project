@@ -14,7 +14,8 @@ namespace Project.Controllers
         {
             _db = db;
         }
-      
+       
+
         public IActionResult Index()
         {
             IEnumerable<Fridge> fridgesList=_db.tblFridges.ToList();

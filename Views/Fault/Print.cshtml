@@ -1,13 +1,11 @@
 ﻿@model Project.Models.Fault
+
 @{
-    Layout = null; // Optional: removes site layout for clean printing
+
+    Layout = "_CustomerLayout";
+
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Print Fault Details</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,8 +34,7 @@
 
         }
     </style>
-</head>
-<body>
+
     <h2>Fault Report Summary</h2>
 
     <div class="section">
@@ -70,5 +67,4 @@
         <button onclick="window.print()">🖨️ Print</button>
         <a href="@Url.Action("Index", "Fault")">🔙 Back to List</a>
     </div>
-</body>
-</html>
+

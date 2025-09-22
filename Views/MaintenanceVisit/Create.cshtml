@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Fault Details";
+    Layout = "_CustomerLayout";
     string statusClass = Model.Status switch
     {
         "Resolved" => "success",

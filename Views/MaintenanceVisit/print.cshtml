@@ -1,6 +1,6 @@
 ﻿@model Project.Models.MaintenanceVisit
 @{
-    Layout = null; // Optional: remove layout for clean print
+    Layout = "_CustomerLayout";
     var daysUntilDue = (Model.ScheduledDate - DateTime.Now).Days;
     var isOverdue = Model.ScheduledDate < DateTime.Now;
 }

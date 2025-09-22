@@ -127,23 +127,23 @@ namespace Project.Areas.Identity.Pages.Account
                     }
                     else if (await _userManager.IsInRoleAsync(user, "Customer"))
                     {
-                        return RedirectToAction("Dashboard", "Customer");
+                        return RedirectToAction("Index", "Customer");
                     }
-                    else if (await _userManager.IsInRoleAsync(user, "CustomerLiaison"))
+                    else if (await _userManager.IsInRoleAsync(user, "CustomerSupport"))
                     {
-                        return RedirectToAction("Dashboard", "CustomerLiaison");
+                        return RedirectToAction("Dashboard", "CustomerSupport");
                     }
-                    else if(await _userManager.IsInRoleAsync(user, "InventoryLiaison"))
+                    else if(await _userManager.IsInRoleAsync(user, "StockController"))
                     {
-                        return RedirectToAction("Dashboard", "InventoryLiaison");
+                        return RedirectToAction("Dashboard", "StockController");
                     }
                     else if(await _userManager.IsInRoleAsync(user, "FaultTech"))
                     {
                         return RedirectToAction("Dashboard", "FaultTech");
                     }
-                    else
+                    else if (await _userManager.IsInRoleAsync(user, "MaintenanceTech"))
                     {
-                        return RedirectToAction("Dashboard", "MaintenanceVisit");
+                        return RedirectToAction("Dashboard", "MaintenanceTech");
                     }
                     return LocalRedirect(returnUrl);
                 }
