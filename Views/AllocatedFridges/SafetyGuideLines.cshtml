@@ -1,0 +1,532 @@
+﻿@{
+    Layout = "_CustomerLayout";
+}
+
+   
+ <style>
+        :root {
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --accent: #0b74de; 
+            --accent-dark: #0958a9;
+            --muted: #64748b; 
+            --muted-light: #94a3b8;
+            --danger: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius: 8px; 
+            --maxw: 900px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: var(--bg); 
+            color: #0f172a; 
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: var(--maxw); 
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .lead {
+            font-size: 1.125rem;
+            color: var(--muted);
+            max-width: 700px;
+            margin: 0.5rem auto 0;
+        }
+        
+        .card {
+            background: var(--card); 
+            border-radius: var(--radius); 
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .toc-container {
+            background: #f1f5f9;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .toc-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+        
+        nav.toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        nav.toc button {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            color: #475569;
+            font-weight: 500;
+        }
+        
+        nav.toc button:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        section.block {
+            margin-top: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        section.block:last-of-type {
+            border-bottom: none;
+        }
+        
+        section.block h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 1rem;
+            color: #1e293b;
+        }
+        
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: #e0f2fe;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+        
+        ul.safe-list {
+            padding-left: 1.5rem;
+            margin: 0 0 1.25rem;
+        }
+        
+        ul.safe-list li {
+            margin: 0.75rem 0;
+            line-height: 1.6;
+            color: #475569;
+        }
+        
+        ul.safe-list strong {
+            color: #1e293b;
+        }
+        
+        .note {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            border-radius: 6px;
+            color: #92400e;
+            font-size: 0.95rem;
+        }
+        
+        .note strong {
+            color: #92400e;
+        }
+        
+        .important {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            padding: 1rem;
+            border-radius: 6px;
+            color: #991b1b;
+            font-size: 0.95rem;
+        }
+        
+        .important strong {
+            color: #991b1b;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn.primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn.secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .btn.secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        footer {
+            margin-top: 2rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Print styles */
+        media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 1rem;
+                box-shadow: none;
+            }
+            
+            .toc-container, .actions {
+                display: none;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+            }
+        }
+        
+        /* Responsive */
+        media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .lead {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            nav.toc {
+                flex-direction: column;
+            }
+            
+            nav.toc button {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <header>
+            <div class="brand">
+                <div class="logo">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 3H17C18.1046 3 19 3.89543 19 5V19C19 20.1046 18.1046 21 17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M9 7H15V11H9V7Z" fill="currentColor"/>
+                        <path d="M9 13H11V17H9V13Z" fill="currentColor"/>
+                        <path d="M13 13H15V17H13V13Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Fridge Maintenance Safety Guidelines</h1>
+                    <p class="lead">A comprehensive safety reference for refrigeration technicians and maintenance professionals.</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="toc-container">
+            <div class="toc-title">Quick Navigation</div>
+            <nav class="toc" aria-label="Table of Contents">
+                <button onclick="scrollToSection('ppe')">Personal Protective Equipment</button>
+                <button onclick="scrollToSection('electrical')">Electrical Safety</button>
+                <button onclick="scrollToSection('refrigerants')">Refrigerant Handling</button>
+                <button onclick="scrollToSection('mechanical')">Mechanical Safety</button>
+                <button onclick="scrollToSection('chemical')">Chemical Safety</button>
+                <button onclick="scrollToSection('fire')">Fire Safety</button>
+                <button onclick="scrollToSection('general')">General Guidelines</button>
+            </nav>
+        </div>
+
+        <div class="card">
+            <section id="ppe" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L9 10.5V12.5L3 14V16L9 17.5V22H15V17.5L21 16V14L15 12.5V10.5L21 9Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Personal Protective Equipment (PPE)
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Safety gloves</strong> — Protect against sharp edges and cold surfaces; use insulated gloves when handling cold components.</li>
+                    <li><strong>Safety goggles</strong> — Shield eyes from debris and chemical splashes during maintenance activities.</li>
+                    <li><strong>Protective clothing</strong> — Long sleeves and trousers to minimize skin exposure to refrigerants and oils.</li>
+                    <li><strong>Safety boots</strong> — Non-slip soles and protective toe caps where required for foot protection.</li>
+                    <li><strong>Hearing protection</strong> — Earplugs or earmuffs in noisy environments or during prolonged compressor work.</li>
+                </ul>
+                <div class="note">
+                    <strong>Inspection Tip:</strong> Examine PPE before each shift — damaged equipment reduces protection effectiveness.
+                </div>
+            </section>
+
+            <section id="electrical" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2V5H17V7H13V10H17V12H11V2H13Z" fill="currentColor"/>
+                            <path d="M5 11H7V22H5V11Z" fill="currentColor"/>
+                            <path d="M17 11H19V22H17V11Z" fill="currentColor"/>
+                            <path d="M9 15H15V17H9V15Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Electrical Safety
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Power disconnection</strong> — Always disconnect the refrigerator from mains power before beginning any work.</li>
+                    <li><strong>Lockout/Tagout procedures</strong> — Apply proper LOTO measures to ensure circuits remain de-energized during maintenance.</li>
+                    <li><strong>Dry work environment</strong> — Keep the work area dry; never handle electrical components with wet hands or tools.</li>
+                    <li><strong>Tool inspection</strong> — Regularly check electrical tools and cables for damage; immediately remove defective equipment from service.</li>
+                    <li><strong>Testing equipment</strong> — Use properly calibrated testers and multimeters, verifying functionality before each use.</li>
+                </ul>
+                <div class="important">
+                    <strong>Critical:</strong> Always verify zero energy state with appropriate testing equipment before touching electrical components.
+                </div>
+            </section>
+
+            <section id="refrigerants" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Handling Refrigerants
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Adequate ventilation</strong> — Work in well-ventilated areas to prevent inhalation of fumes; use local extraction when available.</li>
+                    <li><strong>Proper equipment</strong> — Use refrigerant recovery units, approved cylinders, and appropriate leak detection equipment.</li>
+                    <li><strong>Regulatory compliance</strong> — Follow all local regulations for storage, handling, and disposal of refrigerants.</li>
+                    <li><strong>Frostbite prevention</strong> — Avoid direct skin contact with refrigerants; in case of exposure, rinse with water and seek medical attention.</li>
+                </ul>
+                <div class="note">
+                    <strong>Important:</strong> Always consult the Safety Data Sheet (SDS) for specific refrigerant properties and handling requirements.
+                </div>
+            </section>
+
+            <section id="mechanical" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
+                            <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6ZM13 16H11V14H13V16ZM13 12H11V8H13V12Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Mechanical Safety
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Component stabilization</strong> — Secure the refrigerator and immobilize fans, belts, or other moving parts before servicing.</li>
+                    <li><strong>Pinch point awareness</strong> — Keep hands and fingers clear of hinges, doors, and rotating components during operation.</li>
+                    <li><strong>Proper lifting techniques</strong> — Use mechanical aids or team lifting for heavy components; maintain proper posture to prevent injury.</li>
+                    <li><strong>Tool safety</strong> — Use appropriate tools for each task and ensure they are in good working condition.</li>
+                </ul>
+            </section>
+
+            <section id="chemical" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.66 8L12 2.35L6.34 8C4.78 9.56 4 11.64 4 13.64C4 15.64 4.78 17.75 6.34 19.31C7.9 20.87 9.95 21.66 12 21.66C14.05 21.66 16.1 20.87 17.66 19.31C19.22 17.75 20 15.64 20 13.64C20 11.64 19.22 9.56 17.66 8ZM12 19.66C10.34 19.66 8.78 19.08 7.58 17.88C6.38 16.68 5.8 15.12 5.8 13.46C5.8 11.8 6.38 10.24 7.58 9.04L12 4.66L16.42 9.04C17.62 10.24 18.2 11.8 18.2 13.46C18.2 15.12 17.62 16.68 16.42 17.88C15.22 19.08 13.66 19.66 12 19.66Z" fill="currentColor"/>
+                            <path d="M12 7.5C11.17 7.5 10.5 8.17 10.5 9C10.5 9.83 11.17 10.5 12 10.5C12.83 10.5 13.5 9.83 13.5 9C13.5 8.17 12.83 7.5 12 7.5ZM12 16.5C13.38 16.5 14.5 15.38 14.5 14C14.5 12.62 13.38 11.5 12 11.5C10.62 11.5 9.5 12.62 9.5 14C9.5 15.38 10.62 16.5 12 16.5Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Chemical Safety
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Chemical knowledge</strong> — Review and understand SDS documents for all cleaners, degreasers, and refrigerants used.</li>
+                    <li><strong>Proper storage</strong> — Clearly label containers and store incompatible chemicals separately in ventilated areas.</li>
+                    <li><strong>Exposure preparedness</strong> — Know first aid procedures for chemical exposure and location of emergency eyewash stations.</li>
+                    <li><strong>Spill response</strong> — Have appropriate spill containment materials available and know proper cleanup procedures.</li>
+                </ul>
+            </section>
+
+            <section id="fire" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 23C13.1 23 14 22.1 14 21H10C10 22.1 10.9 23 12 23ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    Fire Safety
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Emergency preparedness</strong> — Know the locations and proper use of fire extinguishers and other emergency equipment.</li>
+                    <li><strong>Extinguisher accessibility</strong> — Keep appropriate fire extinguishers nearby when working on electrical systems or near flammables.</li>
+                    <li><strong>Ignition prevention</strong> — Avoid creating sparks near refrigerants or flammable substances; use non-sparking tools when required.</li>
+                    <li><strong>Emergency procedures</strong> — Understand evacuation routes and emergency shutdown procedures for equipment.</li>
+                </ul>
+            </section>
+
+            <section id="general" class="block">
+                <h2>
+                    <span class="section-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
+                            <path d="M11 7H13V9H11V7ZM11 11H13V17H11V11Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    General Safety Guidelines
+                </h2>
+                <ul class="safe-list">
+                    <li><strong>Workspace organization</strong> — Maintain a clean, organized work area to reduce trip hazards and improve efficiency.</li>
+                    <li><strong>Continuous education</strong> — Participate in regular safety training and stay current with regulations and best practices.</li>
+                    <li><strong>Hazard reporting</strong> — Immediately report unsafe conditions, near misses, or incidents to supervisors.</li>
+                    <li><strong>Emergency response</strong> — Know first aid kit locations and emergency contact procedures for your facility.</li>
+                    <li><strong>Documentation</strong> — Complete all required safety documentation and maintenance records accurately.</li>
+                </ul>
+                
+                <div class="actions">
+                    <button class="btn primary" onclick="window.print()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 8H5C3.34 8 2 9.34 2 11V17H6V21H18V17H22V11C22 9.34 20.66 8 19 8ZM16 19H8V14H16V19ZM19 12C18.45 12 18 11.55 18 11C18 10.45 18.45 10 19 10C19.55 10 20 10.45 20 11C20 11.55 19.55 12 19 12Z" fill="currentColor"/>
+                        </svg>
+                        Print / Save as PDF
+                    </button>
+                </div>
+            </section>
+
+            <footer>
+                <small>Created for professional refrigeration maintenance teams — review and adapt to comply with local regulations and company procedures. Always follow manufacturer's service instructions.</small>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Add active state to navigation buttons when section is in view
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section.block');
+            const navButtons = document.querySelectorAll('nav.toc button');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (window.scrollY >= (sectionTop - 100)) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick').includes(currentSection)) {
+                    button.classList.add('active');
+                    button.style.background = 'var(--accent)';
+                    button.style.color = 'white';
+                    button.style.borderColor = 'var(--accent)';
+                } else {
+                    button.style.background = 'white';
+                    button.style.color = '#475569';
+                    button.style.borderColor = '#cbd5e1';
+                }
+            });
+        });
+    </script>

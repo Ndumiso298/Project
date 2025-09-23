@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using System.Security.Claims;
 
 
 namespace Project.Controllers
@@ -17,48 +18,66 @@ namespace Project.Controllers
 
         public IActionResult Calendar()
         {
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
             var visits = _db.tblFridgeVisits
-                .Include(v => v.RequestHeader)
-                .ThenInclude(r => r.ApplicationUser)
-                .Include(v => v.RequestHeader)
-                .ThenInclude(r => r.RequestFridges)
-                .ThenInclude(rf => rf.Fridge)
+                .Include(u => u.RequestHeader)
+                .ThenInclude(u => u.ApplicationUser)
+                .Include(u => u.RequestHeader)
+                .ThenInclude(u => u.RequestFridges)
+                .ThenInclude(u => u.Fridge)
+                //.Where(v => v.RequestHeader.ApplicationUserId == userId) 
                 .ToList();
 
             return View(visits);
         }
 
+
         public IActionResult Index()
         {
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             var allocatedRequests = _db.tblRequestHeaders
-              .Include(r => r.ApplicationUser)
-              .Include(r => r.RequestFridges)
-              .ThenInclude(f => f.Fridge)
-              .Where(r => r.Status == "Allocated")
-              .ToList();
+                .Include(u => u.ApplicationUser)
+                .Include(u => u.RequestFridges)
+                .ThenInclude(u => u.Fridge)
+                .Where(u => u.Status == "Allocated") 
+                .ToList();
 
-            var requestIds = allocatedRequests.Select(r => r.RequestHeaderId).ToList();
-            var visits = _db.tblFridgeVisits.Where(v => requestIds.Contains(v.RequestHeaderId)).ToList();
+            var requestIds = allocatedRequests.Select(u => u.RequestHeaderId).ToList();
+            var visits = _db.tblFridgeVisits
+                .Where(u => requestIds.Contains(u.RequestHeaderId))
+                .ToList();
 
             foreach (var request in allocatedRequests)
             {
-                request.FridgeVisits = visits.Where(v => v.RequestHeaderId == request.RequestHeaderId).ToList();
+                request.FridgeVisits = visits.Where(u => u.RequestHeaderId == request.RequestHeaderId).ToList();
             }
 
             return View(allocatedRequests);
+        }
+        public IActionResult CustomerBookings()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
+            var requests = _db.tblRequestHeaders
+                .Include(u => u.ApplicationUser)
+                .Include(u => u.RequestFridges)
+                .ThenInclude(u => u.Fridge)
+                .Include(u => u.FridgeVisits) 
+                .Where(u => u.ApplicationUserId == userId && u.Status == "Allocated")
+                .ToList();
 
+            return View(requests);
         }
 
-
-        public  IActionResult Details(int id)
+        public IActionResult DetailsFoRProcessing(int id)
         {
-            var request =  _db.tblRequestHeaders
-                .Include(r => r.ApplicationUser)
-                .Include(r => r.RequestFridges)
-                .ThenInclude(f => f.Fridge)
-                .FirstOrDefault(r => r.RequestHeaderId == id && r.Status == "Allocated");
+            var request = _db.tblRequestHeaders
+                .Include(u => u.ApplicationUser)
+                .Include(u => u.RequestFridges)
+                .ThenInclude(u => u.Fridge)
+                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == "Allocated");
 
             if (request == null)
             {
@@ -67,6 +86,25 @@ namespace Project.Controllers
 
             return View(request);
         }
+
+        public IActionResult SafetyGuideLines()
+        {
+            return View();
+        }
+
+        public  IActionResult Completed()
+        {
+            var visits =  _db.tblFridgeVisits
+                .Include(u => u.RequestHeader)
+                .ThenInclude(u => u.ApplicationUser)
+                .Include(u => u.RequestHeader)
+                .ThenInclude(u => u.RequestFridges)
+                .ThenInclude(u => u.Fridge)      
+                .ToList();
+
+            return View(visits);
+        }
+
         public IActionResult BookVisit(int requestId, int? visitId)
         {
             var request = _db.tblRequestHeaders
@@ -84,10 +122,10 @@ namespace Project.Controllers
             if (visitId.HasValue)
             {
                 visit = _db.tblFridgeVisits
-                    .Include(v => v.RequestHeader)
-                    .ThenInclude(r => r.RequestFridges)
-                    .ThenInclude(rf => rf.Fridge)
-                    .FirstOrDefault(v => v.VisitId == visitId.Value);
+                    .Include(u => u.RequestHeader)
+                    .ThenInclude(u => u.RequestFridges)
+                    .ThenInclude(u => u.Fridge)
+                    .FirstOrDefault(u => u.VisitId == visitId.Value);
 
                 if (visit == null)
                 {

@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Project.Models.RequestHeader>
+
+@{
+    ViewData["Title"] = "My Bookings";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-primary fw-bold">My Allocated Fridge Bookings</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> You don’t have any allocated fridge bookings yet.
+        </div>
+    }
+    else
+    {
+        foreach (var request in Model)
+        {
+            <div class="card mb-4 shadow-sm rounded-3">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Request #@request.RequestHeaderId</h5>
+                    <span class="badge bg-success">@request.Status</span>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">Fridges</h6>
+                    <ul>
+                        @foreach (var rf in request.RequestFridges)
+                        {
+                            <li>
+                                <i class="fas fa-snowflake text-info"></i>
+                                @rf.Fridge.Brand - @rf.Fridge.Type (@rf.Fridge.FridgeNo)
+                            </li>
+                        }
+                    </ul>
+
+                    <h6 class="fw-bold mt-3">Booked Visits</h6>
+                    @if (request.FridgeVisits != null && request.FridgeVisits.Any())
+                    {
+                        <ul>
+                            @foreach (var visit in request.FridgeVisits)
+                            {
+                                <li>
+                                    <i class="fas fa-calendar-check text-success"></i>
+                                    Visit on <strong>@visit.VisitDate.ToString("dd MMM yyyy HH:mm")</strong>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted"><i class="fas fa-calendar-times"></i> No visits booked yet.</p>
+                    }
+
+                  
+                </div>
+            </div>
+        }
+    }
+</div>

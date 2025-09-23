@@ -1,0 +1,122 @@
+﻿@model IEnumerable<Project.Models.FridgeVisit>
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Fridge Visits";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h3 fw-bold text-primary mb-1">Fridge Visits</h2>
+                    <p class="text-muted">Upcoming and completed fridge maintenance visits</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visit List Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h5 class="m-0 font-weight-bold text-primary">Visit Records</h5>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-filter me-1"></i> Filter
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#">All Visits</a></li>
+                    <li><a class="dropdown-item" href="#">Upcoming</a></li>
+                    <li><a class="dropdown-item" href="#">Completed</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="visitTable">
+                    <thead>
+                        <tr>
+                            <th>Technician</th>
+                            <th>Visit Date</th>
+                            <th>Notes</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Cellphone</th>
+                            <th>Type</th>
+                            <th>Fridge No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var visit in Model)
+                        {
+                            foreach (var detail in visit.RequestHeader.RequestFridges)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@visit.TechnicianName</td>
+                                    <td>@visit.VisitDate.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;"
+                                             data-bs-toggle="tooltip" data-bs-placement="top"
+                                             title="@visit.Notes">
+                                            @visit.Notes
+                                        </div>
+                                    </td>
+                                    <td>@visit.RequestHeader.ApplicationUser?.FirstName</td>
+                                    <td>@visit.RequestHeader.ApplicationUser?.LastName</td>
+                                    <td>@visit.RequestHeader.ApplicationUser?.CellNumber</td>
+                                    <td>@detail.Fridge?.Type</td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">@detail.Fridge?.FridgeNo</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x display-1 text-muted"></i>
+                        <h4 class="mt-3 text-muted">No Visits Found</h4>
+                        <p class="text-muted">Scheduled visits will appear here once created</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
+        // Simple search functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search visits...';
+            searchInput.className = 'form-control form-control-sm w-25 ms-auto';
+
+            const cardHeader = document.querySelector('.card-header');
+            cardHeader.appendChild(searchInput);
+
+            searchInput.addEventListener('keyup', function () {
+                const searchText = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#visitTable tbody tr');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchText) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+}
