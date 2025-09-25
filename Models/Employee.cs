@@ -56,11 +56,11 @@ namespace Project.Models
         public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
 
         [NotMapped]
-        public virtual ICollection<FridgeFault> FaultReports { get; set; } = new List<FridgeFault>();
+        public virtual ICollection<FaultRecord> FaultReports { get; set; } = new List<FaultRecord>();
 
-        // FridgeFault tech navigations
-        [InverseProperty(nameof(FridgeFault.AssignedTechnician))]
-        public virtual ICollection<FridgeFault> AssignedFaults { get; set; } = new List<FridgeFault>();
+        // FaultRecord tech navigations
+        [InverseProperty(nameof(FaultRecord.AssignedTechnician))]
+        public virtual ICollection<FaultRecord> AssignedFaults { get; set; } = new List<FaultRecord>();
 
         // Stock controller navigations
         [ValidateNever]

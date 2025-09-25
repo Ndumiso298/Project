@@ -28,7 +28,7 @@ namespace Project.Models
         [Required(ErrorMessage = "TradingLocation is required.")]
         [StringLength(200, ErrorMessage = "TradingLocation cannot exceed 200 characters.")]
         [Display(Name = "TradingLocation")]
-        public string Location { get; set; }
+        public Location Location { get; set; }
 
         // Foreign keys
         [Required(ErrorMessage = "Customer is required.")]
@@ -41,8 +41,16 @@ namespace Project.Models
         [Display(Name = "Allocation")]
         public int? AllocationId { get; set; }
 
-        [Display(Name = "Technician")]
-        public int? TechnicianId { get; set; }
+        [Display(Name = "Assigned Technician")]
+        public int? AssignedTechnicianId { get; set; }
+
+        // Service checklist (mandatory per requirements)
+        [Display(Name = "Service Checklist Completed")]
+        public bool IsChecklistCompleted { get; set; }
+
+        [StringLength(1000)]
+        [Display(Name = "Service Checklist Notes")]
+        public string? ChecklistNotes { get; set; }
 
         // Timing information
         [DataType(DataType.DateTime)]
@@ -93,6 +101,12 @@ namespace Project.Models
         [StringLength(500, ErrorMessage = "Parts replaced cannot exceed 500 characters.")]
         public string? PartsReplaced { get; set; }
 
+        [Display(Name = "Service ServiceCost")]
+        [Range(0, 100000, ErrorMessage = "ServiceCost must be a positive value.")]
+        [Column(TypeName = "decimal(18,2)")]
+        [DataType(DataType.Currency)]
+        public decimal? ServiceCost { get; set; }
+
         // Follow-up information
         [Display(Name = "Follow-up Required")]
         public bool FollowUpRequired { get; set; }
@@ -103,9 +117,9 @@ namespace Project.Models
         public DateTime? FollowUpDate { get; set; }
 
         // Notes and feedback
-        [StringLength(1000, ErrorMessage = "Technician notes cannot exceed 1000 characters.")]
+        [StringLength(1000, ErrorMessage = "AssignedTechnician notes cannot exceed 1000 characters.")]
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Technician Notes")]
+        [Display(Name = "AssignedTechnician Notes")]
         public string? TechnicianNotes { get; set; }
 
         [StringLength(500, ErrorMessage = "Customer note cannot exceed 500 characters.")]
@@ -123,6 +137,9 @@ namespace Project.Models
         public string? CustomerFeedback { get; set; }
 
         // Audit fields
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
         [Display(Name = "Created Date")]
         [DataType(DataType.DateTime)]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
@@ -145,16 +162,20 @@ namespace Project.Models
         [ForeignKey(nameof(AllocationId))]
         [ValidateNever]
         [Display(Name = "Allocation")]
-        public virtual FridgeAllocation Allocation { get; set; }
+        public virtual FridgeAllocation RelatedAllocation { get; set; }
 
-        [ForeignKey(nameof(TechnicianId))]
+        [ForeignKey(nameof(AssignedTechnicianId))]
         [ValidateNever]
-        [Display(Name = "Technician")]
-        public virtual Employee Technician { get; set; }
+        [Display(Name = "AssignedTechnicianId")]
+        public virtual Employee AssignedTechnician { get; set; }
 
         [ValidateNever]
         [Display(Name = "Maintenance Records")]
         public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
+
+        [ValidateNever]
+        [Display(Name = "Fault Records")]
+        public ICollection<FaultRecord> FaultRecords { get; set; } = new List<FaultRecord>();
 
         // Computed properties
         [NotMapped]

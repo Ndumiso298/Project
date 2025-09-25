@@ -12,7 +12,6 @@ namespace Project.Models
         {
             Status = AllocationStatus.Pending;
             CreatedAt = DateTime.UtcNow;
-            IsDeleted = false;
             FridgeVisits = new List<MaintenanceVisit>();
         }
 
@@ -58,6 +57,20 @@ namespace Project.Models
         [Display(Name = "Processed By")]
         public virtual Employee ProcessedBy { get; set; } = null!;
 
+        [Display(Name = "Allocation Location")]
+        public int AllocationLocationId { get; set; }
+
+        [ForeignKey("AllocationLocationId")]
+        [ValidateNever]
+        public virtual Location AllocationLocation { get; set; } = null!;
+
+        // Navigation to related requests
+        public int? AllocationRequestHeaderId { get; set; }
+
+        [ForeignKey("AllocationRequestHeaderId")]
+        [ValidateNever]
+        public virtual AllocationRequestHeader? AllocationRequestHeader { get; set; }
+
         [NotMapped]
         [Display(Name = "Price")]
         [DataType(DataType.Currency)]
@@ -92,21 +105,6 @@ namespace Project.Models
         [Display(Name = "Actual Return Date")]
         public DateTime? ActualReturnDate { get; set; }
 
-        [Required(ErrorMessage = "Service interval is required.")]
-        [Range(1, 24, ErrorMessage = "Service interval must be between 1 and 24 months.")]
-        [Display(Name = "Service Interval (Months)")]
-        public int ServiceIntervalMonths { get; set; } = 6;
-
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [Display(Name = "Last Service Date")]
-        public DateTime? LastServiceDate { get; set; }
-
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [Display(Name = "Next Service Due")]
-        public DateTime? NextServiceDue { get; set; }
-
         [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters.")]
         [DataType(DataType.MultilineText)]
         [Display(Name = "Allocation Notes")]
@@ -122,9 +120,6 @@ namespace Project.Models
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? UpdatedAt { get; set; }
-
-        [Display(Name = "Deleted")]
-        public bool IsDeleted { get; set; }
 
         // Rental Period
         [ValidateNever]
@@ -148,14 +143,10 @@ namespace Project.Models
 
         [NotMapped]
         [Display(Name = "Is Active")]
-        public bool IsActive => Status == AllocationStatus.Active && !IsDeleted;
+        public bool IsActive => Status == AllocationStatus.Active;
 
         [NotMapped]
         [Display(Name = "Is Overdue")]
         public bool IsOverdue => ExpectedReturnDate.HasValue && ExpectedReturnDate < DateTime.UtcNow && Status == AllocationStatus.Active;
-
-        [NotMapped]
-        [Display(Name = "Service Due")]
-        public bool ServiceDue => NextServiceDue.HasValue && NextServiceDue < DateTime.UtcNow;
     }
 }

@@ -67,6 +67,22 @@ namespace Project.Models
         [Display(Name = "Postal Code")]
         public string PostalCode { get; set; } = string.Empty;
 
+        public int LocationId { get; set; }
+
+        [ForeignKey("LocationId")]
+        [ValidateNever]
+        [Display(Name = "Trading Location")]
+        public virtual Location TradingLocation { get; set; } = null!;
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
+        [Display(Name = "Created At")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        public DateTime? UpdatedAt { get; set; }
+
         // Navigation properties
         [ValidateNever]
         public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
@@ -77,11 +93,11 @@ namespace Project.Models
 
         [Display(Name = "Reported Faults")]
         [ValidateNever]
-        public virtual ICollection<FridgeFault>? ReportedFaults { get; set; } = new List<FridgeFault>();
+        public virtual ICollection<FaultRecord>? ReportedFaults { get; set; } = new List<FaultRecord>();
 
         [Display(Name = "Fridge Requests")]
         [ValidateNever]
-        public virtual ICollection<FridgeRequest>? FridgeRequests { get; set; } = new List<FridgeRequest>();
+        public virtual ICollection<ReplacementRequest>? FridgeRequests { get; set; } = new List<ReplacementRequest>();
 
         [Display(Name = "Maintenance Schedules")]
         [ValidateNever]

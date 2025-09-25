@@ -1,4 +1,4 @@
-﻿@model AllocationVM
+﻿@model FridgeAllocationVM
 @{
     Layout = "_CustomerLayout";
 }
@@ -13,7 +13,7 @@
             <div class="card-header bg-primary text-light py-4 position-relative">
                 <div class="row align-items-center">
                     <div class="col-12 text-center">
-                        <h2 class="text-white fw-bold mb-1">Order Summary</h2>
+                        <h2 class="text-white fw-bold mb-1">Allocation Summary</h2>
                         <p class="text-light mb-0 opacity-75">Review your shipping details & order before checkout</p>
                     </div>
                 </div>
@@ -87,10 +87,10 @@
                         </div>
                     </div>
 
-                    <!-- Order Summary -->
+                    <!-- Fridge Allocation Request Summary -->
                     <div class="col-12 col-lg-6">
                         <h3 class="section-title mb-3 text-primary fw-bold">
-                            <i class="bi bi-receipt me-2"></i> Order Summary
+                            <i class="bi bi-receipt me-2"></i> Fridge Allocation Summary
                         </h3>
 
                         <ul class="list-group mb-4 shadow-sm rounded-3 overflow-hidden">
@@ -114,7 +114,7 @@
                         <div class="bg-light p-3 rounded-3 shadow-sm mb-3">
                             <p class="mb-0 small text-muted">
                                 <i class="bi bi-calendar-event me-2"></i>
-                                Estimate Arrival: <strong>@DateTime.Now.AddDays(7).ToShortDateString()</strong> - <strong>@DateTime.Now.AddDays(14).ToShortDateString()</strong>
+                                Estimated Arrival: <strong>@DateTime.Now.AddDays(7).ToShortDateString()</strong> - <strong>@DateTime.Now.AddDays(14).ToShortDateString()</strong>
                             </p>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
             <!-- Footer -->
             <div class="card-footer bg-white border-0 p-4">
                 <button type="submit" value="Place Order" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
-                    <i class="bi bi-check-circle me-2"></i> Place Order
+                    <i class="bi bi-check-circle me-2"></i> Request Allocation
                 </button>
             </div>
         </div>

@@ -110,7 +110,25 @@ namespace Project.Models
         [StringLength(30, ErrorMessage = "Color cannot exceed 30 characters.")]
         public string? Color { get; set; }
 
+        [Required(ErrorMessage = "Service interval is required.")]
+        [Range(1, 24, ErrorMessage = "Service interval must be between 1 and 24 months.")]
+        [Display(Name = "Service Interval (Months)")]
+        public int ServiceIntervalMonths { get; set; } = 6;
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Last Service Date")]
+        public DateTime? LastServiceDate { get; set; }
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Next Service Due")]
+        public DateTime? NextServiceDue { get; set; }
+
         // Audit fields
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
         [Display(Name = "Created Date")]
         [DataType(DataType.DateTime)]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
@@ -130,7 +148,7 @@ namespace Project.Models
 
         [ValidateNever]
         [Display(Name = "Fault Reports")]
-        public virtual ICollection<FridgeFault> FaultReports { get; set; } = new List<FridgeFault>();
+        public virtual ICollection<FaultRecord> FaultReports { get; set; } = new List<FaultRecord>();
 
         // Computed properties
         [NotMapped]

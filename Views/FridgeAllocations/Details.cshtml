@@ -1,0 +1,94 @@
+﻿@model FridgeAllocation
+@{
+    ViewData["Title"] = "Allocation Details";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">@ViewData["Title"]</h4>
+                <div>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                    @if (!User.IsInRole("Customer"))
+                    {
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Fridge Information</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Serial Number:</dt>
+                            <dd class="col-sm-8">@Model.Fridge?.SerialNumber</dd>
+
+                            <dt class="col-sm-4">Model:</dt>
+                            <dd class="col-sm-8">@Model.Fridge?.Model</dd>
+
+                            <dt class="col-sm-4">Capacity:</dt>
+                            <dd class="col-sm-8">@Model.Fridge?.CapacityLiters L</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Customer Information</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Trading Name:</dt>
+                            <dd class="col-sm-8">@Model.Customer?.TradingName</dd>
+
+                            <dt class="col-sm-4">Contact:</dt>
+                            <dd class="col-sm-8">@Model.Customer?.BusinessPhoneNumber</dd>
+
+                            <dt class="col-sm-4">Address:</dt>
+                            <dd class="col-sm-8">@Model.Customer?.AddressLine1, @Model.Customer?.City</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Allocation Details</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Allocation Date:</dt>
+                            <dd class="col-sm-8">@Model.AllocationDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                            <dt class="col-sm-4">Location:</dt>
+                            <dd class="col-sm-8">@Model.AllocationLocation?.Name</dd>
+
+                            <dt class="col-sm-4">Allocated By:</dt>
+                            <dd class="col-sm-8">@Model.AllocatedBy?.UserAccount.FirstName @Model.AllocatedBy?.UserAccount.LastName</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Deallocation Details</h5>
+                        <dl class="row">
+                            <dt class="col-sm-4">Status:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge @(Model.ActualReturnDate == null ? "bg-success" : "bg-secondary")">
+                                    @(Model.ActualReturnDate == null ? "Active" : "Deallocated")
+                                </span>
+                            </dd>
+
+                            @if (Model.ActualReturnDate.HasValue)
+                            {
+                                <dt class="col-sm-4">Deallocation Date:</dt>
+                                <dd class="col-sm-8">@Model.ActualReturnDate.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Reason:</dt>
+                                <dd class="col-sm-8">@Model.Notes</dd>
+
+                                <dt class="col-sm-4">Processed By:</dt>
+                                <dd class="col-sm-8">@Model.ProcessedBy?.UserAccount.FirstName @Model.ProcessedBy?.UserAccount.LastName</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

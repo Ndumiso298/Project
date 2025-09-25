@@ -50,7 +50,7 @@ namespace Project.Models
         public DateTime RequiredByDate { get; set; }
 
         // Budget information
-        [Display(Name = "Estimated Total Cost (R)")]
+        [Display(Name = "Estimated Total ServiceCost (R)")]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0, 1000000, ErrorMessage = "Estimated cost must be a positive value.")]
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Estimated cost must be a valid monetary value.")]
@@ -101,7 +101,7 @@ namespace Project.Models
         public int TotalQuantity => Items?.Sum(i => i.Quantity) ?? 0;
 
         [NotMapped]
-        [Display(Name = "Total Estimated Cost (R)")]
+        [Display(Name = "Total Estimated ServiceCost (R)")]
         [DataType(DataType.Currency)]
         public decimal TotalEstimatedCost => Items?.Sum(i => i.EstimatedLineTotal) ?? 0;
 

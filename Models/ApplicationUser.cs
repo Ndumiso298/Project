@@ -36,15 +36,24 @@ namespace Project.Models
         public DateTime? DOB { get; set; } // Date of Birth 
 
         [Required]
-        public int LocationId { get; set; }
+        public int? LocationId { get; set; }
 
         [ValidateNever]
-        public virtual Location PrimaryLocation { get; set; } = null!;
+        public virtual Location? PrimaryLocation { get; set; } = null!;
 
         [Display(Name = "Profile Picture URL")]
         [DataType(DataType.ImageUrl)]
         [MaxLength(2048, ErrorMessage = "URL cannot exceed 2048 characters.")]
         [Url(ErrorMessage = "Please enter a valid URL.")]
         public string? ProfilePictureUrl { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
+        [Display(Name = "Created At")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Updated At")]
+        public DateTime? UpdatedAt { get; set; }
     }
 }

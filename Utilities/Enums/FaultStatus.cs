@@ -11,7 +11,7 @@ namespace Project.Utilities.Enums
         Acknowledged,       // Support team has acknowledged the report
 
         [Display(Name = "Diagnosing")]
-        Diagnosing,         // Technician is diagnosing the issue
+        Diagnosing,         // AssignedTechnician is diagnosing the issue
 
         [Display(Name = "Scheduled")]
         Scheduled,          // Repair has been scheduled

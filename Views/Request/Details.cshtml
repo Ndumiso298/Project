@@ -1,10 +1,10 @@
-﻿@model RequestVM
+﻿@model AllocationRequestVM
 @{
     Layout = "_CustomerLayout";
 }
 
 <form method="post">
-    <input asp-for="RequstHeader.Id" type="hidden" />
+    <input asp-for="Id" type="hidden" />
 
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
@@ -40,99 +40,92 @@
                         <div class="specs-container mb-4">
                             <!-- First Name -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.FirstName" class="form-label fw-semibold text-dark">Name</label>
-                                <input asp-for="RequstHeader.FirstName" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.FirstName" class="text-danger"></span>
+                                <label asp-for="FirstName" class="form-label fw-semibold text-dark">Name</label>
+                                <input asp-for="FirstName" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
 
                             <!-- Last Name -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.LastName" class="form-label fw-semibold text-dark">Surname</label>
-                                <input asp-for="RequstHeader.LastName" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.LastName" class="text-danger"></span>
+                                <label asp-for="LastName" class="form-label fw-semibold text-dark">Surname</label>
+                                <input asp-for="LastName" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
 
                             <!-- Phone -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.PhoneNumber" class="form-label fw-semibold text-dark">Phone</label>
-                                <input asp-for="RequstHeader.PhoneNumber" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.PhoneNumber" class="text-danger"></span>
+                                <label asp-for="PhoneNumber" class="form-label fw-semibold text-dark">Phone</label>
+                                <input asp-for="PhoneNumber" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
                             <!-- Address -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.AddressLine1" class="form-label fw-semibold text-dark">Address Line 1</label>
-                                <input asp-for="RequstHeader.AddressLine1" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.AddressLine1" class="text-danger"></span>
+                                <label asp-for="AddressLine1" class="form-label fw-semibold text-dark">Address Line 1</label>
+                                <input asp-for="AddressLine1" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
+                                <span asp-validation-for="AddressLine1" class="text-danger"></span>
                             </div>
 
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.AddressLine2" class="form-label fw-semibold text-dark">Address Line 2</label>
-                                <input asp-for="RequstHeader.AddressLine2" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.AddressLine2" class="text-danger"></span>
+                                <label asp-for="AddressLine2" class="form-label fw-semibold text-dark">Address Line 2</label>
+                                <input asp-for="AddressLine2" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
+                                <span asp-validation-for="AddressLine2" class="text-danger"></span>
                             </div>
 
                             <!-- City -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.City" class="form-label fw-semibold text-dark">City</label>
-                                <input asp-for="RequstHeader.City" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
+                                <label asp-for="City" class="form-label fw-semibold text-dark">City</label>
+                                <input asp-for="City" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
                             </div>
 
                             <!-- State -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.Province" class="form-label fw-semibold text-dark">State</label>
-                                <input asp-for="RequstHeader.Province" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
+                                <label asp-for="Province" class="form-label fw-semibold text-dark">State</label>
+                                <input asp-for="Province" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
                             </div>
 
                             <!-- Postal Code -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.PostalCode" class="form-label fw-semibold text-dark">Postal Code</label>
-                                <input asp-for="RequstHeader.PostalCode" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
-                            </div>
-
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-dark">Email</label>
-                                <input asp-for="RequstHeader.Customer.BusinessEmail" class="form-control" readonly />
+                                <label asp-for="PostalCode" class="form-label fw-semibold text-dark">Postal Code</label>
+                                <input asp-for="PostalCode" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
                             </div>
 
                             <!-- Order Date -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Order Date</label>
-                                <input value="@Model.RequstHeader.RequestDate.ToShortDateString()" class="form-control" readonly />
+                                <input value="@Model.RequestDate.ToShortDateString()" class="form-control" readonly />
                             </div>
 
                             <!-- Carrier -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.Carrier" class="form-label fw-semibold text-dark">Carrier</label>
-                                <input asp-for="RequstHeader.Carrier" id="carrier" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ? "false" : "true")" />
+                                <label asp-for="Carrier" class="form-label fw-semibold text-dark">Carrier</label>
+                                <input asp-for="Carrier" id="carrier" class="form-control"
+                                       readonly="@(User.IsInRole("Admin") || User.IsInRole("CustomerSupport") ? "false" : "true")" />
                             </div>
 
                             <!-- Shipping Date -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Shipping Date</label>
-                                <input value="@Model.RequstHeader.ShippingDate?.ToShortDateString()" class="form-control" readonly />
+                                <input value="@Model.ShippingDate?.ToShortDateString()" class="form-control" readonly />
                             </div>
 
                             <!-- Payment Status -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Payment Status</label>
-                                <input asp-for="RequstHeader.Status" class="form-control" readonly />
+                                <input asp-for="Status" class="form-control" readonly />
                             </div>
 
-                            @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole))
+                            @if (User.IsInRole("Admin") || User.IsInRole("CustomerSupport"))
                             {
-                                <button type="submit" asp-action="UpdateRequestDetail"
-                                        class="btn btn-warning w-100 py-2 fw-semibold rounded-pill shadow">
+                                <button type="submit" class="btn btn-warning w-100 py-2 fw-semibold rounded-pill shadow">
                                     <i class="bi bi-pencil-square me-1"></i> Update Order Details
                                 </button>
                             }
@@ -150,17 +143,17 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="fw-semibold mb-1 text-primary">@detail.Fridge.Manufacturer</h6>
-                                        <small class="text-muted">Price Per Month: @detail.Price.ToString("c")</small><br />
+                                        <h6 class="fw-semibold mb-1 text-primary">@detail.FridgeModel</h6>
+                                        <small class="text-muted">Price: @detail.Price.ToString("C")</small><br />
                                         <small class="text-muted">Quantity: @detail.Quantity</small>
                                     </div>
-                                    <span class="fw-bold text-success">@((detail.Quantity * detail.Price).ToString("c"))</span>
+                                    <span class="fw-bold text-success">@detail.TotalPrice.ToString("C")</span>
                                 </li>
                             }
 
                             <li class="list-group-item d-flex justify-content-between bg-primary text-white">
-                                <small>Total Per Month</small>
-                                <strong class="fs-5">@Model.RequstHeader.RequestTotal.ToString("c")</strong>
+                                <small>Total Monthly Cost</small>
+                                <strong class="fs-5">@Model.RequestDetails.Sum(d => d.TotalPrice).ToString("C")</strong>
                             </li>
                         </ul>
                     </div>

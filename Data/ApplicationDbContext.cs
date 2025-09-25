@@ -20,12 +20,12 @@ namespace Project.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Fridge> Fridges { get; set; }
         public DbSet<FridgeAllocation> FridgeAllocations { get; set; }
-        public DbSet<RequestHeader> RequestHeaders { get; set; }
-        public DbSet<RequestDetail> RequestDetails { get; set; }
-        public DbSet<FridgeFault> FaultRecords { get; set; }
+        public DbSet<AllocationRequestHeader> AllocationRequestHeaders { get; set; }
+        public DbSet<AllocationRequestDetail> AllocationRequestDetails { get; set; }
+        public DbSet<FaultRecord> FaultRecords { get; set; }
         public DbSet<MaintenanceVisit> MaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
-        public DbSet<FridgeRequest> ReplacementRequests { get; set; }
+        public DbSet<ReplacementRequest> ReplacementRequests { get; set; }
         public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
         public DbSet<PurchaseRequestItem> PurchaseRequestItems { get; set; }
 
@@ -151,7 +151,7 @@ namespace Project.Data
                     PhoneNumberConfirmed = true,
                     PasswordHash = hasher.HashPassword(user, defaultPassword),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    LocationId = 1 // Assuming Location with Id 1 exists
+                    LocationId = 1 // Assuming Location with UserId 1 exists
                 }
             );
             // Assign Roles to Users
@@ -195,7 +195,7 @@ namespace Project.Data
                     CreatedAt = new DateTime(2025, 9, 21),
                     IsActive = true
                 },
-                // Fault Technician
+                // Fault AssignedTechnician
                 new Employee
                 {
                     Id = 3,
@@ -206,7 +206,7 @@ namespace Project.Data
                     CreatedAt = new DateTime(2025, 9, 21),
                     IsActive = true
                 },
-                // Maintenance Technician
+                // Maintenance AssignedTechnician
                 new Employee
                 {
                     Id = 4,
@@ -238,230 +238,6 @@ namespace Project.Data
                 }
             );
 
-            modelBuilder.Entity<Location>().HasData(
-                 new Location
-                 {
-                     Id = 1,
-                     LocationCode = "APB",
-                     AddressLine1 = "470 Dr Martin Luther King Jr Blvd",
-                     Suburb = "Frogmore",
-                     City = "Beaufort",
-                     Province = "South Carolina",
-                     PostalCode = "29902",
-                     Country = "USA",
-                     Type = LocationType.CustomerSite,
-                     PhoneNumber = "+12718320000",
-                     Email = "info@penny.org",
-                     ManagerName = "Dr Walter Mack",
-                     ManagerPhone = "+12718320001",
-                     ManagerEmail = "wmack@penny.org",
-                     OperatingHours = "9:00-17:00 Mon-Sat",
-                     ServiceAreaRadius = 50,
-                     IsActive = true,
-                     CreatedAt = new DateTime(2023, 1, 15),
-                     UpdatedAt = new DateTime(2024, 3, 10)
-                 },
-                 new Location
-                 {
-                     Id = 2,
-                     LocationCode = "WH_CPT",
-                     AddressLine1 = "Symphony Way",
-                     AddressLine2 = "Phase 2",
-                     Suburb = "Belhar",
-                     City = "Cape Town",
-                     Province = "Western Cape",
-                     PostalCode = "7493",
-                     Country = "South Africa",
-                     Type = LocationType.Warehouse,
-                     WarehouseCode = "CPT_MAIN",
-                     PhoneNumber = "+27219485000",
-                     Email = "warehouse@fridgeco.co.za",
-                     ManagerName = "Sarah Petersen",
-                     ManagerPhone = "+27219485001",
-                     ManagerEmail = "spetersen@fridgeco.co.za",
-                     OperatingHours = "24/7",
-                     StorageCapacity = 500,
-                     CurrentOccupancy = 327,
-                     IsActive = true,
-                     CreatedAt = new DateTime(2022, 5, 10),
-                     UpdatedAt = new DateTime(2024, 6, 15)
-                 },
-                 new Location
-                 {
-                     Id = 3,
-                     LocationCode = "SC_SOW",
-                     AddressLine1 = "7001 Chris Hani Rd",
-                     Suburb = "Diepkloof",
-                     City = "Soweto",
-                     Province = "Gauteng",
-                     PostalCode = "1862",
-                     Country = "South Africa",
-                     Type = LocationType.ServiceCentre,
-                     PhoneNumber = "+27119876000",
-                     Email = "soweto@fridgeservice.co.za",
-                     ManagerName = "Thomas Mbeki",
-                     ManagerPhone = "+27119876001",
-                     ManagerEmail = "tmbeki@fridgeservice.co.za",
-                     OperatingHours = "8:00-18:00 Mon-Fri, 9:00-13:00 Sat",
-                     ServiceAreaRadius = 75,
-                     IsActive = true,
-                     CreatedAt = new DateTime(2023, 3, 20),
-                     UpdatedAt = new DateTime(2024, 7, 5)
-                 },
-                 new Location
-                 {
-                     Id = 4,
-                     LocationCode = "SUP_JHB",
-                     AddressLine1 = "12 Industrial Rd",
-                     Suburb = "Wadeville",
-                     City = "Johannesburg",
-                     Province = "Gauteng",
-                     PostalCode = "1422",
-                     Country = "South Africa",
-                     Type = LocationType.Supplier,
-                     SupplierCode = "FRIDGE_PRO",
-                     PhoneNumber = "+27114567800",
-                     Email = "orders@fridgepro.co.za",
-                     ManagerName = "David Khumalo",
-                     ManagerPhone = "+27114567801",
-                     ManagerEmail = "dkhumalo@fridgepro.co.za",
-                     OperatingHours = "7:30-16:30 Mon-Fri",
-                     IsActive = true,
-                     CreatedAt = new DateTime(2022, 11, 5),
-                     UpdatedAt = new DateTime(2024, 4, 18)
-                 },
-                 new Location
-                 {
-                     Id = 5,
-                     LocationCode = "OFFICE_JHB",
-                     AddressLine1 = "15 Bierman Ave",
-                     Suburb = "Rosebank",
-                     City = "Johannesburg",
-                     Province = "Gauteng",
-                     PostalCode = "2196",
-                     Country = "South Africa",
-                     Type = LocationType.Office,
-                     PhoneNumber = "+27117894500",
-                     Email = "admin@fridgemgmt.co.za",
-                     ManagerName = "Nomsa Dlamini",
-                     ManagerPhone = "+27117894501",
-                     ManagerEmail = "ndlamini@fridgemgmt.co.za",
-                     OperatingHours = "8:00-17:00 Mon-Fri",
-                     IsActive = true,
-                     CreatedAt = new DateTime(2022, 2, 15),
-                     UpdatedAt = new DateTime(2024, 5, 22)
-                 },
-                 new Location
-                 {
-                     Id = 6,
-                     LocationCode = "RET_DBN",
-                     AddressLine1 = "120 Dr Pixley KaSeme St",
-                     Suburb = "Central",
-                     City = "Durban",
-                     Province = "KwaZulu-Natal",
-                     PostalCode = "4001",
-                     Country = "South Africa",
-                     Type = LocationType.RetailStore,
-                     PhoneNumber = "+27312345600",
-                     Email = "durbanstore@fridgeworld.co.za",
-                     ManagerName = "James Naidoo",
-                     ManagerPhone = "+27312345601",
-                     ManagerEmail = "jnaidoo@fridgeworld.co.za",
-                     OperatingHours = "8:30-17:00 Mon-Fri, 9:00-13:00 Sat",
-                     IsActive = true,
-                     CreatedAt = new DateTime(2023, 6, 10),
-                     UpdatedAt = new DateTime(2024, 7, 12)
-                 },
-                 new Location
-                 {
-                     Id = 7,
-                     LocationCode = "DC_PTA",
-                     AddressLine1 = "23 Rosslyn Blvd",
-                     Suburb = "Rosslyn",
-                     City = "Pretoria",
-                     Province = "Gauteng",
-                     PostalCode = "0200",
-                     Country = "South Africa",
-                     Type = LocationType.DistributionCenter,
-                     WarehouseCode = "DC_PTA_01",
-                     PhoneNumber = "+27129988700",
-                     Email = "distribution@fridgedc.co.za",
-                     ManagerName = "Peter van der Merwe",
-                     ManagerPhone = "+27129988701",
-                     ManagerEmail = "pvandermerwe@fridgedc.co.za",
-                     OperatingHours = "24/7",
-                     StorageCapacity = 800,
-                     CurrentOccupancy = 650,
-                     IsActive = true,
-                     CreatedAt = new DateTime(2022, 8, 30),
-                     UpdatedAt = new DateTime(2024, 6, 30)
-                 },
-                 new Location
-                 {
-                     Id = 8,
-                     LocationCode = "SC_KT",
-                     AddressLine1 = "45 Nelson Mandela Dr",
-                     Suburb = "Ibhayi",
-                     City = "Gqeberha",
-                     Province = "Eastern Cape",
-                     PostalCode = "6210",
-                     Country = "South Africa",
-                     Type = LocationType.ServiceCentre,
-                     PhoneNumber = "+27413579000",
-                     Email = "gqeberha@fridgeservice.co.za",
-                     ManagerName = "Lindiwe Botha",
-                     ManagerPhone = "+27413579001",
-                     ManagerEmail = "lbotha@fridgeservice.co.za",
-                     OperatingHours = "8:00-17:00 Mon-Fri, 9:00-12:00 Sat",
-                     ServiceAreaRadius = 100,
-                     IsActive = true,
-                     CreatedAt = new DateTime(2023, 4, 5),
-                     UpdatedAt = new DateTime(2024, 7, 8)
-                 },
-                 new Location
-                 {
-                     Id = 9,
-                     LocationCode = "SUP_DBN",
-                     AddressLine1 = "8 Umgeni Rd",
-                     Suburb = "Stamford Hill",
-                     City = "Durban",
-                     Province = "KwaZulu-Natal",
-                     PostalCode = "4023",
-                     Country = "South Africa",
-                     Type = LocationType.Supplier,
-                     SupplierCode = "COOL_TECH",
-                     PhoneNumber = "+27319876500",
-                     Email = "durban@cooltech.co.za",
-                     ManagerName = "Rajesh Patel",
-                     ManagerPhone = "+27319876501",
-                     ManagerEmail = "rpatel@cooltech.co.za",
-                     OperatingHours = "8:00-16:00 Mon-Fri",
-                     IsActive = true,
-                     CreatedAt = new DateTime(2023, 2, 14),
-                     UpdatedAt = new DateTime(2024, 5, 19)
-                 },
-                 new Location
-                 {
-                     Id = 10,
-                     LocationCode = "RET_CPT",
-                     AddressLine1 = "25 Main Rd",
-                     Suburb = "Observatory",
-                     City = "Cape Town",
-                     Province = "Western Cape",
-                     PostalCode = "7925",
-                     Country = "South Africa",
-                     Type = LocationType.RetailStore,
-                     PhoneNumber = "+27214683200",
-                     Email = "observatory@fridgeworld.co.za",
-                     ManagerName = "Amina Mohammed",
-                     ManagerPhone = "+27214683201",
-                     ManagerEmail = "amohammed@fridgeworld.co.za",
-                     OperatingHours = "8:30-17:30 Mon-Fri, 9:00-14:00 Sat",
-                     IsActive = true,
-                     CreatedAt = new DateTime(2023, 7, 22),
-                     UpdatedAt = new DateTime(2024, 7, 15)
-                 }
-             );
 
             modelBuilder.Entity<Fridge>().HasData(
                 // Industrial Fridges for Shebeens (bars)
@@ -978,7 +754,7 @@ namespace Project.Data
                 new PurchaseRequest
                 {
                     Id = 1,
-                    RequestedById = 2, // Stock Controller (Id 2 from prior seeding)
+                    RequestedById = 2, // Stock Controller (UserId 2 from prior seeding)
                     RequestDate = new DateTime(2025, 9, 15, 14, 30, 0, DateTimeKind.Utc), // Mid-September 2025
                     Status = PurchaseRequestStatus.Approved,
                     Reason = PurchaseRequestReason.LowStock,
@@ -991,7 +767,7 @@ namespace Project.Data
                 new PurchaseRequest
                 {
                     Id = 2,
-                    RequestedById = 2, // Stock Controller (Id 2)
+                    RequestedById = 2, // Stock Controller (UserId 2)
                     RequestDate = new DateTime(2025, 8, 20, 9, 15, 0, DateTimeKind.Utc), // Late August 2025
                     Status = PurchaseRequestStatus.Draft,
                     Reason = PurchaseRequestReason.Replacement,

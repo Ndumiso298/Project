@@ -1,4 +1,4 @@
-﻿@model Project.Models.FridgeFault
+﻿@model Project.Models.FaultRecord
 @{
     Layout = null; // Optional: removes site layout for clean printing
 }
@@ -70,7 +70,7 @@
 
     <div class="no-print">
         <button onclick="window.print()">🖨️ Print</button>
-        <a href="@Url.Action("Index", "FridgeFault")">🔙 Back to List</a>
+        <a href="@Url.Action("Index", "FaultRecord")">🔙 Back to List</a>
     </div>
 </body>
 </html>

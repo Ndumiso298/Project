@@ -1,63 +1,54 @@
-﻿@model RoleManagementVM
+﻿@model UserManagementVM
 
 <div class="card shadow border-0 mt-4">
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Manage User Role</h2>
+                <h2 class="text-white py-2">Manage User Roles</h2>
             </div>
         </div>
     </div>
     <div class="card-body p-4">
         <form method="post" class="row">
-            <input asp-for="ApplicationUser.Id" hidden />
+            <input asp-for="ApplicationUser.Id" type="hidden" />
+
             <div class="border p-3">
+                <!-- Username -->
                 <div class="form-floating py-2 col-12">
                     <input asp-for="ApplicationUser.UserName" readonly class="form-control border-0 shadow" />
-                    <label asp-for="ApplicationUser.UserName" class="ms-2">Name</label>
+                    <label asp-for="ApplicationUser.UserName" class="ms-2">Username</label>
                 </div>
+
+                <!-- Email -->
                 <div class="form-floating py-2 col-12">
                     <input asp-for="ApplicationUser.Email" readonly class="form-control border-0 shadow" />
                     <label asp-for="ApplicationUser.Email" class="ms-2">Email</label>
                 </div>
+
+                <!-- Role Selection -->
                 <div class="form-floating py-2 col-12">
                     <select asp-for="ApplicationUser.UserRole" asp-items="@Model.RoleList" class="form-select"></select>
                     <label asp-for="ApplicationUser.UserRole" class="ms-2">Role</label>
                 </div>
 
-                @{
-                    var employeeVisible = "display:none;";
-                    var customerVisible = "display:none;";
-                }
-
-                @if (Model.ApplicationUser.UserRole == SD.CustomerRole)
-                {
-                    customerVisible = "display:block;";
-                }
-                else if (Model.ApplicationUser.UserRole == SD.AdminRole ||
-                Model.ApplicationUser.UserRole == SD.CustomerSupportRole ||
-                Model.ApplicationUser.UserRole == SD.StockControllerRole ||
-                Model.ApplicationUser.UserRole == SD.FaultTechnicianRole ||
-                Model.ApplicationUser.UserRole == SD.MaintenanceTechnicianRole)
-                {
-                    employeeVisible = "display:block;";
-                }
-
-                <div id="employeeDropdown" class="form-floating py-2 col-12" style="@employeeVisible">
+                <!-- Employee dropdown -->
+                <div id="employeeDropdown" class="form-floating py-2 col-12" style="display:none;">
                     <select asp-for="ApplicationUser.EmployeeId" asp-items="@Model.EmployeeList" class="form-select">
                         <option value="">-- Select Employee --</option>
                     </select>
                     <label asp-for="ApplicationUser.EmployeeId" class="ms-2">Employee</label>
                 </div>
 
-                <div id="customerDropdown" class="form-floating py-2 col-12" style="@customerVisible">
+                <!-- Customer dropdown -->
+                <div id="customerDropdown" class="form-floating py-2 col-12" style="display:none;">
                     <select asp-for="ApplicationUser.CustomerId" asp-items="@Model.CustomerList" class="form-select">
                         <option value="">-- Select Customer --</option>
                     </select>
                     <label asp-for="ApplicationUser.CustomerId" class="ms-2">Customer</label>
                 </div>
 
-                <div class="row pt-2">
+                <!-- Buttons -->
+                <div class="row pt-3">
                     <div class="col-6 col-md-3">
                         <button type="submit" class="btn btn-primary form-control">Update Role</button>
                     </div>
@@ -76,7 +67,7 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function () {
-            toggleDropdowns(); // Set initial state
+            toggleDropdowns(); // Initial state
 
             $('#ApplicationUser_UserRole').change(function () {
                 toggleDropdowns();
@@ -85,18 +76,20 @@
             function toggleDropdowns() {
                 var selection = $('#ApplicationUser_UserRole').val();
 
-                // Hide both dropdowns initially
+                // Hide both by default
                 $('#employeeDropdown').hide();
                 $('#customerDropdown').hide();
 
-                // Show appropriate dropdown based on role
-                if (selection == '@SD.CustomerRole') {
+                // Show Customer dropdown if Customer role
+                if (selection === '@SD.CustomerRole') {
                     $('#customerDropdown').show();
-                } else if (selection == '@SD.AdminRole' ||
-                           selection == '@SD.CustomerSupportRole' ||
-                           selection == '@SD.StockControllerRole' ||
-                           selection == '@SD.FaultTechnicianRole' ||
-                           selection == '@SD.MaintenanceTechnicianRole') {
+                }
+                // Show Employee dropdown if one of the staff roles
+                else if (selection === '@SD.AdminRole' ||
+                         selection === '@SD.CustomerSupportRole' ||
+                         selection === '@SD.StockControllerRole' ||
+                         selection === '@SD.FaultTechnicianRole' ||
+                         selection === '@SD.MaintenanceTechnicianRole') {
                     $('#employeeDropdown').show();
                 }
             }

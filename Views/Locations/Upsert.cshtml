@@ -1,0 +1,168 @@
+﻿@model LocationVM
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add New Location" : "Edit Location";
+    var isEdit = Model.Id != 0;
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-map-marker-alt me-2"></i> @ViewData["Title"]
+                </h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Locations</a></li>
+                        <li class="breadcrumb-item active">@(isEdit ? "Edit" : "Add")</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Upsert" method="post" id="locationForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Name" class="form-label"></label>
+                                    <input asp-for="Name" class="form-control" placeholder="Enter location name" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                    <small class="form-text text-muted">e.g., Main Warehouse, Downtown Branch</small>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="AddressLine1" class="form-label"></label>
+                                    <input asp-for="AddressLine1" class="form-control" placeholder="Enter street address" />
+                                    <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="AddressLine2" class="form-label"></label>
+                                    <input asp-for="AddressLine2" class="form-control" placeholder="Apartment, suite, unit, etc." />
+                                    <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Suburb" class="form-label"></label>
+                                    <input asp-for="Suburb" class="form-control" placeholder="Enter suburb" />
+                                    <span asp-validation-for="Suburb" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="City" class="form-label"></label>
+                                    <input asp-for="City" class="form-control" placeholder="Enter city" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Province" class="form-label"></label>
+                                    <select asp-for="Province" class="form-select" id="provinceSelect">
+                                        <option value="">-- Select Province --</option>
+                                        <option value="Eastern Cape">Eastern Cape</option>
+                                        <option value="Free State">Free State</option>
+                                        <option value="Gauteng">Gauteng</option>
+                                        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                        <option value="Limpopo">Limpopo</option>
+                                        <option value="Mpumalanga">Mpumalanga</option>
+                                        <option value="North West">North West</option>
+                                        <option value="Northern Cape">Northern Cape</option>
+                                        <option value="Western Cape">Western Cape</option>
+                                    </select>
+                                    <span asp-validation-for="Province" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="PostalCode" class="form-label"></label>
+                                    <input asp-for="PostalCode" class="form-control" placeholder="Enter postal code" maxlength="4" />
+                                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Country" class="form-label"></label>
+                                    <input asp-for="Country" class="form-control" value="South Africa" readonly />
+                                    <span asp-validation-for="Country" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (isEdit)
+                        {
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <div class="form-check form-switch">
+                                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                                                <label asp-for="IsActive" class="form-check-label"></label>
+                                            </div>
+                                            <small class="form-text text-muted">Deactivate location to hide it from dropdowns</small>
+                                        </div>
+                                    </div>
+                                </div>
+                        }
+
+                        <div class="form-group mt-4">
+                            <div class="btn-group" role="group">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i> @(isEdit ? "Update" : "Create") Location
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+        <script>
+            $(document).ready(function () {
+                // Province selection
+                $('#provinceSelect').change(function () {
+                    const province = $(this).val();
+                    // You can add dynamic city loading here if needed
+                });
+
+                // Postal code validation
+                $('#PostalCode').on('input', function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value.length > 4) {
+                        this.value = this.value.slice(0, 4);
+                    }
+                });
+
+                // Form validation
+                $('#locationForm').submit(function () {
+                    const postalCode = $('#PostalCode').val();
+                    if (postalCode.length !== 4) {
+                        alert('Postal code must be exactly 4 digits');
+                        return false;
+                    }
+                    return true;
+                });
+            });
+        </script>
+}

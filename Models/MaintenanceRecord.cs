@@ -1,17 +1,42 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Project.Utilities.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project.Models
 {
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-    using Project.Utilities.Enums;
-
     public class MaintenanceRecord
     {
         [Key]
         public int Id { get; set; }
+
+        // Foreign keys
+        [Required(ErrorMessage = "Fridge is required.")]
+        [Display(Name = "Fridge")]
+        public int FridgeId { get; set; }
+
+        [Required(ErrorMessage = "AssignedTechnician is required.")]
+        [Display(Name = "AssignedTechnician")]
+        public int TechnicianId { get; set; }
+
+        [Display(Name = "Maintenance Visit")]
+        public int? MaintenanceVisitId { get; set; }
+
+        // Navigation properties
+        [ForeignKey(nameof(FridgeId))]
+        [ValidateNever]
+        [Display(Name = "Fridge")]
+        public virtual Fridge Fridge { get; set; }
+
+        [ForeignKey(nameof(TechnicianId))]
+        [ValidateNever]
+        [Display(Name = "AssignedTechnician")]
+        public virtual Employee Technician { get; set; }
+
+        [ForeignKey(nameof(MaintenanceVisitId))]
+        [ValidateNever]
+        [Display(Name = "Maintenance Visit")]
+        public virtual MaintenanceVisit MaintenanceVisit { get; set; }
 
         [Required(ErrorMessage = "Service date is required.")]
         [DataType(DataType.DateTime)]
@@ -30,45 +55,17 @@ namespace Project.Models
         [Display(Name = "Description")]
         public string Description { get; set; }
 
-        [StringLength(2000, ErrorMessage = "Technician notes cannot exceed 2000 characters.")]
+        [StringLength(2000, ErrorMessage = "AssignedTechnician notes cannot exceed 2000 characters.")]
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Technician Notes")]
-        public string? TechnicianNotes { get; set; }
+        [Display(Name = "AssignedTechnician Notes")]
+        public string? ServiceNotes { get; set; }
 
-        [Required(ErrorMessage = "Cost is required.")]
-        [Range(0, 100000, ErrorMessage = "Cost must be a positive value.")]
+        [Required(ErrorMessage = "ServiceCost is required.")]
+        [Range(0, 100000, ErrorMessage = "ServiceCost must be a positive value.")]
         [Column(TypeName = "decimal(18,2)")]
         [DataType(DataType.Currency)]
-        [Display(Name = "Cost (R)")]
+        [Display(Name = "ServiceCost (R)")]
         public decimal Cost { get; set; }
-
-        // Foreign keys
-        [Required(ErrorMessage = "Fridge is required.")]
-        [Display(Name = "Fridge")]
-        public int FridgeId { get; set; }
-
-        [Required(ErrorMessage = "Technician is required.")]
-        [Display(Name = "Technician")]
-        public int TechnicianId { get; set; }
-
-        [Display(Name = "Maintenance Visit")]
-        public int? MaintenanceVisitId { get; set; }
-
-        // Navigation properties
-        [ForeignKey(nameof(FridgeId))]
-        [ValidateNever]
-        [Display(Name = "Fridge")]
-        public virtual Fridge Fridge { get; set; }
-
-        [ForeignKey(nameof(TechnicianId))]
-        [ValidateNever]
-        [Display(Name = "Technician")]
-        public virtual Employee Technician { get; set; }
-
-        [ForeignKey(nameof(MaintenanceVisitId))]
-        [ValidateNever]
-        [Display(Name = "Maintenance Visit")]
-        public virtual MaintenanceVisit MaintenanceVisit { get; set; }
 
         // Additional properties for better tracking
         [DataType(DataType.DateTime)]
@@ -100,6 +97,9 @@ namespace Project.Models
         public string? WarrantyReference { get; set; }
 
         // Audit fields
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
         [Display(Name = "Created Date")]
         [DataType(DataType.DateTime)]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
