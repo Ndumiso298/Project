@@ -26,18 +26,26 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form asp-action="Upsert" method="post" enctype="multipart/form-data">
+                    <form asp-action="Upsert" method="post" enctype="multipart/form-data" id="fridgeForm">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="Id" />
 
                         <div class="row">
                             <div class="col-md-8">
+                                <!-- Basic Information -->
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label asp-for="SerialNumber" class="form-label"></label>
-                                            <input asp-for="SerialNumber" class="form-control" />
+                                            <input asp-for="SerialNumber" class="form-control" id="serialNumber" />
                                             <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                                            <div id="serialNumberFeedback" class="form-text"></div>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Manufacturer" class="form-label"></label>
+                                            <input asp-for="Manufacturer" class="form-control" />
+                                            <span asp-validation-for="Manufacturer" class="text-danger"></span>
                                         </div>
 
                                         <div class="form-group mb-3">
@@ -47,38 +55,84 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label asp-for="CapacityLiters" class="form-label"></label>
-                                            <input asp-for="CapacityLiters" type="number" step="0.1" class="form-control" />
-                                            <span asp-validation-for="CapacityLiters" class="text-danger"></span>
+                                            <label asp-for="Type" class="form-label"></label>
+                                            <select asp-for="Type" class="form-select">
+                                                <option value="">-- Select Type --</option>
+                                                <option value="Single Door">Single Door</option>
+                                                <option value="Double Door">Double Door</option>
+                                                <option value="Side-by-Side">Side-by-Side</option>
+                                                <option value="French Door">French Door</option>
+                                                <option value="Mini Fridge">Mini Fridge</option>
+                                                <option value="Commercial">Commercial</option>
+                                            </select>
+                                            <span asp-validation-for="Type" class="text-danger"></span>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
+                                            <label asp-for="CapacityLiters" class="form-label"></label>
+                                            <input asp-for="CapacityLiters" type="number" step="1" class="form-control" />
+                                            <span asp-validation-for="CapacityLiters" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
                                             <label asp-for="RentalPricePerMonth" class="form-label"></label>
                                             <div class="input-group">
-                                                <span class="input-group-text">$</span>
+                                                <span class="input-group-text">R</span>
                                                 <input asp-for="RentalPricePerMonth" type="number" step="0.01" class="form-control" />
                                             </div>
                                             <span asp-validation-for="RentalPricePerMonth" class="text-danger"></span>
                                         </div>
 
                                         <div class="form-group mb-3">
+                                            <label asp-for="Condition" class="form-label"></label>
+                                            <select asp-for="Condition" asp-items="ViewBag.FridgeConditionList" class="form-select">
+                                                <option value="">-- Select Condition --</option>
+                                            </select>
+                                            <span asp-validation-for="Condition" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
                                             <label asp-for="Status" class="form-label"></label>
-                                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<FridgeStatus>()" class="form-select">
+                                            <select asp-for="Status" asp-items="ViewBag.FridgeStatusList" class="form-select">
                                                 <option value="">-- Select Status --</option>
                                             </select>
                                             <span asp-validation-for="Status" class="text-danger"></span>
                                         </div>
+                                    </div>
+                                </div>
 
+                                <!-- Location Information -->
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label asp-for="PurchaseDate" class="form-label"></label>
-                                            <input asp-for="PurchaseDate" type="date" class="form-control" />
-                                            <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                                            <label asp-for="LocationId" class="form-label"></label>
+                                            <select asp-for="LocationId" asp-items="ViewBag.LocationList" class="form-select">
+                                                <option value="">-- Select Location --</option>
+                                            </select>
+                                            <span asp-validation-for="LocationId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="EnergyRating" class="form-label"></label>
+                                            <select asp-for="EnergyRating" class="form-select">
+                                                <option value="">-- Select Energy Rating --</option>
+                                                <option value="A+++">A+++</option>
+                                                <option value="A++">A++</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                            </select>
+                                            <span asp-validation-for="EnergyRating" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- Description -->
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group mb-3">
@@ -86,42 +140,35 @@
                                             <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                                             <span asp-validation-for="Description" class="text-danger"></span>
                                         </div>
-
-                                        <div class="form-group mb-3">
-                                            <label asp-for="Specifications" class="form-label"></label>
-                                            <textarea asp-for="Specifications" class="form-control" rows="3"></textarea>
-                                            <span asp-validation-for="Specifications" class="text-danger"></span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
-                                <div class="form-group mb-3">
+                                <!-- Image Upload -->
+                                <div class="form-group mb-4">
                                     <label class="form-label">Fridge Image</label>
                                     <div class="border rounded p-3 text-center">
                                         @if (isEdit && !string.IsNullOrEmpty(Model.ImageUrl))
                                         {
-                                            <img id="previewImage" src="@Model.ImageUrl" alt="Fridge Image" 
+                                            <img id="previewImage" src="@Model.ImageUrl" alt="Fridge Image"
                                                  class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
-                                            <div class="mb-2">
-                                                <small class="text-muted">Current Image</small>
-                                            </div>
                                         }
                                         else
                                         {
-                                            <img id="previewImage" src="https://via.placeholder.com/300x200?text=Fridge+Image" 
+                                            <img id="previewImage" src="https://via.placeholder.com/300x200?text=Fridge+Image"
                                                  alt="Fridge Image" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
                                         }
-                                        
+
                                         <div class="mb-3">
-                                            <input type="file" name="file" id="uploadBox" class="form-control" 
+                                            <input type="file" name="file" id="uploadBox" class="form-control"
                                                    accept="image/*" onchange="previewFile()" />
                                         </div>
                                         <small class="text-muted">Recommended: 300x200 pixels, JPG/PNG format</small>
                                     </div>
                                 </div>
 
+                                <!-- Quick Stats -->
                                 <div class="card bg-light">
                                     <div class="card-body">
                                         <h6 class="card-title">Quick Stats</h6>
@@ -132,7 +179,7 @@
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <span>Last Modified:</span>
-                                                <span>@(isEdit ? Model.ModifiedDate?.ToString("dd/MM/yyyy") : "N/A")</span>
+                                                <span>@(isEdit ? Model.ModifiedDate.ToString("dd/MM/yyyy") : "N/A")</span>
                                             </div>
                                         </div>
                                     </div>
@@ -158,9 +205,8 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+
     <script>
         function previewFile() {
             const preview = document.getElementById('previewImage');
@@ -176,8 +222,26 @@
             }
         }
 
-        // Set maximum date for purchase date to today
-        document.getElementById('PurchaseDate').max = new Date().toISOString().split("T")[0];
+        // Serial number validation
+        document.getElementById('serialNumber').addEventListener('blur', function() {
+            const serialNumber = this.value;
+            const fridgeId = @Model.Id;
+
+            if (serialNumber.length > 0) {
+                fetch(`/Fridges/CheckSerialNumber?serialNumber=${encodeURIComponent(serialNumber)}&id=${fridgeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const feedback = document.getElementById('serialNumberFeedback');
+                        if (data.exists) {
+                            feedback.className = 'form-text text-danger';
+                            feedback.textContent = data.message;
+                        } else {
+                            feedback.className = 'form-text text-success';
+                            feedback.textContent = data.message;
+                        }
+                    });
+            }
+        });
     </script>
 }
 

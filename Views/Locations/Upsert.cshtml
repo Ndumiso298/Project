@@ -3,6 +3,9 @@
     ViewData["Title"] = Model.Id == 0 ? "Add New Location" : "Edit Location";
     var isEdit = Model.Id != 0;
 }
+@{
+    Layout = "_AdminLayout";
+}
 
 <div class="container-fluid">
     <div class="row mb-4">

@@ -15,24 +15,24 @@ namespace Project.Controllers
     [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole + "," + SD.CustomerRole)]
     public class FridgeAllocationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public FridgeAllocationsController(ApplicationDbContext context)
+        public FridgeAllocationsController(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: Allocations
         public async Task<IActionResult> Index()
         {
-            IQueryable<FridgeAllocation> query = _context.FridgeAllocations
+            IQueryable<FridgeAllocation> query = _db.FridgeAllocations
                 .Include(a => a.Fridge)
                 .Include(a => a.Customer)
                 .Include(a => a.AllocationLocation)
                 .Where(a => a.IsActive);
 
             // Role-based filtering
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole(SD.CustomerRole))
             {
                 var customer = await GetCurrentCustomerAsync();
                 if (customer != null)
@@ -48,7 +48,7 @@ namespace Project.Controllers
         // GET: Allocations/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var allocation = await _context.FridgeAllocations
+            var allocation = await _db.FridgeAllocations
                 .Include(a => a.Fridge)
                 .Include(a => a.Customer)
                 .Include(a => a.AllocationLocation)
@@ -62,7 +62,7 @@ namespace Project.Controllers
             }
 
             // Authorization check for customers
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole(SD.CustomerRole))
             {
                 var customer = await GetCurrentCustomerAsync();
                 if (customer == null || allocation.CustomerId != customer.Id)
@@ -75,7 +75,7 @@ namespace Project.Controllers
         }
 
         // GET: Allocations/Upsert
-        [Authorize(Roles = "Administrator,CustomerSupport")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Upsert(int? id)
         {
             var vm = new FridgeAllocationVM();
@@ -89,7 +89,7 @@ namespace Project.Controllers
             }
 
             // Edit existing allocation
-            var allocation = await _context.FridgeAllocations
+            var allocation = await _db.FridgeAllocations
                 .Include(a => a.Fridge)
                 .Include(a => a.Customer)
                 .FirstOrDefaultAsync(a => a.Id == id);
@@ -115,7 +115,7 @@ namespace Project.Controllers
         // POST: Allocations/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,CustomerSupport")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Upsert(FridgeAllocationVM vm)
         {
             if (ModelState.IsValid)
@@ -136,8 +136,8 @@ namespace Project.Controllers
                             CreatedAt = DateTime.Now
                         };
 
-                        _context.FridgeAllocations.Add(allocation);
-                        await _context.SaveChangesAsync();
+                        _db.FridgeAllocations.Add(allocation);
+                        await _db.SaveChangesAsync();
 
                         // Update fridge status
                         await UpdateFridgeStatus(vm.FridgeId, FridgeStatus.Allocated);
@@ -147,7 +147,7 @@ namespace Project.Controllers
                     else
                     {
                         // Update existing allocation
-                        var allocation = await _context.FridgeAllocations.FindAsync(vm.Id);
+                        var allocation = await _db.FridgeAllocations.FindAsync(vm.Id);
                         if (allocation == null)
                         {
                             return NotFound();
@@ -161,8 +161,8 @@ namespace Project.Controllers
                         allocation.Notes = vm.DeallocationReason;
                         allocation.UpdatedAt = DateTime.Now;
 
-                        _context.FridgeAllocations.Update(allocation);
-                        await _context.SaveChangesAsync();
+                        _db.FridgeAllocations.Update(allocation);
+                        await _db.SaveChangesAsync();
 
                         TempData["success"] = "Allocation updated successfully";
                     }
@@ -180,10 +180,10 @@ namespace Project.Controllers
         }
 
         // GET: Allocations/Deallocate/5
-        [Authorize(Roles = "Administrator,CustomerSupport")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Deallocate(int id)
         {
-            var allocation = await _context.FridgeAllocations
+            var allocation = await _db.FridgeAllocations
                 .Include(a => a.Fridge)
                 .Include(a => a.Customer)
                 .FirstOrDefaultAsync(a => a.Id == id);
@@ -207,12 +207,12 @@ namespace Project.Controllers
         // POST: Allocations/Deallocate/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,CustomerSupport")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Deallocate(DeallocationVM vm)
         {
             if (ModelState.IsValid)
             {
-                var allocation = await _context.FridgeAllocations.FindAsync(vm.AllocationId);
+                var allocation = await _db.FridgeAllocations.FindAsync(vm.AllocationId);
                 if (allocation == null)
                 {
                     return NotFound();
@@ -222,8 +222,8 @@ namespace Project.Controllers
                 allocation.Notes = vm.DeallocationReason;
                 allocation.UpdatedAt = DateTime.Now;
 
-                _context.FridgeAllocations.Update(allocation);
-                await _context.SaveChangesAsync();
+                _db.FridgeAllocations.Update(allocation);
+                await _db.SaveChangesAsync();
 
                 // Update fridge status back to available
                 await UpdateFridgeStatus(allocation.FridgeId, FridgeStatus.Available);
@@ -238,10 +238,10 @@ namespace Project.Controllers
         // POST: Allocations/Delete/5 (Soft Delete)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = SD.AdminRole)]
         public async Task<IActionResult> Delete(int id)
         {
-            var allocation = await _context.FridgeAllocations.FindAsync(id);
+            var allocation = await _db.FridgeAllocations.FindAsync(id);
             if (allocation == null)
             {
                 return NotFound();
@@ -250,7 +250,7 @@ namespace Project.Controllers
             // Soft delete
             allocation.UpdatedAt = DateTime.Now;
 
-            await _context.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             TempData["success"] = "Allocation deleted successfully";
             return RedirectToAction(nameof(Index));
         }
@@ -258,7 +258,7 @@ namespace Project.Controllers
         // Customer Cart Functionality (from your original code)
         public async Task<IActionResult> Cart()
         {
-            if (!User.IsInRole("Customer"))
+            if (!User.IsInRole(SD.CustomerRole))
             {
                 return Forbid();
             }
@@ -269,7 +269,7 @@ namespace Project.Controllers
                 return NotFound();
             }
 
-            var cartAllocations = await _context.FridgeAllocations
+            var cartAllocations = await _db.FridgeAllocations
                 .Include(a => a.Fridge)
                 .Where(a => a.CustomerId == customer.Id && a.IsActive && a.ActualReturnDate == null)
                 .ToListAsync();
@@ -284,7 +284,7 @@ namespace Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> SubmitRequest()
         {
             var customer = await GetCurrentCustomerAsync();
@@ -295,7 +295,7 @@ namespace Project.Controllers
 
             try
             {
-                var cartAllocations = await _context.FridgeAllocations
+                var cartAllocations = await _db.FridgeAllocations
                     .Include(a => a.Fridge)
                     .Where(a => a.CustomerId == customer.Id && a.IsActive && a.ActualReturnDate == null)
                     .ToListAsync();
@@ -323,8 +323,8 @@ namespace Project.Controllers
                     RequestTotal = cartAllocations.Sum(a => a.Fridge?.RentalPricePerMonth ?? 0)
                 };
 
-                _context.AllocationRequestHeaders.Add(request);
-                await _context.SaveChangesAsync();
+                _db.AllocationRequestHeaders.Add(request);
+                await _db.SaveChangesAsync();
 
                 // Create request details
                 foreach (var allocation in cartAllocations)
@@ -336,10 +336,10 @@ namespace Project.Controllers
                         Quantity = 1, // Each allocation is for one fridge
                         Price = allocation.Fridge?.RentalPricePerMonth ?? 0
                     };
-                    _context.AllocationRequestDetails.Add(detail);
+                    _db.AllocationRequestDetails.Add(detail);
                 }
 
-                await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
                 TempData["success"] = "Allocation request submitted successfully";
                 return RedirectToAction(nameof(RequestConfirmation), new { id = request.Id });
             }
@@ -357,7 +357,7 @@ namespace Project.Controllers
 
         private async Task PopulateDropdowns(FridgeAllocationVM vm)
         {
-            vm.FridgeList = await _context.Fridges
+            vm.FridgeList = await _db.Fridges
                 .Where(f => f.Status == FridgeStatus.Available)
                 .OrderBy(f => f.SerialNumber)
                 .Select(f => new SelectListItem
@@ -367,7 +367,7 @@ namespace Project.Controllers
                 })
                 .ToListAsync();
 
-            vm.CustomerList = await _context.Customers
+            vm.CustomerList = await _db.Customers
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.TradingName)
                 .Select(c => new SelectListItem
@@ -377,7 +377,7 @@ namespace Project.Controllers
                 })
                 .ToListAsync();
 
-            vm.LocationList = await _context.Locations
+            vm.LocationList = await _db.Locations
                 .Where(l => l.IsActive)
                 .OrderBy(l => l.Name)
                 .Select(l => new SelectListItem
@@ -387,7 +387,7 @@ namespace Project.Controllers
                 })
                 .ToListAsync();
 
-            vm.EmployeeList = await _context.Employees
+            vm.EmployeeList = await _db.Employees
                 .Where(e => e.IsActive)
                 .OrderBy(e => e.UserAccount.LastName)
                 .Select(e => new SelectListItem
@@ -401,7 +401,7 @@ namespace Project.Controllers
         private async Task<int> GetCurrentEmployeeIdAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var employee = await _context.Employees
+            var employee = await _db.Employees
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.IsActive);
             return employee.Id;
         }
@@ -409,19 +409,19 @@ namespace Project.Controllers
         private async Task<Customer?> GetCurrentCustomerAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return await _context.Customers
+            return await _db.Customers
                 .Include(c => c.UserAccount)
                 .FirstOrDefaultAsync(c => c.UserId == userId && c.IsActive);
         }
 
         private async Task UpdateFridgeStatus(int fridgeId, FridgeStatus status)
         {
-            var fridge = await _context.Fridges.FindAsync(fridgeId);
+            var fridge = await _db.Fridges.FindAsync(fridgeId);
             if (fridge != null)
             {
                 fridge.Status = status;
                 fridge.ModifiedDate = DateTime.Now;
-                _context.Fridges.Update(fridge);
+                _db.Fridges.Update(fridge);
             }
         }
     }

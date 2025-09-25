@@ -26,7 +26,8 @@ namespace Project.Controllers
         {
             IQueryable<AllocationRequestHeader> query = _db.AllocationRequestHeaders
                 .Include(r => r.Customer)
-                .Include(r => r.RequestedFridges).ThenInclude(rd => rd.Fridge)
+                .Include(r => r.RequestedFridges)
+                .ThenInclude(rd => rd.Fridge)
                 .Where(r => r.Status != "Deleted");
 
             // Apply filters
@@ -45,7 +46,7 @@ namespace Project.Controllers
             }
 
             // Role-based filtering
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole(SD.CustomerRole))
             {
                 var customer = await GetCurrentCustomerAsync();
                 if (customer != null)
@@ -78,7 +79,7 @@ namespace Project.Controllers
             }
 
             // Authorization check for customers
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole(SD.CustomerRole))
             {
                 var customer = await GetCurrentCustomerAsync();
                 if (customer == null || request.CustomerId != customer.Id)
@@ -103,7 +104,7 @@ namespace Project.Controllers
                 vm.RequestDate = DateTime.Now;
 
                 // Pre-populate customer data if user is a customer
-                if (User.IsInRole("Customer"))
+                if (User.IsInRole(SD.CustomerRole))
                 {
                     var customer = await GetCurrentCustomerAsync();
                     if (customer != null)
@@ -134,7 +135,7 @@ namespace Project.Controllers
             }
 
             // Authorization check
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole(SD.CustomerRole))
             {
                 var customer = await GetCurrentCustomerAsync();
                 if (customer == null || request.CustomerId != customer.Id)
@@ -239,7 +240,7 @@ namespace Project.Controllers
                         }
 
                         // Authorization check for customers
-                        if (User.IsInRole("Customer") && request.Status != "Pending")
+                        if (User.IsInRole(SD.CustomerRole)  && request.Status != "Pending")
                         {
                             TempData["error"] = "Cannot edit request after it has been processed";
                             return RedirectToAction(nameof(Details), new { id = vm.Id });
@@ -296,7 +297,7 @@ namespace Project.Controllers
 
         // POST: AllocationRequests/Process/5
         [HttpPost]
-        [Authorize(Roles = "Administrator,CustomerLiaison")]
+        [Authorize(Roles =SD.AdminRole + "," + SD.CustomerSupportRole)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Process(int id)
         {
@@ -315,7 +316,7 @@ namespace Project.Controllers
 
         // POST: AllocationRequests/Allocate/5
         [HttpPost]
-        [Authorize(Roles = "Administrator,CustomerLiaison,InventoryLiaison")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole + "," + SD.StockControllerRole)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Allocate(int id)
         {
@@ -383,7 +384,7 @@ namespace Project.Controllers
             }
 
             // Authorization check for customers
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole(SD.CustomerRole))
             {
                 var customer = await GetCurrentCustomerAsync();
                 if (customer == null || request.CustomerId != customer.Id || request.Status != "Pending")
@@ -457,12 +458,13 @@ namespace Project.Controllers
         {
             return new List<SelectListItem>
         {
-            new SelectListItem { Value = "Pending", Text = "Pending" },
-            new SelectListItem { Value = "In Progress", Text = "In Progress" },
-            new SelectListItem { Value = "Allocated", Text = "Allocated" },
-            new SelectListItem { Value = "Shipped", Text = "Shipped" },
-            new SelectListItem { Value = "Completed", Text = "Completed" },
-            new SelectListItem { Value = "Cancelled", Text = "Cancelled" }
+            new SelectListItem { Value = AllocationStatus.Pending.ToString(), Text = "Pending" },
+            new SelectListItem { Value = AllocationStatus.Active.ToString(), Text = "Active" },
+            new SelectListItem { Value = AllocationStatus.Suspended.ToString(), Text = "Suspended" },
+            new SelectListItem { Value = AllocationStatus.Completed.ToString(), Text = "Completed" },
+            new SelectListItem { Value = AllocationStatus.Cancelled.ToString(), Text = "Cancelled" },
+            new SelectListItem { Value = AllocationStatus.Terminated.ToString(), Text = "Terminated" },
+            new SelectListItem { Value = AllocationStatus.Expired.ToString(), Text = "Expired" }
         };
         }
 

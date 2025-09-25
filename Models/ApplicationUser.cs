@@ -47,7 +47,7 @@ namespace Project.Models
         [Url(ErrorMessage = "Please enter a valid URL.")]
         public string? ProfilePictureUrl { get; set; }
 
-        [Display(Name = "Active")]
+        [Display(Name = "Account Status")]
         public bool IsActive { get; set; } = true;
 
         [Display(Name = "Created At")]

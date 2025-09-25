@@ -2,7 +2,7 @@
 {
     public static class SD
     {//Role names
-        public const string AdminRole = "Admin";
+        public const string AdminRole = "Administrator";
         public const string CustomerRole = "Customer";
         public const string CustomerSupportRole = "CustomerSupport";
         public const string StockControllerRole = "StockController";
@@ -12,7 +12,7 @@
         //Request statuses
         public const string StatusPending = "Pending";
         public const string StatusApproved = "Approved";
-        public const string StatusInProcess = "Processing";
+        public const string StatusInProcessing = "Processing";
         public const string StatusShipped = "Shipped";
         public const string PaymentStatusDelayedPayment = "Payment Delay";
 

@@ -255,7 +255,7 @@ namespace Project.Controllers
         }
 
         // GET: MaintenanceVisits/Complete/5
-        [Authorize(Roles = "Administrator,MaintenanceTechnician")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.MaintenanceTechnicianRole)]
         public async Task<IActionResult> Complete(int id)
         {
             var visit = await _context.MaintenanceVisits
@@ -283,7 +283,7 @@ namespace Project.Controllers
         // POST: MaintenanceVisits/Complete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,MaintenanceTechnician")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.MaintenanceTechnicianRole)]
         public async Task<IActionResult> Complete(CompleteMaintenanceVM vm)
         {
             if (ModelState.IsValid)
@@ -319,7 +319,7 @@ namespace Project.Controllers
         // POST: MaintenanceVisits/Delete/5 (Soft Delete)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = SD.AdminRole)]
         public async Task<IActionResult> Delete(int id)
         {
             var visit = await _context.MaintenanceVisits.FindAsync(id);

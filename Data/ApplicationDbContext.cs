@@ -43,6 +43,148 @@ namespace Project.Data
                 new IdentityRole { Id = "6", Name = SD.CustomerRole, NormalizedName = SD.CustomerRole.ToUpper() }
             );
 
+            modelBuilder.Entity<Location>().HasData(
+                // 1 - Customer site
+                new Location
+                {
+                    Id = 1,
+                    Name = "Boerewors Palace",
+                    Province = "Gauteng",
+                    City = "Johannesburg",
+                    Suburb = "CBD",
+                    AddressLine1 = "123 Main Street",
+                    AddressLine2 = "Corner of 5th Ave",
+                    PostalCode = "2001",
+                    Country = "South Africa"
+                },
+
+                // 2 - SmartChill Warehouse (Eastern Cape)
+                new Location
+                {
+                    Id = 2,
+                    Name = "SmartChill Warehouse - Gqeberha",
+                    Province = "Eastern Cape",
+                    City = "Gqeberha",
+                    Suburb = "Walmer",
+                    AddressLine1 = "123 Main Road",
+                    AddressLine2 = "Unit 4",
+                    PostalCode = "6070",
+                    Country = "South Africa"
+                },
+
+                // 3 - SmartChill Warehouse (Gauteng)
+                new Location
+                {
+                    Id = 3,
+                    Name = "SmartChill Warehouse - Johannesburg",
+                    Province = "Gauteng",
+                    City = "Johannesburg",
+                    Suburb = "Sandton",
+                    AddressLine1 = "10 Rivonia Road",
+                    AddressLine2 = "Floor 3",
+                    PostalCode = "2196",
+                    Country = "South Africa"
+                },
+
+                // 4 - SmartChill Warehouse (Western Cape)
+                new Location
+                {
+                    Id = 4,
+                    Name = "SmartChill Warehouse - Cape Town",
+                    Province = "Western Cape",
+                    City = "Cape Town",
+                    Suburb = "Epping",
+                    AddressLine1 = "55 Industria Road",
+                    AddressLine2 = null,
+                    PostalCode = "7460",
+                    Country = "South Africa"
+                },
+
+                // 5 - SmartChill Service Center
+                new Location
+                {
+                    Id = 5,
+                    Name = "SmartChill Service Center",
+                    Province = "KwaZulu-Natal",
+                    City = "Durban",
+                    Suburb = "Pinetown",
+                    AddressLine1 = "18 Workshop Avenue",
+                    AddressLine2 = null,
+                    PostalCode = "3610",
+                    Country = "South Africa"
+                },
+
+                // 6 - Regional Office (Free State)
+                new Location
+                {
+                    Id = 6,
+                    Name = "SmartChill Regional Office - Bloemfontein",
+                    Province = "Free State",
+                    City = "Bloemfontein",
+                    Suburb = "Westdene",
+                    AddressLine1 = "22 Nelson Mandela Drive",
+                    AddressLine2 = "Suite 101",
+                    PostalCode = "9301",
+                    Country = "South Africa"
+                },
+
+                // 7 - Depot (Mpumalanga)
+                new Location
+                {
+                    Id = 7,
+                    Name = "SmartChill Depot - Nelspruit",
+                    Province = "Mpumalanga",
+                    City = "Mbombela",
+                    Suburb = "Riverside",
+                    AddressLine1 = "7 Lowveld Street",
+                    AddressLine2 = null,
+                    PostalCode = "1201",
+                    Country = "South Africa"
+                },
+
+                // 8 - Showroom (Limpopo)
+                new Location
+                {
+                    Id = 8,
+                    Name = "SmartChill Showroom - Polokwane",
+                    Province = "Limpopo",
+                    City = "Polokwane",
+                    Suburb = "Flora Park",
+                    AddressLine1 = "89 Market Street",
+                    AddressLine2 = null,
+                    PostalCode = "0700",
+                    Country = "South Africa"
+                },
+
+                // 9 - Satellite Office (North West)
+                new Location
+                {
+                    Id = 9,
+                    Name = "SmartChill Satellite Office - Rustenburg",
+                    Province = "North West",
+                    City = "Rustenburg",
+                    Suburb = "Bo-dorp",
+                    AddressLine1 = "14 Platinum Drive",
+                    AddressLine2 = null,
+                    PostalCode = "0299",
+                    Country = "South Africa"
+                },
+
+                // 10 - Support Hub (Northern Cape)
+                new Location
+                {
+                    Id = 10,
+                    Name = "SmartChill Support Hub - Kimberley",
+                    Province = "Northern Cape",
+                    City = "Kimberley",
+                    Suburb = "Monument Heights",
+                    AddressLine1 = "5 Diamond Road",
+                    AddressLine2 = "Block B",
+                    PostalCode = "8301",
+                    Country = "South Africa"
+                }
+            );
+
             // Precompute password hashes (use the same password for all seeded users for simplicity)
             var user = new ApplicationUser();
             var hasher = new PasswordHasher<ApplicationUser>();
@@ -53,6 +195,7 @@ namespace Project.Data
                 new ApplicationUser
                 {
                     Id = "1",
+                    EmployeeId = 1,
                     UserName = "admin@smartchill.com",
                     FirstName = "Collins",
                     LastName = "Khosa",
@@ -66,11 +209,12 @@ namespace Project.Data
                     PasswordHash = hasher.HashPassword(user, defaultPassword),
                     SecurityStamp = Guid.NewGuid().ToString(),
                     AccessFailedCount = 0,
-                    LocationId = 5
+                    LocationId = 6
                 },
                 new ApplicationUser
                 {
                     Id = "2",
+                    EmployeeId = 2,
                     UserName = "customersupport@smartchill.com",
                     FirstName = "Andries",
                     LastName = "Tatane",
@@ -83,11 +227,12 @@ namespace Project.Data
                     PhoneNumberConfirmed = true,
                     PasswordHash = hasher.HashPassword(user, defaultPassword),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    LocationId = 5
+                    LocationId = 10
                 },
                 new ApplicationUser
                 {
                     Id = "3",
+                    EmployeeId = 3,
                     UserName = "stockcontroller@smartchill.com",
                     FirstName = "Mido",
                     LastName = "Macia",
@@ -105,6 +250,7 @@ namespace Project.Data
                 new ApplicationUser
                 {
                     Id = "4",
+                    EmployeeId = 4,
                     UserName = "faulttechnician@smartchill.com",
                     FirstName = "Nathaniel",
                     LastName = "Julies",
@@ -117,11 +263,12 @@ namespace Project.Data
                     PhoneNumberConfirmed = true,
                     PasswordHash = hasher.HashPassword(user, defaultPassword),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    LocationId = 8
+                    LocationId = 5
                 },
                 new ApplicationUser
                 {
                     Id = "5",
+                    EmployeeId = 5,
                     UserName = "maintenancetechnician@smartchill.com",
                     FirstName = "Latiefa",
                     LastName = "Freeman",
@@ -134,11 +281,12 @@ namespace Project.Data
                     PhoneNumberConfirmed = true,
                     PasswordHash = hasher.HashPassword(user, defaultPassword),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    LocationId = 3
+                    LocationId = 5
                 },
                 new ApplicationUser
                 {
                     Id = "6",
+                    CustomerId = 1,
                     UserName = "naterobertson@gmail.com",
                     FirstName = "Nathan",
                     LastName = "Robertson",
@@ -163,6 +311,8 @@ namespace Project.Data
                 new IdentityUserRole<string> { UserId = "5", RoleId = "5" },
                 new IdentityUserRole<string> { UserId = "6", RoleId = "6" }
             );
+
+
             modelBuilder.Entity<Employee>()
                 .HasDiscriminator<string>("EmployeeType");
 
@@ -225,22 +375,27 @@ namespace Project.Data
                 {
                     Id = 1,
                     UserId = "6", // FK to ApplicationUser
-                    CustomerLiaisonId = 1, // FK to Employee
+                    CustomerLiaisonId = 2, // FK to Employee
                     TradingName = "Boerewors Palace",
                     BusinessType = BusinessType.SmallRetail,
                     BusinessEmail = "info@boereworspalace.co.za",
                     BusinessPhoneNumber = "+27 11 555 0101",
+                    LocationId = 1,
                     AddressLine1 = "123 Main Street",
                     AddressLine2 = "Corner of 5th Ave",
                     City = "Johannesburg",
                     Province = "Gauteng",
-                    PostalCode = "2001"
+                    PostalCode = "2001",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
                 }
             );
 
 
             modelBuilder.Entity<Fridge>().HasData(
-                // Industrial Fridges for Shebeens (bars)
+                // Warehouse Distribution (Majority in main warehouses)
+
+                // ===== JOHANNESBURG WAREHOUSE (Largest stock) =====
                 new Fridge
                 {
                     Id = 1,
@@ -252,7 +407,7 @@ namespace Project.Data
                     Description = "Commercial beverage fridge with glass door, perfect for beer and drinks display.",
                     RentalPricePerMonth = 1500.00m,
                     LastMaintenanceDate = new DateTime(2024, 6, 15),
-                    LocationId = 1, // Assuming LocationId 1 is a warehouse
+                    LocationId = 3, // Johannesburg Warehouse
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1629367494173-c78a56567877",
@@ -277,7 +432,7 @@ namespace Project.Data
                     Description = "Large capacity glass door fridge for bar use, ideal for beverage storage.",
                     RentalPricePerMonth = 1800.00m,
                     LastMaintenanceDate = new DateTime(2024, 5, 20),
-                    LocationId = 1,
+                    LocationId = 3, // Johannesburg Warehouse
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Allocated,
                     ImageUrl = "https://images.unsplash.com/photo-1579389083078-4e7018379f7e",
@@ -302,7 +457,7 @@ namespace Project.Data
                     Description = "Large capacity reach-in fridge for high-volume shebeen operations.",
                     RentalPricePerMonth = 2200.00m,
                     LastMaintenanceDate = new DateTime(2024, 4, 10),
-                    LocationId = 1,
+                    LocationId = 3, // Johannesburg Warehouse
                     Condition = FridgeCondition.NeedsService,
                     Status = FridgeStatus.InRepair,
                     ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
@@ -316,8 +471,6 @@ namespace Project.Data
                     CreatedDate = new DateTime(2022, 8, 22),
                     ModifiedDate = new DateTime(2024, 4, 10)
                 },
-
-                // Freezers for Spaza Shops
                 new Fridge
                 {
                     Id = 4,
@@ -329,7 +482,7 @@ namespace Project.Data
                     Description = "Upright freezer with multiple shelves, perfect for frozen goods in spaza shops.",
                     RentalPricePerMonth = 1200.00m,
                     LastMaintenanceDate = new DateTime(2024, 7, 5),
-                    LocationId = 1,
+                    LocationId = 3, // Johannesburg Warehouse
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1595425970377-2f8ded7c7b19",
@@ -343,6 +496,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2024, 2, 14),
                     ModifiedDate = new DateTime(2024, 7, 5)
                 },
+
+                // ===== CAPE TOWN WAREHOUSE =====
                 new Fridge
                 {
                     Id = 5,
@@ -354,7 +509,7 @@ namespace Project.Data
                     Description = "Energy-efficient chest freezer for bulk frozen food storage.",
                     RentalPricePerMonth = 950.00m,
                     LastMaintenanceDate = new DateTime(2024, 3, 18),
-                    LocationId = 1,
+                    LocationId = 4, // Cape Town Warehouse
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Allocated,
                     ImageUrl = "https://images.unsplash.com/photo-1631549916768-4119c9ff7ac5",
@@ -368,8 +523,6 @@ namespace Project.Data
                     CreatedDate = new DateTime(2023, 5, 30),
                     ModifiedDate = new DateTime(2024, 3, 18)
                 },
-
-                // More varied fridges
                 new Fridge
                 {
                     Id = 6,
@@ -381,7 +534,7 @@ namespace Project.Data
                     Description = "Spacious double door fridge with separate freezer compartment.",
                     RentalPricePerMonth = 1300.00m,
                     LastMaintenanceDate = new DateTime(2024, 6, 28),
-                    LocationId = 1,
+                    LocationId = 4, // Cape Town Warehouse
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5",
@@ -395,6 +548,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2024, 3, 10),
                     ModifiedDate = new DateTime(2024, 6, 28)
                 },
+
+                // ===== GQEBERHA WAREHOUSE =====
                 new Fridge
                 {
                     Id = 7,
@@ -406,7 +561,7 @@ namespace Project.Data
                     Description = "Large French door commercial fridge with ice maker, perfect for high-volume establishments.",
                     RentalPricePerMonth = 2500.00m,
                     LastMaintenanceDate = new DateTime(2024, 5, 12),
-                    LocationId = 1,
+                    LocationId = 2, // Gqeberha Warehouse
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.UnderMaintenance,
                     ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
@@ -431,7 +586,7 @@ namespace Project.Data
                     Description = "Reliable top mount freezer fridge for small spaza shops.",
                     RentalPricePerMonth = 1100.00m,
                     LastMaintenanceDate = new DateTime(2024, 4, 22),
-                    LocationId = 1,
+                    LocationId = 2, // Gqeberha Warehouse
                     Condition = FridgeCondition.NeedsService,
                     Status = FridgeStatus.InRepair,
                     ImageUrl = "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5",
@@ -445,6 +600,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2022, 11, 5),
                     ModifiedDate = new DateTime(2024, 4, 22)
                 },
+
+                // ===== DURBAN SERVICE CENTER (Fridges being serviced) =====
                 new Fridge
                 {
                     Id = 9,
@@ -456,7 +613,7 @@ namespace Project.Data
                     Description = "Commercial double door fridge with digital temperature control.",
                     RentalPricePerMonth = 1600.00m,
                     LastMaintenanceDate = new DateTime(2024, 7, 8),
-                    LocationId = 1,
+                    LocationId = 5, // Durban Service Center
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
@@ -481,7 +638,7 @@ namespace Project.Data
                     Description = "Heavy-duty commercial reach-in fridge for bars and shebeens.",
                     RentalPricePerMonth = 1900.00m,
                     LastMaintenanceDate = new DateTime(2024, 3, 30),
-                    LocationId = 1,
+                    LocationId = 5, // Durban Service Center
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Allocated,
                     ImageUrl = "https://images.unsplash.com/photo-1629367494173-c78a56567877",
@@ -496,7 +653,7 @@ namespace Project.Data
                     ModifiedDate = new DateTime(2024, 3, 30)
                 },
 
-                // Additional fridges to reach 20
+                // ===== BLOEMFONTEIN REGIONAL OFFICE =====
                 new Fridge
                 {
                     Id = 11,
@@ -508,7 +665,7 @@ namespace Project.Data
                     Description = "Bottom freezer fridge with ample storage for spaza shops.",
                     RentalPricePerMonth = 1400.00m,
                     LastMaintenanceDate = new DateTime(2024, 6, 10),
-                    LocationId = 1,
+                    LocationId = 6, // Bloemfontein Regional Office
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1595425970377-2f8ded7c7b19",
@@ -522,6 +679,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2024, 1, 25),
                     ModifiedDate = new DateTime(2024, 6, 10)
                 },
+
+                // ===== NELSPRUIT DEPOT =====
                 new Fridge
                 {
                     Id = 12,
@@ -533,7 +692,7 @@ namespace Project.Data
                     Description = "Compact bar fridge perfect for small shebeens or as additional storage.",
                     RentalPricePerMonth = 850.00m,
                     LastMaintenanceDate = new DateTime(2024, 5, 5),
-                    LocationId = 1,
+                    LocationId = 7, // Nelspruit Depot
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.QualityControl,
                     ImageUrl = "https://images.unsplash.com/photo-1579389083078-4e7018379f7e",
@@ -547,6 +706,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2023, 7, 18),
                     ModifiedDate = new DateTime(2024, 5, 5)
                 },
+
+                // ===== POLOKWANE SHOWROOM =====
                 new Fridge
                 {
                     Id = 13,
@@ -558,7 +719,7 @@ namespace Project.Data
                     Description = "Premium fridge with advanced cooling technology for spaza shops.",
                     RentalPricePerMonth = 1700.00m,
                     LastMaintenanceDate = new DateTime(2024, 4, 15),
-                    LocationId = 1,
+                    LocationId = 8, // Polokwane Showroom
                     Condition = FridgeCondition.NeedsService,
                     Status = FridgeStatus.InTransit,
                     ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
@@ -572,6 +733,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2022, 12, 10),
                     ModifiedDate = new DateTime(2024, 4, 15)
                 },
+
+                // ===== RUSTENBURG SATELLITE OFFICE =====
                 new Fridge
                 {
                     Id = 14,
@@ -583,7 +746,7 @@ namespace Project.Data
                     Description = "Extra large reach-in fridge for high-capacity shebeen operations.",
                     RentalPricePerMonth = 2400.00m,
                     LastMaintenanceDate = new DateTime(2024, 3, 8),
-                    LocationId = 1,
+                    LocationId = 9, // Rustenburg Satellite Office
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Reserved,
                     ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
@@ -597,6 +760,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2023, 2, 28),
                     ModifiedDate = new DateTime(2024, 3, 8)
                 },
+
+                // ===== KIMBERLEY SUPPORT HUB =====
                 new Fridge
                 {
                     Id = 15,
@@ -608,7 +773,7 @@ namespace Project.Data
                     Description = "Economical single door fridge for small spaza shops.",
                     RentalPricePerMonth = 950.00m,
                     LastMaintenanceDate = new DateTime(2024, 7, 12),
-                    LocationId = 1,
+                    LocationId = 10, // Kimberley Support Hub
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5",
@@ -622,6 +787,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2024, 4, 5),
                     ModifiedDate = new DateTime(2024, 7, 12)
                 },
+
+                // ===== CUSTOMER SITE (Boerewors Palace) =====
                 new Fridge
                 {
                     Id = 16,
@@ -633,7 +800,7 @@ namespace Project.Data
                     Description = "Compact beverage cooler for bars and shebeens.",
                     RentalPricePerMonth = 800.00m,
                     LastMaintenanceDate = new DateTime(2024, 5, 25),
-                    LocationId = 1,
+                    LocationId = 1, // Boerewors Palace (Customer Site)
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Quarantined,
                     ImageUrl = "https://images.unsplash.com/photo-1629367494173-c78a56567877",
@@ -647,6 +814,8 @@ namespace Project.Data
                     CreatedDate = new DateTime(2023, 9, 15),
                     ModifiedDate = new DateTime(2024, 5, 25)
                 },
+
+                // ===== ADDITIONAL WAREHOUSE STOCK =====
                 new Fridge
                 {
                     Id = 17,
@@ -658,7 +827,7 @@ namespace Project.Data
                     Description = "Glass door display fridge for spaza shops to showcase products.",
                     RentalPricePerMonth = 1750.00m,
                     LastMaintenanceDate = new DateTime(2024, 6, 20),
-                    LocationId = 1,
+                    LocationId = 3, // Johannesburg Warehouse
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1579389083078-4e7018379f7e",
@@ -683,7 +852,7 @@ namespace Project.Data
                     Description = "Commercial double door fridge with digital display and precise temperature control.",
                     RentalPricePerMonth = 1650.00m,
                     LastMaintenanceDate = new DateTime(2024, 4, 28),
-                    LocationId = 1,
+                    LocationId = 4, // Cape Town Warehouse
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Allocated,
                     ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
@@ -708,7 +877,7 @@ namespace Project.Data
                     Description = "Compact top mount freezer fridge for small spaza shop operations.",
                     RentalPricePerMonth = 1000.00m,
                     LastMaintenanceDate = new DateTime(2024, 7, 3),
-                    LocationId = 1,
+                    LocationId = 2, // Gqeberha Warehouse
                     Condition = FridgeCondition.New,
                     Status = FridgeStatus.Available,
                     ImageUrl = "https://images.unsplash.com/photo-1595425970377-2f8ded7c7b19",
@@ -733,7 +902,7 @@ namespace Project.Data
                     Description = "Extra large commercial reach-in fridge for high-volume shebeen operations.",
                     RentalPricePerMonth = 2600.00m,
                     LastMaintenanceDate = new DateTime(2024, 5, 15),
-                    LocationId = 1,
+                    LocationId = 5, // Durban Service Center (Scrapped item)
                     Condition = FridgeCondition.PreOwned,
                     Status = FridgeStatus.Scrapped,
                     ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",

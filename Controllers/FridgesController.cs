@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Utilities;
+using Project.Utilities.Enums;
 
 namespace Project.Controllers
 {
@@ -11,105 +14,200 @@ namespace Project.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
+
         public FridgesController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
             _webHostEnvironment = webHostEnvironment;
+        }
 
-        }
-        public IActionResult Index()
+        public async Task<IActionResult> Upsert(int? id)
         {
-            List<Fridge> fridges = _db.Fridges.ToList();
-            return View(fridges);
-        }
-        public IActionResult Upsert(int? id)
-        {
-            if (id == 0 || id == null)
+            Fridge fridge = new Fridge();
+
+            if (id == null || id == 0)
             {
-                return View(new Fridge());
+                // Create new - set default values
+                fridge.LastMaintenanceDate = DateTime.UtcNow;
+                fridge.ServiceIntervalMonths = 6;
+                fridge.Condition = FridgeCondition.New;
+                fridge.Status = FridgeStatus.Available;
+                ViewBag.Title = "Add New Fridge";
             }
             else
             {
+                // Update existing
+                fridge = await _db.Fridges
+                    .Include(f => f.CurrentLocation)
+                    .FirstOrDefaultAsync(f => f.Id == id);
 
-                Fridge fridgeFromDb = _db.Fridges.FirstOrDefault(u => u.Id == id);
-                return View(fridgeFromDb);
+                if (fridge == null)
+                {
+                    return NotFound();
+                }
+                ViewBag.Title = "Edit Fridge";
             }
 
-
+            await PopulateDropdowns();
+            return View(fridge);
         }
+
         [HttpPost]
-        public IActionResult Upsert(Fridge objfridge, IFormFile? file)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert(Fridge fridge, IFormFile file)
         {
+            // Validate service interval
+            if (fridge.ServiceIntervalMonths < 1 || fridge.ServiceIntervalMonths > 24)
+            {
+                ModelState.AddModelError("ServiceIntervalMonths", "Service interval must be between 1 and 24 months.");
+            }
+
+            // Validate capacity
+            if (fridge.CapacityLiters < 1 || fridge.CapacityLiters > 1000)
+            {
+                ModelState.AddModelError("CapacityLiters", "Capacity must be between 1 and 1000 liters.");
+            }
 
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                // Handle image upload
                 if (file != null && file.Length > 0)
                 {
-                    string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    string fridgePath = Path.Combine(wwwRootPath, "Images", "FridgeAllocations");
-                    Directory.CreateDirectory(fridgePath);
-
-                    // Delete old image if updating
-                    if (!string.IsNullOrEmpty(objfridge.ImageUrl))
+                    try
                     {
-                        var oldImagePath = Path.Combine(wwwRootPath, objfridge.ImageUrl.TrimStart('\\', '/'));
-                        if (System.IO.File.Exists(oldImagePath))
+                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Fridges");
+
+                        // Create directory if it doesn't exist
+                        if (!Directory.Exists(uploadsFolder))
                         {
-                            System.IO.File.Delete(oldImagePath);
+                            Directory.CreateDirectory(uploadsFolder);
                         }
-                    }
 
-                    using (var fileStream = new FileStream(Path.Combine(fridgePath, fileName), FileMode.Create))
+                        // Generate unique filename
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+
+                        fridge.ImageUrl = "/Images/Fridges/" + uniqueFileName;
+                    }
+                    catch (Exception ex)
                     {
-                        file.CopyTo(fileStream);
+                        ModelState.AddModelError("", "Error uploading image: " + ex.Message);
+                        await PopulateDropdowns();
+                        return View(fridge);
                     }
-
-                    objfridge.ImageUrl = $"/Images/FridgeAllocations/{fileName}";
                 }
 
-
-                if (objfridge.Id == 0)
+                // Calculate next service due date
+                if (fridge.LastServiceDate.HasValue && fridge.ServiceIntervalMonths > 0)
                 {
-                    _db.Fridges.Add(objfridge);
+                    fridge.NextServiceDue = fridge.LastServiceDate.Value.AddMonths(fridge.ServiceIntervalMonths);
+                }
 
+                if (fridge.Id == 0)
+                {
+                    // Create new
+                    fridge.CreatedDate = DateTime.UtcNow;
+                    fridge.ModifiedDate = DateTime.UtcNow;
+                    fridge.IsActive = true;
+
+                    _db.Fridges.Add(fridge);
+                    TempData["success"] = "Fridge created successfully!";
                 }
                 else
                 {
-                    _db.Fridges.Update(objfridge);
+                    // Update existing - preserve existing image if no new one uploaded
+                    var existingFridge = await _db.Fridges.AsNoTracking()
+                        .FirstOrDefaultAsync(f => f.Id == fridge.Id);
+
+                    if (existingFridge != null)
+                    {
+                        // Keep existing image if no new file uploaded
+                        if (file == null && !string.IsNullOrEmpty(existingFridge.ImageUrl))
+                        {
+                            fridge.ImageUrl = existingFridge.ImageUrl;
+                        }
+
+                        fridge.CreatedDate = existingFridge.CreatedDate;
+                        fridge.ModifiedDate = DateTime.UtcNow;
+                    }
+
+                    _db.Fridges.Update(fridge);
+                    TempData["success"] = "Fridge updated successfully!";
                 }
-                _db.SaveChanges();
-                return RedirectToAction("Index");
 
+                try
+                {
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    ModelState.AddModelError("", "Error saving fridge: " + ex.Message);
+                    await PopulateDropdowns();
+                    return View(fridge);
+                }
             }
-            return View(objfridge);
+
+            // If we got this far, something failed; redisplay form
+            await PopulateDropdowns();
+            return View(fridge);
         }
 
-
-        public IActionResult Delete(int? id)
+        private async Task PopulateDropdowns()
         {
-            Fridge fridgeFromDb = _db.Fridges.FirstOrDefault(u => u.Id == id);
-            if (fridgeFromDb.Id == null || fridgeFromDb.Id == 0)
-            {
-                return NotFound();
-            }
-            return View(fridgeFromDb);
+            ViewBag.LocationList = await _db.Locations
+                .Where(l => l.IsActive)
+                .Select(l => new SelectListItem
+                {
+                    Value = l.Id.ToString(),
+                    Text = $"{l.Name} - {l.City} - {l.Suburb} - {l.Province}"
+                })
+                .OrderBy(l => l.Text)
+                .ToListAsync();
+
+            // Add enum lists for dropdowns
+            ViewBag.FridgeConditionList = Enum.GetValues(typeof(FridgeCondition))
+                .Cast<FridgeCondition>()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.ToString(),
+                    Text = e.ToString()
+                })
+                .ToList();
+
+            ViewBag.FridgeStatusList = Enum.GetValues(typeof(FridgeStatus))
+                .Cast<FridgeStatus>()
+                .Select(e => new SelectListItem
+                {
+                    Value = e.ToString(),
+                    Text = e.ToString()
+                })
+                .ToList();
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeletePost(Fridge objfridge)
+        // Additional helper methods
+
+        [HttpPost]
+        public async Task<JsonResult> CheckSerialNumber(string serialNumber, int id = 0)
         {
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, objfridge.ImageUrl.TrimStart('\\'));
-            if (System.IO.File.Exists(oldImagePath))
-            {
-                System.IO.File.Delete(oldImagePath);
-            }
+            // Check if serial number already exists (excluding current fridge)
+            var exists = await _db.Fridges
+                .AnyAsync(f => f.SerialNumber == serialNumber && f.Id != id && f.IsActive);
 
+            return Json(new { exists = exists, message = exists ? "Serial number already exists!" : "Serial number available." });
+        }
 
-            _db.Fridges.Remove(objfridge);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+        public async Task<IActionResult> ValidateSerialNumber(string serialNumber, int id = 0)
+        {
+            var exists = await _db.Fridges
+                .AnyAsync(f => f.SerialNumber == serialNumber && f.Id != id && f.IsActive);
+
+            return Json(!exists);
         }
     }
 }

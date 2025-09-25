@@ -71,9 +71,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Right Column - Address and Role -->
+                        </div> <!-- End of left column -->
+                        <!-- Right Column - Address Information -->
                         <div class="col-md-6">
                             <div class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
@@ -81,34 +80,39 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="form-floating mb-3">
-                                        <input asp-for="Input.Location.AddressLine1" class="form-control" autocomplete="address-line1" placeholder="Address Line 1" />
-                                        <label asp-for="Input.Location.AddressLine1">Address Line 1*</label>
+                                        <input asp-for="Input.Location.AddressLine1" class="form-control" placeholder="Please enter your street address." required />
+                                        <label asp-for="Input.Location.AddressLine1" class="form-label">Address Line 1*</label>
                                         <span asp-validation-for="Input.Location.AddressLine1" class="text-danger"></span>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input asp-for="Input.Location.AddressLine2" class="form-control" autocomplete="address-line2" placeholder="Address Line 2" />
-                                        <label asp-for="Input.Location.AddressLine2">Address Line 2</label>
+                                        <input asp-for="Input.Location.AddressLine2" class="form-control" placeholder="Please enter your street address." />
+                                        <label asp-for="Input.Location.AddressLine2" class="form-label">Address Line 2</label>
                                         <span asp-validation-for="Input.Location.AddressLine2" class="text-danger"></span>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3">
-                                                <input asp-for="Input.Location.City" class="form-control" autocomplete="address-level2" placeholder="City" />
-                                                <label asp-for="Input.Location.City">City*</label>
-                                                <span asp-validation-for="Input.Location.City" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3">
-                                                <input asp-for="Input.Location.Province" class="form-control" autocomplete="address-level1" placeholder="Province" />
-                                                <label asp-for="Input.Location.Province">Province*</label>
-                                                <span asp-validation-for="Input.Location.Province" class="text-danger"></span>
-                                            </div>
-                                        </div>
+                                    <div class="form-floating mb-3">
+                                        <select asp-for="Input.Location.Province" class="form-control" required id="provinceSelect">
+                                            <option value="">--Select Province--</option>
+                                        </select>
+                                        <label asp-for="Input.Location.Province" class="form-label">Province*</label>
+                                        <span asp-validation-for="Input.Location.Province" class="text-danger"></span>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input asp-for="Input.Location.PostalCode" class="form-control" autocomplete="postal-code" placeholder="Postal Code" />
-                                        <label asp-for="Input.Location.PostalCode">Postal Code*</label>
+                                        <select asp-for="Input.Location.City" class="form-control" required id="citySelect">
+                                            <option value="">--Select City--</option>
+                                        </select>
+                                        <label asp-for="Input.Location.City" class="form-label">City*</label>
+                                        <span asp-validation-for="Input.Location.City" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <select asp-for="Input.Location.Suburb" class="form-control" required id="suburbSelect">
+                                            <option value="">--Select Suburb--</option>
+                                        </select>
+                                        <label asp-for="Input.Location.Suburb" class="form-label">Suburb*</label>
+                                        <span asp-validation-for="Input.Location.Suburb" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.Location.PostalCode" class="form-control" placeholder="Postal Code will auto-fill" pattern="^\d{4}$" required id="postalCodeInput" />
+                                        <label asp-for="Input.Location.PostalCode" class="form-label">Postal Code*</label>
                                         <span asp-validation-for="Input.Location.PostalCode" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -131,8 +135,8 @@
                                     </div>
                                 </div>
                             }
-                        </div>
-                    </div>
+                        </div> <!-- End of right column -->
+                    </div> <!-- End of row -->
 
                     <div class="d-grid gap-2 mt-4">
                         <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg py-2 fw-semibold">
@@ -140,11 +144,10 @@
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-</div>
-
+            </div> <!-- End of card-body -->
+        </div> <!-- End of card -->
+    </div> <!-- End of col-md-10 -->
+</div> <!-- End of row -->
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <style>
@@ -169,4 +172,100 @@
                 box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.3);
             }
     </style>
+    <script>
+        // South African Provinces
+        const provinces = [
+            "Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal",
+            "Limpopo", "Mpumalanga", "North West", "Northern Cape", "Western Cape"
+        ];
+
+        // Cities and their suburbs (based on your seeded data)
+        const citiesData = {
+            "Johannesburg": ["CBD", "Sandton"],
+            "Gqeberha": ["Walmer"],
+            "Cape Town": ["Epping"],
+            "Durban": ["Pinetown"],
+            "Bloemfontein": ["Westdene"],
+            "Mbombela": ["Riverside"],
+            "Polokwane": ["Flora Park"],
+            "Rustenburg": ["Bo-dorp"],
+            "Kimberley": ["Monument Heights"]
+        };
+
+        // Populate Province dropdown
+        const provinceSelect = document.getElementById('provinceSelect');
+        provinces.forEach(province => {
+            const option = document.createElement('option');
+            option.value = province;
+            option.textContent = province;
+            provinceSelect.appendChild(option);
+        });
+
+        // When province changes, populate cities
+        provinceSelect.addEventListener('change', function() {
+            const citySelect = document.getElementById('citySelect');
+            const suburbSelect = document.getElementById('suburbSelect');
+
+            // Clear previous options
+            citySelect.innerHTML = '<option value="">--Select City--</option>';
+            suburbSelect.innerHTML = '<option value="">--Select Suburb--</option>';
+
+            // Enable city selection
+            citySelect.disabled = false;
+
+            // Filter cities based on selected province (you can enhance this logic)
+            Object.keys(citiesData).forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        });
+
+        // When city changes, populate suburbs
+        document.getElementById('citySelect').addEventListener('change', function() {
+            const suburbSelect = document.getElementById('suburbSelect');
+            const selectedCity = this.value;
+
+            // Clear previous options
+            suburbSelect.innerHTML = '<option value="">--Select Suburb--</option>';
+
+            if (selectedCity && citiesData[selectedCity]) {
+                // Enable suburb selection
+                suburbSelect.disabled = false;
+
+                // Populate suburbs
+                citiesData[selectedCity].forEach(suburb => {
+                    const option = document.createElement('option');
+                    option.value = suburb;
+                    option.textContent = suburb;
+                    suburbSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Auto-fill postal code based on suburb selection (you can extend this)
+        document.getElementById('suburbSelect').addEventListener('change', function() {
+            const postalCodeInput = document.getElementById('postalCodeInput');
+            const selectedSuburb = this.value;
+
+            // Simple mapping - extend this with actual postal codes
+            const postalCodes = {
+                "CBD": "2001",
+                "Sandton": "2196",
+                "Walmer": "6070",
+                "Epping": "7460",
+                "Pinetown": "3610",
+                "Westdene": "9301",
+                "Riverside": "1201",
+                "Flora Park": "0700",
+                "Bo-dorp": "0299",
+                "Monument Heights": "8301"
+            };
+
+            if (postalCodes[selectedSuburb]) {
+                postalCodeInput.value = postalCodes[selectedSuburb];
+            }
+        });
+    </script>
 }

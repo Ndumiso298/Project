@@ -62,11 +62,11 @@
 
                 <!-- Technician Dropdown -->
 <div class="mb-4">
-    <label asp-for="TechnicianId" class="form-label fw-semibold">Assigned Technician</label>
-    <select asp-for="TechnicianId" class="form-select" asp-items="ViewBag.TechnicianList">
+                    <label asp-for="AssignedTechnicianId" class="form-label fw-semibold">Assigned Technician</label>
+                    <select asp-for="AssignedTechnicianId" class="form-select" asp-items="ViewBag.TechnicianList">
         <option value="">-- Select Technician --</option>
     </select>
-    <span asp-validation-for="TechnicianId" class="text-danger"></span>
+                    <span asp-validation-for="AssignedTechnicianId" class="text-danger"></span>
 </div>
 
 

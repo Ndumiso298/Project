@@ -21,8 +21,8 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Fridge allocation is required.")]
-        [Display(Name = "Fridge Allocation")]
+        [Required(ErrorMessage = "Related allocation is required.")]
+        [Display(Name = "Related Allocation")]
         public int FridgeAllocationId { get; set; }
 
         [Required]
@@ -34,7 +34,7 @@ namespace Project.Models
         [Display(Name = "Reported By")]
         public string? ReportedById { get; set; }
 
-        public int MaintenanceVisitId { get; set; }
+        public int? MaintenanceVisitId { get; set; }
 
         // Navigation properties
         [ForeignKey(nameof(FridgeAllocationId))]
@@ -55,7 +55,8 @@ namespace Project.Models
 
         [ForeignKey(nameof(MaintenanceVisitId))]
         [ValidateNever]
-        public virtual MaintenanceVisit MaintenanceVisit { get; set; }
+        [NotMapped]
+        public virtual MaintenanceVisit? MaintenanceVisit { get; set; }
 
         [Display(Name = "Fault Location")]
         public int? FaultLocationId { get; set; }

@@ -15,7 +15,7 @@ namespace Project.Models
         [Required]
         public string UserId { get; set; } = string.Empty;
 
-        [ForeignKey("UserId")]
+        [ForeignKey(nameof(UserId))]
         [ValidateNever]
         public virtual ApplicationUser UserAccount { get; set; } = null!;
 

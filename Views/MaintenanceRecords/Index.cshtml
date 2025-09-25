@@ -1,4 +1,6 @@
-﻿@model IEnumerable<MaintenanceRecord>
+﻿@using Project.Utilities.Enums
+@using Project.Helpers
+@model IEnumerable<MaintenanceRecord>
 @{
     ViewData["Title"] = "Maintenance Records";
 }
@@ -90,11 +92,11 @@
                                                 <br><small class="text-muted">@record.Fridge?.Model</small>
                                             </td>
                                             <td>@record.Technician?.UserAccount?.FirstName @record.Technician?.UserAccount?.LastName</td>
-                                            <td>
+@*                                             <td>
                                                 <span class="badge @GetServiceTypeBadge(record.ServiceType)">
                                                     @record.ServiceType
                                                 </span>
-                                            </td>
+                                            </td> *@
                                             <td>@record.Description.Truncate(50)</td>
                                             <td>@record.Cost.ToString("C")</td>
                                             <td>
@@ -117,7 +119,7 @@
                                                        class="btn btn-warning" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    @if (User.IsInRole("Administrator"))
+                                                    @if (User.IsInRole(SD.AdminRole))
                                                     {
                                                         <button type="button" class="btn btn-danger delete-record"
                                                                 data-id="@record.Id" title="Delete">

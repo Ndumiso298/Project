@@ -1,4 +1,5 @@
 ﻿@using Project.Utilities.Enums
+@using Project.Helpers
 @model MaintenanceRecord
 @{
     ViewData["Title"] = "Maintenance Record Details";
@@ -96,16 +97,10 @@
                                 <br><small class="text-muted">(@Model.DurationMinutes.Value minutes)</small>
                             </dd>
                         }
-
-                        <dt class="col-sm-4">Work Hours:</dt>
-                        <dd class="col-sm-8">
-                            @(Model.WorkHours?.ToString("F1") ?? "N/A") hours
-                        </dd>
                     </dl>
                 </div>
             </div>
         </div>
-
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header bg-success text-white">
@@ -206,9 +201,9 @@
     {
         return serviceType switch
         {
-            ServicingType.PreventiveMaintenance => "bg-primary",
-            ServicingType.CorrectiveRepair => "bg-warning",
-            ServicingType.EmergencyService => "bg-danger",
+            ServicingType.Installation => "bg-primary",
+            ServicingType.PreventiveMaintenance => "bg-warning",
+            ServicingType.CorrectiveRepair => "bg-danger",
             _ => "bg-secondary"
         };
     }

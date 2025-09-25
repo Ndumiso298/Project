@@ -16,17 +16,17 @@ namespace Project.Controllers
     [Authorize(Roles = SD.AdminRole + "," + SD.MaintenanceTechnicianRole)]
     public class MaintenanceRecordsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public MaintenanceRecordsController(ApplicationDbContext context)
+        public MaintenanceRecordsController(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         // GET: MaintenanceRecords
         public async Task<IActionResult> Index(int? fridgeId, DateTime? fromDate, DateTime? toDate)
         {
-            IQueryable<MaintenanceRecord> query = _context.MaintenanceRecords
+            IQueryable<MaintenanceRecord> query = _db.MaintenanceRecords
                 .Include(r => r.Fridge)
                 .Include(r => r.Technician)
                 .Include(r => r.MaintenanceVisit)
@@ -60,7 +60,7 @@ namespace Project.Controllers
         // GET: MaintenanceRecords/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var record = await _context.MaintenanceRecords
+            var record = await _db.MaintenanceRecords
                 .Include(r => r.Fridge)
                 .Include(r => r.Technician)
                 .Include(r => r.MaintenanceVisit)
@@ -88,7 +88,7 @@ namespace Project.Controllers
                 // Pre-populate from visit if provided
                 if (visitId.HasValue)
                 {
-                    var visit = await _context.MaintenanceVisits
+                    var visit = await _db.MaintenanceVisits
                         .Include(v => v.Fridge)
                         .Include(v => v.AssignedTechnician)
                         .FirstOrDefaultAsync(v => v.Id == visitId);
@@ -106,7 +106,7 @@ namespace Project.Controllers
             }
 
             // Edit existing record
-            var record = await _context.MaintenanceRecords
+            var record = await _db.MaintenanceRecords
                 .Include(r => r.Fridge)
                 .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
 
@@ -165,8 +165,8 @@ namespace Project.Controllers
                             ModifiedDate = DateTime.Now
                         };
 
-                        _context.MaintenanceRecords.Add(record);
-                        await _context.SaveChangesAsync();
+                        _db.MaintenanceRecords.Add(record);
+                        await _db.SaveChangesAsync();
 
                         // Update fridge's last service date
                         await UpdateFridgeServiceInfo(vm.FridgeId, vm.ServiceDate, vm.NextServiceDue);
@@ -176,7 +176,7 @@ namespace Project.Controllers
                     else
                     {
                         // Update existing record
-                        var record = await _context.MaintenanceRecords.FindAsync(vm.Id);
+                        var record = await _db.MaintenanceRecords.FindAsync(vm.Id);
                         if (record == null)
                         {
                             return NotFound();
@@ -192,8 +192,8 @@ namespace Project.Controllers
                         record.ModifiedDate = DateTime.Now;
                         record.IsActive = true;
 
-                        _context.MaintenanceRecords.Update(record);
-                        await _context.SaveChangesAsync();
+                        _db.MaintenanceRecords.Update(record);
+                        await _db.SaveChangesAsync();
 
                         // Update fridge's service info
                         await UpdateFridgeServiceInfo(vm.FridgeId, vm.ServiceDate, vm.NextServiceDue);
@@ -216,10 +216,10 @@ namespace Project.Controllers
         // POST: MaintenanceRecords/Delete/5 (Soft Delete)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = SD.AdminRole)]
         public async Task<IActionResult> Delete(int id)
         {
-            var record = await _context.MaintenanceRecords.FindAsync(id);
+            var record = await _db.MaintenanceRecords.FindAsync(id);
             if (record == null)
             {
                 return NotFound();
@@ -229,14 +229,14 @@ namespace Project.Controllers
             record.IsActive = false;
             record.ModifiedDate = DateTime.Now;
 
-            await _context.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             TempData["success"] = "Maintenance record deleted successfully";
             return RedirectToAction(nameof(Index));
         }
 
         private async Task PopulateDropdowns(MaintenanceRecordVM vm)
         {
-            vm.FridgeList = await _context.Fridges
+            vm.FridgeList = await _db.Fridges
                 .Where(f => f.Status != FridgeStatus.Scrapped && f.IsActive)
                 .Select(f => new SelectListItem
                 {
@@ -245,7 +245,7 @@ namespace Project.Controllers
                 })
                 .ToListAsync();
 
-            vm.TechnicianList = await _context.Employees
+            vm.TechnicianList = await _db.Employees
                 .Where(e => e.IsActive && e.EmployeeType == EmployeeType.MaintenanceTechnician)
                 .Select(e => new SelectListItem
                 {
@@ -254,7 +254,7 @@ namespace Project.Controllers
                 })
                 .ToListAsync();
 
-            vm.VisitList = await _context.MaintenanceVisits
+            vm.VisitList = await _db.MaintenanceVisits
                 .Where(v => v.Status == ServicingStatus.Scheduled || v.Status == ServicingStatus.Completed) // Fixed condition
                 .Select(v => new SelectListItem
                 {
@@ -266,7 +266,7 @@ namespace Project.Controllers
 
         private async Task<List<SelectListItem>> GetFridgeListAsync()
         {
-            return await _context.Fridges
+            return await _db.Fridges
                 .Where(f => f.Status != FridgeStatus.Scrapped && f.IsActive)
                 .Select(f => new SelectListItem
                 {
@@ -278,14 +278,14 @@ namespace Project.Controllers
 
         private async Task UpdateFridgeServiceInfo(int fridgeId, DateTime serviceDate, DateTime? nextServiceDue)
         {
-            var fridge = await _context.Fridges.FindAsync(fridgeId);
+            var fridge = await _db.Fridges.FindAsync(fridgeId);
             if (fridge != null)
             {
                 fridge.LastServiceDate = serviceDate;
                 fridge.NextServiceDue = nextServiceDue;
                 fridge.ModifiedDate = DateTime.Now;
-                _context.Fridges.Update(fridge);
-                await _context.SaveChangesAsync();
+                _db.Fridges.Update(fridge);
+                await _db.SaveChangesAsync();
             }
         }
     }

@@ -8,7 +8,6 @@ namespace Project.Models
     public class PurchaseRequest
     {
         [Key]
-        [Display(Name = "Request ID")]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Requested by employee is required.")]

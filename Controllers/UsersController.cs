@@ -287,7 +287,6 @@ namespace Project.Controllers
                 case "Customer":
                     await HandleCustomerRecord(user, vm, isUpdate);
                     break;
-                    // Add more role cases as needed
             }
         }
 
@@ -330,11 +329,11 @@ namespace Project.Controllers
         {
             return role switch
             {
-                "Admin" => EmployeeType.Admin,
-                "CustomerSupport" => EmployeeType.CustomerSupport,
-                "StockController" => EmployeeType.StockController,
-                "MaintenanceTechnician" => EmployeeType.MaintenanceTechnician,
-                "FaultTechnician" => EmployeeType.FaultTechnician,
+                SD.AdminRole => EmployeeType.Admin,
+                SD.CustomerSupportRole => EmployeeType.CustomerSupport,
+                SD.StockControllerRole => EmployeeType.StockController,
+                SD.MaintenanceTechnicianRole => EmployeeType.MaintenanceTechnician,
+                SD.FaultTechnicianRole => EmployeeType.FaultTechnician,
                 _ => EmployeeType.CustomerSupport
             };
         }

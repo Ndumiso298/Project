@@ -5,26 +5,143 @@
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
-<h3>@ViewData["Title"]</h3>
-<partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
+    <div class="col-md-10 mx-auto">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <!-- Header -->
+            <div class="card-header bg-primary text-light py-4 text-center">
+                <h2 class="text-white mb-1"><i class="bi bi-person-circle me-2"></i>Your Profile</h2>
+                <p class="text-light mb-0 opacity-75">Manage your SmartChill Solutions account details</p>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+
+            <!-- Status Message -->
+            <div class="card-body p-4 p-md-5">
+                <partial name="_StatusMessage" for="StatusMessage" />
+
+                <form id="profile-form" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <!-- Left Column - Personal Information -->
+                        <div class="col-md-6">
+                            <div class="card mb-4 border-0 shadow-sm">
+                                <div class="card-header bg-primary text-light">
+                                    <h5 class="mb-0"><i class="bi bi-person me-2"></i>Personal Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Username" class="form-control" disabled />
+                                        <label asp-for="Username">Username</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" />
+                                        <label asp-for="Input.FirstName">First Name*</label>
+                                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" />
+                                        <label asp-for="Input.LastName">Last Name*</label>
+                                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.DOB" type="date" class="form-control" />
+                                        <label asp-for="Input.DOB">Date of Birth*</label>
+                                        <span asp-validation-for="Input.DOB" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Phone Number" />
+                                        <label asp-for="Input.PhoneNumber">Phone Number*</label>
+                                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Location & Profile Picture -->
+                        <div class="col-md-6">
+                            <div class="card mb-4 border-0 shadow-sm">
+                                <div class="card-header bg-primary text-light">
+                                    <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Location</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-floating mb-3">
+                                        <select asp-for="Input.LocationId" asp-items="Model.Input.LocationOptions" class="form-select"></select>
+                                        <label asp-for="Input.LocationId">Primary Location*</label>
+                                        <span asp-validation-for="Input.LocationId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4 border-0 shadow-sm">
+                                <div class="card-header bg-primary text-light">
+                                    <h5 class="mb-0"><i class="bi bi-image me-2"></i>Profile Picture</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- URL Input -->
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.ProfilePictureUrl" class="form-control" placeholder="Paste image URL" />
+                                        <label asp-for="Input.ProfilePictureUrl">Profile Picture URL</label>
+                                        <span asp-validation-for="Input.ProfilePictureUrl" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- File Upload Alternative -->
+                                    <div class="mb-3">
+                                        <label for="profileImageUpload" class="form-label">Or upload an image</label>
+                                        <input type="file" id="profileImageUpload" class="form-control" accept="image/*" />
+                                        <small class="text-muted">Max file size: 5MB. Supported formats: JPG, PNG, GIF</small>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(Model.Input.ProfilePictureUrl))
+                                    {
+                                        <div class="mb-3 text-center">
+                                            <img src="@Model.Input.ProfilePictureUrl" alt="Profile Picture" class="img-thumbnail" style="max-height:150px;" id="profileImagePreview" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="mb-3 text-center">
+                                            <img src="https://via.placeholder.com/150x150?text=No+Image" alt="Profile Picture" class="img-thumbnail" style="max-height:150px;" id="profileImagePreview" />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button id="update-profile-button" type="submit" class="btn btn-primary btn-lg py-2 fw-semibold">
+                            <i class="bi bi-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Image preview for file upload
+        document.getElementById('profileImageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImagePreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Image preview for URL input
+        document.getElementById('Input_ProfilePictureUrl').addEventListener('blur', function() {
+            const url = this.value;
+            if (url) {
+                document.getElementById('profileImagePreview').src = url;
+            }
+        });
+    </script>
 }

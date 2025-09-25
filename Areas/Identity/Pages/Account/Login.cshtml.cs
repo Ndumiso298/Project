@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Project.Models;
+using Project.Utilities;
 
 namespace Project.Areas.Identity.Pages.Account
 {
@@ -85,37 +86,39 @@ namespace Project.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                
+                
                 if (result.Succeeded)
                 {
 
                     _logger.LogInformation("User logged in.");
 
                     var user = await  _userManager.FindByEmailAsync(Input.Email);
-                    if (await _userManager.IsInRoleAsync(user, "Admin"))
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
+                    //if (await _userManager.IsInRoleAsync(user, SD.AdminRole))
+                    //{
+                    //    return RedirectToAction("Index", "Home");
 
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "Customer"))
-                    {
-                        return RedirectToAction("Dashboard", "Customer");
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "AllocatedBy"))
-                    {
-                        return RedirectToAction("Dashboard", "AllocatedBy");
-                    }
-                    else if(await _userManager.IsInRoleAsync(user, "InventoryLiaison"))
-                    {
-                        return RedirectToAction("Dashboard", "InventoryLiaison");
-                    }
-                    else if(await _userManager.IsInRoleAsync(user, "FaultTechnician"))
-                    {
-                        return RedirectToAction("Dashboard", "FaultTechnician");
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "MaintenanceTechnician"))
-                    {
-                        return RedirectToAction("Dashboard", "MaintenanceVisit");
-                    }
+                    //}
+                    //else if (await _userManager.IsInRoleAsync(user, SD.CustomerRole))
+                    //{
+                    //    return RedirectToAction("Index", "Home");
+                    //}
+                    //else if (await _userManager.IsInRoleAsync(user, SD.CustomerSupportRole))
+                    //{
+                    //    return RedirectToAction("Index", "Home");
+                    //}
+                    //else if (await _userManager.IsInRoleAsync(user, SD.StockControllerRole))
+                    //{
+                    //    return RedirectToAction("Index", "Home");
+                    //}
+                    //else if (await _userManager.IsInRoleAsync(user, SD.FaultTechnicianRole))
+                    //{
+                    //    return RedirectToAction("Index", "Home");
+                    //}
+                    //else if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnicianRole))
+                    //{
+                    //    return RedirectToAction("Index", "Home");
+                    //}
                 }
                 if (result.RequiresTwoFactor)
                 {

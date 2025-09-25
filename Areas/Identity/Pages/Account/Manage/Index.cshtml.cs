@@ -8,7 +8,11 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Project.Data;
 using Project.Models;
 
 namespace Project.Areas.Identity.Pages.Account.Manage
@@ -17,13 +21,16 @@ namespace Project.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _db;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _db = db;
         }
 
         public string Username { get; set; }
@@ -36,22 +43,65 @@ namespace Project.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Required(ErrorMessage = "First name is required.")]
+            [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters.")]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; } = string.Empty;
 
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            [Required(ErrorMessage = "Last name is required.")]
+            [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; } = string.Empty;
+
+            [Required(ErrorMessage = "Date of Birth is required.")]
+            [DataType(DataType.Date)]
+            [Display(Name = "Date of Birth")]
+            public DateTime? DOB { get; set; }
+
+            [Required(ErrorMessage = "Phone number is required.")]
+            [Phone(ErrorMessage = "Please enter a valid phone number.")]
+            [Display(Name = "Cell/Tel Number")]
+            public string PhoneNumber { get; set; } = string.Empty;
+
+            [Display(Name = "User Role")]
+            public string? UserRole { get; set; } = string.Empty;
+
+            [Required(ErrorMessage = "Location is required.")]
+            [Display(Name = "Primary Location")]
+            public int? LocationId { get; set; }
+
+            [Display(Name = "Profile Picture URL")]
+            [DataType(DataType.ImageUrl)]
+            [MaxLength(2048, ErrorMessage = "URL cannot exceed 2048 characters.")]
+            [Url(ErrorMessage = "Please enter a valid URL.")]
+            public string? ProfilePictureUrl { get; set; }
+
+            // For dropdown binding
+            [ValidateNever]
+            public IEnumerable<SelectListItem> LocationOptions { get; set; } = new List<SelectListItem>();
         }
+
 
         private async Task LoadAsync(ApplicationUser user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
+            Username = await _userManager.GetUserNameAsync(user);
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DOB = user.DOB,
+                PhoneNumber = user.PhoneNumber,
+                UserRole = user.UserRole,
+                LocationId = user.LocationId,
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                LocationOptions = _db.Locations
+                    .OrderBy(l => l.City)
+                    .Select(l => new SelectListItem
+                    {
+                        Value = l.Id.ToString(),
+                        Text = $"{l.City}, {l.Suburb}, {l.Province}"
+                    }).ToList()
             };
         }
 

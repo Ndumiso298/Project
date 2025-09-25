@@ -20,7 +20,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Project.Data;
 using Project.Models;
 using Project.Utilities;
 
@@ -35,6 +37,7 @@ namespace Project.Areas.Identity.Pages.Account
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _db;
 
         public RegisterModel(
             RoleManager<IdentityRole> roleManager,
@@ -42,7 +45,8 @@ namespace Project.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IUserStore<ApplicationUser> userStore,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext db)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -51,10 +55,11 @@ namespace Project.Areas.Identity.Pages.Account
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _emailSender = emailSender;
+            _db = db;
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } = new InputModel();
 
         public string ReturnUrl { get; set; }
 
@@ -105,7 +110,19 @@ namespace Project.Areas.Identity.Pages.Account
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
-            public Location Location { get; set; } = new();
+            [ValidateNever]
+            public IEnumerable<SelectListItem> ProvinceOptions { get; set; } = new List<SelectListItem>();
+
+            [ValidateNever]
+            public IEnumerable<SelectListItem> CityOptions { get; set; } = new List<SelectListItem>();
+
+            [ValidateNever]
+            public IEnumerable<SelectListItem> SuburbOptions { get; set; } = new List<SelectListItem>();
+
+            [ValidateNever]
+            public IEnumerable<SelectListItem> LocationOptions { get; set; } = new List<SelectListItem>();
+
+            public Location Location { get; set; } = new Location();
         }
 
 
@@ -123,18 +140,16 @@ namespace Project.Areas.Identity.Pages.Account
                 await _roleManager.CreateAsync(new IdentityRole(SD.CustomerRole));
             }
 
-            Input = new InputModel(); // ensure it'CustomersController not null
+            Input = new InputModel();
             Input.RoleList = _roleManager.Roles
                 .OrderBy(r => r.Name)
-                .Select(r => new SelectListItem
-                {
-                    Text = r.Name,
-                    Value = r.Name
-                }).ToList();
+                .Select(r => new SelectListItem { Text = r.Name, Value = r.Name })
+                .ToList();
+            PopulateLocationOptions();
 
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-       }
+        }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -142,19 +157,34 @@ namespace Project.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                if (Input.Location == null)
+                {
+                    Input.Location = new Location();
+                }
                 var user = CreateUser();
-
                 user.UserName = Input.Email;
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.DOB = Input.DOB;
                 user.Email = Input.Email;
                 user.PhoneNumber = Input.PhoneNumber;
-                user.PrimaryLocation.AddressLine1 = Input.Location.AddressLine1;
-                user.PrimaryLocation.AddressLine2 = Input.Location.AddressLine2;
-                user.PrimaryLocation.City = Input.Location.City;
-                user.PrimaryLocation.Province = Input.Location.Province;
-                user.PrimaryLocation.PostalCode = Input.Location.PostalCode;
+                user.PrimaryLocation = new Location();
+
+                // Safe way to assign with null checks
+            if (Input.Location != null)
+            {
+                user.PrimaryLocation.AddressLine1 = Input.Location.AddressLine1 ?? string.Empty;
+                user.PrimaryLocation.AddressLine2 = Input.Location.AddressLine2 ?? string.Empty;
+                user.PrimaryLocation.City = Input.Location.City ?? string.Empty;
+                user.PrimaryLocation.Province = Input.Location.Province ?? string.Empty;
+                user.PrimaryLocation.PostalCode = Input.Location.PostalCode ?? string.Empty;
+                }
+                else
+                {
+                    // Handle the case where Location is null
+                    user.PrimaryLocation.CreatedAt = DateTime.UtcNow;
+                    user.PrimaryLocation.IsActive = true;
+                }
 
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -211,6 +241,9 @@ namespace Project.Areas.Identity.Pages.Account
                     Text = r.Name,
                     Value = r.Name
                 }).ToList();
+
+
+            PopulateLocationOptions();
             return Page();
         }
 
@@ -235,6 +268,41 @@ namespace Project.Areas.Identity.Pages.Account
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
+
+        private void PopulateLocationOptions()
+        {
+            var locations = _db.Locations.AsNoTracking().ToList();
+
+            Input.ProvinceOptions = locations
+                .Select(l => l.Province)
+                .Distinct()
+                .OrderBy(p => p)
+                .Select(p => new SelectListItem { Value = p, Text = p })
+                .ToList();
+
+            Input.CityOptions = locations
+                .Select(l => l.City)
+                .Distinct()
+                .OrderBy(c => c)
+                .Select(c => new SelectListItem { Value = c, Text = c })
+                .ToList();
+
+            Input.SuburbOptions = locations
+                .Select(l => l.Suburb)
+                .Distinct()
+                .OrderBy(s => s)
+                .Select(s => new SelectListItem { Value = s, Text = s })
+                .ToList();
+
+            Input.LocationOptions = locations
+                .OrderBy(l => l.City)
+                .Select(l => new SelectListItem
+                {
+                    Value = l.Id.ToString(),
+                    Text = $"{l.AddressLine1}, {l.Suburb}, {l.City}, {l.Province} ({l.PostalCode})"
+                })
+                .ToList();
         }
     }
 }

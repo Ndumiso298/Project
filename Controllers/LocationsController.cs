@@ -13,19 +13,19 @@ namespace Project.Controllers
     [Authorize(Roles = SD.AdminRole + "," + SD.StockControllerRole)]
     public class LocationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public LocationsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public LocationsController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
-            _context = context;
+            _db = db;
             _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Locations
         public async Task<IActionResult> Index()
         {
-            var locations = await _context.Locations
+            var locations = await _db.Locations
                 .Include(l => l.Employees)
                 .Include(l => l.Customers)
                 .Include(l => l.Fridges)
@@ -41,7 +41,7 @@ namespace Project.Controllers
         // GET: Locations/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var location = await _context.Locations
+            var location = await _db.Locations
                 .Include(l => l.Employees).ThenInclude(e => e.UserAccount)
                 .Include(l => l.Customers).ThenInclude(c => c.UserAccount)
                 .Include(l => l.Fridges).ThenInclude(f => f.Status)
@@ -79,7 +79,7 @@ namespace Project.Controllers
             else
             {
                 // Edit existing location
-                var location = await _context.Locations.FindAsync(id);
+                var location = await _db.Locations.FindAsync(id);
                 if (location == null || !location.IsActive)
                 {
                     return NotFound();
@@ -126,14 +126,14 @@ namespace Project.Controllers
                             CreatedAt = DateTime.UtcNow
                         };
 
-                        _context.Locations.Add(location);
-                        await _context.SaveChangesAsync();
+                        _db.Locations.Add(location);
+                        await _db.SaveChangesAsync();
                         TempData["success"] = "Location created successfully";
                     }
                     else
                     {
                         // Update existing location
-                        var location = await _context.Locations.FindAsync(vm.Id);
+                        var location = await _db.Locations.FindAsync(vm.Id);
                         if (location == null)
                         {
                             return NotFound();
@@ -150,8 +150,8 @@ namespace Project.Controllers
                         location.IsActive = vm.IsActive;
                         location.UpdatedAt = DateTime.UtcNow;
 
-                        _context.Locations.Update(location);
-                        await _context.SaveChangesAsync();
+                        _db.Locations.Update(location);
+                        await _db.SaveChangesAsync();
                         TempData["success"] = "Location updated successfully";
                     }
 
@@ -176,7 +176,7 @@ namespace Project.Controllers
         // GET: Locations/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var location = await _context.Locations
+            var location = await _db.Locations
                 .Include(l => l.Employees)
                 .Include(l => l.Customers)
                 .Include(l => l.Fridges)
@@ -200,7 +200,7 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var location = await _context.Locations
+            var location = await _db.Locations
                 .Include(l => l.Employees)
                 .Include(l => l.Customers)
                 .Include(l => l.Fridges)
@@ -224,7 +224,7 @@ namespace Project.Controllers
             location.IsActive = false;
             location.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             TempData["success"] = "Location deleted successfully";
             return RedirectToAction(nameof(Index));
         }
@@ -233,7 +233,7 @@ namespace Project.Controllers
         [AcceptVerbs("GET", "POST")]
         public async Task<JsonResult> CheckLocationNameExists(string name, int id = 0)
         {
-            var exists = await _context.Locations
+            var exists = await _db.Locations
                 .AnyAsync(l => l.Name == name.Trim() && l.Id != id && l.IsActive);
 
             return Json(!exists);
@@ -242,7 +242,7 @@ namespace Project.Controllers
         // AJAX: Get locations by province
         public async Task<JsonResult> GetLocationsByProvince(string province)
         {
-            var locations = await _context.Locations
+            var locations = await _db.Locations
                 .Where(l => l.Province == province && l.IsActive)
                 .OrderBy(l => l.City)
                 .ThenBy(l => l.Suburb)
@@ -255,7 +255,7 @@ namespace Project.Controllers
         // AJAX: Get provinces
         public async Task<JsonResult> GetProvinces()
         {
-            var provinces = await _context.Locations
+            var provinces = await _db.Locations
                 .Where(l => l.IsActive)
                 .Select(l => l.Province)
                 .Distinct()
@@ -268,7 +268,7 @@ namespace Project.Controllers
         // AJAX: Get cities by province
         public async Task<JsonResult> GetCities(string province)
         {
-            var cities = await _context.Locations
+            var cities = await _db.Locations
                 .Where(l => l.Province == province && l.IsActive)
                 .Select(l => l.City)
                 .Distinct()
@@ -281,7 +281,7 @@ namespace Project.Controllers
         // AJAX: Get suburbs by city
         public async Task<JsonResult> GetSuburbs(string province, string city)
         {
-            var suburbs = await _context.Locations
+            var suburbs = await _db.Locations
                 .Where(l => l.Province == province && l.City == city && l.IsActive)
                 .Select(l => l.Suburb)
                 .Distinct()

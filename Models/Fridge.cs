@@ -44,12 +44,12 @@ namespace Project.Models
         [Display(Name = "Description")]
         public string Description { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Rental price is required.")]
+        //[Required(ErrorMessage = "Rental price is required.")]
         [Range(0, 10000, ErrorMessage = "Rental price must be a positive value.")]
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Rental Price (R/month)")]
-        public decimal RentalPricePerMonth { get; set; }
+        public decimal? RentalPricePerMonth { get; set; }
 
         [Required(ErrorMessage = "Last maintenance date is required.")]
         [DataType(DataType.Date)]

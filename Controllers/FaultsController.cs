@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
+using Project.Helpers;
 using Project.Models;
 using Project.Models.ViewModels;
 using Project.Utilities;
@@ -66,7 +67,7 @@ namespace Project.Controllers
                 }
 
                 // Role-based filtering for customers
-                if (User.IsInRole("Customer"))
+                if (User.IsInRole(SD.CustomerRole))
                 {
                     var customer = await GetCurrentCustomerAsync();
                     if (customer != null)
@@ -103,7 +104,7 @@ namespace Project.Controllers
                 }
 
                 // Authorization check for customers
-                if (User.IsInRole("Customer"))
+                if (User.IsInRole(SD.CustomerRole))
                 {
                     var customer = await GetCurrentCustomerAsync();
                     if (customer == null || fault.ReportedById != customer.UserAccount.Id)
@@ -158,7 +159,7 @@ namespace Project.Controllers
                     }
 
                     // Pre-populate for customers
-                    if (User.IsInRole("Customer"))
+                    if (User.IsInRole(SD.CustomerRole))
                     {
                         var customer = await GetCurrentCustomerAsync();
                         if (customer != null)
@@ -181,7 +182,7 @@ namespace Project.Controllers
                 }
 
                 // Authorization check for customers
-                if (User.IsInRole("Customer"))
+                if (User.IsInRole(SD.CustomerRole))
                 {
                     var customer = await GetCurrentCustomerAsync();
                     if (customer == null || fault.ReportedById != customer.UserAccount.Id)
@@ -253,7 +254,7 @@ namespace Project.Controllers
                         }
 
                         // Authorization check for customers
-                        if (User.IsInRole("Customer") && fault.Status != FaultStatus.Reported)
+                        if (User.IsInRole(SD.CustomerRole) && fault.Status != FaultStatus.Reported)
                         {
                             TempData["error"] = "Cannot edit fault after it has been processed";
                             return RedirectToAction(nameof(Details), new { id = vm.Id });
@@ -299,7 +300,7 @@ namespace Project.Controllers
         }
 
         // GET: Faults/Process/5
-        [Authorize(Roles = "Administrator,FaultTechnician")]
+        [Authorize(Roles = SD.AdminRole + "," + SD.FaultTechnicianRole)]
             public async Task<IActionResult> Process(int id)
             {
                 var fault = await _db.FaultRecords
@@ -332,7 +333,7 @@ namespace Project.Controllers
             // POST: Faults/Process/5
             [HttpPost]
             [ValidateAntiForgeryToken]
-            [Authorize(Roles = "Administrator,FaultTechnician")]
+            [Authorize(Roles = SD.AdminRole + "," + SD.FaultTechnicianRole)]
             public async Task<IActionResult> Process(ProcessFaultVM vm)
             {
                 if (ModelState.IsValid)
@@ -384,7 +385,7 @@ namespace Project.Controllers
                 }
 
                 // Authorization check for customers
-                if (User.IsInRole("Customer"))
+                if (User.IsInRole(SD.CustomerRole))
                 {
                     var customer = await GetCurrentCustomerAsync();
                     if (customer == null || fault.ReportedById != customer.UserAccount.Id)
@@ -399,7 +400,7 @@ namespace Project.Controllers
             // POST: Faults/Delete/5 (Soft Delete)
             [HttpPost]
             [ValidateAntiForgeryToken]
-            [Authorize(Roles = "Administrator")]
+            [Authorize(Roles = SD.AdminRole)]
             public async Task<IActionResult> Delete(int id)
             {
                 var fault = await _db.FaultRecords.FindAsync(id);
@@ -418,7 +419,7 @@ namespace Project.Controllers
             }
 
             // GET: Faults/Dashboard
-            [Authorize(Roles = "Administrator,FaultTechnician")]
+            [Authorize(Roles = SD.AdminRole + "," + SD.FaultTechnicianRole)]
             public async Task<IActionResult> Dashboard()
             {
                 var dashboard = new FaultDashboardVM
@@ -540,15 +541,7 @@ namespace Project.Controllers
         }
 
         // Extension method to get Display Name from enum
-        public static class EnumExtensions
-        {
-            public static string GetDisplayName(this Enum value)
-            {
-                var field = value.GetType().GetField(value.ToString());
-                var attribute = field?.GetCustomAttribute<DisplayAttribute>();
-                return attribute?.Name ?? value.ToString();
-            }
-        }
+
 
         //public class FaultsController : Controller
         //{

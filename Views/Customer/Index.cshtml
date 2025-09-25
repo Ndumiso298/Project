@@ -13,11 +13,6 @@
                     <p class="text-muted">Find the perfect refrigeration solution for your needs</p>
                 </div>
                 <div class="d-flex align-items-center">
-                   @*  <div class="me-3">
-                        <span class="badge bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-check-circle-fill me-1"></i> @Model.Count() Available Unit
-                        </span>
-                    </div> *@
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-filter me-1"></i> Sort By
@@ -91,8 +86,8 @@
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
-                                    <span class="h5 mb-0 text-primary">@fridge.RentalPricePerMonth.ToString("c")</span>
-                                    <span class="text-muted small d-block">per month</span>
+@*                                     <span class="h5 mb-0 text-primary">@fridge.RentalPricePerMonth.ToString("c")</span>
+ *@                                    <span class="text-muted small d-block">per month</span>
                                 </div>
                                 <div class="text-center">
                                     <span class="badge bg-light text-dark">

@@ -69,12 +69,12 @@ namespace Project.Models
 
         public int LocationId { get; set; }
 
-        [ForeignKey("LocationId")]
+        [ForeignKey(nameof(LocationId))]
         [ValidateNever]
         [Display(Name = "Trading Location")]
         public virtual Location TradingLocation { get; set; } = null!;
 
-        [Display(Name = "Active")]
+        [Display(Name = "Account Status")]
         public bool IsActive { get; set; } = true;
 
         [Display(Name = "Created At")]

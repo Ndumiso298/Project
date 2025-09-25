@@ -36,7 +36,7 @@
                                 <dd class="col-sm-8">#@Model.Id</dd>
 
                                 <dt class="col-sm-4">Customer:</dt>
-                                <dd class="col-sm-8">@Model.FridgeAllocation?.Customer?.Name</dd>
+                                <dd class="col-sm-8">@Model.FridgeAllocation?.Customer?.TradingLocation.Name</dd>
 
                                 <dt class="col-sm-4">Fridge Model:</dt>
                                 <dd class="col-sm-8">@Model.FridgeAllocation?.Fridge?.Model</dd>
@@ -94,7 +94,7 @@
                                 <dd class="col-sm-8">
                                     @if (Model.AssignedEmployee != null)
                                     {
-                                        @($"{Model.AssignedEmployee.FirstName} {Model.AssignedEmployee.LastName}")
+                                        @($"{Model.AssignedEmployee.UserAccount.FirstName} {Model.AssignedEmployee.UserAccount.LastName}")
                                     }
                                     else
                                     {
@@ -258,7 +258,7 @@
         return status switch
         {
             CustomerRequestStatus.Draft => "bg-secondary",
-            CustomerRequestStatus.Pending => "bg-warning",
+            CustomerRequestStatus.AdditionalInfoRequired => "bg-warning",
             CustomerRequestStatus.InProgress => "bg-info",
             CustomerRequestStatus.Completed => "bg-success",
             CustomerRequestStatus.Cancelled => "bg-danger",
