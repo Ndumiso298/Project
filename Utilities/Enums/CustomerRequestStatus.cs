@@ -20,7 +20,7 @@ namespace Project.Utilities.Enums
         Approved, // Request has been approved, replacement being processed
 
         [Display(Name = "Replacement Scheduled")]
-        ReplacementScheduled, // Technician visit scheduled
+        ReplacementScheduled, // AssignedTechnician visit scheduled
 
         [Display(Name = "In Progress")]
         InProgress, // Replacement process has begun

@@ -1,0 +1,134 @@
+﻿@model IEnumerable<Location>
+@{
+    ViewData["Title"] = "Location Management";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-map-marker-alt me-2"></i> @ViewData["Title"]
+                </h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Locations</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">All Locations</h5>
+                    <a asp-action="Upsert" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add New Location
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered" id="locationsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Address</th>
+                                        <th>City/Suburb</th>
+                                        <th>Province</th>
+                                        <th>Employees</th>
+                                        <th>Customers</th>
+                                        <th>Fridges</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var location in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@location.Name</strong>
+                                                <br><small class="text-muted">@location.PostalCode</small>
+                                            </td>
+                                            <td>
+                                                @location.AddressLine1
+                                                @if (!string.IsNullOrEmpty(location.AddressLine2))
+                                                {
+                                                    <br>
+
+                                                    <small class="text-muted">@location.AddressLine2</small>
+                                                }
+                                            </td>
+                                            <td>@location.Suburb, @location.City</td>
+                                            <td>@location.Province</td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary">@location.Employees.Count(e => e.IsActive)</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-success">@location.Customers.Count(c => c.IsActive)</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-info">@location.Fridges.Count(f => f.IsActive)</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(location.IsActive ? "bg-success" : "bg-secondary")">
+                                                    @(location.IsActive ? "Active" : "Inactive")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a asp-action="Details" asp-route-id="@location.Id"
+                                                       class="btn btn-info" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a asp-action="Upsert" asp-route-id="@location.Id"
+                                                       class="btn btn-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@location.Id"
+                                                       class="btn btn-danger" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-map-marker-alt fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Locations Found</h4>
+                            <p class="text-muted">Get started by adding your first location.</p>
+                            <a asp-action="Upsert" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Add New Location
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#locationsTable').DataTable({
+                "order": [[3, "asc"], [2, "asc"]], // Sort by Province, then City
+                "responsive": true,
+                "columnDefs": [
+                    { "orderable": false, "targets": [4, 5, 6, 8] } // Disable sorting for counts and actions
+                ]
+            });
+        });
+    </script>
+}

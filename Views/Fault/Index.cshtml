@@ -1,5 +1,5 @@
 ﻿@using Project.Utilities.Enums
-@model IEnumerable<Project.Models.FridgeFault>
+@model IEnumerable<Project.Models.FaultRecord>
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
@@ -119,11 +119,11 @@
                         </td>
                         <td>@obj.ReportedBy?.FirstName</td>
                         <td>@obj.ReportedBy?.LastName</td>
-                        <td>@obj.ReportedBy?.AddressLine1</td>
-                        <td>@obj.ReportedBy?.AddressLine2</td>
-                        <td>@obj.ReportedBy?.City</td>
-                        <td>@obj.ReportedBy?.Province</td>
-                        <td>@obj.ReportedBy?.PostalCode</td>
+                        <td>@obj.ReportedBy?.PrimaryLocation.AddressLine1</td>
+                        <td>@obj.ReportedBy?.PrimaryLocation.AddressLine2</td>
+                        <td>@obj.ReportedBy?.PrimaryLocation.City</td>
+                        <td>@obj.ReportedBy?.PrimaryLocation.Province</td>
+                        <td>@obj.ReportedBy?.PrimaryLocation.PostalCode</td>
                         <td>@obj.ReportedDate.ToString("dd MMM yyyy")</td>
                         <td>@obj.ResolvedDate?.ToString("dd MMM yyyy")</td>
                         <td>@obj.AssignedTechnician?.UserAccount.Id</td>

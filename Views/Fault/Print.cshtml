@@ -1,4 +1,4 @@
-﻿@model Project.Models.FridgeFault
+﻿@model Project.Models.FaultRecord
 @{
     Layout = null; // Optional: removes site layout for clean printing
 }
@@ -56,10 +56,10 @@
     <div class="section">
         <h4>Customer Info</h4>
         <div><span class="label">Name:</span><span class="value">@Model.ReportedBy?.Customer.UserAccount.FirstName</span></div>
-        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.UserAccount.AddressLine1</span></div>
-        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.UserAccount.AddressLine2</span></div>
-        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.UserAccount.City</span></div>
-        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.UserAccount.Province</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.AddressLine1</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.AddressLine2</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.City</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.Province</span></div>
     </div>
 
     <div class="section">
@@ -70,7 +70,7 @@
 
     <div class="no-print">
         <button onclick="window.print()">🖨️ Print</button>
-        <a href="@Url.Action("Index", "FridgeFault")">🔙 Back to List</a>
+        <a href="@Url.Action("Index", "FaultRecord")">🔙 Back to List</a>
     </div>
 </body>
 </html>

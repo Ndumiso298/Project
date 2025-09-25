@@ -1,6 +1,187 @@
 ﻿@model Fridge
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add New Fridge" : "Edit Fridge";
+    var isEdit = Model.Id != 0;
+}
 
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-refrigerator me-2"></i> @ViewData["Title"]
+                </h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Fridges</a></li>
+                        <li class="breadcrumb-item active">@(isEdit ? "Edit" : "Add")</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Upsert" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="SerialNumber" class="form-label"></label>
+                                            <input asp-for="SerialNumber" class="form-control" />
+                                            <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Model" class="form-label"></label>
+                                            <input asp-for="Model" class="form-control" />
+                                            <span asp-validation-for="Model" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label asp-for="CapacityLiters" class="form-label"></label>
+                                            <input asp-for="CapacityLiters" type="number" step="0.1" class="form-control" />
+                                            <span asp-validation-for="CapacityLiters" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="RentalPricePerMonth" class="form-label"></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input asp-for="RentalPricePerMonth" type="number" step="0.01" class="form-control" />
+                                            </div>
+                                            <span asp-validation-for="RentalPricePerMonth" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Status" class="form-label"></label>
+                                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<FridgeStatus>()" class="form-select">
+                                                <option value="">-- Select Status --</option>
+                                            </select>
+                                            <span asp-validation-for="Status" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label asp-for="PurchaseDate" class="form-label"></label>
+                                            <input asp-for="PurchaseDate" type="date" class="form-control" />
+                                            <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Description" class="form-label"></label>
+                                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="Description" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Specifications" class="form-label"></label>
+                                            <textarea asp-for="Specifications" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="Specifications" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Fridge Image</label>
+                                    <div class="border rounded p-3 text-center">
+                                        @if (isEdit && !string.IsNullOrEmpty(Model.ImageUrl))
+                                        {
+                                            <img id="previewImage" src="@Model.ImageUrl" alt="Fridge Image" 
+                                                 class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Current Image</small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <img id="previewImage" src="https://via.placeholder.com/300x200?text=Fridge+Image" 
+                                                 alt="Fridge Image" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
+                                        }
+                                        
+                                        <div class="mb-3">
+                                            <input type="file" name="file" id="uploadBox" class="form-control" 
+                                                   accept="image/*" onchange="previewFile()" />
+                                        </div>
+                                        <small class="text-muted">Recommended: 300x200 pixels, JPG/PNG format</small>
+                                    </div>
+                                </div>
+
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Quick Stats</h6>
+                                        <div class="small">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Created:</span>
+                                                <span>@(isEdit ? Model.CreatedDate.ToString("dd/MM/yyyy") : "New")</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span>Last Modified:</span>
+                                                <span>@(isEdit ? Model.ModifiedDate?.ToString("dd/MM/yyyy") : "N/A")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <div class="btn-group" role="group">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i> @(isEdit ? "Update" : "Create")
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function previewFile() {
+            const preview = document.getElementById('previewImage');
+            const file = document.querySelector('input[type=file]').files[0];
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                preview.src = reader.result;
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Set maximum date for purchase date to today
+        document.getElementById('PurchaseDate').max = new Date().toISOString().split("T")[0];
+    </script>
+}
+
+@* @model Fridge
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
@@ -160,7 +341,7 @@
                                                     <input asp-for="RentedToDate" type="date" class="form-control" />
                                                     <span asp-validation-for="RentedToDate" class="text-danger small"></span>
                                                 </div>
-                                            </div> *@
+                                            </div> 
                                         </div>
                                     </div>
                                 </div>
@@ -294,4 +475,4 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
-}
+} *@

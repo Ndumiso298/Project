@@ -20,3 +20,76 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Custom styles for allocations */
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.btn-group .btn {
+    margin-right: 0.25rem;
+}
+
+/* Responsive table */
+.table-responsive table {
+    min-width: 800px;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Location-specific styles */
+.badge {
+    font-size: 0.75em;
+}
+
+.card .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Stats cards */
+.card.bg-primary, .card.bg-success, .card.bg-info, .card.bg-warning {
+    border: none;
+}
+
+    .card.bg-primary .card-body,
+    .card.bg-success .card-body,
+    .card.bg-info .card-body,
+    .card.bg-warning .card-body {
+        padding: 1.5rem;
+    }

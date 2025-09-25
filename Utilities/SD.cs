@@ -4,10 +4,10 @@
     {//Role names
         public const string AdminRole = "Admin";
         public const string CustomerRole = "Customer";
-        public const string CustomerSupport = "CustomerSupport";
-        public const string StockController = "StockController";
-        public const string FaultTechnician = "FaultTechnician";
-        public const string MaintenanceTechnician = "MaintenanceTechnician";
+        public const string CustomerSupportRole = "CustomerSupport";
+        public const string StockControllerRole = "StockController";
+        public const string FaultTechnicianRole = "FaultTechnician";
+        public const string MaintenanceTechnicianRole = "MaintenanceTechnician";
 
         //Request statuses
         public const string StatusPending = "Pending";

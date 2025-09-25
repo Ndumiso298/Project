@@ -1,0 +1,243 @@
+﻿@model Location
+@{
+    ViewData["Title"] = "Location Details";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-map-marker-alt me-2"></i> @ViewData["Title"]
+                </h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Locations</a></li>
+                        <li class="breadcrumb-item active">@Model.Name</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Location Information -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i> Location Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Name:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Address:</dt>
+                        <dd class="col-sm-8">
+                            @Model.AddressLine1<br>
+                            @if (!string.IsNullOrEmpty(Model.AddressLine2))
+                            {
+                                @Model.AddressLine2
+
+                                <br>
+                            }
+                            @Model.Suburb, @Model.City<br>
+                            @Model.Province, @Model.PostalCode<br>
+                            @Model.Country
+                        </dd>
+
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                                @(Model.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">Created:</dt>
+                        <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy")</dd>
+
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <dt class="col-sm-4">Last Updated:</dt>
+                            <dd class="col-sm-8">@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.EmployeeCount</h4>
+                                    <p class="mb-0">Active Employees</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.CustomerCount</h4>
+                                    <p class="mb-0">Active Customers</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-store fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-info text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.FridgeCount</h4>
+                                    <p class="mb-0">Available Fridges</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-refrigerator fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.ActiveAllocations</h4>
+                                    <p class="mb-0">Active Allocations</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-truck-loading fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="Employees" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users me-2"></i> View Employees
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="Customers" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-success w-100">
+                                <i class="fas fa-store me-2"></i> View Customers
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="Fridges" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-info w-100">
+                                <i class="fas fa-refrigerator me-2"></i> View Fridges
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="FridgeAllocations" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-warning w-100">
+                                <i class="fas fa-truck-loading me-2"></i> View Allocations
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance and Faults Summary -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i> Maintenance Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-circle me-2"></i> Pending Maintenance</h6>
+                        <p class="mb-1">Scheduled visits: <strong>@ViewBag.PendingMaintenance</strong></p>
+                        @if (ViewBag.PendingMaintenance > 0)
+                        {
+                            <a asp-controller="MaintenanceVisits" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-sm btn-warning mt-2">
+                                View Maintenance Schedule
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Fault Reports Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-bug me-2"></i> Open Faults</h6>
+                        <p class="mb-1">Active fault reports: <strong>@ViewBag.OpenFaults</strong></p>
+                        @if (ViewBag.OpenFaults > 0)
+                        {
+                            <a asp-controller="Faults" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-sm btn-danger mt-2">
+                                View Fault Reports
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Location Management</h5>
+                    <div>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i> Edit Location
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

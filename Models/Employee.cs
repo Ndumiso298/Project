@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Data.SqlClient;
+using Project.Utilities.Enums;
 
 namespace Project.Models
 {
@@ -24,11 +25,10 @@ namespace Project.Models
         public string EmployeeNumber { get; set; } = string.Empty;
 
         [Display(Name = "Availability Status")]
-        public string? AvailabilityStatus { get; set; }
+        public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Available;
 
         [Required]
-        [MaxLength(21)]
-        public string EmployeeType { get; set; }
+        public EmployeeType EmployeeType { get; set; }
         // Metadata
         [Display(Name = "Created At")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
@@ -56,11 +56,11 @@ namespace Project.Models
         public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
 
         [NotMapped]
-        public virtual ICollection<FridgeFault> FaultReports { get; set; } = new List<FridgeFault>();
+        public virtual ICollection<FaultRecord> FaultReports { get; set; } = new List<FaultRecord>();
 
-        // FridgeFault tech navigations
-        [InverseProperty(nameof(FridgeFault.AssignedTechnician))]
-        public virtual ICollection<FridgeFault> AssignedFaults { get; set; } = new List<FridgeFault>();
+        // FaultRecord tech navigations
+        [InverseProperty(nameof(FaultRecord.AssignedTechnician))]
+        public virtual ICollection<FaultRecord> AssignedFaults { get; set; } = new List<FaultRecord>();
 
         // Stock controller navigations
         [ValidateNever]

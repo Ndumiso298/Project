@@ -1,0 +1,73 @@
+﻿@model DeallocationVM
+@{
+    ViewData["Title"] = "Deallocate Fridge";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">@ViewData["Title"]</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Warning:</strong> This action cannot be undone. The fridge will be marked as available for reallocation.
+                </div>
+
+                <dl class="row mb-4">
+                    <dt class="col-sm-4">Fridge:</dt>
+                    <dd class="col-sm-8">@Model.FridgeSerialNumber</dd>
+
+                    <dt class="col-sm-4">Customer:</dt>
+                    <dd class="col-sm-8">@Model.CustomerName</dd>
+
+                    <dt class="col-sm-4">Allocation Date:</dt>
+                    <dd class="col-sm-8">@Model.AllocationDate.ToString("dd/MM/yyyy")</dd>
+                </dl>
+
+                <form asp-action="Deallocate" method="post">
+                    <input type="hidden" asp-for="AllocationId" />
+
+                    <div class="form-group mb-3">
+                        <label asp-for="DeallocationDate" class="form-label"></label>
+                        <input asp-for="DeallocationDate" class="form-control" />
+                        <span asp-validation-for="DeallocationDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="DeallocationReason" class="form-label"></label>
+                        <textarea asp-for="DeallocationReason" class="form-control" rows="3"
+                                  placeholder="Please provide a reason for deallocation..."></textarea>
+                        <span asp-validation-for="DeallocationReason" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <div class="btn-group" role="group">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-undo"></i> Confirm Deallocation
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#DeallocationDate').datetimepicker({
+                format: 'DD/MM/YYYY HH:mm',
+                sideBySide: true
+            });
+        });
+    </script>
+}

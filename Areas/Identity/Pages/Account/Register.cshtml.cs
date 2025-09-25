@@ -70,7 +70,7 @@ namespace Project.Areas.Identity.Pages.Account
 
             [Required(ErrorMessage = "First name is required")]
             [DataType(DataType.Text)]
-            [Display(Name = "First name(s)")]
+            [Display(Name = "First name(CustomersController)")]
             public string FirstName { get; set; }
 
             [Required(ErrorMessage = "Last name is required")]
@@ -81,7 +81,7 @@ namespace Project.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "Date of Birth is required")]
             [DataType(DataType.Date)]
             [Display(Name = "Date of Birth")]
-            public DateTime DOB { get; set; }
+            public DateTime? DOB { get; set; }
 
             [Required(ErrorMessage = "Phone number is required")]
             [Phone(ErrorMessage = "Please enter a valid phone number")]
@@ -104,27 +104,8 @@ namespace Project.Areas.Identity.Pages.Account
 
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
-            [Required(ErrorMessage = "Address line 1 is required.")]
-            [StringLength(100, ErrorMessage = "Address line 1 cannot exceed 100 characters.")]
-            [Display(Name = "Address Line 1")]
-            public string AddressLine1 { get; set; } = string.Empty;
 
-            [StringLength(100, ErrorMessage = "Address line 2 cannot exceed 100 characters.")]
-            [Display(Name = "Address Line 2")]
-            public string? AddressLine2 { get; set; }
-
-            [Required(ErrorMessage = "City is required.")]
-            [StringLength(50, ErrorMessage = "City cannot exceed 50 characters.")]
-            public string City { get; set; } = string.Empty;
-
-            [Required(ErrorMessage = "Province is required.")]
-            [StringLength(50, ErrorMessage = "Province cannot exceed 50 characters.")]
-            public string Province { get; set; } = string.Empty;
-
-            [Required(ErrorMessage = "Postal code is required.")]
-            [RegularExpression(@"^\d{4}$", ErrorMessage = "Postal code must be 4 digits")]
-            [Display(Name = "Postal Code")]
-            public string PostalCode { get; set; } = string.Empty;
+            public Location Location { get; set; } = new();
         }
 
 
@@ -135,14 +116,14 @@ namespace Project.Areas.Identity.Pages.Account
 
             {
                 await _roleManager.CreateAsync(new IdentityRole(SD.AdminRole));
-                await _roleManager.CreateAsync(new IdentityRole(SD.CustomerSupport));
-                await _roleManager.CreateAsync(new IdentityRole(SD.StockController));
-                await _roleManager.CreateAsync(new IdentityRole(SD.FaultTechnician));
-                await _roleManager.CreateAsync(new IdentityRole(SD.MaintenanceTechnician));
+                await _roleManager.CreateAsync(new IdentityRole(SD.CustomerSupportRole));
+                await _roleManager.CreateAsync(new IdentityRole(SD.StockControllerRole));
+                await _roleManager.CreateAsync(new IdentityRole(SD.FaultTechnicianRole));
+                await _roleManager.CreateAsync(new IdentityRole(SD.MaintenanceTechnicianRole));
                 await _roleManager.CreateAsync(new IdentityRole(SD.CustomerRole));
             }
 
-            Input = new InputModel(); // ensure it's not null
+            Input = new InputModel(); // ensure it'CustomersController not null
             Input.RoleList = _roleManager.Roles
                 .OrderBy(r => r.Name)
                 .Select(r => new SelectListItem
@@ -169,11 +150,11 @@ namespace Project.Areas.Identity.Pages.Account
                 user.DOB = Input.DOB;
                 user.Email = Input.Email;
                 user.PhoneNumber = Input.PhoneNumber;
-                user.AddressLine1 = Input.AddressLine1;
-                user.AddressLine2 = Input.AddressLine2;
-                user.City = Input.City;
-                user.Province = Input.Province;
-                user.PostalCode = Input.PostalCode;
+                user.PrimaryLocation.AddressLine1 = Input.Location.AddressLine1;
+                user.PrimaryLocation.AddressLine2 = Input.Location.AddressLine2;
+                user.PrimaryLocation.City = Input.Location.City;
+                user.PrimaryLocation.Province = Input.Location.Province;
+                user.PrimaryLocation.PostalCode = Input.Location.PostalCode;
 
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -222,7 +203,7 @@ namespace Project.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
-            Input = new InputModel(); // ensure it's not null
+            Input = new InputModel();
             Input.RoleList = _roleManager.Roles
                 .OrderBy(r => r.Name)
                 .Select(r => new SelectListItem

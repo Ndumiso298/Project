@@ -10,9 +10,7 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        [StringLength(10, ErrorMessage = "Location code cannot exceed 10 characters.")]
-        [Display(Name = "Location Code")]
-        public string? LocationCode { get; set; } // Short code for internal reference
+        public string? Name { get; set; }
 
         // Address information
         [Required(ErrorMessage = "Address line 1 is required.")]
@@ -43,65 +41,7 @@ namespace Project.Models
 
         [Required(ErrorMessage = "Country is required.")]
         [StringLength(50, ErrorMessage = "Country cannot exceed 50 characters.")]
-        public string Country { get; set; } = "South Africa"; // Default value
-
-        // Location characteristics
-        [Required(ErrorMessage = "Location type is required.")]
-        [Display(Name = "Location Type")]
-        public LocationType Type { get; set; }
-
-        // Type-specific properties
-        [StringLength(20, ErrorMessage = "Warehouse code cannot exceed 20 characters.")]
-        [Display(Name = "Warehouse Code")]
-        public string? WarehouseCode { get; set; } // For warehouse locations
-
-        [StringLength(50, ErrorMessage = "Supplier code cannot exceed 50 characters.")]
-        [Display(Name = "Supplier Code")]
-        public string? SupplierCode { get; set; } // For supplier locations
-
-        // Contact information
-        [Phone(ErrorMessage = "Invalid phone number format")]
-        [Display(Name = "Location Phone")]
-        public string? PhoneNumber { get; set; }
-
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        [Display(Name = "Location Email")]
-        public string? Email { get; set; }
-
-        // Manager/contact person at this location
-        [Display(Name = "Location Manager")]
-        public string? ManagerName { get; set; }
-
-        [Phone(ErrorMessage = "Invalid phone number format")]
-        [Display(Name = "Manager Phone")]
-        public string? ManagerPhone { get; set; }
-
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        [Display(Name = "Manager Email")]
-        public string? ManagerEmail { get; set; }
-
-        // Operational details
-        [Display(Name = "Operating Hours")]
-        public string? OperatingHours { get; set; }
-
-        [Display(Name = "Service Area Radius (km)")]
-        [Range(0, 1000, ErrorMessage = "Service area radius must be between 0 and 1000 km.")]
-        public int? ServiceAreaRadius { get; set; } // For service centers
-
-        // Capacity tracking (for warehouses)
-        [Display(Name = "Storage Capacity (units)")]
-        [Range(0, 10000, ErrorMessage = "Storage capacity must be a positive value.")]
-        public int? StorageCapacity { get; set; }
-
-        [Display(Name = "Current Occupancy (units)")]
-        [Range(0, 10000, ErrorMessage = "Current occupancy must be a positive value.")]
-        public int? CurrentOccupancy { get; set; }
-
-        [NotMapped]
-        [Display(Name = "Available Capacity")]
-        public int? AvailableCapacity => StorageCapacity.HasValue && CurrentOccupancy.HasValue
-            ? StorageCapacity.Value - CurrentOccupancy.Value
-            : null;
+        public string Country { get; set; } = "South Africa";
 
         // Status
         [Display(Name = "Active Status")]
@@ -109,25 +49,46 @@ namespace Project.Models
 
         // Metadata
         [Display(Name = "Created At")]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Updated At")]
+        [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
         [ValidateNever]
+        [Display(Name = "Employees")]
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 
         [ValidateNever]
+        [Display(Name = "Customers")]
         public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
         [ValidateNever]
+        [Display(Name = "Fridges")]
         public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
+
+        // ADD THIS: Fridge Allocations related to this location
+        [ValidateNever]
+        [Display(Name = "Fridge Allocations")]
+        public virtual ICollection<FridgeAllocation> FridgeAllocations { get; set; } = new List<FridgeAllocation>();
+
+        // ADD THIS: Maintenance visits at this location
+        [ValidateNever]
+        [Display(Name = "Maintenance Visits")]
+        public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; } = new List<MaintenanceVisit>();
+
+        // ADD THIS: Fault reports at this location
+        [ValidateNever]
+        [Display(Name = "Fault Reports")]
+        public virtual ICollection<FaultRecord> FaultReports { get; set; } = new List<FaultRecord>();
 
         // Computed properties
         [NotMapped]
+        [Display(Name = "Full Address")]
         public string FullAddress
         {
             get
@@ -139,13 +100,5 @@ namespace Project.Models
                 return address;
             }
         }
-
-        [NotMapped]
-        [Display(Name = "Is Warehouse")]
-        public bool IsWarehouse => Type == LocationType.Warehouse || Type == LocationType.DistributionCenter;
-
-        [NotMapped]
-        [Display(Name = "Is Customer Facing")]
-        public bool IsCustomerFacing => Type == LocationType.CustomerSite || Type == LocationType.RetailStore || Type == LocationType.ServiceCentre;
     }
 }
