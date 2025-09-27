@@ -63,6 +63,7 @@ namespace Project.Controllers
             AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.ApplicationUser.City;
             AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.ApplicationUser.State;
             AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.ApplicationUser.PostalCode;
+            AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.ApplicationUser.CellNumber;
 
             foreach (var allocation in AllocationVM.AllocationList)
             {

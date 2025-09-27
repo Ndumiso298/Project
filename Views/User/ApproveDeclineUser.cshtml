@@ -1,0 +1,71 @@
+﻿@model Project.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Approve or Decline User";
+}
+
+<div class="container py-4">
+    <h2>Approve or Decline User</h2>
+    <hr />
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4>User Details</h4>
+            <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+            <p><strong>Email:</strong> @Model.Email</p>
+            <p><strong>Phone:</strong> @Model.CellNumber</p>
+            <p><strong>Address:</strong> @Model.StreetAddress, @Model.City, @Model.State, @Model.PostalCode</p>
+
+            @* Show document only if user is Customer and document exists *@
+            @if (Model.Role != null && Model.Role.Contains("Customer") && !string.IsNullOrEmpty(Model.BusinessDocumentPath))
+            {
+                <p>
+                    <strong>Business Document:</strong>
+                    <a href="@Url.Content(Model.BusinessDocumentPath)" target="_blank" class="btn btn-outline-primary">
+                        Open Document
+                    </a>
+                </p>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4>Actions</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <form asp-action="ApproveUser" method="post">
+                        <input type="hidden" name="userId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-success w-100">Approve</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form asp-action="DeclineUser" method="post">
+                        <input type="hidden" name="userId" value="@Model.Id" />
+                      
+                        <button type="submit" class="btn btn-danger w-100">Decline</button>
+                    </form>
+                </div>
+               
+
+                <div class="col-md-3">
+                    <a asp-action="Index" class="btn btn-secondary w-100">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

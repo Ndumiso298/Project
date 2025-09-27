@@ -247,16 +247,11 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RequestHeaderId")
-                        .HasColumnType("int");
-
                     b.HasKey("AllocationId");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("FridgeId");
-
-                    b.HasIndex("RequestHeaderId");
 
                     b.ToTable("tblAllocations");
                 });
@@ -1086,15 +1081,24 @@ namespace Project.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<string>("BusinessDocumentPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CellNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("DeclinedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -1103,7 +1107,14 @@ namespace Project.Migrations
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetAddress")
@@ -1176,10 +1187,6 @@ namespace Project.Migrations
                         .HasForeignKey("FridgeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Project.Models.RequestHeader", null)
-                        .WithMany("Allocations")
-                        .HasForeignKey("RequestHeaderId");
 
                     b.Navigation("ApplicationUser");
 
@@ -1256,7 +1263,7 @@ namespace Project.Migrations
                         .HasForeignKey("AllocationId");
 
                     b.HasOne("Project.Models.RequestHeader", "RequestHeader")
-                        .WithMany()
+                        .WithMany("FridgeVisits")
                         .HasForeignKey("RequestHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1385,7 +1392,7 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>
                 {
-                    b.Navigation("Allocations");
+                    b.Navigation("FridgeVisits");
 
                     b.Navigation("RequestFridges");
                 });

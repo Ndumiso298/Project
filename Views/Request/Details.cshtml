@@ -119,8 +119,23 @@
                             <!-- Payment Status -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Payment Status</label>
-                                <input asp-for="RequstHeader.Status" class="form-control" readonly />
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- Textbox that shows status -->
+                                    <input asp-for="RequstHeader.Status" class="form-control w-auto" readonly />
+
+                                    @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
+                                    {
+                                        <!-- Toggle button -->
+                                        <button type="submit" asp-action="ToggleStatus"
+                                                class="btn btn-warning rounded-pill shadow-sm">
+                                            <i class="bi bi-arrow-repeat me-1"></i> Change Status
+                                        </button>
+                                    }
+                                </div>
                             </div>
+
+
 
                             @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
                             {

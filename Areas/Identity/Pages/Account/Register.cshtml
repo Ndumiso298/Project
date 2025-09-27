@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Register";
     Layout = "_CustomerLayout";
+
+    bool isAdmin = User.IsInRole("Admin"); // Check if logged-in user is Admin
 }
 
 <div class="row">
@@ -17,7 +19,7 @@
 
             <!-- Body -->
             <div class="card-body p-4 p-md-5">
-                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                     <div class="row">
@@ -46,28 +48,23 @@
                                 </div>
                             </div>
 
-                            <div class="card mb-4 border-0 shadow-sm">
-                                <div class="card-header bg-primary text-light">
-                                    <h5 class="mb-0"><i class="bi bi-key me-2"></i>Login Credentials</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-floating mb-3">
-                                        <input asp-for="Input.Email" class="form-control" placeholder="Email" />
-                                        <label asp-for="Input.Email">Email*</label>
-                                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            @* Business Document Upload: only visible if not Admin *@
+                            @if (!isAdmin)
+                            {
+                                <div class="card mb-4 border-0 shadow-sm">
+                                    <div class="card-header bg-primary text-light">
+                                        <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Business Verification</h5>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input asp-for="Input.Password" class="form-control" placeholder="Password" />
-                                        <label asp-for="Input.Password">Password*</label>
-                                        <span asp-validation-for="Input.Password" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" />
-                                        <label asp-for="Input.ConfirmPassword">Confirm Password*</label>
-                                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label asp-for="Input.BusinessDocument" class="form-label fw-semibold"></label>
+                                            <input asp-for="Input.BusinessDocument" type="file" class="form-control" />
+                                            <span asp-validation-for="Input.BusinessDocument" class="text-danger"></span>
+                                            <small class="text-muted">Upload a valid document that proves your business (PDF, JPG, PNG).</small>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         </div>
 
                         <!-- Right Column -->
@@ -99,92 +96,60 @@
                                     </div>
                                 </div>
                             </div>
-                             @if (User.IsInRole(SD.AdminRole))
-                            {
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-primary text-light">
-                                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Account Type</h5>
+
+                            <div class="card mb-4 border-0 shadow-sm">
+                                <div class="card-header bg-primary text-light">
+                                    <h5 class="mb-0"><i class="bi bi-key me-2"></i>Login Credentials</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.Email" class="form-control" placeholder="Email" />
+                                        <label asp-for="Input.Email">Email*</label>
+                                        <span asp-validation-for="Input.Email" class="text-danger"></span>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="form-floating mb-3">
-
-                                            <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-                                                <option value="">--Select Role--</option>
-                                            </select>
-
-                                          
-
-                                            <label asp-for="Input.Role">User Role*</label>
-                                            <span asp-validation-for="Input.Role" class="text-danger"></span>
-                                        </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.Password" class="form-control" placeholder="Password" type="password" />
+                                        <label asp-for="Input.Password">Password*</label>
+                                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" />
+                                        <label asp-for="Input.ConfirmPassword">Confirm Password*</label>
+                                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                                     </div>
                                 </div>
-                            }
+                                @* Role Dropdown: only visible to Admin *@
+                                @if (isAdmin)
+                                {
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-primary text-light">
+                                            <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Account Type</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-floating mb-3">
+                                                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+                                                    <option value="">--Select Role--</option>
+                                                </select>
+                                                <label asp-for="Input.Role">User Role*</label>
+                                                <span asp-validation-for="Input.Role" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
                           
                         </div>
-                        </div>
-                            
-                            <!-- Submit -->
+                    </div>
+
+                    <!-- Submit -->
                     <div class="d-grid gap-2 mt-4">
                         <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg py-2 fw-semibold">
                             <i class="bi bi-person-plus me-2"></i>Register
                         </button>
                     </div>
                 </form>
-
-                <!-- External logins -->
-                <div class="mt-5">
-                    <h5 class="text-center">Use another service to register</h5>
-                    <hr />
-                    @if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                    {
-                        <p class="text-center text-muted">
-                            No external authentication services configured.
-                            <a href="https://go.microsoft.com/fwlink/?LinkID=532715">Learn how to set them up</a>.
-                        </p>
-                    }
-                    else
-                    {
-                        <div class="text-center">
-                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-outline-primary m-1" name="provider" value="@provider.Name"
-                                            title="Log in using your @provider.DisplayName account">
-                                        @provider.DisplayName
-                                    </button>
-                                }
-                            </form>
-                        </div>
-                    }
-                </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <style>
-        .card {
-            border: none;
-            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #008cba 0%, #008cba 100%);
-            border-bottom: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #008cba 0%, #008cba 100%);
-            border: none;
-            transition: all 0.3s;
-        }
-
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.3);
-            }
-    </style>
-}

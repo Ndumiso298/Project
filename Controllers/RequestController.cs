@@ -79,7 +79,6 @@ namespace Project.Controllers
                 return NotFound("Request not found.");
             }
 
-            // Update properties safely
             RequestHeaderFromDb.FirstName = RequestVM.RequstHeader.FirstName;
             RequestHeaderFromDb.LastName = RequestVM.RequstHeader.LastName;
             RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
@@ -87,18 +86,8 @@ namespace Project.Controllers
             RequestHeaderFromDb.City = RequestVM.RequstHeader.City;
             RequestHeaderFromDb.State = RequestVM.RequstHeader.State;
             RequestHeaderFromDb.PostalCode = RequestVM.RequstHeader.PostalCode;
-            RequestHeaderFromDb.Status = "Allocated";
 
-            if (!string.IsNullOrEmpty(RequestVM.RequstHeader.Carrier))
-            {
-                RequestHeaderFromDb.Carrier = RequestVM.RequstHeader.Carrier;
-            }
-
-            if (RequestVM.RequestFridgeNo?.Fridge != null &&
-                !string.IsNullOrEmpty(RequestVM.RequestFridgeNo.Fridge.FridgeNo))
-            {
-                RequestHeaderFromDb.Carrier = RequestVM.RequestFridgeNo.Fridge.FridgeNo;
-            }
+           
 
             _db.tblRequestHeaders.Update(RequestHeaderFromDb);
             _db.SaveChanges();
@@ -108,9 +97,42 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Details), new { id = RequestHeaderFromDb.RequestHeaderId });
         }
 
-        
-        
-      
+        [HttpPost]
+        public IActionResult ToggleStatus(RequestVM RequestVM)
+        {
+           if (RequestVM == null || RequestVM.RequstHeader == null)
+           {
+              return BadRequest("Invalid request data.");
+           }
+
+           var requestHeaderFromDb = _db.tblRequestHeaders
+          .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+
+           if (requestHeaderFromDb == null)
+           {
+              return NotFound("Request not found.");
+           }
+
+           if (requestHeaderFromDb.Status == SD.Allocated)
+           {
+              requestHeaderFromDb.Status = SD.WaitingForPayment;
+           }
+          else
+          {
+            requestHeaderFromDb.Status = SD.Allocated;
+          }
+
+          _db.tblRequestHeaders.Update(requestHeaderFromDb);
+          _db.SaveChanges();
+
+           TempData["Success"] = "Status updated successfully.";
+
+           return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+        }
+
+
+
+
 
         [HttpPost]
         public IActionResult ShipOrder()

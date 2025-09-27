@@ -11,7 +11,11 @@
 
 
 
-       
+
+        public const string Allocated = "Allocated";
+        public const string WaitingForPayment = "Waiting For Payment";
+        public const string Approved = "Approved";
+        public const string Rejected = "Rejected";
 
     }
 }

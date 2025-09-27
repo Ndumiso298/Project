@@ -17,7 +17,7 @@ namespace Project.Models
         [Required]
         public int CapacityLiters { get; set; }
         [Required]
-        public string Type { get; set; } // e.g., "Single Door", "Double Door", etc
+        public string Type { get; set; }
         [Required]
         public string Description { get; set; }
         [Required]
@@ -30,7 +30,7 @@ namespace Project.Models
         //[Required]
         public string? ImageUrl { get; set; }
         [Required]
-        public string AvailabilityStatus { get; set; } // e.g., "Available", "Rented", "Under Maintenance"
+        public string AvailabilityStatus { get; set; } 
         public string? Location { get; set; }
     }
 

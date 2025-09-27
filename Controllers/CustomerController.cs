@@ -14,11 +14,11 @@ namespace Project.Controllers
         {
             _db = db;
         }
-       
+
 
         public IActionResult Index()
         {
-            IEnumerable<Fridge> fridgesList=_db.tblFridges.ToList();
+            IEnumerable<Fridge> fridgesList = _db.tblFridges.ToList();
             return View(fridgesList);
         }
         public IActionResult Details(int id)
@@ -26,11 +26,11 @@ namespace Project.Controllers
             Allocation allocation = new()
             {
                 Fridge = _db.tblFridges.FirstOrDefault(u => u.FridgeId == id),
-                Count= 1,
-                FridgeId=id
+                Count = 1,
+                FridgeId = id
             };
-          return View(allocation);
-        
+            return View(allocation);
+
         }
         [HttpPost]
         [Authorize]

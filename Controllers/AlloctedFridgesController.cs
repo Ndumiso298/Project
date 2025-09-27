@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
+using Project.Utility;
 using System.Security.Claims;
 
 
@@ -41,7 +42,7 @@ namespace Project.Controllers
                 .Include(u => u.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .Where(u => u.Status == "Allocated") 
+                .Where(u => u.Status ==SD.Allocated) 
                 .ToList();
 
             var requestIds = allocatedRequests.Select(u => u.RequestHeaderId).ToList();
@@ -65,7 +66,7 @@ namespace Project.Controllers
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
                 .Include(u => u.FridgeVisits) 
-                .Where(u => u.ApplicationUserId == userId && u.Status == "Allocated")
+                .Where(u => u.ApplicationUserId == userId && u.Status == SD.Allocated)
                 .ToList();
 
             return View(requests);
@@ -77,7 +78,7 @@ namespace Project.Controllers
                 .Include(u => u.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == "Allocated");
+                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == SD.Allocated);
 
             if (request == null)
             {
@@ -110,7 +111,7 @@ namespace Project.Controllers
             var request = _db.tblRequestHeaders
                 .Include(r => r.RequestFridges)
                 .ThenInclude(rf => rf.Fridge)
-                .FirstOrDefault(r => r.RequestHeaderId == requestId && r.Status == "Allocated");
+                .FirstOrDefault(r => r.RequestHeaderId == requestId && r.Status == SD.Allocated);
 
             if (request == null)
             {

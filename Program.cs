@@ -23,6 +23,7 @@ builder.Services.ConfigureApplicationCookie(option =>
 });
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddHostedService<UserCleanupService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

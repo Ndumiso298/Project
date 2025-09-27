@@ -322,6 +322,11 @@
                                     Register User
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-action="Index" asp-controller="User">
+                                    Register User
+                                </a>
+                            </li>
                         }
                         else if (User.IsInRole(SD.CustomerRole))
                         {
@@ -461,11 +466,7 @@
 
             <div class="footer-bottom">
                 <div class="payment-methods">
-                    <i class="fab fa-cc-visa"></i>
-                    <i class="fab fa-cc-mastercard"></i>
-                    <i class="fab fa-cc-amex"></i>
-                    <i class="fab fa-cc-paypal"></i>
-                    <i class="fab fa-cc-apple-pay"></i>
+                  
                 </div>
                 <p>&copy; 2025 Smart & Chill Solutions - Rental Management System | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
             </div>

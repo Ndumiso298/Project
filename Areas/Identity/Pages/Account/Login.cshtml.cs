@@ -1,87 +1,54 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
+using Project.Models;
+using Project.Utility;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 
 namespace Project.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger,UserManager<IdentityUser> userManager)
+        public LoginModel(SignInManager<IdentityUser> signInManager,
+                          UserManager<IdentityUser> userManager,
+                          ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [TempData]
         public string ErrorMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [EmailAddress]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
         }
@@ -95,7 +62,6 @@ namespace Project.Areas.Identity.Pages.Account
 
             returnUrl ??= Url.Content("~/");
 
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -107,63 +73,73 @@ namespace Project.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            if (!ModelState.IsValid)
+                return Page();
 
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+
+            if (user == null)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return Page();
+            }
 
-                    _logger.LogInformation("User logged in.");
+            var appUser = user as ApplicationUser;
 
-                    var user = await  _userManager.FindByEmailAsync(Input.Email);
-                    if (await _userManager.IsInRoleAsync(user, "Admin"))
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
+            // Only Customers require admin approval
+            var isCustomer = await _userManager.IsInRoleAsync(user, SD.CustomerRole);
 
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "Customer"))
-                    {
-                        return RedirectToAction("Index", "Customer");
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "CustomerSupport"))
-                    {
-                        return RedirectToAction("Dashboard", "CustomerSupport");
-                    }
-                    else if(await _userManager.IsInRoleAsync(user, "StockController"))
-                    {
-                        return RedirectToAction("Dashboard", "StockController");
-                    }
-                    else if(await _userManager.IsInRoleAsync(user, "FaultTech"))
-                    {
-                        return RedirectToAction("Dashboard", "FaultTech");
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "MaintenanceTech"))
-                    {
-                        return RedirectToAction("Dashboard", "MaintenanceTech");
-                    }
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
+            if (isCustomer && appUser != null)
+            {
+                if (!appUser.IsApproved)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    if (!string.IsNullOrEmpty(appUser.RejectionReason))
+                    {
+                        // Account declined
+                        ModelState.AddModelError(string.Empty, $"Your account was declined: {appUser.RejectionReason}");
+                    }
+                    else
+                    {
+                        // Pending approval
+                        ModelState.AddModelError(string.Empty, "Your account is pending admin approval.");
+                    }
                     return Page();
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User logged in.");
+
+                // Redirect based on role
+                if (await _userManager.IsInRoleAsync(user, SD.AdminRole))
+                    return RedirectToAction("Dashboard", "Admin");
+                if (await _userManager.IsInRoleAsync(user, SD.CustomerRole))
+                    return RedirectToAction("Index", "Customer");
+                if (await _userManager.IsInRoleAsync(user, SD.CustomerSupport))
+                    return RedirectToAction("Dashboard", "CustomerSupport");
+                if (await _userManager.IsInRoleAsync(user, SD.StockController))
+                    return RedirectToAction("Dashboard", "StockController");
+                if (await _userManager.IsInRoleAsync(user, SD.FaultTechnician))
+                    return RedirectToAction("Dashboard", "FaultTech");
+                if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnician))
+                    return RedirectToAction("Dashboard", "MaintenanceTech");
+
+                return LocalRedirect(returnUrl);
+            }
+
+            if (result.RequiresTwoFactor)
+                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning("User account locked out.");
+                return RedirectToPage("./Lockout");
+            }
+
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return Page();
         }
     }

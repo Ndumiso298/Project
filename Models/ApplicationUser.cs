@@ -19,7 +19,17 @@ namespace Project.Models
         public string? PostalCode { get; set; }
         public string? CellNumber { get; set; }
 
+        public bool IsApproved { get; set; } = false;
+        public string? RejectionReason { get; set; }
+        public string? BusinessDocumentPath { get; set; }
 
-
+        [NotMapped]
+        public string RoleId { get; set; }
+        [NotMapped]
+        public string Role { get; set; }
+        [NotMapped]
+        public string UserClaim { get; set; }
+        public string Status { get; internal set; }
+        public DateTime? DeclinedAt { get; set; }
     }
 }
