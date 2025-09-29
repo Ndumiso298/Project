@@ -21,7 +21,7 @@ namespace Project.Models.ViewModels
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, 50, ErrorMessage = "Quantity must be between 1 and 50.")]
         [Display(Name = "Quantity *")]
-        public int Quantity { get; set; } = 1;
+        public int Quantity { get; set; }
 
         [Required(ErrorMessage = "Rental duration is required.")]
         [Range(1, 60, ErrorMessage = "Rental duration must be between 1 and 60 months.")]
@@ -55,6 +55,10 @@ namespace Project.Models.ViewModels
         [DataType(DataType.Currency)]
         public decimal LineTotal => MonthlyTotal * RentalDurationMonths;
 
+        [Display(Name = "Total Rental Period Cost")]
+        [DataType(DataType.Currency)]
+        public decimal TotalRentalPeriodCost => LineTotal;
+
         [Display(Name = "Has Sufficient Stock")]
         public bool HasSufficientStock => Quantity <= AvailableStock;
 
@@ -75,7 +79,7 @@ namespace Project.Models.ViewModels
         [Display(Name = "Can Edit")]
         public bool CanEdit { get; set; } = true;
 
-        // Validation Methods
+        // Enhanced Validation Methods
         public IEnumerable<string> GetValidationErrors()
         {
             var errors = new List<string>();
@@ -98,6 +102,10 @@ namespace Project.Models.ViewModels
             if (!HasSufficientStock)
                 errors.Add($"{ModelName}: Only {AvailableStock} units available (requested {Quantity})");
 
+            // Business rule: Minimum quantity based on business type could be added here
+            if (Quantity < 1) // Could be configurable per business type
+                errors.Add($"Minimum quantity for {ModelName} is 1 unit");
+
             return errors;
         }
 
@@ -111,12 +119,15 @@ namespace Project.Models.ViewModels
                 FridgeModelId = FridgeModelId,
                 Quantity = Quantity,
                 RentalDurationMonths = RentalDurationMonths,
-                SpecialRequirements = SpecialRequirements
+                SpecialRequirements = SpecialRequirements?.Trim(), // Sanitize input
             };
         }
 
         public static AllocationRequestDetailVM FromEntity(AllocationRequestDetail entity, int availableStock = 0)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             return new AllocationRequestDetailVM
             {
                 Id = entity.Id,
@@ -125,7 +136,7 @@ namespace Project.Models.ViewModels
                 Quantity = entity.Quantity,
                 RentalDurationMonths = entity.RentalDurationMonths,
                 SpecialRequirements = entity.SpecialRequirements,
-                AvailableStock = availableStock,
+                AvailableStock = availableStock
             };
         }
 
@@ -136,7 +147,11 @@ namespace Project.Models.ViewModels
         {
             { "data-available-stock", AvailableStock.ToString() },
             { "data-unit-price", MonthlyRentalPrice.ToString("F2") },
-            { "data-is-valid", IsValid.ToString().ToLower() }
+            { "data-is-valid", IsValid.ToString().ToLower() },
+            { "data-temp-id", TempId.ToString() },
+            { "data-model-name", ModelName },
+            { "data-min-quantity", "1" }, // Configurable business rule
+            { "data-max-quantity", "50" } // Configurable business rule
         };
         }
     }

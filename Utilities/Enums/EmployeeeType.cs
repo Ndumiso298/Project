@@ -5,7 +5,7 @@ namespace Project.Utilities.Enums
     public enum EmployeeType
     {
         [Display(Name = "Administrator")]
-        Admin,
+        Administrator,
 
         [Display(Name = "Customer Support")]
         CustomerSupport,

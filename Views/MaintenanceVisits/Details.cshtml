@@ -36,7 +36,7 @@
         @foreach (var record in Model.MaintenanceRecords)
         {
             <li class="list-group-item">
-                @record.ServiceDate.ToString("dd/MM/yyyy") - @record.ServiceNotes
+                @(record.ServiceDate?.ToString("dd/MM/yyyy") ?? "-") - @record.ServiceNotes
             </li>
         }
     </ul>

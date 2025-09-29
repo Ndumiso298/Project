@@ -4,11 +4,8 @@ namespace Project.Utilities.Enums
 {
     public enum FridgeType
     {
-        [Display(Name = "Single Door")]
-        SingleDoor,
-
-        [Display(Name = "Double Door")]
-        DoubleDoor,
+        [Display(Name = "Upright Fridge")]
+        UprightFridge,
 
         [Display(Name = "Chest Freezer")]
         ChestFreezer,
@@ -16,16 +13,28 @@ namespace Project.Utilities.Enums
         [Display(Name = "Upright Freezer")]
         UprightFreezer,
 
-        [Display(Name = "Glass Door")]
-        GlassDoor,
+        [Display(Name = "Glass Display Fridge")]
+        GlassDisplayFridge,
 
         [Display(Name = "Beverage Cooler")]
         BeverageCooler,
 
-        [Display(Name = "Commercial Refrigerator")]
-        CommercialRefrigerator,
+        [Display(Name = "Undercounter Fridge")]
+        UndercounterFridge,
 
-        [Display(Name = "Walk-in Cooler")]
-        WalkInCooler
+        [Display(Name = "Undercounter Freezer")]
+        UndercounterFreezer,
+
+        [Display(Name = "Wine Cooler")]
+        WineCooler,
+
+        [Display(Name = "Combi Fridge-Freezer")]
+        CombiFridgeFreezer,
+
+        [Display(Name = "Ice Maker")]
+        IceMaker,
+
+        [Display(Name = "Bottle Cooler")]
+        BottleCooler
     }
 }

@@ -70,10 +70,10 @@
                                         </span>
                                     </td>
                                     <td>
-                                        @if (request.RequiredByDate.HasValue)
+                                        @if (request.RequiredByDate != null)
                                         {
-                                            @request.RequiredByDate.Value.ToString("dd/MM/yyyy")
-                                            @if (request.RequiredByDate.Value < DateTime.Today && request.Status != PurchaseRequestStatus.Approved && request.Status != PurchaseRequestStatus.Submitted)
+                                            @request.RequiredByDate.ToString("dd/MM/yyyy")
+                                            @if (request.RequiredByDate < DateTime.Today && request.Status != PurchaseRequestStatus.Approved && request.Status != PurchaseRequestStatus.Submitted)
                                             {
                                                 <div><span class="badge bg-danger">Overdue</span></div>
                                             }
@@ -97,7 +97,9 @@
                                     <td>
                                         @if (request.EstimatedTotalCost > 0)
                                         {
-                                            <span class="fw-bold text-warning">R @request.EstimatedTotalCost.ToString("N2")</span>
+                                            <span class="fw-bold text-warning">
+                                                R @(request.EstimatedTotalCost?.ToString("N2") ?? "-")
+                                            </span>
                                         }
                                         else
                                         {
@@ -107,7 +109,9 @@
                                     <td>
                                         @if (request.ApprovedBudget > 0)
                                         {
-                                            <span class="fw-bold text-success">R @request.ApprovedBudget.ToString("N2")</span>
+                                            <span class="fw-bold text-warning">
+                                                R @(request.ApprovedBudget?.ToString("N2") ?? "-")
+                                            </span>
                                         }
                                         else
                                         {
@@ -166,7 +170,10 @@
                     <div class="col-md-3 col-6">
                         <div class="card bg-danger text-white text-center">
                             <div class="card-body py-3">
-                                <h5 class="card-title">R @Model.Where(r => r.EstimatedTotalCost > 0).Sum(r => r.EstimatedTotalCost).ToString("N2")</h5>
+                                <h5 class="card-title">
+                                    R @Model.Where(r => r.EstimatedTotalCost > 0)
+                                    .Sum(r => r.EstimatedTotalCost)!.Value.ToString("N2")
+                                </h5>
                                 <small class="card-text">Total Estimated</small>
                             </div>
                         </div>

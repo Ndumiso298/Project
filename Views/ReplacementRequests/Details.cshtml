@@ -226,7 +226,7 @@
                             {
                                 <dl>
                                     <dt>Service Date:</dt>
-                                    <dd>@Model.MaintenanceRecord.ServiceDate.ToString("dd/MM/yyyy")</dd>
+                                    <dd>@(Model.MaintenanceRecord.ServiceDate?.ToString("dd/MM/yyyy") ?? "-")</dd>
 
                                     <dt>Service Type:</dt>
                                     <dd>@Model.MaintenanceRecord.ServiceType</dd>
@@ -315,7 +315,7 @@
                         <dd class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
 
                         <dt>Last Updated:</dt>
-                        <dd class="text-muted">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                        <dd class="text-muted">@(Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</dd>
 
                         <dt>Status:</dt>
                         <dd>
@@ -338,7 +338,33 @@
 @section Scripts {
     <script>
         function confirmDelete(id, requestNumber) {
-            // Same implementation as in Index view
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete replacement request #${requestNumber}. This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('@Url.Action("DeleteConfirmed")', { id: id }, function () {
+                        Swal.fire(
+                            'Deleted!',
+                            'Replacement request has been deleted.',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    }).fail(function () {
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the replacement request.',
+                            'error'
+                        );
+                    });
+                }
+            });
         }
     </script>
 }

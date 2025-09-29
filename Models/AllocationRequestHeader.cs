@@ -16,6 +16,8 @@ namespace Project.Models
             RequestDetails = new List<AllocationRequestDetail>();
             Allocations = new List<FridgeAllocation>();
             CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+            RequestNumber = GenerateRequestNumber();
         }
 
         [Key]
@@ -23,6 +25,11 @@ namespace Project.Models
         public int Id { get; set; }
 
         // Request Information
+        [Required]
+        [StringLength(20)]
+        [Display(Name = "Request Number")]
+        public string RequestNumber { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Request date is required.")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Request Date")]
@@ -171,6 +178,23 @@ namespace Project.Models
         public string DisplayName => $"Request #{Id:00000} - {Customer?.TradingName ?? "Unknown Customer"}";
 
         // Business Logic Methods
+        private static string GenerateRequestNumber()
+        {
+            return $"REQ-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper()}";
+        }
+
+        // Soft delete implementation
+        [Display(Name = "Is Deleted")]
+        public bool IsDeleted { get; set; }
+
+        [Display(Name = "Deleted Date")]
+        public DateTime? DeletedAt { get; set; }
+
+        [StringLength(450)]
+        [Display(Name = "Deleted By")]
+        public string? DeletedBy { get; set; }
+
+
         public bool CanTransitionTo(AllocationRequestStatus newStatus)
         {
             return Status switch
@@ -199,5 +223,52 @@ namespace Project.Models
                 }
             }
         }
+
+        public (bool isValid, List<string> errors) ValidateForSubmission()
+        {
+            var errors = new List<string>();
+
+            if (CustomerId <= 0)
+                errors.Add("Valid customer is required");
+
+            if (DeliveryLocationId <= 0)
+                errors.Add("Delivery location is required");
+
+            if (string.IsNullOrWhiteSpace(ContactPerson))
+                errors.Add("Contact person is required");
+
+            if (string.IsNullOrWhiteSpace(ContactPhoneNumber))
+                errors.Add("Contact phone number is required");
+
+            if (!RequestDetails.Any())
+                errors.Add("At least one fridge item is required");
+
+            // Business rule: Maximum total quantity
+            if (TotalQuantity > 100)
+                errors.Add("Total quantity cannot exceed 100 units per request");
+
+            // Business rule: Maximum contract value
+            if (TotalContractValue > 100000)
+                errors.Add("Total contract value cannot exceed R100,000");
+
+            return (!errors.Any(), errors);
+        }
+
+        public bool HasSufficientStock()
+        {
+            return RequestDetails.All(detail =>
+            {
+                var availableStock = GetAvailableStockForModel(detail.FridgeModelId);
+                return detail.IsQuantityAvailable(availableStock);
+            });
+        }
+
+        public int GetAvailableStockForModel(int fridgeModelId)
+        {
+            // This would typically call a service to get current stock levels
+            // For now, returning a placeholder - would be implemented with proper inventory service
+            return 10; // Placeholder
+        }
+
     }
 }

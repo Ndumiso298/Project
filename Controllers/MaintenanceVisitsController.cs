@@ -164,7 +164,7 @@ namespace Project.Controllers
                             vm.AllocationId = allocationId;
                             vm.FridgeId = allocation.FridgeId;
                             vm.CustomerId = allocation.CustomerId;
-                            vm.LocationId = allocation.DeliveryLocationId;
+                            vm.LocationId = allocation.DeliveryLocationId ?? 0;
                             vm.LocationInfo = allocation.DeliveryLocation?.FullAddress;
                             vm.CustomerInfo = allocation.Customer?.TradingName;
                             vm.FridgeInfo = $"{allocation.Fridge?.SerialNumber} - {allocation.Fridge?.FridgeModel?.ModelName}";

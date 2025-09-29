@@ -88,7 +88,7 @@
                                 <dd class="col-sm-8">
                                     @if (Model.ServiceCost > 0)
                                     {
-                                        <span class="fw-bold text-success">R @Model.ServiceCost.ToString("N2")</span>
+                                        <span class="fw-bold text-success">R @(Model.ServiceCost?.ToString("N2") ?? "-")</span>
                                     }
                                     else
                                     {
@@ -370,7 +370,7 @@
                                 <a asp-controller="MaintenanceRecords" asp-action="Details" asp-route-id="@record.Id"
                                    class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <small>@record.ServiceDate.ToString("dd/MM/yyyy")</small>
+                                        <small>@(record.ServiceDate?.ToString("dd/MM/yyyy") ?? "-")</small>
                                         <span class="badge bg-@GetServiceTypeBadge(record.ServiceType)">@record.ServiceType</span>
                                     </div>
                                     <small class="text-muted">@record.Description</small>
@@ -404,7 +404,9 @@
                         <dd class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
 
                         <dt>Last Modified:</dt>
-                        <dd class="text-muted">@Model.ModifiedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                        <dd class="text-muted">
+                            @(Model.ModifiedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                        </dd>
 
                         <dt>Status:</dt>
                         <dd>

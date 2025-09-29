@@ -272,7 +272,7 @@ namespace Project.Controllers
                 }
 
                 // Check dependencies for soft delete
-                var dependencyCheck = await CheckLocationDependencies(location);
+                var dependencyCheck = await CheckLocationDependencies(location.Id);
                 ViewBag.CanDelete = dependencyCheck.CanDelete;
                 ViewBag.DependencyMessage = dependencyCheck.Message;
 
@@ -323,7 +323,7 @@ namespace Project.Controllers
                 }
 
                 // Check dependencies
-                var dependencyCheck = await CheckLocationDependencies(location);
+                var dependencyCheck = await CheckLocationDependencies(location.Id);
                 if (!dependencyCheck.CanDelete)
                 {
                     TempData["error"] = dependencyCheck.Message;
@@ -333,7 +333,7 @@ namespace Project.Controllers
                 // Soft delete (as per project checklist)
                 location.IsActive = false;
                 location.ModifiedAt = DateTime.UtcNow;
-                location.ModifiedBy = User.Identity.Name;
+                location.ModifiedBy = User?.Identity?.Name ?? "System";
 
                 await _db.SaveChangesAsync();
                 TempData["success"] = "Location deactivated successfully.";
@@ -470,7 +470,7 @@ namespace Project.Controllers
                 }
 
                 location.ModifiedAt = DateTime.UtcNow;
-                location.ModifiedBy = User.Identity.Name;
+                location.ModifiedBy = User?.Identity?.Name ?? "System";
 
                 await _db.SaveChangesAsync();
 
@@ -501,7 +501,7 @@ namespace Project.Controllers
                 Country = vm.Country.Trim(),
                 IsActive = vm.IsActive,
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = User.Identity.Name
+                CreatedBy = User?.Identity?.Name ?? "System"
             };
 
             _db.Locations.Add(location);
@@ -522,7 +522,7 @@ namespace Project.Controllers
             location.Country = vm.Country.Trim();
             location.IsActive = vm.IsActive;
             location.ModifiedAt = DateTime.UtcNow;
-            location.ModifiedBy = User.Identity.Name;
+            location.ModifiedBy = User?.Identity?.Name ?? "System";
 
             _db.Locations.Update(location);
             await _db.SaveChangesAsync();
@@ -590,12 +590,13 @@ namespace Project.Controllers
             }
         }
 
-        private async Task<(bool CanDelete, string Message)> CheckLocationDependencies(Location location)
+        private async Task<(bool CanDelete, string Message)> CheckLocationDependencies(int locationId)
         {
-            var activeEmployees = location.Employees.Any(e => e.IsActive);
-            var activeCustomers = location.Customers.Any(c => c.IsActive);
-            var activeFridges = location.Fridges.Any(f => f.IsActive);
-            var activeAllocations = location.FridgeAllocations.Any(a => a.Status == AllocationStatus.Active);
+            var activeEmployees = await _db.Employees
+                .AnyAsync(e => e.IsActive && e.UserAccount != null && e.UserAccount.LocationId == locationId);
+            var activeCustomers = await _db.Customers.AnyAsync(c => c.LocationId == locationId && c.IsActive);
+            var activeFridges = await _db.Fridges.AnyAsync(f => f.LocationId == locationId && f.IsActive);
+            var activeAllocations = await _db.FridgeAllocations.AnyAsync(a => a.Customer.LocationId == locationId && a.Status == AllocationStatus.Active);
 
             if (activeEmployees || activeCustomers || activeFridges || activeAllocations)
             {
@@ -611,6 +612,7 @@ namespace Project.Controllers
             return (true, "Location can be safely deleted.");
         }
 
+
         private async Task<object> GetRecentActivities(int locationId)
         {
             var recentActivities = new
@@ -623,8 +625,8 @@ namespace Project.Controllers
                     .ToListAsync(),
 
                 RecentMaintenance = await _db.MaintenanceVisits
-                    .Where(m => m.Allocation.DeliveryLocationId == locationId)
-                    .OrderByDescending(m => m.ScheduledDate)
+                     .Where(m => m.Allocation != null && m.Allocation.DeliveryLocationId == locationId)
+                     .OrderByDescending(m => m.ScheduledDate)
                     .Take(5)
                     .Select(m => new { m.Id, m.ScheduledDate, m.Technician.UserAccount.FirstName, m.Status })
                     .ToListAsync(),

@@ -148,4 +148,3 @@ namespace Project.Models
         public int FaultReportCount => FaultReports?.Count ?? 0;
     }
 }
-

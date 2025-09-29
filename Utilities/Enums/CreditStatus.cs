@@ -7,13 +7,16 @@ namespace Project.Utilities.Enums
         [Display(Name = "Good Standing")]
         Good,
 
-        [Display(Name = "Credit Watch")]
-        Watch,
+        [Display(Name = "Limited Credit")]
+        Limited,
 
-        [Display(Name = "Account Hold")]
-        Hold,
+        [Display(Name = "Suspended Credit")]
+        Suspended,
 
-        [Display(Name = "Blocked (No Transactions)")]
-        Blocked
+        [Display(Name = "Overdue Account")]
+        Overdue,
+
+        [Display(Name = "Blacklisted")]
+        Blacklisted
     }
 }

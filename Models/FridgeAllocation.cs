@@ -59,11 +59,11 @@ namespace Project.Models
         // Location Information
         [Required(ErrorMessage = "Delivery location is required.")]
         [Display(Name = "Delivery Location")]
-        public int DeliveryLocationId { get; set; }
+        public int? DeliveryLocationId { get; set; }
 
         [ForeignKey(nameof(DeliveryLocationId))]
         [ValidateNever]
-        public virtual Location DeliveryLocation { get; set; } = null!;
+        public virtual Location? DeliveryLocation { get; set; } = null!;
 
         // Request Tracking
         [Display(Name = "Allocation Request")]

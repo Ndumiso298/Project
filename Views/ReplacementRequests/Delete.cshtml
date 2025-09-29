@@ -137,7 +137,7 @@
     {
         return status switch
         {
-            CustomerRequestStatus.Pending => "warning",
+            CustomerRequestStatus.Draft => "warning",
             CustomerRequestStatus.InProgress => "info",
             CustomerRequestStatus.Completed => "success",
             CustomerRequestStatus.Cancelled => "danger",
@@ -162,9 +162,9 @@
         return requestType switch
         {
             CustomerRequestType.Replacement => "primary",
-            CustomerRequestType.Repair => "warning",
-            CustomerRequestType.Maintenance => "info",
-            CustomerRequestType.Upgrade => "success",
+            CustomerRequestType.AdditionalUnits => "warning",
+            CustomerRequestType.TemporaryAllocation => "info",
+            CustomerRequestType.NewAllocation => "success",
             _ => "secondary"
         };
     }

@@ -31,22 +31,4 @@ namespace Project.Utilities.Enums
         [Display(Name = "Other")]
         Other
     }
-
-    //public enum BusinessType
-    //{
-    //    [Display(Name = "Spaza Shop")]
-    //    SpazaShop,
-    //    [Display(Name = "Shebeen")]
-    //    Shebeen,
-    //    [Display(Name = "Supermarket")]
-    //    Supermarket,
-    //    [Display(Name = "Convenience Store")]
-    //    ConvenienceStore,
-    //    [Display(Name = "Restaurant")]
-    //    Restaurant,
-    //    [Display(Name = "Bar")]
-    //    Bar,
-    //    [Display(Name = "Other")]
-    //    Other
-    //}
 }

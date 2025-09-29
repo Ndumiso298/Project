@@ -624,7 +624,9 @@ namespace Project.Controllers
 
         private async Task<int> CreateAllocationRequestAsync(AllocationRequestHeaderVM vm)
         {
-            var request = vm.ToEntity();
+            var request = vm.ToEntity(
+                User.FindFirstValue(ClaimTypes.NameIdentifier),
+                User.Identity?.Name);
             request.CreatedAt = DateTime.UtcNow;
             request.CreatedBy = User.Identity?.Name;
 

@@ -32,7 +32,7 @@ namespace Project.Models
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, 50, ErrorMessage = "Quantity must be between 1 and 50.")]
         [Display(Name = "Quantity")]
-        public int Quantity { get; set; } = 1;
+        public int Quantity { get; set; }
 
         [Required(ErrorMessage = "Rental duration is required.")]
         [Range(1, 60, ErrorMessage = "Rental duration must be between 1 and 60 months.")]
@@ -43,6 +43,22 @@ namespace Project.Models
         [StringLength(500, ErrorMessage = "Special requirements cannot exceed 500 characters.")]
         [Display(Name = "Special Requirements")]
         public string? SpecialRequirements { get; set; }
+
+        [Display(Name = "Created Date")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Created By")]
+        [StringLength(450, ErrorMessage = "Created by cannot exceed 450 characters.")]
+        public string? CreatedBy { get; set; }
+
+        [Display(Name = "Last Updated")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime? ModifiedAt { get; set; }
+
+        [Display(Name = "Modified By")]
+        [StringLength(450, ErrorMessage = "Updated by cannot exceed 450 characters.")]
+        public string? ModifiedBy { get; set; }
 
         // Computed Properties
         [NotMapped]

@@ -86,18 +86,22 @@ namespace Project.Models.ViewModels
         // Employee-specific properties (Visible when role is employee type)
         [Display(Name = "Employee Number")]
         [StringLength(20, ErrorMessage = "Employee number cannot exceed 20 characters.")]
+        [RequiredIfUserRole(new[] { "FaultTechnician", "MaintenanceTechnician", "CustomerLiaison", "InventoryLiaison", "PurchasingManager" },
+            ErrorMessage = "Employee number is required for employees.")] // CHANGED: Specific role validation
         public string? EmployeeNumber { get; set; }
 
         [Display(Name = "Employee Type")]
+        [RequiredIfUserRole(new[] { "FaultTechnician", "MaintenanceTechnician", "CustomerLiaison", "InventoryLiaison", "PurchasingManager" },
+            ErrorMessage = "Employee type is required for employees.")]
         public EmployeeType? EmployeeType { get; set; }
 
         [Display(Name = "Availability Status")]
         public AvailabilityStatus? AvailabilityStatus { get; set; }
 
-        // Customer-specific properties (Visible when role is Customer)
+        // Customer-specific properties
         [Display(Name = "Trading Name")]
         [RequiredIfUserRole("Customer", ErrorMessage = "Trading name is required for customers.")]
-        [StringLength(100, ErrorMessage = "Trading name cannot exceed 100 characters.")]
+        [StringLength(200, ErrorMessage = "Trading name cannot exceed 200 characters.")] // CHANGED: Increased to match model
         public string? TradingName { get; set; }
 
         [Display(Name = "Business Type")]
@@ -111,17 +115,20 @@ namespace Project.Models.ViewModels
 
         [Display(Name = "Business Email")]
         [EmailAddress(ErrorMessage = "Please enter a valid business email address.")]
-        [StringLength(100, ErrorMessage = "Business email cannot exceed 100 characters.")]
+        [StringLength(200, ErrorMessage = "Business email cannot exceed 200 characters.")] // CHANGED: Increased to match model
+        [RequiredIfUserRole("Customer", ErrorMessage = "Business email is required for customers.")]
         public string? BusinessEmail { get; set; }
 
         [Display(Name = "Business Phone")]
         [Phone(ErrorMessage = "Please enter a valid business phone number.")]
-        [StringLength(15, ErrorMessage = "Business phone number cannot exceed 15 characters.")]
+        [StringLength(20, ErrorMessage = "Business phone number cannot exceed 20 characters.")] // CHANGED: Increased to match model
+        [RequiredIfUserRole("Customer", ErrorMessage = "Business phone is required for customers.")]
         public string? BusinessPhoneNumber { get; set; }
 
         // Address Information (for Customers and Suppliers)
         [Display(Name = "Address Line 1")]
         [StringLength(100, ErrorMessage = "Address line 1 cannot exceed 100 characters.")]
+        [RequiredIfUserRole("Customer", ErrorMessage = "Address line 1 is required for customers.")]
         public string? AddressLine1 { get; set; }
 
         [Display(Name = "Address Line 2")]
@@ -130,19 +137,23 @@ namespace Project.Models.ViewModels
 
         [Display(Name = "Suburb")]
         [StringLength(50, ErrorMessage = "Suburb cannot exceed 50 characters.")]
+        [RequiredIfUserRole("Customer", ErrorMessage = "Suburb is required for customers.")]
         public string? Suburb { get; set; }
 
         [Display(Name = "City")]
-        [StringLength(50, ErrorMessage = "City cannot exceed 50 characters.")]
+        [StringLength(100, ErrorMessage = "City cannot exceed 100 characters.")]
+        [RequiredIfUserRole("Customer", ErrorMessage = "City is required for customers.")]
         public string? City { get; set; }
 
         [Display(Name = "Province")]
-        [StringLength(50, ErrorMessage = "Province cannot exceed 50 characters.")]
+        [StringLength(100, ErrorMessage = "Province cannot exceed 100 characters.")]
+        [RequiredIfUserRole("Customer", ErrorMessage = "Province is required for customers.")]
         public string? Province { get; set; }
 
         [Display(Name = "Postal Code")]
         [StringLength(10, ErrorMessage = "Postal code cannot exceed 10 characters.")]
         [RegularExpression(@"^[0-9]{4}$", ErrorMessage = "Postal code must be 4 digits.")]
+        [RequiredIfUserRole("Customer", ErrorMessage = "Postal code is required for customers.")]
         public string? PostalCode { get; set; }
 
         // Status Management
@@ -172,16 +183,31 @@ namespace Project.Models.ViewModels
         [Display(Name = "Last Login")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? LastLoginDate { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        public string? Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string? ConfirmPassword { get; set; }
     }
 
     // Custom validation attribute for role-based required fields
     public class RequiredIfUserRoleAttribute : ValidationAttribute
     {
-        private readonly string _role;
+        private readonly string[] _roles;
 
         public RequiredIfUserRoleAttribute(string role)
         {
-            _role = role;
+            _roles = new[] { role };
+        }
+
+        public RequiredIfUserRoleAttribute(string[] roles)
+        {
+            _roles = roles;
         }
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
@@ -193,7 +219,7 @@ namespace Project.Models.ViewModels
             {
                 var roleValue = roleProperty.GetValue(instance) as string;
 
-                if (roleValue == _role && (value == null || string.IsNullOrWhiteSpace(value.ToString())))
+                if (_roles.Contains(roleValue) && (value == null || string.IsNullOrWhiteSpace(value.ToString())))
                 {
                     return new ValidationResult(ErrorMessage);
                 }

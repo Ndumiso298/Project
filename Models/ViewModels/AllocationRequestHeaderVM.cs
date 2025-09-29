@@ -12,6 +12,10 @@ namespace Project.Models.ViewModels
         public int Id { get; set; }
 
         // Request Information
+        [Display(Name = "Request Number")]
+        public string RequestNumber { get; set; } = string.Empty;
+
+
         [Required(ErrorMessage = "Request date is required.")]
         [Display(Name = "Request Date *")]
         [DataType(DataType.DateTime)]
@@ -178,26 +182,38 @@ namespace Project.Models.ViewModels
         }
 
         // Mapping helper methods
-        public AllocationRequestHeader ToEntity()
+        public AllocationRequestHeader ToEntity(string currentUserId, string currentUserName)
         {
-            return new AllocationRequestHeader
+            var entity = new AllocationRequestHeader
             {
                 Id = Id,
+                RequestNumber = RequestNumber,
                 RequestDate = RequestDate,
                 RequestType = RequestType,
                 Priority = Priority,
                 Status = Status,
                 CustomerId = CustomerId,
-                ContactPerson = ContactPerson,
-                ContactPhoneNumber = PhoneNumber,
-                ContactEmail = Email,
+                ContactPerson = ContactPerson?.Trim() ?? string.Empty,
+                ContactPhoneNumber = PhoneNumber?.Trim() ?? string.Empty,
+                ContactEmail = Email?.Trim(),
                 DeliveryLocationId = DeliveryLocationId,
-                DeliveryInstructions = DeliveryInstructions,
+                DeliveryInstructions = DeliveryInstructions?.Trim(),
                 PreferredDeliveryDate = PreferredDeliveryDate,
                 DiscountPercentage = DiscountPercentage,
-                SpecialNotes = SpecialNotes
+                SpecialNotes = SpecialNotes?.Trim(),
             };
+
+            // Set CreatedAt for new entities only
+            if (Id == 0)
+            {
+                entity.CreatedAt = DateTime.UtcNow;
+            }
+
+            entity.UpdatedAt = DateTime.UtcNow;
+
+            return entity;
         }
+
 
         public static AllocationRequestHeaderVM FromEntity(AllocationRequestHeader entity)
         {
@@ -222,5 +238,22 @@ namespace Project.Models.ViewModels
                 LocationAddress = entity.DeliveryLocation?.ToString() ?? string.Empty
             };
         }
+
+        public void SanitizeInput()
+        {
+            ContactPerson = ContactPerson?.Trim() ?? string.Empty;
+            PhoneNumber = PhoneNumber?.Trim() ?? string.Empty;
+            Email = Email?.Trim();
+            DeliveryInstructions = DeliveryInstructions?.Trim();
+            SpecialNotes = SpecialNotes?.Trim();
+        }
+
+        // Business rule: Calculate suggested target date
+        public DateTime CalculateSuggestedTargetDate()
+        {
+            var baseDate = PreferredDeliveryDate ?? RequestDate.AddDays(7);
+            return baseDate.AddDays(14); // 2 weeks after preferred date or 3 weeks after request
+        }
+
     }
 }

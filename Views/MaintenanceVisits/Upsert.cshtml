@@ -215,55 +215,51 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    
+
     <script>
         $(document).ready(function () {
             // Auto-populate current datetime if creating new record
-            @if (Model.Id == 0)
-            {
-                <text>
-                var now = new Date();
-                // Round to nearest 15 minutes
-                var roundedMinutes = Math.round(now.getMinutes() / 15) * 15;
-                now.setMinutes(roundedMinutes);
-                
-                // Format for datetime-local input
-                var year = now.getFullYear();
-                var month = (now.getMonth() + 1).toString().padStart(2, '0');
-                var day = now.getDate().toString().padStart(2, '0');
-                var hours = now.getHours().toString().padStart(2, '0');
-                var minutes = now.getMinutes().toString().padStart(2, '0');
-                
-                var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-                $('#ScheduledDate').val(formattedDateTime);
-                </text>
-            }
+        @if (Model.Id == 0)
+        {
+            @:var now = new Date();
+            @:// Round to nearest 15 minutes
+            @:var roundedMinutes = Math.round(now.getMinutes() / 15) * 15;
+            @:now.setMinutes(roundedMinutes);
+
+            @:// Format for datetime-local input
+            @:var year = now.getFullYear();
+            @:var month = (now.getMonth() + 1).toString().padStart(2, '0');
+            @:var day = now.getDate().toString().padStart(2, '0');
+            @:var hours = now.getHours().toString().padStart(2, '0');
+            @:var minutes = now.getMinutes().toString().padStart(2, '0');
+
+            @:var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            @:$('#ScheduledDate').val(formattedDateTime);
+        }
 
             // Date validation - cannot schedule in the past for new visits
-            @if (Model.Id == 0)
-            {
-                <text>
-                $('#ScheduledDate').change(function () {
-                    var selectedDate = new Date($(this).val());
-                    var now = new Date();
-                    
-                    if (selectedDate < now) {
-                        $(this).addClass('is-invalid');
-                        $('<div class="invalid-feedback">Scheduled date cannot be in the past for new visits</div>').insertAfter($(this));
-                    } else {
-                        $(this).removeClass('is-invalid');
-                        $('.invalid-feedback').remove();
-                    }
-                });
-                </text>
-            }
+        @if (Model.Id == 0)
+        {
+            @:$('#ScheduledDate').change(function () {
+            @:    var selectedDate = new Date($(this).val());
+            @:    var now = new Date();
+
+            @:    if (selectedDate < now) {
+            @:        $(this).addClass('is-invalid');
+            @:        $('<div class="invalid-feedback">Scheduled date cannot be in the past for new visits</div>').insertAfter($(this));
+            @:    } else {
+            @:        $(this).removeClass('is-invalid');
+            @:        $('.invalid-feedback').remove();
+            @:    }
+            @:});
+        }
 
             // Show/hide prepopulated info based on allocation
             function updatePrepopulatedInfo() {
-                var hasInfo = $('#customerInfo').text().trim() !== '' || 
-                              $('#fridgeInfo').text().trim() !== '' || 
+                var hasInfo = $('#customerInfo').text().trim() !== '' ||
+                              $('#fridgeInfo').text().trim() !== '' ||
                               $('#locationInfo').text().trim() !== '';
-                
+
                 if (hasInfo) {
                     $('#prepopulatedInfo').removeClass('d-none');
                 } else {

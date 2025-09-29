@@ -105,7 +105,7 @@ namespace Project.Models.ViewModels
         // Validation Methods
         public string GetLocationSummary()
         {
-            return $"{Suburb}, {City} - {TotalFridges} fridges, {TotalCustomers} customers";
+            return $"{Suburb}, {City}, {Province} - {TotalFridges} fridges, {TotalCustomers} customers";
         }
     }
 }

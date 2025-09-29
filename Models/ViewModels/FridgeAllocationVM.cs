@@ -253,7 +253,7 @@ namespace Project.Models.ViewModels
                 Id = entity.Id,
                 FridgeId = entity.FridgeId,
                 CustomerId = entity.CustomerId,
-                DeliveryLocationId = entity.DeliveryLocationId,
+                DeliveryLocationId = entity.DeliveryLocationId ?? 0,
                 AllocatedByEmployeeId = entity.AllocatedByEmployeeId,
                 ProcessedByEmployeeId = entity.ProcessedByEmployeeId,
                 AllocationRequestHeaderId = entity.AllocationRequestHeaderId,

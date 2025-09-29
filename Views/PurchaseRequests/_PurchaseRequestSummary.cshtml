@@ -1,7 +1,6 @@
 ﻿@model PurchaseRequest
 @{
-    var isOverdue = Model.RequiredByDate.HasValue &&
-                    Model.RequiredByDate.Value < DateTime.Today &&
+    var isOverdue = Model.RequiredByDate < DateTime.Today &&
                     Model.Status != PurchaseRequestStatus.Approved &&
                     Model.Status != PurchaseRequestStatus.Submitted;
 }
@@ -33,7 +32,7 @@
 
         <div class="mb-2">
             <small class="text-muted">Required By:</small>
-            <div>@(Model.RequiredByDate?.ToString("dd/MM/yyyy") ?? "Not specified")</div>
+            <div>@(Model.RequiredByDate.ToString("dd/MM/yyyy") ?? "Not specified")</div>
         </div>
 
         <div class="mb-3">
@@ -56,13 +55,13 @@
             <div class="col-6">
                 <div class="border rounded p-2">
                     <div class="small text-muted">Estimated</div>
-                    <div class="fw-bold text-warning">R @Model.EstimatedTotalCost.ToString("N2")</div>
+                    R @(Model.EstimatedTotalCost?.ToString("N2") ?? "-")
                 </div>
             </div>
             <div class="col-6">
                 <div class="border rounded p-2">
                     <div class="small text-muted">Approved</div>
-                    <div class="fw-bold text-success">R @Model.ApprovedBudget.ToString("N2")</div>
+                    <div class="fw-bold text-success">R @(Model.ApprovedBudget?.ToString("N2") ?? "-")</div>
                 </div>
             </div>
         </div>

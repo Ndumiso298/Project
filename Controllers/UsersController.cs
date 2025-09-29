@@ -650,7 +650,7 @@ namespace Project.Controllers
         {
             return role switch
             {
-                SD.AdminRole => EmployeeType.Admin,
+                SD.AdminRole => EmployeeType.Administrator,
                 SD.CustomerSupportRole => EmployeeType.CustomerSupport,
                 SD.StockControllerRole => EmployeeType.StockController,
                 SD.MaintenanceTechnicianRole => EmployeeType.MaintenanceTechnician,

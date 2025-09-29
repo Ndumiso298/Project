@@ -195,7 +195,7 @@ namespace Project.Controllers
                 vm.FridgeId = fault.FridgeId;
                 vm.ReportedById = fault.ReportedById;
                 vm.AssignedTechnicianId = fault.AssignedTechnicianId; // Fixed: removed .Id
-                vm.FaultLocationId = fault.RelatedAllocation.DeliveryLocationId; // Fixed: removed allocation
+                vm.FaultLocationId = fault.RelatedAllocation.DeliveryLocationId ?? 0;
                 vm.FaultDescription = fault.Description; // Fixed: changed from FaultDescription
                 vm.FaultStatus = fault.Status; // Fixed: changed from FaultStatus
                 vm.Priority = fault.Priority;

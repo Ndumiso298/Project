@@ -81,6 +81,23 @@ namespace Project.Models
         [Range(0, 1000, ErrorMessage = "Power consumption must be between 0 and 1000 kWh/year.")]
         public decimal? PowerConsumption { get; set; }
 
+        [Display(Name = "Temperature Range (°C)")]
+        [StringLength(20, ErrorMessage = "Temperature range cannot exceed 20 characters.")]
+        public string? TemperatureRange { get; set; }
+
+        // Features
+        [Display(Name = "Has Glass Door")]
+        public bool HasGlassDoor { get; set; }
+
+        [Display(Name = "Has Digital Display")]
+        public bool HasDigitalDisplay { get; set; }
+
+        [Display(Name = "Has Lock")]
+        public bool HasLock { get; set; }
+
+        [Display(Name = "Is Frost Free")]
+        public bool IsFrostFree { get; set; }
+
         // Maintenance Information
         [Required(ErrorMessage = "Service interval is required.")]
         [Range(1, 24, ErrorMessage = "Service interval must be between 1 and 24 months.")]
@@ -90,6 +107,14 @@ namespace Project.Models
         [Display(Name = "Warranty Period (Months)")]
         [Range(0, 60, ErrorMessage = "Warranty period must be between 0 and 60 months.")]
         public int WarrantyPeriodMonths { get; set; } = 12;
+
+        [Display(Name = "Minimum Stock Level")]
+        [Range(0, 100, ErrorMessage = "Minimum stock level must be between 0 and 100.")]
+        public int MinimumStockLevel { get; set; } = 2;
+
+        [Display(Name = "Reorder Quantity")]
+        [Range(1, 50, ErrorMessage = "Reorder quantity must be between 1 and 50.")]
+        public int ReorderQuantity { get; set; } = 5;
 
         // Media
         [Url(ErrorMessage = "Please enter a valid image URL.")]
@@ -130,6 +155,10 @@ namespace Project.Models
 
         // Computed Properties
         [NotMapped]
+        [Display(Name = "Display Name")]
+        public string DisplayName => $"{Manufacturer} {ModelName} ({ModelCode})";
+
+        [NotMapped]
         [Display(Name = "Total Fridges")]
         public int TotalFridges => Fridges?.Count(f => f.IsActive && !f.IsScrapped) ?? 0;
 
@@ -150,8 +179,21 @@ namespace Project.Models
         public int UnderRepairFridges => Fridges?.Count(f => f.IsActive && !f.IsScrapped && f.Status == FridgeStatus.Quarantined) ?? 0;
 
         [NotMapped]
-        [Display(Name = "Display Name")]
-        public string DisplayName => $"{Manufacturer} {ModelName} ({ModelCode})";
+        [Display(Name = "Stock Status")]
+        public StockStatus StockStatus
+        {
+            get
+            {
+                if (AvailableFridges == 0) return StockStatus.OutOfStock;
+                if (AvailableFridges <= MinimumStockLevel) return StockStatus.LowStock;
+                return StockStatus.InStock;
+            }
+        }
+
+        [NotMapped]
+        [Display(Name = "Needs Reorder")]
+        public bool NeedsReorder => AvailableFridges <= MinimumStockLevel;
+
 
         [NotMapped]
         [Display(Name = "Monthly Revenue Potential")]

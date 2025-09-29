@@ -9,6 +9,14 @@ namespace Project.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        public ApplicationUser()
+        {
+            CreatedAt = DateTime.UtcNow;
+            AccountStatus = AccountStatus.PendingApproval;
+            SecurityStamp = Guid.NewGuid().ToString();
+            ConcurrencyStamp = Guid.NewGuid().ToString();
+        }
+
         [NotMapped]
         [Display(Name = "User Role")]
         public string UserRole { get; set; } = string.Empty;
@@ -55,7 +63,7 @@ namespace Project.Models
 
         // Location (for employee/customer physical location tracking)
         [Display(Name = "Primary Location")]
-        [Required(ErrorMessage = "Primary location is required for system operations.")]
+        //[Required(ErrorMessage = "Primary location is required for system operations.")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid location.")]
         public int? LocationId { get; set; }
 
@@ -115,5 +123,10 @@ namespace Project.Models
         [Display(Name = "Lockout End Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? LockoutEndDate { get; set; }
+
+        public bool IsValidEntityAssignment()
+        {
+            return !(EmployeeId.HasValue && CustomerId.HasValue);
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Project.Models
         public string FullName => $"{UserAccount?.FirstName} {UserAccount?.LastName}";
 
         [Required(ErrorMessage = "Employee Number is required.")]
-        [StringLength(50, ErrorMessage = "Employee Number cannot exceed 50 characters.")]
+        [StringLength(20, ErrorMessage = "Employee Number cannot exceed 20 characters.")]
         [Display(Name = "Employee Number")]
         public string EmployeeNumber { get; set; } = string.Empty;
 
@@ -33,6 +33,29 @@ namespace Project.Models
 
         [Required]
         public EmployeeType EmployeeType { get; set; }
+
+        [Display(Name = "Employment Type")]
+        public EmploymentType EmploymentType { get; set; } = EmploymentType.FullTime;
+
+        // Contact Information (can be different from user account)
+        [Display(Name = "Work Phone")]
+        [Phone(ErrorMessage = "Please enter a valid phone number.")]
+        [StringLength(15, ErrorMessage = "Work phone cannot exceed 15 characters.")]
+        public string? WorkPhone { get; set; }
+
+        [Display(Name = "Work Email")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [StringLength(100, ErrorMessage = "Work email cannot exceed 100 characters.")]
+        public string? WorkEmail { get; set; }
+
+        // Location Information
+        [Display(Name = "Work Location")]
+        public int? WorkLocationId { get; set; }
+
+        [ForeignKey(nameof(WorkLocationId))]
+        [ValidateNever]
+        [Display(Name = "Work Location")]
+        public virtual Location? WorkLocation { get; set; }
 
         // Metadata
         [Display(Name = "Active Status")]
