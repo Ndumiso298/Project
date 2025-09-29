@@ -1,0 +1,77 @@
+﻿@model Project.Models.PurchaseRequest
+@{
+    ViewData["Title"] = "Delete Purchase Request";
+}
+
+<h2 class="mb-3">Delete Purchase Request</h2>
+
+<div class="alert alert-warning">
+    <strong>Are you sure?</strong> This will permanently delete the purchase request and all its items.
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-danger text-white">
+        Request #@Model.Id
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Requested By</dt>
+            <dd class="col-sm-9">@Model.RequestedBy?.UserAccount.UserName</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+
+            <dt class="col-sm-3">Reason</dt>
+            <dd class="col-sm-9">@Model.Reason @(!string.IsNullOrEmpty(Model.CustomReason) ? $" - {Model.CustomReason}" : "")</dd>
+
+            <dt class="col-sm-3">Urgency</dt>
+            <dd class="col-sm-9">@Model.Urgency</dd>
+
+            <dt class="col-sm-3">Required By</dt>
+            <dd class="col-sm-9">@Model.RequiredByDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Estimated Total Cost</dt>
+            <dd class="col-sm-9">@($"{Model.EstimatedTotalCost:C}")</dd>
+
+            <dt class="col-sm-3">Approved Budget</dt>
+            <dd class="col-sm-9">@($"{Model.ApprovedBudget:C}")</dd>
+        </dl>
+    </div>
+</div>
+
+@if (Model.Items != null && Model.Items.Any())
+{
+    <h4>Request Items</h4>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Fridge Model</th>
+                <th>Quantity</th>
+                <th>Estimated Unit Price</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.FridgeModel?.ModelName</td>
+                    <td>@item.Quantity</td>
+                    <td>@($"{item.EstimatedUnitPrice:C}")</td>
+                    <td>@item.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Confirm Delete
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Cancel
+    </a>
+</form>

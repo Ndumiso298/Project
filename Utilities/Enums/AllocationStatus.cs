@@ -23,6 +23,6 @@ namespace Project.Utilities.Enums
         Terminated,        // Allocation ended prematurely
 
         [Display(Name = "Expired")]
-        Expired
+        Expired            // Allocation duration expired naturally
     }
 }

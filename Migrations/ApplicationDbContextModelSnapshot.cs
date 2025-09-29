@@ -277,7 +277,7 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressLine1")
+                    b.Property<string>("StreetAddress")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -598,7 +598,7 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressLine1")
+                    b.Property<string>("StreetAddress")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -963,7 +963,7 @@ namespace Project.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Model")
+                    b.Property<string>("ModelName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -1558,7 +1558,7 @@ namespace Project.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Project.Models.FridgeAllocation", b =>
+            modelBuilder.Entity("Project.Models.RelatedAllocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1575,7 +1575,7 @@ namespace Project.Migrations
                     b.Property<DateTime>("AllocationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("AllocationLocationId")
+                    b.Property<int>("DeliveryLocationId")
                         .HasColumnType("int");
 
                     b.Property<int?>("AllocationRequestHeaderId")
@@ -1616,7 +1616,7 @@ namespace Project.Migrations
 
                     b.HasIndex("AllocatedById");
 
-                    b.HasIndex("AllocationLocationId");
+                    b.HasIndex("DeliveryLocationId");
 
                     b.HasIndex("AllocationRequestHeaderId");
 
@@ -1637,7 +1637,7 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressLine1")
+                    b.Property<string>("StreetAddress")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -2299,7 +2299,7 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.HasOne("Project.Models.AllocationRequestHeader", "RequestHeader")
-                        .WithMany("RequestedFridges")
+                        .WithMany("RequestDetails")
                         .HasForeignKey("RequestHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2383,7 +2383,7 @@ namespace Project.Migrations
                         .WithMany("AssignedFaults")
                         .HasForeignKey("FaultTechnicianId");
 
-                    b.HasOne("Project.Models.FridgeAllocation", "FridgeAllocation")
+                    b.HasOne("Project.Models.RelatedAllocation", "RelatedAllocation")
                         .WithMany()
                         .HasForeignKey("FridgeAllocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2405,7 +2405,7 @@ namespace Project.Migrations
 
                     b.Navigation("Fridge");
 
-                    b.Navigation("FridgeAllocation");
+                    b.Navigation("RelatedAllocation");
 
                     b.Navigation("ReportedBy");
                 });
@@ -2429,7 +2429,7 @@ namespace Project.Migrations
                     b.Navigation("CurrentLocation");
                 });
 
-            modelBuilder.Entity("Project.Models.FridgeAllocation", b =>
+            modelBuilder.Entity("Project.Models.RelatedAllocation", b =>
                 {
                     b.HasOne("Project.Models.Employee", "AllocatedBy")
                         .WithMany("AllocatedFridges")
@@ -2437,9 +2437,9 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.Location", "AllocationLocation")
+                    b.HasOne("Project.Models.Location", "DeliveryLocation")
                         .WithMany("FridgeAllocations")
-                        .HasForeignKey("AllocationLocationId")
+                        .HasForeignKey("DeliveryLocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2467,7 +2467,7 @@ namespace Project.Migrations
 
                     b.Navigation("AllocatedBy");
 
-                    b.Navigation("AllocationLocation");
+                    b.Navigation("DeliveryLocation");
 
                     b.Navigation("AllocationRequestHeader");
 
@@ -2505,8 +2505,8 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.MaintenanceVisit", b =>
                 {
-                    b.HasOne("Project.Models.FridgeAllocation", "RelatedAllocation")
-                        .WithMany("FridgeVisits")
+                    b.HasOne("Project.Models.RelatedAllocation", "RelatedAllocation")
+                        .WithMany("MaintenanceVisits")
                         .HasForeignKey("AllocationId");
 
                     b.HasOne("Project.Models.Employee", "AssignedTechnician")
@@ -2590,7 +2590,7 @@ namespace Project.Migrations
                         .WithMany("RelatedRequests")
                         .HasForeignKey("FaultRecordId");
 
-                    b.HasOne("Project.Models.FridgeAllocation", "FridgeAllocation")
+                    b.HasOne("Project.Models.RelatedAllocation", "RelatedAllocation")
                         .WithMany()
                         .HasForeignKey("FridgeAllocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2604,7 +2604,7 @@ namespace Project.Migrations
 
                     b.Navigation("FaultRecord");
 
-                    b.Navigation("FridgeAllocation");
+                    b.Navigation("RelatedAllocation");
 
                     b.Navigation("MaintenanceRecord");
                 });
@@ -2613,7 +2613,7 @@ namespace Project.Migrations
                 {
                     b.Navigation("Allocations");
 
-                    b.Navigation("RequestedFridges");
+                    b.Navigation("RequestDetails");
                 });
 
             modelBuilder.Entity("Project.Models.ApplicationUser", b =>
@@ -2671,9 +2671,9 @@ namespace Project.Migrations
                     b.Navigation("MaintenanceRecords");
                 });
 
-            modelBuilder.Entity("Project.Models.FridgeAllocation", b =>
+            modelBuilder.Entity("Project.Models.RelatedAllocation", b =>
                 {
-                    b.Navigation("FridgeVisits");
+                    b.Navigation("MaintenanceVisits");
                 });
 
             modelBuilder.Entity("Project.Models.Location", b =>

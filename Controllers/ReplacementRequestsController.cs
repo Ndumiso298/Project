@@ -44,46 +44,6 @@ namespace Project.Controllers
             return View(requests);
         }
 
-        // GET: ReplacementRequest/Create
-        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
-        public async Task<IActionResult> Create()
-        {
-            var vm = new ReplacementRequestVM();
-            await PopulateDropdowns(vm);
-            return View(vm);
-        }
-
-        // POST: ReplacementRequest/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
-        public async Task<IActionResult> Create(ReplacementRequestVM vm)
-        {
-            if (ModelState.IsValid)
-            {
-                var request = new ReplacementRequest
-                {
-                    FridgeAllocationId = vm.FridgeAllocationId,
-                    FaultRecordId = vm.FaultRecordId,
-                    RequestType = vm.RequestType,
-                    Reason = vm.Reason,
-                    Quantity = vm.Quantity,
-                    Priority = vm.Priority,
-                    RequestedDate = vm.RequestedDate,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                _db.ReplacementRequests.Add(request);
-                await _db.SaveChangesAsync();
-
-                TempData["Success"] = "Replacement request created successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            await PopulateDropdowns(vm);
-            return View(vm);
-        }
-
         // GET: ReplacementRequest/Details/5
         [Authorize(Roles = SD.AdminRole + "," + SD.StockControllerRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Details(int id)
@@ -106,10 +66,21 @@ namespace Project.Controllers
             return View(request);
         }
 
-        // GET: ReplacementRequest/Edit/5
-        [Authorize(Roles = SD.AdminRole + "," + SD.StockControllerRole)]
-        public async Task<IActionResult> Edit(int id)
+        // GET: ReplacementRequest/Upsert/{id?}
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole + "," + SD.StockControllerRole)]
+        public async Task<IActionResult> Upsert(int? id)
         {
+            var vm = new ReplacementRequestVM();
+            await PopulateDropdowns(vm);
+
+            if (id == null || id == 0)
+            {
+                // New request
+                vm.RequestedDate = DateTime.UtcNow;
+                return View(vm);
+            }
+
+            // Editing existing request
             var request = await _db.ReplacementRequests
                 .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
 
@@ -118,7 +89,7 @@ namespace Project.Controllers
                 return NotFound();
             }
 
-            var vm = new ReplacementRequestVM
+            vm = new ReplacementRequestVM
             {
                 Id = request.Id,
                 FridgeAllocationId = request.FridgeAllocationId,
@@ -129,7 +100,7 @@ namespace Project.Controllers
                 Priority = request.Priority,
                 RequestedDate = request.RequestedDate,
                 Status = request.Status,
-                AssignedEmployeeId = request.AssignedEmployeeId,
+                AssignedTechnicianId = request.AssignedEmployeeId,
                 ResponseNotes = request.ResponseNotes
             };
 
@@ -137,20 +108,40 @@ namespace Project.Controllers
             return View(vm);
         }
 
-        // POST: ReplacementRequest/Edit/5
+        // POST: ReplacementRequest/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.AdminRole + "," + SD.StockControllerRole)]
-        public async Task<IActionResult> Edit(int id, ReplacementRequestVM vm)
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole + "," + SD.StockControllerRole)]
+        public async Task<IActionResult> Upsert(ReplacementRequestVM vm)
         {
-            if (id != vm.Id)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                await PopulateDropdowns(vm);
+                return View(vm);
             }
 
-            if (ModelState.IsValid)
+            if (vm.Id == 0)
             {
-                var request = await _db.ReplacementRequests.FindAsync(id);
+                // Create new
+                var request = new ReplacementRequest
+                {
+                    FridgeAllocationId = vm.FridgeAllocationId,
+                    FaultRecordId = vm.FaultRecordId,
+                    RequestType = vm.RequestType,
+                    Reason = vm.Reason,
+                    Quantity = vm.Quantity,
+                    Priority = vm.Priority,
+                    RequestedDate = vm.RequestedDate,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _db.ReplacementRequests.Add(request);
+                TempData["Success"] = "Replacement request created successfully!";
+            }
+            else
+            {
+                // Update existing
+                var request = await _db.ReplacementRequests.FindAsync(vm.Id);
                 if (request == null || request.IsDeleted)
                 {
                     return NotFound();
@@ -164,7 +155,7 @@ namespace Project.Controllers
                 request.Priority = vm.Priority;
                 request.RequestedDate = vm.RequestedDate;
                 request.Status = vm.Status;
-                request.AssignedEmployeeId = vm.AssignedEmployeeId;
+                request.AssignedEmployeeId = vm.AssignedTechnicianId;
                 request.ResponseNotes = vm.ResponseNotes;
                 request.UpdatedAt = DateTime.UtcNow;
 
@@ -174,15 +165,14 @@ namespace Project.Controllers
                 }
 
                 _db.ReplacementRequests.Update(request);
-                await _db.SaveChangesAsync();
-
                 TempData["Success"] = "Replacement request updated successfully!";
-                return RedirectToAction(nameof(Index));
             }
 
-            await PopulateDropdowns(vm);
-            return View(vm);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
+
 
         // GET: ReplacementRequest/Delete/5
         [Authorize(Roles = SD.AdminRole)]
@@ -256,26 +246,39 @@ namespace Project.Controllers
                 .Select(fa => new SelectListItem
                 {
                     Value = fa.Id.ToString(),
-                    Text = $"{fa.Customer.TradingName} - {fa.Fridge.Model} (Allocation: {fa.Id})"
+                    Text = $"{fa.Customer.TradingName} - {fa.Fridge} (Allocation: {fa.Id})"
                 })
                 .ToListAsync();
 
             vm.FaultRecordList = await _db.FaultRecords
-                .Include(fr => fr.FridgeAllocation)
+                .Include(fr => fr.RelatedAllocation)
                 .Where(fr => fr.Status != FaultStatus.Resolved)
                 .Select(fr => new SelectListItem
                 {
                     Value = fr.Id.ToString(),
-                    Text = $"Fault #{fr.Id} - {fr.FridgeAllocation.Customer.TradingName}"
+                    Text = $"Fault #{fr.Id} - {fr.RelatedAllocation.Customer.TradingName}"
                 })
                 .ToListAsync();
 
             vm.EmployeeList = await _db.Employees
-                .Where(e => e.IsActive && (e.EmployeeType == EmployeeType.StockController || e.EmployeeType == EmployeeType.CustomerSupport))
+                .Include(e => e.UserAccount)
+                .Where(e => e.IsActive &&
+                       (e.EmployeeType == EmployeeType.StockController ||
+                        e.EmployeeType == EmployeeType.CustomerSupport ))
                 .Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
                     Text = $"{e.UserAccount.FirstName} {e.UserAccount.LastName} ({e.EmployeeType})"
+                })
+                .ToListAsync();
+
+            vm.TechnicianList = await _db.Employees
+                .Include(e => e.UserAccount)
+                .Where(e => e.IsActive && e.EmployeeType == EmployeeType.FaultTechnician || e.EmployeeType == EmployeeType.MaintenanceTechnician)
+                .Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = $"{e.UserAccount.FirstName} {e.UserAccount.LastName} (Technician)"
                 })
                 .ToListAsync();
 
@@ -288,8 +291,8 @@ namespace Project.Controllers
                 })
                 .ToList();
 
-            vm.PriorityList = Enum.GetValues(typeof(RequestPriority))
-                .Cast<RequestPriority>()
+            vm.PriorityList = Enum.GetValues(typeof(CustomerRequestPriority))
+                .Cast<CustomerRequestPriority>()
                 .Select(p => new SelectListItem
                 {
                     Value = p.ToString(),

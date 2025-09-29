@@ -7,8 +7,8 @@ namespace Project.Utilities.Enums
         [Display(Name = "Preventive Maintenance")]
         PreventiveMaintenance,
 
-        [Display(Name = "Corrective Repair")]
-        CorrectiveRepair,
+        [Display(Name = "Corrective Maintenance")]
+        CorrectiveMaintenance,
 
         [Display(Name = "Installation")]
         Installation,

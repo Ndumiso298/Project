@@ -1,7 +1,238 @@
-﻿
+﻿@model MaintenanceDashboardVM
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Maintenance Dashboard";
 }
 
-<h1>Dashboard</h1>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-chart-bar me-2"></i>Maintenance Dashboard
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary me-2">
+                <i class="fas fa-list me-2"></i>View All Visits
+            </a>
+            <a asp-action="Upsert" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Schedule Visit
+            </a>
+        </div>
+    </div>
 
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card bg-primary text-white text-center">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.TotalVisits</h3>
+                    <p class="card-text">Total Visits</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card bg-success text-white text-center">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.ScheduledVisits</h3>
+                    <p class="card-text">Scheduled</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card bg-warning text-white text-center">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.InProgressVisits</h3>
+                    <p class="card-text">In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card bg-info text-white text-center">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.CompletedVisits</h3>
+                    <p class="card-text">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card bg-danger text-white text-center">
+                <div class="card-body">
+                    <h3 class="card-title">@(Model.OverdueVisits?.Count ?? 0)</h3>
+                    <p class="card-text">Overdue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card bg-secondary text-white text-center">
+                <div class="card-body">
+                    <h3 class="card-title">@(DateTime.Now.ToString("MMM yyyy"))</h3>
+                    <p class="card-text">Current Month</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Overdue Visits -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Overdue Visits
+                        <span class="badge bg-light text-danger ms-2">@(Model.OverdueVisits?.Count ?? 0)</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.OverdueVisits?.Any() == true)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var visit in Model.OverdueVisits)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a asp-action="Details" asp-route-id="@visit.Id" class="text-decoration-none">
+                                                #@visit.Id - @visit.Customer?.TradingName
+                                            </a>
+                                        </div>
+                                        <small class="text-muted">
+                                            @visit.Fridge?.SerialNumber • @visit.ScheduledDate.ToString("dd/MM/yyyy")
+                                            @if (visit.Technician != null)
+                                            {
+                                                <span> • @visit.Technician.UserAccount?.FirstName</span>
+                                            }
+                                        </small>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Complete" asp-route-id="@visit.Id" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
+                            <h6 class="text-success">No Overdue Visits</h6>
+                            <p class="text-muted small">All maintenance visits are up to date</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Visits -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Upcoming Visits (Next 7 Days)
+                        <span class="badge bg-light text-primary ms-2">@(Model.UpcomingVisits?.Count ?? 0)</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.UpcomingVisits?.Any() == true)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var visit in Model.UpcomingVisits)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold">
+                                            <a asp-action="Details" asp-route-id="@visit.Id" class="text-decoration-none">
+                                                #@visit.Id - @visit.Customer?.TradingName
+                                            </a>
+                                        </div>
+                                        <small class="text-muted">
+                                            @visit.Fridge?.SerialNumber • @visit.ScheduledDate.ToString("dd/MM/yyyy HH:mm")
+                                            @if (visit.Technician != null)
+                                            {
+                                                <span> • @visit.Technician.UserAccount?.FirstName</span>
+                                            }
+                                        </small>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Upsert" asp-route-id="@visit.Id" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-plus fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">No Upcoming Visits</h6>
+                            <p class="text-muted small">No visits scheduled for the next 7 days</p>
+                            <a asp-action="Upsert" class="btn btn-sm btn-primary">Schedule Visit</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 col-6 mb-3">
+                            <a asp-action="Upsert" class="btn btn-outline-primary btn-lg w-100 py-3">
+                                <i class="fas fa-plus fa-2x mb-2"></i>
+                                <div>Schedule Visit</div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <a asp-action="Index" class="btn btn-outline-success btn-lg w-100 py-3">
+                                <i class="fas fa-list fa-2x mb-2"></i>
+                                <div>View All</div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <a asp-action="Index" asp-route-status="Scheduled" class="btn btn-outline-info btn-lg w-100 py-3">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <div>Scheduled</div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <a asp-action="Index" asp-route-status="InProgress" class="btn btn-outline-warning btn-lg w-100 py-3">
+                                <i class="fas fa-tools fa-2x mb-2"></i>
+                                <div>In Progress</div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <a asp-action="Index" asp-route-status="Completed" class="btn btn-outline-secondary btn-lg w-100 py-3">
+                                <i class="fas fa-check fa-2x mb-2"></i>
+                                <div>Completed</div>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <a asp-controller="MaintenanceRecords" asp-action="Index" class="btn btn-outline-dark btn-lg w-100 py-3">
+                                <i class="fas fa-history fa-2x mb-2"></i>
+                                <div>Records</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

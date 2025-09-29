@@ -19,9 +19,13 @@ namespace Project.Models
         [ValidateNever]
         public virtual ApplicationUser UserAccount { get; set; } = null!;
 
+        [NotMapped]
+        [Display(Name = "Full Name")]
+        public string FullName => $"{UserAccount?.FirstName} {UserAccount?.LastName}";
+
         [Required(ErrorMessage = "Employee Number is required.")]
         [StringLength(50, ErrorMessage = "Employee Number cannot exceed 50 characters.")]
-        [Display(Name = "Employee Number*")]
+        [Display(Name = "Employee Number")]
         public string EmployeeNumber { get; set; } = string.Empty;
 
         [Display(Name = "Availability Status")]
@@ -29,17 +33,24 @@ namespace Project.Models
 
         [Required]
         public EmployeeType EmployeeType { get; set; }
+
         // Metadata
-        [Display(Name = "Created At")]
+        [Display(Name = "Active Status")]
+        public bool IsActive { get; set; } = true;
+
+        [Display(Name = "Created Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Display(Name = "Updated At")]
+        [Display(Name = "Created By")]
+        public string? CreatedBy { get; set; } = string.Empty;
+
+        [Display(Name = "Last Updated")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? UpdatedAt { get; set; }
 
-        [Display(Name = "Account Status")]
-        public bool IsActive { get; set; } = true;
+        [Display(Name = "Updated By")]
+        public string? UpdatedBy { get; set; } = string.Empty;
 
         // Navigation properties
         [ValidateNever]
@@ -53,7 +64,7 @@ namespace Project.Models
         public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; } = new List<MaintenanceVisit>();
 
         [ValidateNever]
-        public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
+        public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
 
         [NotMapped]
         public virtual ICollection<FaultRecord> FaultReports { get; set; } = new List<FaultRecord>();

@@ -10,11 +10,11 @@ namespace Project.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(ApplicationDbContext db)
         {
-            _context = context;
+            _db = db;
         }
 
         public async Task<IActionResult> Index()
@@ -30,10 +30,10 @@ namespace Project.Controllers
         //{
         //    if (User.IsInRole(SD.AdminRole))
         //    {
-        //        ViewBag.TotalFridges = await _context.Fridges.CountAsync(f => f.IsActive);
-        //        ViewBag.ActiveCustomers = await _context.Customers.CountAsync(c => c.IsActive);
-        //        ViewBag.PendingRequests = await _context.AllocationRequestHeaders.CountAsync(r => r.Status == "Pending");
-        //        ViewBag.OpenFaults = await _context.FaultRecords.CountAsync(f => !f.IsDeleted);
+        //        ViewBag.TotalFridges = await _db.Fridges.CountAsync(f => f.IsActive);
+        //        ViewBag.ActiveCustomers = await _db.Customers.CountAsync(c => c.IsActive);
+        //        ViewBag.PendingRequests = await _db.AllocationRequestHeaders.CountAsync(r => r.Status == "Pending");
+        //        ViewBag.OpenFaults = await _db.FaultRecords.CountAsync(f => !f.IsDeleted);
 
         //        return View("AdminDashboard");
         //    }
@@ -51,7 +51,7 @@ namespace Project.Controllers
             return View();
         }
 
-        public IActionResult AboutUs()
+        public IActionResult About()
         {
             return View();
         }

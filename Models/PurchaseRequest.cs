@@ -40,7 +40,7 @@ namespace Project.Models
 
         [Required(ErrorMessage = "Urgency level is required.")]
         [Display(Name = "Urgency Level")]
-        public PurchaseRequestUrgency Urgency { get; set; } = PurchaseRequestUrgency.Normal;
+        public PurchaseRequestUrgency Urgency { get; set; } = PurchaseRequestUrgency.Medium;
 
         [Required(ErrorMessage = "Required by date is essential.")]
         [DataType(DataType.Date)]

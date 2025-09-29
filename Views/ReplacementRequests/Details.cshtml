@@ -4,28 +4,27 @@
 }
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="fas fa-info-circle me-2"></i>@ViewData["Title"]</h1>
-        <div>
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Back to List
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-exchange-alt me-2"></i>Replacement Request #@Model.Id
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
             </a>
-            @if (User.IsInRole("InventoryLiaison") || User.IsInRole("Administrator"))
-            {
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary ms-2">
-                    <i class="fas fa-edit me-1"></i>Edit
-                </a>
-            }
         </div>
     </div>
 
     <div class="row">
+        <!-- Main Details -->
         <div class="col-lg-8">
-            <!-- Basic Information Card -->
+            <!-- Request Information -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-file-alt me-2"></i>Request Information
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Request Information
                     </h5>
                 </div>
                 <div class="card-body">
@@ -35,66 +34,50 @@
                                 <dt class="col-sm-4">Request ID:</dt>
                                 <dd class="col-sm-8">#@Model.Id</dd>
 
-                                <dt class="col-sm-4">Customer:</dt>
-                                <dd class="col-sm-8">@Model.FridgeAllocation?.Customer?.TradingLocation.Name</dd>
-
-                                <dt class="col-sm-4">Fridge Model:</dt>
-                                <dd class="col-sm-8">@Model.FridgeAllocation?.Fridge?.Model</dd>
-
                                 <dt class="col-sm-4">Request Type:</dt>
                                 <dd class="col-sm-8">
-                                    <span class="badge bg-info">@Model.RequestType</span>
+                                    <span class="badge bg-@GetRequestTypeBadge(Model.RequestType)">
+                                        @Model.RequestType
+                                    </span>
                                 </dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
+
                                 <dt class="col-sm-4">Priority:</dt>
                                 <dd class="col-sm-8">
-                                    <span class="badge @GetPriorityBadgeClass(Model.Priority)">
+                                    <span class="badge bg-@GetPriorityBadge(Model.Priority)">
                                         @Model.Priority
                                     </span>
                                 </dd>
 
                                 <dt class="col-sm-4">Status:</dt>
                                 <dd class="col-sm-8">
-                                    <span class="badge @GetStatusBadgeClass(Model.Status)">
+                                    <span class="badge bg-@GetStatusBadge(Model.Status)">
                                         @Model.Status
                                     </span>
                                 </dd>
-
-                                <dt class="col-sm-4">Quantity:</dt>
-                                <dd class="col-sm-8">@Model.Quantity</dd>
-
-                                <dt class="col-sm-4">Requested Date:</dt>
-                                <dd class="col-sm-8">@Model.RequestedDate.ToString("dd/MM/yyyy")</dd>
                             </dl>
                         </div>
-                    </div>
-
-                    <div class="mt-3">
-                        <dt>Reason:</dt>
-                        <dd class="border rounded p-3 bg-light">@Model.Reason</dd>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assignment Information -->
-            <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-users me-2"></i>Assignment Information
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
                         <div class="col-md-6">
                             <dl class="row">
-                                <dt class="col-sm-4">Assigned To:</dt>
+                                <dt class="col-sm-4">Requested Date:</dt>
+                                <dd class="col-sm-8">@Model.RequestedDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Response Date:</dt>
                                 <dd class="col-sm-8">
-                                    @if (Model.AssignedEmployee != null)
+                                    @if (Model.ResponseDate.HasValue)
                                     {
-                                        @($"{Model.AssignedEmployee.UserAccount.FirstName} {Model.AssignedEmployee.UserAccount.LastName}")
+                                        @Model.ResponseDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Pending</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-4">Assigned Date:</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.AssignedDate.HasValue)
+                                    {
+                                        @Model.AssignedDate.Value.ToString("dd/MM/yyyy HH:mm")
                                     }
                                     else
                                     {
@@ -102,123 +85,250 @@
                                     }
                                 </dd>
 
-                                <dt class="col-sm-4">Assigned Date:</dt>
-                                <dd class="col-sm-8">
-                                    @(Model.AssignedDate?.ToString("dd/MM/yyyy") ?? "Not assigned")
-                                </dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Response Date:</dt>
-                                <dd class="col-sm-8">
-                                    @(Model.ResponseDate?.ToString("dd/MM/yyyy") ?? "Not responded")
-                                </dd>
-
-                                <dt class="col-sm-4">Created:</dt>
-                                <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                                <dt class="col-sm-4">Quantity:</dt>
+                                <dd class="col-sm-8">@Model.Quantity</dd>
                             </dl>
                         </div>
                     </div>
 
+                    <!-- Reason -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <dt>Reason:</dt>
+                            <dd class="text-muted">@(string.IsNullOrEmpty(Model.Reason) ? "No reason provided" : Model.Reason)</dd>
+                        </div>
+                    </div>
+
+                    <!-- Response Notes -->
                     @if (!string.IsNullOrEmpty(Model.ResponseNotes))
                     {
-                        <div class="mt-3">
-                            <dt>Response Notes:</dt>
-                            <dd class="border rounded p-3 bg-light">@Model.ResponseNotes</dd>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <dt>Response Notes:</dt>
+                                <dd class="bg-light p-3 rounded">
+                                    @Html.Raw(Model.ResponseNotes.Replace("\n", "<br>"))
+                                </dd>
+                            </div>
                         </div>
                     }
+                </div>
+            </div>
+
+            <!-- Customer & Equipment Details -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>Customer & Equipment Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Customer Information</h6>
+                            <dl>
+                                <dt>Customer:</dt>
+                                <dd>@Model.FridgeAllocation?.Customer?.TradingName</dd>
+
+                                <dt>Contact:</dt>
+                                <dd>@Model.FridgeAllocation?.Customer?.UserAccount?.FirstName @Model.FridgeAllocation?.Customer?.UserAccount?.LastName</dd>
+
+                                <dt>Email:</dt>
+                                <dd>@Model.FridgeAllocation?.Customer?.UserAccount?.Email</dd>
+
+                                <dt>Phone:</dt>
+                                <dd>@Model.FridgeAllocation?.Customer?.UserAccount?.PhoneNumber</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Equipment Information</h6>
+                            <dl>
+                                <dt>Allocation ID:</dt>
+                                <dd>#@Model.FridgeAllocationId</dd>
+
+                                <dt>Fridge:</dt>
+                                <dd>
+                                    @if (Model.FridgeAllocation?.Fridge != null)
+                                    {
+                                        <a asp-controller="Fridges" asp-action="Details" asp-route-id="@Model.FridgeAllocation.Fridge.Id"
+                                           class="text-decoration-none">
+                                            @Model.FridgeAllocation.Fridge.SerialNumber
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </dd>
+
+                                <dt>Model:</dt>
+                                <dd>@Model.FridgeAllocation?.Fridge?.FridgeModel?.Manufacturer @Model.FridgeAllocation?.Fridge?.FridgeModel?.ModelName</dd>
+
+                                <dt>Assigned Technician:</dt>
+                                <dd>
+                                    @if (Model.AssignedEmployee != null)
+                                    {
+                                        @Model.AssignedEmployee.UserAccount?.FirstName @Model.AssignedEmployee.UserAccount?.LastName
+                                        <br>
+                                        <small class="text-muted">@Model.AssignedEmployee.EmployeeType</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not assigned</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Records -->
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-link me-2"></i>Related Records
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Fault Record</h6>
+                            @if (Model.FaultRecord != null)
+                            {
+                                <dl>
+                                    <dt>Fault ID:</dt>
+                                    <dd>#@Model.FaultRecord.Id</dd>
+
+                                    <dt>Description:</dt>
+                                    <dd>@Model.FaultRecord.Description</dd>
+
+                                    <dt>Status:</dt>
+                                    <dd>
+                                        <span class="badge bg-@GetFaultStatusBadge(Model.FaultRecord.Status)">
+                                            @Model.FaultRecord.Status
+                                        </span>
+                                    </dd>
+
+                                    <dt>Reported Date:</dt>
+                                    <dd>@Model.FaultRecord.ReportedDate.ToString("dd/MM/yyyy")</dd>
+                                </dl>
+                                <a asp-controller="FaultRecords" asp-action="Details" asp-route-id="@Model.FaultRecord.Id"
+                                   class="btn btn-sm btn-outline-warning">View Fault Details</a>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No fault record linked</p>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Maintenance Record</h6>
+                            @if (Model.MaintenanceRecord != null)
+                            {
+                                <dl>
+                                    <dt>Service Date:</dt>
+                                    <dd>@Model.MaintenanceRecord.ServiceDate.ToString("dd/MM/yyyy")</dd>
+
+                                    <dt>Service Type:</dt>
+                                    <dd>@Model.MaintenanceRecord.ServiceType</dd>
+
+                                    <dt>Technician:</dt>
+                                    <dd>@Model.MaintenanceRecord.Technician?.UserAccount?.FirstName</dd>
+                                </dl>
+                                <a asp-controller="MaintenanceRecords" asp-action="Details" asp-route-id="@Model.MaintenanceRecord.Id"
+                                   class="btn btn-sm btn-outline-warning">View Maintenance</a>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No maintenance record linked</p>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Sidebar -->
         <div class="col-lg-4">
-            <!-- Actions Card -->
+            <!-- Quick Actions -->
             <div class="card mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-cogs me-2"></i>Quick Actions
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if (User.IsInRole("InventoryLiaison") || User.IsInRole("Administrator"))
-                    {
-                        <!-- Assignment Form -->
-                        <form asp-action="Assign" method="post" class="mb-3">
-                            <input type="hidden" name="id" value="@Model.Id" />
-                            <div class="mb-2">
-                                <label class="form-label">Assign to Employee:</label>
-                                <select name="employeeId" class="form-select" required>
-                                    <option value="">-- Select Employee --</option>
-                                    @foreach (var emp in ViewBag.AvailableEmployees ?? new List<Employee>())
+                    <div class="d-grid gap-2">
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Request
+                        </a>
+
+                        @if (Model.AssignedEmployeeId == null && (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.StockControllerRole)))
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-plus me-2"></i>Assign To
+                                </button>
+                                <ul class="dropdown-menu">
+                                    @foreach (var tech in ViewBag.TechnicianList)
                                     {
-                                        <option value="@emp.Id">@emp.FirstName @emp.LastName</option>
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Assign", new { id = Model.Id, employeeId = tech.Value })">
+                                                @tech.Text
+                                            </a>
+                                        </li>
                                     }
-                                </select>
+                                </ul>
                             </div>
-                            <button type="submit" class="btn btn-success btn-sm w-100">
-                                <i class="fas fa-user-check me-1"></i>Assign
+                        }
+
+                        <a asp-controller="FridgeAllocations" asp-action="Details" asp-route-id="@Model.FridgeAllocationId"
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-link me-2"></i>View Allocation
+                        </a>
+
+                        <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.FridgeAllocation?.CustomerId"
+                           class="btn btn-outline-info">
+                            <i class="fas fa-user me-2"></i>View Customer
+                        </a>
+
+                        @if (User.IsInRole(SD.AdminRole))
+                        {
+                            <button type="button" class="btn btn-danger"
+                                    onclick="confirmDelete(@Model.Id, '@Model.Id')">
+                                <i class="fas fa-trash me-2"></i>Delete Request
                             </button>
-                        </form>
-
-                        <div class="d-grid gap-2">
-                            @if (Model.Status != CustomerRequestStatus.Completed)
-                            {
-                                <a href="#" class="btn btn-success btn-sm"
-                                   onclick="updateStatus(@Model.Id, '@CustomerRequestStatus.Completed')">
-                                    <i class="fas fa-check me-1"></i>Mark Complete
-                                </a>
-                            }
-
-                            @if (Model.Status != CustomerRequestStatus.Cancelled)
-                            {
-                                <a href="#" class="btn btn-danger btn-sm"
-                                   onclick="updateStatus(@Model.Id, '@CustomerRequestStatus.Cancelled')">
-                                    <i class="fas fa-times me-1"></i>Cancel Request
-                                </a>
-                            }
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
 
-            <!-- Related Information -->
+            <!-- Request Metadata -->
             <div class="card">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-link me-2"></i>Related Information
+                    <h5 class="mb-0">
+                        <i class="fas fa-database me-2"></i>Request Information
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if (Model.FaultRecord != null)
-                    {
-                        <div class="mb-2">
-                            <strong>Related Fault:</strong><br>
-                            <a asp-controller="FaultRecords" asp-action="Details"
-                               asp-route-id="@Model.FaultRecord.Id" class="text-decoration-none">
-                                Fault #@Model.FaultRecord.Id
-                            </a>
-                        </div>
-                    }
+                    <dl>
+                        <dt>Created Date:</dt>
+                        <dd class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
 
-                    @if (Model.MaintenanceRecord != null)
-                    {
-                        <div class="mb-2">
-                            <strong>Related Maintenance:</strong><br>
-                            <a asp-controller="MaintenanceRecords" asp-action="Details"
-                               asp-route-id="@Model.MaintenanceRecord.Id" class="text-decoration-none">
-                                Maintenance #@Model.MaintenanceRecord.Id
-                            </a>
-                        </div>
-                    }
+                        <dt>Last Updated:</dt>
+                        <dd class="text-muted">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
 
-                    <div class="mt-3">
-                        <strong>Customer Location:</strong><br>
-                        <small class="text-muted">
-                            @Model.FridgeAllocation?.Customer?.AddressLine1<br>
-                            @Model.FridgeAllocation?.Customer?.City
-                        </small>
-                    </div>
+                        <dt>Status:</dt>
+                        <dd>
+                            @if (!Model.IsDeleted)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Deleted</span>
+                            }
+                        </dd>
+                    </dl>
                 </div>
             </div>
         </div>
@@ -227,42 +337,58 @@
 
 @section Scripts {
     <script>
-        function updateStatus(requestId, status) {
-            if (confirm('Are you sure you want to update the status to ' + status + '?')) {
-                $.post('@Url.Action("UpdateStatus", "ReplacementRequests")', {
-                    id: requestId,
-                    status: status
-                }, function() {
-                    location.reload();
-                });
-            }
+        function confirmDelete(id, requestNumber) {
+            // Same implementation as in Index view
         }
     </script>
 }
 
 @functions {
-    public string GetPriorityBadgeClass(RequestPriority priority)
-    {
-        return priority switch
-        {
-            RequestPriority.Low => "bg-success",
-            RequestPriority.Medium => "bg-warning",
-            RequestPriority.High => "bg-danger",
-            RequestPriority.Critical => "bg-dark",
-            _ => "bg-secondary"
-        };
-    }
-
-    public string GetStatusBadgeClass(CustomerRequestStatus status)
+    public string GetStatusBadge(CustomerRequestStatus status)
     {
         return status switch
         {
-            CustomerRequestStatus.Draft => "bg-secondary",
-            CustomerRequestStatus.AdditionalInfoRequired => "bg-warning",
-            CustomerRequestStatus.InProgress => "bg-info",
-            CustomerRequestStatus.Completed => "bg-success",
-            CustomerRequestStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
+            CustomerRequestStatus.Draft => "warning",
+            CustomerRequestStatus.InProgress => "info",
+            CustomerRequestStatus.Completed => "success",
+            CustomerRequestStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+    }
+
+    public string GetPriorityBadge(CustomerRequestPriority priority)
+    {
+        return priority switch
+        {
+            CustomerRequestPriority.Low => "success",
+            CustomerRequestPriority.Medium => "warning",
+            CustomerRequestPriority.High => "danger",
+            CustomerRequestPriority.Critical => "dark",
+            _ => "secondary"
+        };
+    }
+
+    public string GetRequestTypeBadge(CustomerRequestType requestType)
+    {
+        return requestType switch
+        {
+            CustomerRequestType.Replacement => "primary",
+            CustomerRequestType.AdditionalUnits => "warning",
+            CustomerRequestType.TemporaryAllocation => "info",
+            CustomerRequestType.NewAllocation => "success",
+            _ => "secondary"
+        };
+    }
+
+    public string GetFaultStatusBadge(FaultStatus status)
+    {
+        return status switch
+        {
+            FaultStatus.Reported => "warning",
+            FaultStatus.InProgress => "info",
+            FaultStatus.Resolved => "success",
+            FaultStatus.Closed => "danger",
+            _ => "secondary"
         };
     }
 }

@@ -1,0 +1,372 @@
+﻿<!-- Views/Faults/Dashboard.cshtml -->
+@model FaultDashboardVM
+@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using Project.Data
+
+@{
+    ViewData["Title"] = "Fault Management Dashboard";
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>@ViewData["Title"]
+                            </h3>
+                        </div>
+                        <div class="col-auto">
+                            <a asp-action="Index" class="btn btn-light btn-sm">
+                                <i class="fas fa-list me-1"></i>View All Faults
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Active Faults
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Open Faults
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OpenFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Resolved This Week
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ResolvedFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                High Priority Faults
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.HighPriorityFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Faults -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold">Recent Faults (Last 7 Days)</h6>
+                    <a asp-action="Index" class="btn btn-light btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentFaults.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Fault #</th>
+                                        <th>Description</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Reported Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var fault in Model.RecentFaults)
+                                    {
+                                        <tr>
+                                            <td>#@fault.Id</td>
+                                            <td>
+                                                <div class="text-truncate" style="max-width: 200px;">
+                                                    @fault.FaultDescription
+                                                </div>
+                                            </td>
+                                            <td>@GetPriorityBadge(fault.Priority)</td>
+                                            <td>@GetStatusBadge(fault.FaultStatus)</td>
+                                            <td>@fault.ReportedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="Details" asp-route-id="@fault.Id"
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a asp-action="Process" asp-route-id="@fault.Id"
+                                                       class="btn btn-sm btn-outline-info">
+                                                        <i class="fas fa-cogs"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h5 class="text-muted">No Recent Faults</h5>
+                            <p class="text-muted">No faults have been reported in the last 7 days.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Statistics -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Upsert" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i>Report New Fault
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i>View All Faults
+                        </a>
+                        <a asp-action="Index" asp-route-status="Reported" class="btn btn-outline-warning">
+                            <i class="fas fa-clock me-2"></i>View Open Faults
+                        </a>
+                        <a asp-action="Index" asp-route-status="InProgress" class="btn btn-outline-info">
+                            <i class="fas fa-cogs me-2"></i>View In Progress
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Distribution -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="m-0 font-weight-bold">Fault Status Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="statusChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-secondary"></i> Reported
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-info"></i> In Progress
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Resolved
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technician Performance -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="m-0 font-weight-bold">Technician Performance</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Technician</th>
+                                    <th>Assigned Faults</th>
+                                    <th>Resolved</th>
+                                    <th>In Progress</th>
+                                    <th>Average Resolution Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var technicians = await _db.Employees
+                                    .Where(e => e.IsActive && (e.EmployeeType == EmployeeType.FaultTechnician || e.EmployeeType == EmployeeType.MaintenanceTechnician))
+                                    .Include(e => e.UserAccount)
+                                    .ToListAsync();
+
+                                    foreach (var tech in technicians)
+                                    {
+                                        var assignedFaults = await _db.FaultRecords
+                                        .Where(f => f.AssignedTechnicianId == tech.Id)
+                                        .ToListAsync();
+
+                                        var resolvedFaults = assignedFaults.Count(f => f.Status == FaultStatus.Resolved);
+                                        var inProgressFaults = assignedFaults.Count(f => f.Status == FaultStatus.InProgress);
+
+                                        <tr>
+                                            <td>@tech.UserAccount?.FirstName @tech.UserAccount?.LastName</td>
+                                            <td>@assignedFaults.Count</td>
+                                            <td>
+                                                <span class="badge bg-success">@resolvedFaults</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@inProgressFaults</span>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var resolvedWithDates = assignedFaults.Where(f => f.Status ==                               FaultStatus.Resolved && f.ResolvedDate.HasValue)
+                                                    .ToList();
+
+                                                    if (resolvedWithDates.Any())
+                                                    {
+                                                        var avgHours = resolvedWithDates
+                                                        .Average(f => (f.ResolvedDate.Value - f.ReportedDate).TotalHours);
+                                                        <span>@avgHours.ToString("F1") hours</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Status Distribution Chart
+        var ctx = document.getElementById('statusChart').getContext('2d');
+        var statusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Reported', 'In Progress', 'Resolved'],
+                datasets: [{
+                    data: [@Model.TotalFaults, @Model.OpenFaults, @Model.ResolvedFaults],
+                    backgroundColor: ['#6c757d', '#17a2b8', '#28a745'],
+                    hoverBackgroundColor: ['#5a6268', '#138496', '#218838'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 80,
+            },
+        });
+
+        // Auto-refresh dashboard every 5 minutes
+        setInterval(function() {
+            location.reload();
+        }, 300000); // 5 minutes
+    </script>
+}
+
+@functions {
+    private IHtmlContent GetStatusBadge(FaultStatus status)
+    {
+        var badgeClass = status switch
+        {
+            FaultStatus.Reported => "bg-secondary",
+            FaultStatus.InProgress => "bg-info",
+            FaultStatus.Resolved => "bg-success",
+            FaultStatus.Closed => "bg-dark",
+            _ => "bg-secondary"
+        };
+
+        return Html.Raw($"<span class='badge {badgeClass}'>{status}</span>");
+    }
+
+    private IHtmlContent GetPriorityBadge(FaultPriority priority)
+    {
+        var badgeClass = priority switch
+        {
+            FaultPriority.Low => "bg-success",
+            FaultPriority.Medium => "bg-warning",
+            FaultPriority.High => "bg-danger",
+            FaultPriority.Critical => "bg-danger",
+            _ => "bg-secondary"
+        };
+
+        return Html.Raw($"<span class='badge {badgeClass}'>{priority}</span>");
+    }
+}

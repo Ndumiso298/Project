@@ -61,8 +61,9 @@ namespace Project.Models.ViewModels
         [StringLength(500, ErrorMessage = "Parts replaced cannot exceed 500 characters.")]
         public string? PartsReplaced { get; set; }
 
-        [Display(Name = "Repair ServiceCost")]
+        [Display(Name = "Repair Cost (R)")]
         [Range(0, 10000)]
+        [DataType(DataType.Currency)]
         public decimal? RepairCost { get; set; }
     }
 }

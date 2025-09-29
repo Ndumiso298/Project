@@ -10,8 +10,6 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        public string? Name { get; set; }
-
         // Address information
         [Required(ErrorMessage = "Address line 1 is required.")]
         [StringLength(100, ErrorMessage = "Address line 1 cannot exceed 100 characters.")]
@@ -48,15 +46,21 @@ namespace Project.Models
         public bool IsActive { get; set; } = true;
 
         // Metadata
-        [Display(Name = "Created At")]
-        [DataType(DataType.DateTime)]
+        [Display(Name = "Created Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Display(Name = "Updated At")]
-        [DataType(DataType.DateTime)]
+        [Display(Name = "Created By")]
+        [StringLength(450, ErrorMessage = "Created by cannot exceed 450 characters.")]
+        public string? CreatedBy { get; set; }
+
+        [Display(Name = "Last Updated")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+
+        [Display(Name = "Modified By")]
+        [StringLength(450, ErrorMessage = "Updated by cannot exceed 450 characters.")]
+        public string? ModifiedBy { get; set; }
 
         // Navigation properties
         [ValidateNever]

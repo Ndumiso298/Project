@@ -1,0 +1,212 @@
+﻿@model ReplacementRequestVM
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create Replacement Request" : "Edit Replacement Request";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-exchange-alt me-2"></i>@ViewData["Title"]
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <form asp-action="Upsert" method="post" id="replacementRequestForm">
+        <div class="card">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <!-- Request Information -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="FridgeAllocationId" class="form-label"></label> *
+                            <select asp-for="FridgeAllocationId" asp-items="Model.FridgeAllocationList" class="form-select">
+                                <option value="">-- Select Allocation --</option>
+                            </select>
+                            <span asp-validation-for="FridgeAllocationId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FaultRecordId" class="form-label"></label>
+                            <select asp-for="FaultRecordId" asp-items="Model.FaultRecordList" class="form-select">
+                                <option value="">-- Select Fault Record (Optional) --</option>
+                            </select>
+                            <span asp-validation-for="FaultRecordId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RequestType" class="form-label"></label> *
+                            <select asp-for="RequestType" asp-items="Model.RequestTypeList" class="form-select"></select>
+                            <span asp-validation-for="RequestType" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Priority" class="form-label"></label> *
+                            <select asp-for="Priority" asp-items="Model.PriorityList" class="form-select"></select>
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label"></label> *
+                            <select asp-for="Status" asp-items="Model.StatusList" class="form-select"></select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RequestedDate" class="form-label"></label> *
+                            <input asp-for="RequestedDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="RequestedDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantity and Reason -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label"></label> *
+                            <input asp-for="Quantity" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="mb-3">
+                            <label asp-for="Reason" class="form-label"></label> *
+                            <textarea asp-for="Reason" class="form-control" rows="3"
+                                      placeholder="Please provide details about why this replacement is needed..."></textarea>
+                            <span asp-validation-for="Reason" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment and Response (for existing requests) -->
+                @if (Model.Id != 0)
+                {
+                    <div class="card bg-light mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-check me-2"></i>Assignment & Response
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="AssignedTechnicianId" class="form-label"></label>
+                                        <select asp-for="AssignedTechnicianId" asp-items="Model.TechnicianList" class="form-select">
+                                            <option value="">-- Select Technician --</option>
+                                        </select>
+                                        <span asp-validation-for="AssignedTechnicianId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Status" class="form-label"></label>
+                                        <select asp-for="Status" asp-items="Model.StatusList" class="form-select">
+                                            <option value="">-- Select Status --</option>
+                                        </select>
+                                        <span asp-validation-for="Status" class="text-danger"></span>
+                                        <div class="form-text">
+                                            Setting status to "Completed" will automatically set the response date.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label asp-for="ResponseNotes" class="form-label"></label>
+                                        <textarea asp-for="ResponseNotes" class="form-control" rows="4"
+                                                  placeholder="Add response notes, action taken, or additional information..."></textarea>
+                                        <span asp-validation-for="ResponseNotes" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Quick Help -->
+                <div class="alert alert-info mt-4">
+                    <h6><i class="fas fa-info-circle me-2"></i>Quick Guide</h6>
+                    <ul class="mb-0">
+                        <li><strong>Replacement:</strong> Request to replace a faulty fridge with a new one</li>
+                        <li><strong>Repair:</strong> Request for technical repair of existing fridge</li>
+                        <li><strong>Maintenance:</strong> Request for routine maintenance service</li>
+                        <li><strong>Upgrade:</strong> Request to upgrade to a different fridge model</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            @(Model.Id == 0 ? "Create Request" : "Update Request")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Auto-populate current datetime for new requests
+        @if (Model.Id == 0)
+        {
+            <text>
+                    var now = new Date();
+                    var year = now.getFullYear();
+                    var month = (now.getMonth() + 1).toString().padStart(2, '0');
+                    var day = now.getDate().toString().padStart(2, '0');
+                    var hours = now.getHours().toString().padStart(2, '0');
+                    var minutes = now.getMinutes().toString().padStart(2, '0');
+
+                    var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                    $('#RequestedDate').val(formattedDateTime);
+            </text>
+        }
+
+            // Auto-complete when status is set to Completed
+            $('#Status').change(function () {
+                if ($(this).val() === 'Completed') {
+                    // You could auto-populate response date here if needed
+                    console.log('Request marked as completed');
+                }
+            });
+
+            // Show loading state for allocation dropdown
+            $('#FridgeAllocationId').select2({
+                placeholder: "Select an allocation",
+                allowClear: true
+            });
+
+            // Show loading state for fault record dropdown
+            $('#FaultRecordId').select2({
+                placeholder: "Select a fault record (optional)",
+                allowClear: true
+            });
+        });
+    </script>
+}

@@ -4,19 +4,16 @@ namespace Project.Utilities.Enums
 {
     public enum CustomerRequestType
     {
-        [Display(Name = "Full Replacement")]
-        FullReplacement,
+        [Display(Name = "New Allocation")]
+        NewAllocation,
 
-        [Display(Name = "Partial Replacement")]
-        PartialReplacement,
+        [Display(Name = "Replacement")]
+        Replacement,
 
-        [Display(Name = "Temporary Replacement")]
-        TemporaryReplacement,
+        [Display(Name = "Additional Units")]
+        AdditionalUnits,
 
-        [Display(Name = "Upgrade")]
-        Upgrade,
-
-        [Display(Name = "Emergency Replacement")]
-        EmergencyReplacement
+        [Display(Name = "Temporary Allocation")]
+        TemporaryAllocation
     }
 }

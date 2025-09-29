@@ -42,7 +42,7 @@ namespace Project.Models
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         [Display(Name = "Service Date")]
-        public DateTime ServiceDate { get; set; } = DateTime.UtcNow;
+        public DateTime? ServiceDate { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = "Service type is required.")]
         [StringLength(20, ErrorMessage = "Service type cannot exceed 20 characters.")]
@@ -60,13 +60,6 @@ namespace Project.Models
         [Display(Name = "AssignedTechnician Notes")]
         public string? ServiceNotes { get; set; }
 
-        [Required(ErrorMessage = "ServiceCost is required.")]
-        [Range(0, 100000, ErrorMessage = "ServiceCost must be a positive value.")]
-        [Column(TypeName = "decimal(18,2)")]
-        [DataType(DataType.Currency)]
-        [Display(Name = "ServiceCost (R)")]
-        public decimal Cost { get; set; }
-
         // Additional properties for better tracking
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
@@ -77,6 +70,13 @@ namespace Project.Models
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         [Display(Name = "End Time")]
         public DateTime? EndTime { get; set; }
+
+        [Required(ErrorMessage = "Service Cost is required.")]
+        [Range(0, 100000, ErrorMessage = "Service Cost must be a positive value.")]
+        [Column(TypeName = "decimal(18,2)")]
+        [DataType(DataType.Currency)]
+        [Display(Name = "Service Cost (R)")]
+        public decimal? Cost { get; set; }
 
         [NotMapped]
         [Display(Name = "Duration (minutes)")]
@@ -111,7 +111,7 @@ namespace Project.Models
         // Computed properties
         [NotMapped]
         [Display(Name = "Is Emergency Service")]
-        public bool IsEmergency => ServiceType == ServicingType.CorrectiveRepair;
+        public bool IsEmergency => ServiceType == ServicingType.CorrectiveMaintenance;
 
         [NotMapped]
         [Display(Name = "Service Complexity")]

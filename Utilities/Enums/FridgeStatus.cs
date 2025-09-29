@@ -4,34 +4,31 @@ namespace Project.Utilities.Enums
 {
     public enum FridgeStatus
     {
-        [Display(Name = "Available")]
-        Available,           // In warehouse, ready for allocation
+        [Display(Name = "Available (Warehouse Stock)")]
+        Available,            // In a Location/Warehouse, ready for allocation
 
-        [Display(Name = "Allocated")]
-        Allocated,           // Currently with a customer
+        [Display(Name = "Pending Allocation")]
+        PendingAllocation,    // Requested by customer, awaiting Inventory Liaison approval
+
+        [Display(Name = "Allocated (Customer Site)")]
+        Allocated,            // Currently with a customer
+
+        [Display(Name = "In Service / Repair")] // Clearer name for technician work
+        InService,            // Repair or maintenance (used by Fault/Maintenance Techs)
 
         [Display(Name = "In Transit")]
-        InTransit,           // Being moved between locations
-
-        [Display(Name = "In Repair")]
-        InRepair,            // At service center for repairs
-
-        [Display(Name = "Under Maintenance")]
-        UnderMaintenance,    // Scheduled maintenance/service
+        InTransit,            // Being moved between locations or to/from customer
 
         [Display(Name = "Quality Control")]
-        QualityControl,      // Being inspected after repair/service
+        QualityControl,       // Being inspected after service/repair
 
-        [Display(Name = "Quarantined")]
-        Quarantined,         // Temporarily held for investigation
-
-        [Display(Name = "Reserved")]
-        Reserved,            // Allocated but not yet deployed
+        [Display(Name = "Quarantined (Blocked)")]
+        Quarantined,          // Temporarily held for investigation (e.g., failed QC)
 
         [Display(Name = "Scrapped")]
-        Scrapped,            // Decommissioned and ready for disposal
+        Scrapped,             // Marked for disposal (Soft Delete equivalent for Inventory)
 
         [Display(Name = "Lost/Stolen")]
-        LostStolen           // Missing inventory
+        LostStolen            // Missing inventory
     }
 }

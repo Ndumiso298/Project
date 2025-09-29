@@ -1,0 +1,453 @@
+﻿@model FridgeVM
+@using Microsoft.AspNetCore.Identity
+@using Project.Utilities
+@using Project.Models
+
+@{
+    ViewData["Title"] = "Fridge Details";
+    var canEdit = User.IsInRole(SD.AdminRole) || User.IsInRole(SD.StockControllerRole);
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 text-primary">
+                        <i class="bi bi-refrigerator me-2"></i>Fridge Details
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Fridge Inventory</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">@Model.SerialNumber</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="btn-group">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Back to List
+                    </a>
+                    @if (canEdit)
+                    {
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="bi bi-pencil me-1"></i>Edit Fridge
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>@TempData["error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Main Information Column -->
+        <div class="col-lg-8">
+            <!-- Basic Information Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Basic Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Serial Number</dt>
+                                <dd class="col-sm-8 fw-bold text-primary">@Model.SerialNumber</dd>
+
+                                <dt class="col-sm-4">Model</dt>
+                                <dd class="col-sm-8">@Model.FridgeModelDetails?.DisplayName</dd>
+
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @GetStatusBadgeClass(Model.Status)">
+                                        @Model.Status.GetDisplayName()
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">Condition</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @GetConditionBadgeClass(Model.Condition)">
+                                        @Model.Condition.GetDisplayName()
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Location</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.LocationDetails != null)
+                                    {
+                                        <div>@Model.LocationDetails.AddressLine1</div>
+                                        <div>@Model.LocationDetails.Suburb, @Model.LocationDetails.City</div>
+                                        <div>@Model.LocationDetails.Province</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not set</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-4">Active</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                                        @(Model.IsActive ? "Yes" : "No")
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchase & Warranty Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-receipt me-2"></i>Purchase & Warranty
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Purchase Date</dt>
+                                <dd class="col-sm-8">@(Model.PurchaseDate?.ToString("dd/MM/yyyy") ?? "Not set")</dd>
+
+                                <dt class="col-sm-4">Purchase Price</dt>
+                                <dd class="col-sm-8">@(Model.PurchasePrice?.ToString("C") ?? "Not set")</dd>
+
+                                <dt class="col-sm-4">Supplier</dt>
+                                <dd class="col-sm-8">@(Model.Supplier ?? "Not set")</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Warranty Expiry</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.WarrantyExpiryDate.HasValue)
+                                    {
+                                        <span class="@(Model.UnderWarranty ? "text-success" : "text-danger")">
+                                            @Model.WarrantyExpiryDate.Value.ToString("dd/MM/yyyy")
+                                            (@(Model.UnderWarranty ? "Active" : "Expired"))
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No warranty</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-4">Age</dt>
+                                <dd class="col-sm-8">@(Model.AgeInYears?.ToString("F1") ?? "Unknown") years</dd>
+
+                                <dt class="col-sm-4">Under Warranty</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.UnderWarranty ? "bg-success" : "bg-secondary")">
+                                        @(Model.UnderWarranty ? "Yes" : "No")
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-tools me-2"></i>Maintenance Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Last Service</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.LastServiceDate.HasValue)
+                                    {
+                                        <div>@Model.LastServiceDate.Value.ToString("dd/MM/yyyy")</div>
+                                        <small class="@(Model.RequiresMaintenance ? "text-danger" : "text-success")">
+                                            @(Model.RequiresMaintenance ? "Maintenance Required" : "Up to date")
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-warning">Never serviced</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-4">Next Service Due</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.NextServiceDue.HasValue)
+                                    {
+                                        <div>@Model.NextServiceDue.Value.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">(@Model.DaysUntilServiceDue days)</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not scheduled</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Service Interval</dt>
+                                <dd class="col-sm-8">@Model.FridgeModelDetails?.ServiceIntervalMonths months</dd>
+
+                                <dt class="col-sm-4">Total Services</dt>
+                                <dd class="col-sm-8">@Model.TotalServiceCount</dd>
+
+                                <dt class="col-sm-4">Requires Maintenance</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.RequiresMaintenance ? "bg-danger" : "bg-success")">
+                                        @(Model.RequiresMaintenance ? "Yes" : "No")
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Quick Actions Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightning me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (canEdit)
+                        {
+                            <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+                                <i class="bi bi-pencil me-1"></i>Edit Fridge
+                            </a>
+
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#scrapModal">
+                                <i class="bi bi-x-circle me-1"></i>Scrap Fridge
+                            </button>
+                        }
+
+                        @if (User.IsInRole(SD.AdminRole))
+                        {
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="bi bi-trash me-1"></i>Delete Fridge
+                            </button>
+                        }
+
+                        <a href="#" class="btn btn-outline-info">
+                            <i class="bi bi-printer me-1"></i>Print Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-graph-up me-2"></i>Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Allocation History
+                            <span class="badge bg-primary rounded-pill">@Model.AllocationHistoryCount</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Maintenance Records
+                            <span class="badge bg-warning rounded-pill">@Model.MaintenanceHistoryCount</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Fault Reports
+                            <span class="badge bg-danger rounded-pill">@Model.FaultReportCount</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Overview Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-speedometer2 me-2"></i>Status Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">Overall Health</small>
+                        <div class="progress mb-2" style="height: 10px;">
+                            @{
+                                var healthPercentage = Model.Condition switch
+                                {
+                                    FridgeCondition.New => 100,
+                                    FridgeCondition.Refurbished => 80,
+                                    FridgeCondition.PreOwned => 60,
+                                    FridgeCondition.Poor => 20,
+                                    _ => 0
+                                };
+                                var healthColor = healthPercentage >= 60 ? "bg-success" :
+                                healthPercentage >= 30 ? "bg-warning" : "bg-danger";
+                            }
+                            <div class="progress-bar @healthColor" role="progressbar"
+                                 style="width: @healthPercentage%" aria-valuenow="@healthPercentage"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">@Model.Condition.GetDisplayName() Condition</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Maintenance Status</small>
+                        <div class="progress mb-2" style="height: 10px;">
+                            @{
+                                var maintenancePercentage = Model.RequiresMaintenance ? 20 : 100;
+                                var maintenanceColor = Model.RequiresMaintenance ? "bg-danger" : "bg-success";
+                            }
+                            <div class="progress-bar @maintenanceColor" role="progressbar"
+                                 style="width: @maintenancePercentage%" aria-valuenow="@maintenancePercentage"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">@(Model.RequiresMaintenance ? "Due for Service" : "Up to Date")</small>
+                    </div>
+
+                    <div>
+                        <small class="text-muted">Warranty Status</small>
+                        <div class="progress mb-2" style="height: 10px;">
+                            @{
+                                var warrantyPercentage = Model.UnderWarranty ? 100 : 0;
+                                var warrantyColor = Model.UnderWarranty ? "bg-success" : "bg-secondary";
+                            }
+                            <div class="progress-bar @warrantyColor" role="progressbar"
+                                 style="width: @warrantyPercentage%" aria-valuenow="@warrantyPercentage"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">@(Model.UnderWarranty ? "Under Warranty" : "No Warranty")</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+@if (User.IsInRole(SD.AdminRole))
+{
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete fridge <strong>@Model.SerialNumber</strong>?</p>
+                    <p class="text-danger"><small>This action cannot be undone. The fridge will be marked as scrapped.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Scrap Modal -->
+@if (canEdit)
+{
+    <div class="modal fade" id="scrapModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">Scrap Fridge</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form asp-action="Scrap" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <p>Are you sure you want to scrap fridge <strong>@Model.SerialNumber</strong>?</p>
+                        <div class="mb-3">
+                            <label for="scrapReason" class="form-label">Scrap Reason *</label>
+                            <textarea class="form-control" id="scrapReason" name="scrapReason"
+                                      rows="3" placeholder="Enter reason for scrapping..." required></textarea>
+                        </div>
+                        <p class="text-warning"><small>The fridge will be marked as scrapped and removed from active inventory.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Scrap Fridge</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus on scrap reason textarea when modal opens
+            $('#scrapModal').on('shown.bs.modal', function () {
+                $('#scrapReason').focus();
+            });
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeClass(FridgeStatus status)
+    {
+        return status switch
+        {
+            FridgeStatus.Available => "bg-success",
+            FridgeStatus.Allocated => "bg-warning",
+            FridgeStatus.InService => "bg-info",
+            FridgeStatus.Quarantined => "bg-danger",
+            FridgeStatus.Scrapped => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetConditionBadgeClass(FridgeCondition condition)
+    {
+        return condition switch
+        {
+            FridgeCondition.New => "bg-success",
+            FridgeCondition.PreOwned => "bg-info",
+            FridgeCondition.Refurbished => "bg-primary",
+            FridgeCondition.Poor => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

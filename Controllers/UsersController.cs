@@ -8,6 +8,7 @@ using Project.Utilities;
 using Project.Data;
 using Microsoft.EntityFrameworkCore;
 using Project.Utilities.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Project.Controllers
 {
@@ -18,99 +19,542 @@ namespace Project.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(ApplicationDbContext db,
-                             UserManager<ApplicationUser> userManager,
-                             RoleManager<IdentityRole> roleManager,
-                             IWebHostEnvironment webHostEnvironment)
+        public UsersController(
+            ApplicationDbContext db,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IWebHostEnvironment webHostEnvironment,
+            ILogger<UsersController> logger)
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, string roleFilter, string statusFilter)
         {
-            var users = await _db.Users
-                .Include(u => u.PrimaryLocation)
-                .Include(u => u.Employee)
-                .Include(u => u.Customer)
-                .Where(u => u.IsActive)
-                .OrderBy(u => u.LastName)
-                .ThenBy(u => u.FirstName)
-                .ToListAsync();
-
-            var userVMs = new List<UserManagementVM>();
-
-            foreach (var user in users)
+            try
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                var userVM = new UserManagementVM
+                var query = _db.Users
+                    .Include(u => u.PrimaryLocation)
+                    .Include(u => u.Employee)
+                    .Include(u => u.Customer)
+                    .Where(u => u.IsActive);
+
+                // Apply filters
+                if (!string.IsNullOrEmpty(searchString))
                 {
-                    UserId = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    DOB = user.DOB,
-                    LocationId = user.LocationId,
-                    ProfilePictureUrl = user.ProfilePictureUrl,
-                    IsActive = user.IsActive,
-                    UserRole = roles.FirstOrDefault() ?? "User",
-                    CurrentRole = roles.FirstOrDefault()
-                };
+                    query = query.Where(u =>
+                        u.FirstName.Contains(searchString) ||
+                        u.LastName.Contains(searchString) ||
+                        u.Email.Contains(searchString) ||
+                        u.PhoneNumber.Contains(searchString));
+                }
 
-                userVMs.Add(userVM);
+                if (!string.IsNullOrEmpty(roleFilter) && roleFilter != "All")
+                {
+                    var usersInRole = await _userManager.GetUsersInRoleAsync(roleFilter);
+                    var userIds = usersInRole.Select(u => u.Id);
+                    query = query.Where(u => userIds.Contains(u.Id));
+                }
+
+                if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "All")
+                {
+                    var status = Enum.Parse<AccountStatus>(statusFilter);
+                    query = query.Where(u => u.AccountStatus == status);
+                }
+
+                var users = await query
+                    .OrderBy(u => u.LastName)
+                    .ThenBy(u => u.FirstName)
+                    .ToListAsync();
+
+                var userVMs = new List<UserManagementVM>();
+                foreach (var user in users)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    userVMs.Add(MapToUserManagementVM(user, roles.FirstOrDefault()));
+                }
+
+                await PopulateFilterDropdowns();
+                return View(userVMs);
             }
-
-            return View(userVMs);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading users index");
+                TempData["error"] = "An error occurred while loading users.";
+                return RedirectToAction("Index", "Home");
+            }
         }
 
-        // GET: Users/Upsert
+        // GET: Users/Upsert/{id?}
         public async Task<IActionResult> Upsert(string? id)
         {
-            var vm = new UserManagementVM();
-
-            // Populate dropdowns
-            await PopulateDropdowns(vm);
-
-            if (string.IsNullOrEmpty(id))
+            try
             {
-                // Create new user
+                var vm = new UserManagementVM();
+                await PopulateDropdowns(vm);
+
+                if (string.IsNullOrEmpty(id))
+                {
+                    // Create new user
+                    ViewBag.Action = "Create";
+                    return View(vm);
+                }
+
+                // Edit existing user
+                ViewBag.Action = "Edit";
+                var user = await GetUserWithRelatedData(id);
+                if (user == null)
+                {
+                    TempData["error"] = "User not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
+                vm = await MapToUserManagementVMAsync(user, roles.FirstOrDefault());
+                await PopulateDropdowns(vm);
+
                 return View(vm);
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading user upsert page for ID: {UserId}", id);
+                TempData["error"] = "An error occurred while loading the user form.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
 
-            // Edit existing user
-            var user = await _db.Users
+        // POST: Users/Upsert
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert(UserManagementVM vm)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    await PopulateDropdowns(vm);
+                    return View(vm);
+                }
+
+                if (string.IsNullOrEmpty(vm.UserId))
+                {
+                    // Create new user
+                    await CreateNewUser(vm);
+                    TempData["success"] = "User created successfully. Temporary password has been set.";
+                }
+                else
+                {
+                    // Update existing user
+                    await UpdateExistingUser(vm);
+                    TempData["success"] = "User updated successfully.";
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ValidationException vex)
+            {
+                ModelState.AddModelError("", vex.Message);
+                await PopulateDropdowns(vm);
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error upserting user: {Email}", vm.Email);
+                TempData["error"] = $"An error occurred: {ex.Message}";
+                await PopulateDropdowns(vm);
+                return View(vm);
+            }
+        }
+
+        // POST: Users/ToggleStatus/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(string id)
+        {
+            try
+            {
+                var user = await _db.Users.FindAsync(id);
+                if (user == null)
+                {
+                    TempData["error"] = "User not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Prevent users from modifying their own status
+                if (id == _userManager.GetUserId(User))
+                {
+                    TempData["error"] = "You cannot modify your own account status.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var previousStatus = user.AccountStatus;
+                user.AccountStatus = user.AccountStatus == AccountStatus.Active
+                    ? AccountStatus.Suspended
+                    : AccountStatus.Active;
+                user.UpdatedAt = DateTime.UtcNow;
+                user.UpdatedBy = _userManager.GetUserId(User);
+
+                _db.Users.Update(user);
+                await _db.SaveChangesAsync();
+
+                _logger.LogInformation("User {UserId} status changed from {PreviousStatus} to {NewStatus} by {CurrentUser}",
+                    id, previousStatus, user.AccountStatus, User.Identity.Name);
+
+                TempData["success"] = $"User {(user.AccountStatus == AccountStatus.Active ? "activated" : "suspended")} successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error toggling user status for ID: {UserId}", id);
+                TempData["error"] = "An error occurred while updating user status.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(string id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    TempData["error"] = "User not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Prevent users from resetting their own password via this method
+                if (id == _userManager.GetUserId(User))
+                {
+                    TempData["error"] = "Please use the 'Forgot Password' feature to reset your own password.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var newPassword = GenerateSecureTemporaryPassword();
+                var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+                if (result.Succeeded)
+                {
+                    // Log the password reset
+                    _logger.LogInformation("Password reset for user: {Email} by {CurrentUser}",
+                        user.Email, User.Identity.Name);
+
+                    // In a real application, you might want to email the password to the user
+                    // For now, we'll display it in the success message
+                    TempData["success"] = $"Password reset successfully for {user.Email}. Temporary password: {newPassword}";
+
+                    // You could also store it in TempData separately for the modal
+                    TempData["ResetPassword"] = newPassword;
+                    TempData["ResetUserEmail"] = user.Email;
+                }
+                else
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    throw new Exception($"Password reset failed: {errors}");
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting password for user ID: {UserId}", id);
+                TempData["error"] = "An error occurred while resetting the password.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        #region Private Methods
+
+        private async Task<ApplicationUser?> GetUserWithRelatedData(string id)
+        {
+            return await _db.Users
                 .Include(u => u.Employee)
                 .Include(u => u.Customer)
+                .Include(u => u.PrimaryLocation)
                 .FirstOrDefaultAsync(u => u.Id == id);
+        }
 
-            if (user == null)
+        private async Task CreateNewUser(UserManagementVM vm)
+        {
+            // Validate unique email
+            if (await _userManager.FindByEmailAsync(vm.Email) != null)
             {
-                return NotFound();
+                throw new ValidationException("A user with this email already exists.");
             }
 
+            var user = new ApplicationUser
+            {
+                UserName = vm.Email,
+                Email = vm.Email,
+                FirstName = vm.FirstName,
+                LastName = vm.LastName,
+                PhoneNumber = vm.PhoneNumber,
+                DOB = vm.DOB,
+                LocationId = vm.LocationId,
+                ProfilePictureUrl = vm.ProfilePictureUrl,
+                AccountStatus = vm.IsActive ? AccountStatus.Active : AccountStatus.PendingApproval,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
 
-            var roles = await _userManager.GetRolesAsync(user);
-            var currentRole = roles.FirstOrDefault();
+            // Create user with temporary password
+            var temporaryPassword = GenerateSecureTemporaryPassword();
+            var result = await _userManager.CreateAsync(user, temporaryPassword);
 
-            // FIXED: Use vm.Id instead of vm.UserId
-            vm.UserId = user.Id;
-            vm.FirstName = user.FirstName;
-            vm.LastName = user.LastName;
-            vm.Email = user.Email;
-            vm.PhoneNumber = user.PhoneNumber;
-            vm.DOB = user.DOB;
-            vm.LocationId = user.LocationId;
-            vm.ProfilePictureUrl = user.ProfilePictureUrl;
-            vm.IsActive = user.IsActive;
-            vm.UserRole = currentRole ?? "User";
-            vm.CurrentRole = currentRole; // Now this property exists
+            if (!result.Succeeded)
+            {
+                throw new Exception($"User creation failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
 
-            // Populate role-specific data
+            // Handle role assignment and entity creation
+            await HandleUserRoleAssignment(user, vm);
+
+            _logger.LogInformation("New user created: {Email} with role {Role}", user.Email, vm.UserRole);
+        }
+
+        private async Task UpdateExistingUser(UserManagementVM vm)
+        {
+            var user = await GetUserWithRelatedData(vm.UserId);
+            if (user == null)
+            {
+                throw new ValidationException("User not found.");
+            }
+
+            // Check if email is being changed and validate uniqueness
+            if (user.Email != vm.Email && await _userManager.FindByEmailAsync(vm.Email) != null)
+            {
+                throw new ValidationException("A user with this email already exists.");
+            }
+
+            // Update user properties
+            user.FirstName = vm.FirstName;
+            user.LastName = vm.LastName;
+            user.Email = vm.Email;
+            user.UserName = vm.Email;
+            user.PhoneNumber = vm.PhoneNumber;
+            user.DOB = vm.DOB;
+            user.LocationId = vm.LocationId;
+            user.ProfilePictureUrl = vm.ProfilePictureUrl;
+            user.AccountStatus = vm.IsActive ? AccountStatus.Active : AccountStatus.Suspended;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"User update failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+
+            // Handle role assignment and entity updates
+            await HandleUserRoleAssignment(user, vm, true);
+
+            _logger.LogInformation("User updated: {Email}", user.Email);
+        }
+
+        private async Task HandleUserRoleAssignment(ApplicationUser user, UserManagementVM vm, bool isUpdate = false)
+        {
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var currentRole = currentRoles.FirstOrDefault();
+
+            // Remove from current role if it's changing
+            if (isUpdate && currentRole != vm.UserRole)
+            {
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+                // Soft delete previous role-specific entities
+                await HandleRoleChangeCleanup(user, currentRole);
+            }
+
+            // Add to new role
+            if (!await _userManager.IsInRoleAsync(user, vm.UserRole))
+            {
+                await _userManager.AddToRoleAsync(user, vm.UserRole);
+            }
+
+            // Create/update role-specific entities
+            await HandleRoleSpecificEntities(user, vm, isUpdate);
+        }
+
+        private async Task HandleRoleChangeCleanup(ApplicationUser user, string? previousRole)
+        {
+            if (previousRole?.Contains("Employee") == true && user.EmployeeId.HasValue)
+            {
+                var employee = await _db.Employees.FindAsync(user.EmployeeId);
+                if (employee != null)
+                {
+                    employee.IsActive = false;
+                    employee.UpdatedAt = DateTime.UtcNow;
+                }
+                user.EmployeeId = null;
+            }
+
+            if (previousRole == "Customer" && user.CustomerId.HasValue)
+            {
+                var customer = await _db.Customers.FindAsync(user.CustomerId);
+                if (customer != null)
+                {
+                    customer.IsActive = false;
+                    customer.UpdatedAt = DateTime.UtcNow;
+                }
+                user.CustomerId = null;
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task HandleRoleSpecificEntities(ApplicationUser user, UserManagementVM vm, bool isUpdate)
+        {
+            if (IsEmployeeRole(vm.UserRole))
+            {
+                await HandleEmployeeEntity(user, vm, isUpdate);
+            }
+            else if (vm.UserRole == "Customer")
+            {
+                await HandleCustomerEntity(user, vm, isUpdate);
+            }
+        }
+
+        private async Task HandleEmployeeEntity(ApplicationUser user, UserManagementVM vm, bool isUpdate)
+        {
+            var employee = isUpdate && user.EmployeeId.HasValue
+                ? await _db.Employees.FindAsync(user.EmployeeId)
+                : new Employee { UserId = user.Id };
+
+            if (employee == null) return;
+
+            employee.EmployeeNumber = vm.EmployeeNumber ?? GenerateEmployeeNumber();
+            employee.EmployeeType = MapRoleToEmployeeType(vm.UserRole);
+            employee.AvailabilityStatus = vm.AvailabilityStatus ?? AvailabilityStatus.Available;
+            employee.IsActive = true;
+            employee.UpdatedAt = DateTime.UtcNow;
+
+            if (!isUpdate || !user.EmployeeId.HasValue)
+            {
+                employee.CreatedAt = DateTime.UtcNow;
+                _db.Employees.Add(employee);
+            }
+
+            await _db.SaveChangesAsync();
+            user.EmployeeId = employee.Id;
+        }
+
+        private async Task HandleCustomerEntity(ApplicationUser user, UserManagementVM vm, bool isUpdate)
+        {
+            var customer = isUpdate && user.CustomerId.HasValue
+                ? await _db.Customers.FindAsync(user.CustomerId)
+                : new Customer { UserId = user.Id };
+
+            if (customer == null) return;
+
+            customer.TradingName = vm.TradingName ?? $"{vm.FirstName} {vm.LastName}";
+            customer.BusinessType = vm.BusinessType ?? BusinessType.SpazaShop;
+            customer.BusinessEmail = vm.BusinessEmail ?? vm.Email;
+            customer.BusinessPhoneNumber = vm.BusinessPhoneNumber ?? vm.PhoneNumber;
+            customer.AddressLine1 = vm.AddressLine1 ?? string.Empty;
+            customer.AddressLine2 = vm.AddressLine2;
+            customer.Suburb = vm.Suburb ?? string.Empty;
+            customer.City = vm.City ?? string.Empty;
+            customer.Province = vm.Province ?? string.Empty;
+            customer.PostalCode = vm.PostalCode ?? string.Empty;
+            customer.LocationId = await GetOrCreateLocationId(vm.Suburb, vm.City, vm.Province);
+            customer.IsActive = true;
+            customer.UpdatedAt = DateTime.UtcNow;
+
+            if (!isUpdate || !user.CustomerId.HasValue)
+            {
+                customer.CreatedAt = DateTime.UtcNow;
+                _db.Customers.Add(customer);
+            }
+
+            await _db.SaveChangesAsync();
+            user.CustomerId = customer.Id;
+        }
+
+        private async Task PopulateDropdowns(UserManagementVM vm)
+        {
+            vm.LocationList = await _db.Locations
+                .Where(l => l.IsActive)
+                .OrderBy(l => l.Province)
+                .ThenBy(l => l.City)
+                .Select(l => new SelectListItem
+                {
+                    Value = l.Id.ToString(),
+                    Text = $"{l.Suburb}, {l.City}, {l.Province}"
+                })
+                .ToListAsync();
+
+            vm.RoleList = await _roleManager.Roles
+                .OrderBy(r => r.Name)
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Name,
+                    Text = r.Name
+                })
+                .ToListAsync();
+
+            // Add business type options for customer role
+            ViewBag.BusinessTypes = Enum.GetValues<BusinessType>()
+                .Select(bt => new SelectListItem
+                {
+                    Value = bt.ToString(),
+                    Text = bt.ToString()
+                })
+                .ToList();
+
+            // Add employee type options for employee roles
+            ViewBag.EmployeeTypes = Enum.GetValues<EmployeeType>()
+                .Select(et => new SelectListItem
+                {
+                    Value = et.ToString(),
+                    Text = et.ToString()
+                })
+                .ToList();
+        }
+
+        private async Task PopulateFilterDropdowns()
+        {
+            ViewBag.RoleFilterList = await _roleManager.Roles
+                .Select(r => new SelectListItem { Value = r.Name, Text = r.Name })
+                .ToListAsync();
+
+            ViewBag.StatusFilterList = Enum.GetValues<AccountStatus>()
+                .Select(s => new SelectListItem { Value = s.ToString(), Text = s.ToString() })
+                .ToList();
+        }
+
+        private UserManagementVM MapToUserManagementVM(ApplicationUser user, string? role)
+        {
+            return new UserManagementVM
+            {
+                UserId = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                DOB = user.DOB,
+                LocationId = user.LocationId,
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                IsActive = user.IsActive && user.AccountStatus == AccountStatus.Active,
+                UserRole = role ?? "User",
+                AccountStatus = user.AccountStatus,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt,
+                LastLoginDate = user.LastLoginDate
+            };
+        }
+
+        private async Task<UserManagementVM> MapToUserManagementVMAsync(ApplicationUser user, string? role)
+        {
+            var vm = MapToUserManagementVM(user, role);
+
             if (user.Employee != null)
             {
                 vm.EmployeeNumber = user.Employee.EmployeeNumber;
@@ -126,206 +570,83 @@ namespace Project.Controllers
                 vm.BusinessPhoneNumber = user.Customer.BusinessPhoneNumber;
                 vm.AddressLine1 = user.Customer.AddressLine1;
                 vm.AddressLine2 = user.Customer.AddressLine2;
+                vm.Suburb = user.Customer.Suburb;
                 vm.City = user.Customer.City;
                 vm.Province = user.Customer.Province;
                 vm.PostalCode = user.Customer.PostalCode;
             }
 
-            if (user.PrimaryLocation != null)
-            {
-                ViewBag.LocationInfo = $"Current Location: {user.PrimaryLocation.Name} ({user.PrimaryLocation.City})";
-
-                // Show location-specific stats if needed
-                ViewBag.EmployeesAtLocation = user.PrimaryLocation.Employees.Count(e => e.IsActive);
-                ViewBag.CustomersAtLocation = user.PrimaryLocation.Customers.Count(c => c.IsActive);
-                ViewBag.FridgesAtLocation = user.PrimaryLocation.Fridges.Count(f => f.Status == FridgeStatus.Available);
-            }
-
-            return View(vm);
+            return vm;
         }
 
-        // POST: Users/Upsert
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(UserManagementVM vm)
+        private string GenerateSecureTemporaryPassword()
         {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    if (string.IsNullOrEmpty(vm.UserId))
-                    {
-                        // Create new user
-                        await CreateUser(vm);
-                        TempData["success"] = "User created successfully";
-                    }
-                    else
-                    {
-                        // Update existing user
-                        await UpdateUser(vm);
-                        TempData["success"] = "User updated successfully";
-                    }
+            const string uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijkmnpqrstuvwxyz";
+            const string digits = "23456789";
+            const string special = "!@#$%^&*";
 
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Error saving user: {ex.Message}");
-                }
+            var random = new Random();
+            var password = new char[12];
+
+            // Ensure at least one character from each group
+            password[0] = uppercase[random.Next(uppercase.Length)];
+            password[1] = lowercase[random.Next(lowercase.Length)];
+            password[2] = digits[random.Next(digits.Length)];
+            password[3] = special[random.Next(special.Length)];
+
+            // Fill the rest with random characters from all groups
+            var allChars = uppercase + lowercase + digits + special;
+            for (int i = 4; i < 12; i++)
+            {
+                password[i] = allChars[random.Next(allChars.Length)];
             }
 
-            // If we got this far, something failed; repopulate dropdowns
-            await PopulateDropdowns(vm);
-            return View(vm);
+            // Shuffle the password characters
+            return new string(password.OrderBy(x => random.Next()).ToArray());
         }
 
-        private async Task CreateUser(UserManagementVM vm)
+        private string GenerateEmployeeNumber()
         {
-            var user = new ApplicationUser
-            {
-                UserName = vm.Email,
-                Email = vm.Email,
-                FirstName = vm.FirstName,
-                LastName = vm.LastName,
-                PhoneNumber = vm.PhoneNumber,
-                DOB = vm.DOB,
-                LocationId = vm.LocationId,
-                ProfilePictureUrl = vm.ProfilePictureUrl,
-                IsActive = vm.IsActive,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            // Create the user
-            var result = await _userManager.CreateAsync(user, "TempPassword123!"); // Default password
-            if (!result.Succeeded)
-            {
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-
-            // Assign role and create role-specific records
-            await HandleRoleAssignment(user, vm);
+            var timestamp = DateTime.Now.ToString("yyMMddHHmmss");
+            return $"EMP{timestamp}";
         }
 
-        private async Task UpdateUser(UserManagementVM vm)
+        private async Task<int> GetOrCreateLocationId(string suburb, string city, string province)
         {
-            var user = await _db.Users
-                .Include(u => u.Employee)
-                .Include(u => u.Customer)
-                .FirstOrDefaultAsync(u => u.Id == vm.UserId);
+            if (string.IsNullOrEmpty(suburb) || string.IsNullOrEmpty(city) || string.IsNullOrEmpty(province))
+                return 1; // Default location ID
 
-            if (user == null) throw new Exception("User not found");
+            var location = await _db.Locations
+                .FirstOrDefaultAsync(l => l.Suburb == suburb && l.City == city && l.Province == province);
 
-            user.FirstName = vm.FirstName;
-            user.LastName = vm.LastName;
-            user.Email = vm.Email;
-            user.UserName = vm.Email;
-            user.PhoneNumber = vm.PhoneNumber;
-            user.DOB = vm.DOB;
-            user.LocationId = vm.LocationId;
-            user.ProfilePictureUrl = vm.ProfilePictureUrl;
-            user.IsActive = vm.IsActive;
-            user.UpdatedAt = DateTime.UtcNow;
-
-            // Update user
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
+            if (location == null)
             {
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-
-            // Handle role changes and updates
-            await HandleRoleAssignment(user, vm, true);
-        }
-
-        private async Task HandleRoleAssignment(ApplicationUser user, UserManagementVM vm, bool isUpdate = false)
-        {
-            var currentRoles = await _userManager.GetRolesAsync(user);
-
-            // Only remove from roles if the role is changing
-            if (isUpdate && currentRoles.FirstOrDefault() != vm.UserRole)
-            {
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
-
-                // Remove existing role-specific records if changing roles
-                if (user.EmployeeId.HasValue && !vm.UserRole.Contains("Employee")) // Check if new role is not employee-related
+                location = new Location
                 {
-                    var employee = await _db.Employees.FindAsync(user.EmployeeId);
-                    if (employee != null)
-                    {
-                        employee.IsActive = false; // Soft delete
-                        user.EmployeeId = null;
-                    }
-                }
-
-                if (user.CustomerId.HasValue && vm.UserRole != "Customer")
-                {
-                    var customer = await _db.Customers.FindAsync(user.CustomerId);
-                    if (customer != null)
-                    {
-                        customer.IsActive = false; // Soft delete
-                        user.CustomerId = null;
-                    }
-                }
-            }
-
-            // Add to new role if not already in it
-            if (!currentRoles.Contains(vm.UserRole))
-            {
-                await _userManager.AddToRoleAsync(user, vm.UserRole);
-            }
-
-            // Create/update role-specific records
-            switch (vm.UserRole)
-            {
-                case "Administrator":
-                case "CustomerLiaison":
-                case "InventoryLiaison":
-                case "MaintenanceTechnician":
-                case "FaultTechnician":
-                    await HandleEmployeeRecord(user, vm, isUpdate);
-                    break;
-                case "Customer":
-                    await HandleCustomerRecord(user, vm, isUpdate);
-                    break;
-            }
-        }
-
-        private async Task HandleEmployeeRecord(ApplicationUser user, UserManagementVM vm, bool isUpdate)
-        {
-            Employee employee;
-
-            if (isUpdate && user.EmployeeId.HasValue)
-            {
-                employee = await _db.Employees.FindAsync(user.EmployeeId);
-                if (employee == null)
-                {
-                    // Create new employee record if not found
-                    employee = new Employee { UserId = user.Id, CreatedAt = DateTime.UtcNow };
-                    _db.Employees.Add(employee);
-                }
-            }
-            else
-            {
-                employee = new Employee
-                {
-                    UserId = user.Id,
+                    Suburb = suburb,
+                    City = city,
+                    Province = province,
+                    IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 };
-                _db.Employees.Add(employee);
+                _db.Locations.Add(location);
+                await _db.SaveChangesAsync();
             }
 
-            employee.EmployeeNumber = vm.EmployeeNumber ?? GenerateEmployeeNumber();
-            employee.EmployeeType = vm.EmployeeType ?? GetEmployeeTypeFromRole(vm.UserRole);
-            employee.AvailabilityStatus = vm.AvailabilityStatus ?? AvailabilityStatus.Available;
-            employee.IsActive = vm.IsActive;
-            employee.UpdatedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync();
-            user.EmployeeId = employee.Id;
-            await _userManager.UpdateAsync(user);
+            return location.Id;
         }
 
-        private EmployeeType GetEmployeeTypeFromRole(string role)
+        private bool IsEmployeeRole(string role)
+        {
+            return role == SD.AdminRole ||
+                   role == SD.CustomerSupportRole ||
+                   role == SD.StockControllerRole ||
+                   role == SD.MaintenanceTechnicianRole ||
+                   role == SD.FaultTechnicianRole;
+        }
+
+        private EmployeeType MapRoleToEmployeeType(string role)
         {
             return role switch
             {
@@ -337,144 +658,10 @@ namespace Project.Controllers
                 _ => EmployeeType.CustomerSupport
             };
         }
-
-        // POST: Users/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(string id)
-        {
-            var user = await _db.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            // Soft delete (as per project checklist)
-            user.IsActive = false;
-            user.UpdatedAt = DateTime.UtcNow;
-
-            // Also soft delete related records
-            if (user.EmployeeId.HasValue)
-            {
-                var employee = await _db.Employees.FindAsync(user.EmployeeId);
-                if (employee != null) employee.IsActive = false;
-            }
-
-            if (user.CustomerId.HasValue)
-            {
-                var customer = await _db.Customers.FindAsync(user.CustomerId);
-                if (customer != null) customer.IsActive = false;
-            }
-
-            await _db.SaveChangesAsync();
-            TempData["success"] = "User deleted successfully";
-            return RedirectToAction(nameof(Index));
-        }
-
-        private async Task PopulateDropdowns(UserManagementVM vm)
-        {
-            vm.LocationList = await _db.Locations
-                .Where(l => l.IsActive)
-                .OrderBy(l => l.Name)
-                .Select(l => new SelectListItem
-                {
-                    Value = l.Id.ToString(),
-                    Text = l.Name
-                })
-                .ToListAsync();
-
-            var roles = await _roleManager.Roles
-                .OrderBy(r => r.Name)
-                .Select(r => new SelectListItem
-                {
-                    Value = r.Name,
-                    Text = r.Name
-                })
-                .ToListAsync();
-
-            // Add common roles used in the system
-            vm.RoleList = roles;
-        }
-
-        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
-
-        private async Task HandleCustomerRecord(ApplicationUser user, UserManagementVM vm, bool isUpdate)
-        {
-            Customer customer;
-
-            if (isUpdate && user.CustomerId.HasValue)
-            {
-                customer = await _db.Customers.FindAsync(user.CustomerId);
-                if (customer == null)
-                {
-                    // Create new customer record if not found
-                    customer = new Customer { UserId = user.Id, CreatedAt = DateTime.UtcNow };
-                    _db.Customers.Add(customer);
-                }
-            }
-            else
-            {
-                customer = new Customer
-                {
-                    UserId = user.Id,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _db.Customers.Add(customer);
-            }
-
-            // Set customer properties
-            // Set customer properties including address
-            customer.TradingName = vm.TradingName ?? $"{vm.FirstName} {vm.LastName}";
-            customer.BusinessType = vm.BusinessType ?? BusinessType.Other;
-            customer.BusinessEmail = vm.BusinessEmail ?? vm.Email;
-            customer.BusinessPhoneNumber = vm.BusinessPhoneNumber ?? vm.PhoneNumber;
-
-            // Keep the address fields from VM
-            customer.AddressLine1 = vm.AddressLine1 ?? string.Empty;
-            customer.AddressLine2 = vm.AddressLine2;
-            customer.City = vm.City ?? string.Empty;
-            customer.Province = vm.Province ?? string.Empty;
-            customer.PostalCode = vm.PostalCode ?? string.Empty;
-
-            // ADD: Set LocationId based on city/province lookup
-            customer.LocationId = await GetOrCreateLocationId(vm.City, vm.Province);
-
-            customer.IsActive = vm.IsActive;
-            customer.UpdatedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync();
-            user.CustomerId = customer.Id;
-            await _userManager.UpdateAsync(user);
-        }
-
-        private async Task<int> GetOrCreateLocationId(string city, string province)
-        {
-            var locationName = $"{city}, {province}";
-            var location = await _db.Locations
-                .FirstOrDefaultAsync(l => l.City == city && l.Province == province);
-
-            if (location == null)
-            {
-                location = new Location
-                {
-                    Name = locationName,
-                    City = city,
-                    Province = province,
-                };
-                _db.Locations.Add(location);
-                await _db.SaveChangesAsync();
-            }
-
-            return location.Id;
-        }
-
-        private string GenerateEmployeeNumber()
-        {
-            var timestamp = DateTime.Now.ToString("yyMMddHHmmss");
-            return $"EMP{timestamp}";
-        }
+        #endregion
     }
 }
+
 
 //        private readonly UserManager<IdentityUser> _userManager;
 //        private readonly RoleManager<IdentityRole> _roleManager;

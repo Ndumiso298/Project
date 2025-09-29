@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Project.Helpers;
+using Project.Utilities.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project.Models.ViewModels
 {
@@ -8,115 +11,216 @@ namespace Project.Models.ViewModels
     {
         public int Id { get; set; }
 
-        // Customer Information
-        [Required(ErrorMessage = "Customer is required.")]
-        [Display(Name = "Customer *")]
-        public int CustomerId { get; set; }
-
-        [Display(Name = "Customer Name")]
-        public string CustomerName { get; set; } = string.Empty;
-
-        public IEnumerable<SelectListItem>? CustomerList { get; set; }
-
         // Request Information
         [Required(ErrorMessage = "Request date is required.")]
         [Display(Name = "Request Date *")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime RequestDate { get; set; } = DateTime.UtcNow;
+        public DateTime RequestDate { get; set; } = DateTime.Now;
 
-        [Display(Name = "Status")]
-        public string Status { get; set; } = "Waiting For Payment";
+        [Required(ErrorMessage = "Request type is required.")]
+        [Display(Name = "Request Type *")]
+        public CustomerRequestType RequestType { get; set; } = CustomerRequestType.NewAllocation;
 
-        // Contact Person Details
-        [Required(ErrorMessage = "First name is required.")]
-        [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters.")]
-        [Display(Name = "First Name *")]
-        public string FirstName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Priority level is required.")]
+        [Display(Name = "Priority *")]
+        public CustomerRequestPriority Priority { get; set; } = CustomerRequestPriority.Medium;
 
-        [Required(ErrorMessage = "Last name is required.")]
-        [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
-        [Display(Name = "Last Name *")]
-        public string LastName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Status is required.")]
+        [Display(Name = "Status *")]
+        public AllocationRequestStatus Status { get; set; } = AllocationRequestStatus.Draft;
 
-        [Required(ErrorMessage = "Cell number is required.")]
-        [StringLength(15, ErrorMessage = "Cell number cannot exceed 15 characters.")]
-        [Phone, RegularExpression(@"^(\+27|0)[0-9]{9}$", ErrorMessage = "Please enter a valid South African phone number.")]
-        [Display(Name = "Cell Number *")]
+        // Customer Information
+        [Required(ErrorMessage = "Customer is required.")]
+        [Display(Name = "Customer *")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid customer.")]
+        public int CustomerId { get; set; }
+
+        // Contact Information
+        [Required(ErrorMessage = "Contact person is required.")]
+        [StringLength(100, ErrorMessage = "Contact person cannot exceed 100 characters.")]
+        [Display(Name = "Contact Person *")]
+        public string ContactPerson { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required.")]
+        [Phone(ErrorMessage = "Please enter a valid phone number.")]
+        [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters.")]
+        [Display(Name = "Phone Number *")]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        // Address Information
-        [Required(ErrorMessage = "Address line 1 is required.")]
-        [StringLength(100, ErrorMessage = "Address line 1 cannot exceed 100 characters.")]
-        [Display(Name = "Address Line 1 *")]
-        public string AddressLine1 { get; set; } = string.Empty;
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [Display(Name = "Email Address")]
+        public string? Email { get; set; }
 
-        [StringLength(100, ErrorMessage = "Address line 2 cannot exceed 100 characters.")]
-        [Display(Name = "Address Line 2")]
-        public string? AddressLine2 { get; set; }
+        // Delivery Information
+        [Required(ErrorMessage = "Delivery location is required.")]
+        [Display(Name = "Delivery Location *")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid delivery location.")]
+        public int DeliveryLocationId { get; set; }
 
-        [Required(ErrorMessage = "City is required.")]
-        [StringLength(50, ErrorMessage = "City cannot exceed 50 characters.")]
-        [Display(Name = "City *")]
-        public string City { get; set; } = string.Empty;
+        [StringLength(500, ErrorMessage = "Delivery instructions cannot exceed 500 characters.")]
+        [Display(Name = "Delivery Instructions")]
+        public string? DeliveryInstructions { get; set; }
 
-        [Required(ErrorMessage = "Province is required.")]
-        [StringLength(50, ErrorMessage = "Province cannot exceed 50 characters.")]
-        [Display(Name = "Province *")]
-        public string Province { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Postal code is required.")]
-        [StringLength(10, ErrorMessage = "Postal code cannot exceed 10 characters.")]
-        [RegularExpression(@"^\d{4}$", ErrorMessage = "Postal code must be a 4-digit number.")]
-        [Display(Name = "Postal Code *")]
-        public string PostalCode { get; set; } = string.Empty;
-
-        // Shipping Information
-        [StringLength(50, ErrorMessage = "Carrier name cannot exceed 50 characters.")]
-        [Display(Name = "Carrier")]
-        public string? Carrier { get; set; }
-
-        [Display(Name = "Shipping Date")]
-        [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime? ShippingDate { get; set; }
-
-        [Display(Name = "Payment Due Date")]
-        [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime? PaymentDueDate { get; set; }
+        [Display(Name = "Preferred Delivery Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [DateGreaterThan("RequestDate", ErrorMessage = "Preferred delivery date must be after request date.")]
+        public DateTime? PreferredDeliveryDate { get; set; }
 
         // Financial Information
-        [Display(Name = "Request Total")]
-        [DataType(DataType.Currency)]
-        [DisplayFormat(DataFormatString = "R {0:N2}")]
-        public decimal RequestTotal => RequestedFridges?.Sum(f => f.TotalPrice) ?? 0;
+        [Display(Name = "Discount Percentage")]
+        [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100 percent.")]
+        public decimal DiscountPercentage { get; set; }
 
-        // Navigation and Collection
+        [Display(Name = "Special Notes")]
+        [StringLength(1000, ErrorMessage = "Special notes cannot exceed 1000 characters.")]
+        public string? SpecialNotes { get; set; }
+
+        // Request Details
+        [Display(Name = "Request Details")]
+        [ValidateEnumerable(ErrorMessage = "At least one fridge item is required.")]
+        public List<AllocationRequestDetailVM> RequestDetails { get; set; } = new();
+
+        // Dropdown Lists
         [ValidateNever]
-        [Display(Name = "Requested Fridges")]
-        public List<AllocationRequestDetailVM> RequestedFridges { get; set; } = new List<AllocationRequestDetailVM>();
+        public IEnumerable<SelectListItem>? CustomerList { get; set; }
 
-        // Utility Properties
-        [Display(Name = "Contact Person")]
-        public string ContactPersonFullName => $"{FirstName} {LastName}";
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? LocationList { get; set; }
 
-        [Display(Name = "Full Address")]
-        public string FullAddress
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? RequestTypeList { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? PriorityList { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? StatusList { get; set; }
+
+        // Display Properties (for read-only views)
+        [Display(Name = "Customer Name")]
+        public string CustomerName { get; set; } = string.Empty;
+
+        [Display(Name = "Customer Business Type")]
+        public BusinessType CustomerBusinessType { get; set; }
+
+        [Display(Name = "Location Address")]
+        public string? LocationAddress { get; set; }
+
+        // Computed Properties
+        [Display(Name = "Total Monthly Rental")]
+        [DataType(DataType.Currency)]
+        public decimal TotalMonthlyRental => RequestDetails.Sum(d => d.MonthlyTotal);
+
+        [Display(Name = "Total Contract Value")]
+        [DataType(DataType.Currency)]
+        public decimal TotalContractValue => RequestDetails.Sum(d => d.LineTotal);
+
+        [Display(Name = "Discount Amount")]
+        [DataType(DataType.Currency)]
+        public decimal DiscountAmount => TotalContractValue * (DiscountPercentage / 100);
+
+        [Display(Name = "Final Amount")]
+        [DataType(DataType.Currency)]
+        public decimal FinalAmount => TotalContractValue - DiscountAmount;
+
+        [Display(Name = "Total Items")]
+        public int TotalItems => RequestDetails.Sum(d => d.Quantity);
+
+        // Status Flags
+        [Display(Name = "Is Approved")]
+        public bool IsApproved => Status == AllocationRequestStatus.Approved;
+
+        [Display(Name = "Can Be Edited")]
+        public bool CanBeEdited => Status == AllocationRequestStatus.Draft;
+
+        [Display(Name = "Requires Approval")]
+        public bool RequiresApproval => Status == AllocationRequestStatus.Draft || Status == AllocationRequestStatus.Submitted;
+
+        [Display(Name = "Has Stock Issues")]
+        public bool HasStockIssues => RequestDetails.Any(d => !d.HasSufficientStock);
+
+        [Display(Name = "Is Complete")]
+        public bool IsComplete => Status == AllocationRequestStatus.Completed;
+
+        // Validation Methods
+        public bool IsValidForSubmission()
         {
-            get
-            {
-                var addressParts = new List<string> { AddressLine1 };
-                if (!string.IsNullOrEmpty(AddressLine2))
-                    addressParts.Add(AddressLine2);
-                addressParts.AddRange(new[] { City, Province, PostalCode });
-                return string.Join(", ", addressParts.Where(p => !string.IsNullOrEmpty(p)));
-            }
+            return CustomerId > 0 &&
+                   DeliveryLocationId > 0 &&
+                   !string.IsNullOrWhiteSpace(ContactPerson) &&
+                   !string.IsNullOrWhiteSpace(PhoneNumber) &&
+                   RequestDetails.Count > 0 &&
+                   RequestDetails.All(d => d.IsValid) &&
+                   !HasStockIssues;
         }
 
-        // For dropdowns
-        public IEnumerable<SelectListItem>? ProvinceList { get; set; }
-        public IEnumerable<SelectListItem>? CarrierList { get; set; }
-        public IEnumerable<SelectListItem>? StatusList { get; set; }
+        public IEnumerable<string> GetValidationErrors()
+        {
+            var errors = new List<string>();
+
+            if (CustomerId <= 0) errors.Add("Customer selection is required");
+            if (DeliveryLocationId <= 0) errors.Add("Delivery location is required");
+            if (string.IsNullOrWhiteSpace(ContactPerson)) errors.Add("Contact person is required");
+            if (string.IsNullOrWhiteSpace(PhoneNumber)) errors.Add("Phone number is required");
+            if (RequestDetails.Count == 0) errors.Add("At least one fridge item is required");
+
+            var stockErrors = RequestDetails.Where(d => !d.HasSufficientStock)
+                .Select(d => $"{d.ModelName}: Only {d.AvailableStock} available, requested {d.Quantity}");
+            errors.AddRange(stockErrors);
+
+            var invalidDetails = RequestDetails.Where(d => !d.IsValid)
+                .Select(d => $"{d.ModelName}: Invalid quantity or rental duration");
+            errors.AddRange(invalidDetails);
+
+            return errors;
+        }
+
+        // Mapping helper methods
+        public AllocationRequestHeader ToEntity()
+        {
+            return new AllocationRequestHeader
+            {
+                Id = Id,
+                RequestDate = RequestDate,
+                RequestType = RequestType,
+                Priority = Priority,
+                Status = Status,
+                CustomerId = CustomerId,
+                ContactPerson = ContactPerson,
+                ContactPhoneNumber = PhoneNumber,
+                ContactEmail = Email,
+                DeliveryLocationId = DeliveryLocationId,
+                DeliveryInstructions = DeliveryInstructions,
+                PreferredDeliveryDate = PreferredDeliveryDate,
+                DiscountPercentage = DiscountPercentage,
+                SpecialNotes = SpecialNotes
+            };
+        }
+
+        public static AllocationRequestHeaderVM FromEntity(AllocationRequestHeader entity)
+        {
+            return new AllocationRequestHeaderVM
+            {
+                Id = entity.Id,
+                RequestDate = entity.RequestDate,
+                RequestType = entity.RequestType,
+                Priority = entity.Priority,
+                Status = entity.Status,
+                CustomerId = entity.CustomerId,
+                ContactPerson = entity.ContactPerson,
+                PhoneNumber = entity.ContactPhoneNumber,
+                Email = entity.ContactEmail,
+                DeliveryLocationId = entity.DeliveryLocationId,
+                DeliveryInstructions = entity.DeliveryInstructions,
+                PreferredDeliveryDate = entity.PreferredDeliveryDate,
+                DiscountPercentage = entity.DiscountPercentage,
+                SpecialNotes = entity.SpecialNotes,
+                CustomerName = entity.Customer?.TradingName ?? string.Empty,
+                CustomerBusinessType = entity.Customer?.BusinessType ?? BusinessType.SpazaShop,
+                LocationAddress = entity.DeliveryLocation?.ToString() ?? string.Empty
+            };
+        }
     }
 }

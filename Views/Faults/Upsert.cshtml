@@ -1,0 +1,219 @@
+﻿<!-- Views/Faults/Upsert.cshtml -->
+@model FaultRecordVM
+@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Project.Data
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Report New Fault" : "Edit Fault Report";
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var isCustomer = User.IsInRole(SD.CustomerRole);
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="card-title mb-0">
+                                <i class="fas @(Model.Id == 0 ? "fa-plus-circle" : "fa-edit") me-2"></i>@ViewData["Title"]
+                            </h3>
+                        </div>
+                        <div class="col-auto">
+                            <a asp-action="Index" class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <form asp-action="Upsert" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Fault Details -->
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">Fault Details</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label asp-for="FaultDescription" class="form-label required">Fault Description *</label>
+                                            <textarea asp-for="FaultDescription" class="form-control" rows="4"
+                                                      placeholder="Please describe the fault in detail..."></textarea>
+                                            <span asp-validation-for="FaultDescription" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label asp-for="Priority" class="form-label required">Priority *</label>
+                                                <select asp-for="Priority" asp-items="Model.PriorityList" class="form-select"></select>
+                                                <span asp-validation-for="Priority" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label asp-for="FaultStatus" class="form-label required">Status *</label>
+                                                <select asp-for="FaultStatus" asp-items="Model.StatusList" class="form-select"></select>
+                                                <span asp-validation-for="FaultStatus" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Equipment Information -->
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">Equipment Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label asp-for="FridgeId" class="form-label required">Fridge *</label>
+                                            <select asp-for="FridgeId" asp-items="Model.FridgeList" class="form-select">
+                                                <option value="">-- Select Fridge --</option>
+                                            </select>
+                                            <span asp-validation-for="FridgeId" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="FaultLocationId" class="form-label">Fault Location</label>
+                                            <select asp-for="FaultLocationId" asp-items="Model.LocationList" class="form-select">
+                                                <option value="">-- Select Location --</option>
+                                            </select>
+                                            <span asp-validation-for="FaultLocationId" class="text-danger"></span>
+                                        </div>
+
+                                        @if (!isCustomer)
+                                        {
+                                            <div class="mb-3">
+                                                <label asp-for="AssignedTechnicianId" class="form-label">Assign Technician</label>
+                                                <select asp-for="AssignedTechnicianId" asp-items="Model.TechnicianList" class="form-select">
+                                                    <option value="">-- Unassigned --</option>
+                                                </select>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">Additional Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            @if (!isCustomer)
+                                            {
+                                                <div class="col-md-6">
+                                                    <label asp-for="ReportedById" class="form-label">Reported By</label>
+                                                    <select asp-for="ReportedById" asp-items="Model.UserList" class="form-select">
+                                                        <option value="">-- Select User --</option>
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" asp-for="ReportedById" />
+                                            }
+
+                                            <div class="col-md-6">
+                                                <label asp-for="MaintenanceVisitId" class="form-label">Related Maintenance Visit</label>
+                                                <select asp-for="MaintenanceVisitId" asp-items="Model.VisitList" class="form-select">
+                                                    <option value="">-- None --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Resolution Details (for editing resolved faults) -->
+                                        @if (Model.Id > 0 && !isCustomer)
+                                        {
+                                            <hr />
+                                            <h6>Resolution Details</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label asp-for="ResolutionNotes" class="form-label">Technician Notes</label>
+                                                    <textarea asp-for="ResolutionNotes" class="form-control" rows="3"
+                                                              placeholder="Add resolution notes..."></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label asp-for="PartsReplaced" class="form-label">Parts Replaced</label>
+                                                    <textarea asp-for="PartsReplaced" class="form-control" rows="3"
+                                                              placeholder="List replaced parts..."></textarea>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label asp-for="RepairCost" class="form-label">Repair Cost (R)</label>
+                                                    <input asp-for="RepairCost" type="number" step="0.01" class="form-control" />
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label asp-for="ResolvedDate" class="form-label">Resolved Date</label>
+                                                    <input asp-for="ResolvedDate" type="datetime-local" class="form-control" />
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-light">
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>@(Model.Id == 0 ? "Report Fault" : "Update Fault")
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function() {
+            // Auto-populate location when fridge is selected
+            $('#FridgeId').change(function() {
+                var fridgeId = $(this).val();
+                if (fridgeId) {
+                    // In a real implementation, you'd fetch the fridge location via AJAX
+                    // For now, we'll just clear the location field
+                    $('#FaultLocationId').val('');
+                }
+            });
+
+            // Show/hide resolution fields based on status
+            $('#FaultStatus').change(function() {
+                toggleResolutionFields($(this).val());
+            });
+
+            function toggleResolutionFields(status) {
+                const isResolved = status === 'Resolved';
+                $('.resolution-field').toggle(isResolved);
+
+                if (isResolved && !$('#ResolvedDate').val()) {
+                    const now = new Date();
+                    $('#ResolvedDate').val(now.toISOString().slice(0, 16));
+                }
+            }
+
+            // Initialize on page load
+            toggleResolutionFields($('#FaultStatus').val());
+        });
+    </script>
+}

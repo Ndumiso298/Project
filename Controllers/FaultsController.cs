@@ -34,7 +34,7 @@ namespace Project.Controllers
                     .Include(f => f.ReportedBy)
                     .Include(f => f.AssignedTechnician)
                     .Include(f => f.Fridge)
-                    .Include(f => f.MaintenanceVisit)
+                    .Include(f => f.MaintenanceVisits)
                     .Where(f => f.Status != FaultStatus.Resolved);
 
                 // Apply filters
@@ -54,7 +54,7 @@ namespace Project.Controllers
 
                 if (!string.IsNullOrEmpty(location))
                 {
-                    query = query.Where(f => f.FridgeAllocation.AllocationLocation.Name.Contains(location));
+                    query = query.Where(f => f.RelatedAllocation.DeliveryLocation.City.Contains(location));
                 }
 
                 if (!string.IsNullOrEmpty(searchString))
@@ -94,8 +94,8 @@ namespace Project.Controllers
                     .Include(f => f.ReportedBy)
                     .Include(f => f.AssignedTechnician)
                     .Include(f => f.Fridge)
-                    .Include(f => f.MaintenanceVisit)
-                    .Include(f => f.FridgeAllocation.AllocationLocation)
+                    .Include(f => f.MaintenanceVisits)
+                    .Include(f => f.RelatedAllocation.DeliveryLocation)
                     .FirstOrDefaultAsync(f => f.Id == id && f.Status != FaultStatus.Resolved);
 
                 if (fault == null)
@@ -139,7 +139,7 @@ namespace Project.Controllers
                         {
                             vm.FridgeId = fridgeId.Value; // Fixed: Use .Value for nullable int
                             vm.FaultLocationId = fridge.LocationId;
-                            ViewBag.FridgeInfo = $"{fridge.SerialNumber} - {fridge.Model}";
+                            ViewBag.FridgeInfo = $"{fridge.SerialNumber} - {fridge.FridgeModel}";
                         }
                     }
 
@@ -194,17 +194,16 @@ namespace Project.Controllers
                 vm.Id = fault.Id;
                 vm.FridgeId = fault.FridgeId;
                 vm.ReportedById = fault.ReportedById;
-                vm.AssignedTechnicianId = fault.AssignedTechnician.Id; // Fixed: removed .Id
-                vm.MaintenanceVisitId = fault.MaintenanceVisitId;
-                vm.FaultLocationId = fault.FridgeAllocation.AllocationLocationId; // Fixed: removed allocation
+                vm.AssignedTechnicianId = fault.AssignedTechnicianId; // Fixed: removed .Id
+                vm.FaultLocationId = fault.RelatedAllocation.DeliveryLocationId; // Fixed: removed allocation
                 vm.FaultDescription = fault.Description; // Fixed: changed from FaultDescription
                 vm.FaultStatus = fault.Status; // Fixed: changed from FaultStatus
                 vm.Priority = fault.Priority;
                 vm.ReportedDate = fault.ReportedDate;
                 vm.ResolvedDate = fault.ResolvedDate;
-                vm.ResolutionNotes = fault.ResolutionNotes;
+                vm.ResolutionNotes = fault.TechnicianNotes;
                 vm.PartsReplaced = fault.PartsReplaced;
-                vm.RepairCost = fault.RepairCost;
+                vm.RepairCost = fault.TotalCost;
 
                 return View(vm);
             }
@@ -225,17 +224,15 @@ namespace Project.Controllers
                         {
                             FridgeId = vm.FridgeId,
                             ReportedById = vm.ReportedById,
-                            FaultTechnicianId = vm.AssignedTechnicianId,  // Match entity property
-                            MaintenanceVisitId = vm.MaintenanceVisitId ?? 0,  // Handle nullable to non-nullable
+                            AssignedTechnicianId = vm.AssignedTechnicianId,  // Match entity property
                             FaultLocationId = vm.FaultLocationId,
                             Description = vm.FaultDescription,  // Match entity property
                             Status = vm.FaultStatus,  // Match entity property
                             Priority = vm.Priority,
                             ReportedDate = vm.ReportedDate,
                             ResolvedDate = vm.ResolvedDate,
-                            ResolutionNotes = vm.ResolutionNotes,
+                            TechnicianNotes = vm.ResolutionNotes,
                             PartsReplaced = vm.PartsReplaced,
-                            RepairCost = vm.RepairCost,
                             CreatedAt = DateTime.Now
                         };
 
@@ -262,17 +259,15 @@ namespace Project.Controllers
 
                         fault.FridgeId = vm.FridgeId;
                         fault.ReportedById = vm.ReportedById;
-                        fault.FaultTechnicianId = vm.AssignedTechnicianId;  // Match entity property
-                        fault.MaintenanceVisitId = vm.MaintenanceVisitId ?? 0;  // Handle nullable
+                        fault.AssignedTechnicianId = vm.AssignedTechnicianId;  // Match entity property
                         fault.FaultLocationId = vm.FaultLocationId;
                         fault.Description = vm.FaultDescription;  // Match entity property
                         fault.Status = vm.FaultStatus;  // Match entity property
                         fault.Priority = vm.Priority;
                         fault.ReportedDate = vm.ReportedDate;
                         fault.ResolvedDate = vm.ResolvedDate;
-                        fault.ResolutionNotes = vm.ResolutionNotes;
+                        fault.TechnicianNotes = vm.ResolutionNotes;
                         fault.PartsReplaced = vm.PartsReplaced;
-                        fault.RepairCost = vm.RepairCost;
                         fault.UpdatedAt = DateTime.Now;
 
                         // Update resolved date if status changed to resolved
@@ -317,11 +312,11 @@ namespace Project.Controllers
                 var vm = new ProcessFaultVM
                 {
                     Id = fault.Id,
-                    FridgeInfo = $"{fault.Fridge?.SerialNumber} - {fault.Fridge?.Model}",
+                    FridgeInfo = $"{fault.Fridge?.SerialNumber} - {fault.Fridge?.FridgeModel.ModelName}",
                     CustomerInfo = $"{fault.ReportedBy?.FirstName} {fault.ReportedBy?.LastName}",
                     FaultDescription = fault.Description,
                     ReportedDate = fault.ReportedDate,
-                    AssignedTechnicianId = fault.FaultTechnicianId,
+                    AssignedTechnicianId = fault.AssignedTechnicianId,
                     FaultStatus = fault.Status, // Fixed
                     Priority = fault.Priority
                 };
@@ -344,12 +339,11 @@ namespace Project.Controllers
                         return NotFound();
                     }
 
-                    fault.FaultTechnicianId = vm.AssignedTechnicianId;
+                    fault.AssignedTechnicianId = vm.AssignedTechnicianId;
                     fault.Status = vm.FaultStatus; // Fixed
                     fault.Priority = vm.Priority;
-                    fault.ResolutionNotes = vm.ResolutionNotes;
+                    fault.TechnicianNotes = vm.ResolutionNotes;
                     fault.PartsReplaced = vm.PartsReplaced;
-                    fault.RepairCost = vm.RepairCost;
                     fault.UpdatedAt = DateTime.Now;
 
                     // Update resolved date if status changed to resolved
@@ -376,7 +370,7 @@ namespace Project.Controllers
                     .Include(f => f.ReportedBy)
                     .Include(f => f.AssignedTechnician)
                     .Include(f => f.Fridge)
-                    .Include(f => f.FridgeAllocation.AllocationLocation)
+                    .Include(f => f.RelatedAllocation.DeliveryLocation)
                     .FirstOrDefaultAsync(f => f.Id == id && f.Status != FaultStatus.Resolved);
 
                 if (fault == null)
@@ -425,17 +419,25 @@ namespace Project.Controllers
                 var dashboard = new FaultDashboardVM
                 {
                     TotalFaults = await _db.FaultRecords.CountAsync(f => f.Status == FaultStatus.Reported),
-                    OpenFaults = await _db.FaultRecords.CountAsync(f => 
+                    OpenFaults = await _db.FaultRecords.CountAsync(f =>
                         (f.Status == FaultStatus.Reported || f.Status == FaultStatus.InProgress)),
                     ResolvedFaults = await _db.FaultRecords.CountAsync(f => f.Status == FaultStatus.Reported && f.Status == FaultStatus.Resolved),
                     HighPriorityFaults = await _db.FaultRecords.CountAsync(f => f.Status == FaultStatus.Reported && f.Priority == FaultPriority.High),
                     RecentFaults = await _db.FaultRecords
-                        .Include(f => f.Fridge)
-                        .Include(f => f.ReportedBy)
-                        .Where(f => f.Status == FaultStatus.Reported && f.ReportedDate >= DateTime.Now.AddDays(-7))
-                        .OrderByDescending(f => f.ReportedDate)
-                        .Take(10)
-                        .ToListAsync()
+                    .Include(f => f.Fridge)
+                    .Include(f => f.ReportedBy)
+                    .Where(f => f.Status == FaultStatus.Reported && f.ReportedDate >= DateTime.Now.AddDays(-7))
+                    .OrderByDescending(f => f.ReportedDate)
+                    .Take(10)
+                    .Select(f => new FaultSummaryVM
+                    {
+                        Id = f.Id,
+                        FaultDescription = f.Description,
+                        FaultStatus = f.Status,
+                        Priority = f.Priority,
+                        ReportedDate = f.ReportedDate,
+                    })
+                    .ToListAsync()
                 };
 
                 return View(dashboard);
@@ -448,7 +450,7 @@ namespace Project.Controllers
                     .Select(f => new SelectListItem
                     {
                         Value = f.Id.ToString(),
-                        Text = $"{f.SerialNumber} - {f.Model}"
+                        Text = $"{f.SerialNumber} - {f.FridgeModel.ModelName}"
                     })
                     .ToListAsync();
 
@@ -484,7 +486,7 @@ namespace Project.Controllers
                     .Select(l => new SelectListItem
                     {
                         Value = l.Id.ToString(),
-                        Text = l.Name
+                        Text = l.City.ToString(),
                     })
                     .ToListAsync();
 

@@ -86,7 +86,7 @@ namespace Project.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "Date of Birth is required")]
             [DataType(DataType.Date)]
             [Display(Name = "Date of Birth")]
-            public DateTime? DOB { get; set; }
+            public DateTime DOB { get; set; }
 
             [Required(ErrorMessage = "Phone number is required")]
             [Phone(ErrorMessage = "Please enter a valid phone number")]

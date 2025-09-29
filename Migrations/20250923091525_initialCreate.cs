@@ -830,7 +830,7 @@ namespace Project.Migrations
 
             migrationBuilder.InsertData(
                 table: "Fridges",
-                columns: new[] { "Id", "CapacityLiters", "Color", "Condition", "CreatedDate", "CustomerId", "Description", "Dimensions", "EmployeeId", "EnergyRating", "ImageUrl", "IsActive", "LastMaintenanceDate", "LastServiceDate", "LocationId", "Manufacturer", "Model", "ModifiedDate", "NextServiceDue", "PurchaseDate", "PurchasePrice", "RentalPricePerMonth", "SerialNumber", "ServiceIntervalMonths", "Status", "Type", "WarrantyExpiryDate", "Weight" },
+                columns: new[] { "Id", "CapacityLiters", "Color", "Condition", "CreatedDate", "CustomerId", "Description", "Dimensions", "EmployeeId", "EnergyRating", "ImageUrl", "IsActive", "LastMaintenanceDate", "LastServiceDate", "LocationId", "Manufacturer", "ModelName", "ModifiedDate", "NextServiceDue", "PurchaseDate", "PurchasePrice", "RentalPricePerMonth", "SerialNumber", "ServiceIntervalMonths", "Status", "Type", "WarrantyExpiryDate", "Weight" },
                 values: new object[,]
                 {
                     { 1, 290, "Stainless Steel", 0, new DateTime(2024, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "Commercial beverage fridge with glass door, perfect for beer and drinks display.", "180×70×70cm", null, "A+", "https://images.unsplash.com/photo-1629367494173-c78a56567877", true, new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 3, "Samsung", "RB29F", new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 12000.00m, 1500.00m, "SAM-BEER-001", 6, 0, "Double Door Commercial", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 85.5m },
@@ -1023,7 +1023,7 @@ namespace Project.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FridgeAllocations_AllocationLocationId",
                 table: "FridgeAllocations",
-                column: "AllocationLocationId");
+                column: "DeliveryLocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FridgeAllocations_AllocationRequestHeaderId",

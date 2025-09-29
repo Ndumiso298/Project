@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Project.Models.ViewModels.FridgeAllocationVM>
+@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Project.Data
+
+@{
+    ViewData["Title"] = "My Allocations";
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+}
+
+<h2 class="mb-3">My Active Allocations</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You currently have no active fridge allocations.
+    </div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Allocation Date</th>
+                <th>Fridge</th>
+                <th>Location</th>
+                <th>Quantity</th>
+                <th>Monthly Rental</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var allocation in Model)
+            {
+                <tr>
+                    <td>@allocation.AllocationDate.ToString("dd/MM/yyyy")</td>
+                    <td>@allocation.FridgeDetails?.SerialNumber (@allocation.FridgeDetails?.FridgeModelDetails.ModelName)</td>
+                    <td>@allocation.LocationDetails?.City</td>
+                    <td>@allocation.Quantity</td>
+                    <td>@allocation.MonthlyRentalPrice.ToString("C")</td>
+                    <td><span class="badge @allocation.StatusBadgeClass">@allocation.Status</span></td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@allocation.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

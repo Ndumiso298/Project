@@ -10,7 +10,7 @@ namespace Project.Helpers
             {
                 ServicingType.Installation => "bg-primary",
                 ServicingType.PreventiveMaintenance => "bg-warning",
-                ServicingType.CorrectiveRepair => "bg-danger",
+                ServicingType.CorrectiveMaintenance => "bg-danger",
                 _ => "bg-secondary"
             };
         }

@@ -1,122 +1,312 @@
-﻿@model IEnumerable<Location>
+﻿@model IEnumerable<LocationVM>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
 @{
     ViewData["Title"] = "Location Management";
 }
-@{
-    Layout = "AdminLayout";
-}
 
 <div class="container-fluid">
+    <!-- Page Header -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="page-title-box">
-                <h4 class="page-title">
-                    <i class="fas fa-map-marker-alt me-2"></i> @ViewData["Title"]
-                </h4>
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Locations</li>
-                    </ol>
-                </div>
-            </div>
+        <div class="col">
+            <h1 class="h2 text-primary">
+                <i class="fas fa-map-marker-alt me-2"></i>@ViewData["Title"]
+            </h1>
+            <p class="text-muted">Manage and track all business locations</p>
+        </div>
+        <div class="col-auto">
+            <a asp-action="Upsert" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Add New Location
+            </a>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">All Locations</h5>
-                    <a asp-action="Upsert" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Add New Location
+    <!-- Alert Messages -->
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search and Filter Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light py-3">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-filter me-2"></i>Search & Filter
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-3">
+                    <label for="searchString" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchString" name="searchString"
+                           value="@ViewBag.SearchString" placeholder="Suburb, city, province, postal code...">
+                </div>
+
+                <div class="col-md-2">
+                    <label for="provinceFilter" class="form-label">Province</label>
+                    <select class="form-select" id="provinceFilter" name="provinceFilter">
+                        <option value="">All Provinces</option>
+                        @if (ViewBag.ProvinceList != null)
+                        {
+                            foreach (var province in ViewBag.ProvinceList)
+                            {
+                                <option value="@province" selected="@(province == ViewBag.ProvinceFilter)">@province</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="cityFilter" class="form-label">City</label>
+                    <select class="form-select" id="cityFilter" name="cityFilter">
+                        <option value="">All Cities</option>
+                        @if (ViewBag.CityList != null)
+                        {
+                            foreach (var city in ViewBag.CityList)
+                            {
+                                <option value="@city" selected="@(city == ViewBag.CityFilter)">@city</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter" name="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="true" selected="@("true" == ViewBag.StatusFilter)">Active</option>
+                        <option value="false" selected="@("false" == ViewBag.StatusFilter)">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="btn-group w-100" role="group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>Apply
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light py-3">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Locations
+                        <span class="badge bg-secondary ms-2">@Model.Count()</span>
+                    </h5>
+                </div>
+                <div class="col-auto">
+                    <div class="text-muted small">
+                        Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Address</th>
+                                <th>Location</th>
+                                <th>Contact</th>
+                                <th>Statistics</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="@(!item.IsActive ? "table-warning" : "")">
+                                    <td>
+                                        <div class="fw-bold">@item.AddressLine1</div>
+                                        @if (!string.IsNullOrEmpty(item.AddressLine2))
+                                        {
+                                            <div class="small text-muted">@item.AddressLine2</div>
+                                        }
+                                        <small class="text-muted">@item.PostalCode</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">@item.Suburb</div>
+                                        <div class="small text-muted">
+                                            @item.City, @item.Province
+                                        </div>
+                                        <small class="text-info">@item.Country</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <span class="badge bg-primary" title="Fridges">
+                                                <i class="fas fa-refrigerator me-1"></i>@item.TotalFridges
+                                            </span>
+                                            <span class="badge bg-success" title="Available Fridges">
+                                                @item.AvailableFridges
+                                            </span>
+                                            <span class="badge bg-info" title="Customers">
+                                                <i class="fas fa-users me-1"></i>@item.TotalCustomers
+                                            </span>
+                                            <span class="badge bg-warning" title="Employees">
+                                                <i class="fas fa-user-tie me-1"></i>@item.TotalEmployees
+                                            </span>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            Utilization: @item.UtilizationRate
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input status-toggle" type="checkbox"
+                                                   data-location-id="@item.Id"
+                                                   id="status-@item.Id"
+                                            @(item.IsActive ? "checked" : "")>
+                                            <label class="form-check-label small" for="status-@item.Id">
+                                                @(item.IsActive ? "Active" : "Inactive")
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">by @(item.CreatedBy ?? "System")</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Upsert" asp-route-id="@item.Id"
+                                               class="btn btn-outline-secondary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger"
+                                                    title="Delete" onclick="confirmDelete(@item.Id, '@item.Suburb, @item.City')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <div class="card-footer">
+                        <nav aria-label="Location pagination">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" asp-action="Index"
+                                       asp-route-searchString="@ViewBag.SearchString"
+                                       asp-route-provinceFilter="@ViewBag.ProvinceFilter"
+                                       asp-route-cityFilter="@ViewBag.CityFilter"
+                                       asp-route-statusFilter="@ViewBag.StatusFilter"
+                                       asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                                </li>
+
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                        <a class="page-link" asp-action="Index"
+                                           asp-route-searchString="@ViewBag.SearchString"
+                                           asp-route-provinceFilter="@ViewBag.ProvinceFilter"
+                                           asp-route-cityFilter="@ViewBag.CityFilter"
+                                           asp-route-statusFilter="@ViewBag.StatusFilter"
+                                           asp-route-page="@i">@i</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" asp-action="Index"
+                                       asp-route-searchString="@ViewBag.SearchString"
+                                       asp-route-provinceFilter="@ViewBag.ProvinceFilter"
+                                       asp-route-cityFilter="@ViewBag.CityFilter"
+                                       asp-route-statusFilter="@ViewBag.StatusFilter"
+                                       asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No locations found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or add a new location.</p>
+                    <a asp-action="Upsert" class="btn btn-primary mt-2">
+                        <i class="fas fa-plus me-1"></i>Add First Location
                     </a>
                 </div>
-                <div class="card-body">
-                    @if (Model.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered" id="locationsTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Address</th>
-                                        <th>City/Suburb</th>
-                                        <th>Province</th>
-                                        <th>Employees</th>
-                                        <th>Customers</th>
-                                        <th>Fridges</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var location in Model)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <strong>@location.Name</strong>
-                                                <br><small class="text-muted">@location.PostalCode</small>
-                                            </td>
-                                            <td>
-                                                @location.AddressLine1
-                                                @if (!string.IsNullOrEmpty(location.AddressLine2))
-                                                {
-                                                    <br>
+            }
+        </div>
+    </div>
+</div>
 
-                                                    <small class="text-muted">@location.AddressLine2</small>
-                                                }
-                                            </td>
-                                            <td>@location.Suburb, @location.City</td>
-                                            <td>@location.Province</td>
-                                            <td class="text-center">
-                                                <span class="badge bg-primary">@location.Employees.Count(e => e.IsActive)</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-success">@location.Customers.Count(c => c.IsActive)</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-info">@location.Fridges.Count(f => f.IsActive)</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge @(location.IsActive ? "bg-success" : "bg-secondary")">
-                                                    @(location.IsActive ? "Active" : "Inactive")
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <a asp-action="Details" asp-route-id="@location.Id"
-                                                       class="btn btn-info" title="View Details">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a asp-action="Upsert" asp-route-id="@location.Id"
-                                                       class="btn btn-warning" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a asp-action="Delete" asp-route-id="@location.Id"
-                                                       class="btn btn-danger" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-5">
-                            <i class="fas fa-map-marker-alt fa-4x text-muted mb-3"></i>
-                            <h4 class="text-muted">No Locations Found</h4>
-                            <p class="text-muted">Get started by adding your first location.</p>
-                            <a asp-action="Upsert" class="btn btn-primary">
-                                <i class="fas fa-plus me-1"></i> Add New Location
-                            </a>
-                        </div>
-                    }
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Location Deactivation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deactivate location <strong id="deleteLocationAddress"></strong>?</p>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> You will be taken to a detailed deactivation page where dependencies will be checked.
                 </div>
+
+                <div class="row small text-muted">
+                    <div class="col-4 text-center">
+                        <i class="fas fa-user-tie me-1"></i>
+                        <span id="employeeCount">0</span> employees
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="fas fa-users me-1"></i>
+                        <span id="customerCount">0</span> customers
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="fas fa-refrigerator me-1"></i>
+                        <span id="fridgeCount">0</span> fridges
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <a id="deleteConfirmLink" class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i>Continue to Deactivation
+                </a>
             </div>
         </div>
     </div>
@@ -124,14 +314,155 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('#locationsTable').DataTable({
-                "order": [[3, "asc"], [2, "asc"]], // Sort by Province, then City
-                "responsive": true,
-                "columnDefs": [
-                    { "orderable": false, "targets": [4, 5, 6, 8] } // Disable sorting for counts and actions
-                ]
+        // Delete confirmation modal
+        function confirmDelete(id, address, employeeCount, customerCount, fridgeCount) {
+            document.getElementById('deleteLocationAddress').textContent = address;
+            document.getElementById('employeeCount').textContent = employeeCount;
+            document.getElementById('customerCount').textContent = customerCount;
+            document.getElementById('fridgeCount').textContent = fridgeCount;
+
+            const deleteLink = document.getElementById('deleteConfirmLink');
+            deleteLink.href = `/Location/Delete/${id}`;
+
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        // Status toggle functionality
+        document.querySelectorAll('.status-toggle').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const locationId = this.dataset.locationId;
+                const isActive = this.checked;
+
+                fetch('/Location/ToggleStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ id: parseInt(locationId) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Success', 'Location status updated successfully.', 'success');
+                        // Optionally reload the page or update UI
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast('Error', data.message || 'Failed to update status.', 'error');
+                        this.checked = !isActive; // Revert toggle
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error', 'An error occurred while updating status.', 'error');
+                    this.checked = !isActive; // Revert toggle
+                });
             });
         });
+
+        // Auto-submit form on filter changes
+        document.getElementById('provinceFilter').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        document.getElementById('cityFilter').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        // Enhanced search with debounce
+        let searchTimeout;
+        document.getElementById('searchString').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.form.submit();
+            }, 500);
+        });
+
+        // Dynamic city dropdown based on province selection
+        document.getElementById('provinceFilter').addEventListener('change', function() {
+            const province = this.value;
+            const cityDropdown = document.getElementById('cityFilter');
+
+            if (!province) {
+                // Reset to all cities if no province selected
+                cityDropdown.innerHTML = '<option value="">All Cities</option>';
+                return;
+            }
+
+            fetch(`/Location/GetCities?province=${encodeURIComponent(province)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        cityDropdown.innerHTML = '<option value="">All Cities</option>';
+                        data.data.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city;
+                            option.textContent = city;
+                            cityDropdown.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading cities:', error));
+        });
+
+        // Toast notification function
+        function showToast(title, message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <strong>${title}</strong><br>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.innerHTML += toastHtml;
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '1060';
+            document.body.appendChild(container);
+            return container;
+        }
     </script>
+
+    <style>
+        .badge {
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.075);
+        }
+
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
 }

@@ -19,6 +19,7 @@ namespace Project.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Fridge> Fridges { get; set; }
+        public DbSet<FridgeModel> FridgeModels { get; set; }
         public DbSet<FridgeAllocation> FridgeAllocations { get; set; }
         public DbSet<AllocationRequestHeader> AllocationRequestHeaders { get; set; }
         public DbSet<AllocationRequestDetail> AllocationRequestDetails { get; set; }
@@ -563,7 +564,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2024, 5, 12),
                     LocationId = 2, // Gqeberha Warehouse
                     Condition = FridgeCondition.PreOwned,
-                    Status = FridgeStatus.UnderMaintenance,
+                    Status = FridgeStatus.UnderRepair,
                     ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
                     PurchaseDate = new DateTime(2023, 1, 15),
                     PurchasePrice = 22000.00m,

@@ -94,31 +94,31 @@ namespace Project.Areas.Identity.Pages.Account
                     _logger.LogInformation("User logged in.");
 
                     var user = await  _userManager.FindByEmailAsync(Input.Email);
-                    //if (await _userManager.IsInRoleAsync(user, SD.AdminRole))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
+                    if (await _userManager.IsInRoleAsync(user, SD.AdminRole))
+                    {
+                        return RedirectToAction("Index", "Home");
 
-                    //}
-                    //else if (await _userManager.IsInRoleAsync(user, SD.CustomerRole))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
-                    //else if (await _userManager.IsInRoleAsync(user, SD.CustomerSupportRole))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
-                    //else if (await _userManager.IsInRoleAsync(user, SD.StockControllerRole))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
-                    //else if (await _userManager.IsInRoleAsync(user, SD.FaultTechnicianRole))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
-                    //else if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnicianRole))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
+                    }
+                    else if (await _userManager.IsInRoleAsync(user, SD.CustomerRole))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (await _userManager.IsInRoleAsync(user, SD.CustomerSupportRole))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (await _userManager.IsInRoleAsync(user, SD.StockControllerRole))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (await _userManager.IsInRoleAsync(user, SD.FaultTechnicianRole))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnicianRole))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -132,7 +132,7 @@ namespace Project.Areas.Identity.Pages.Account
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
+                    //return Page();
                 }
             }
 

@@ -11,7 +11,7 @@ namespace Project.Utilities.Enums
         Acknowledged,       // Support team has acknowledged the report
 
         [Display(Name = "Diagnosing")]
-        Diagnosing,         // AssignedTechnician is diagnosing the issue
+        Diagnosing,         // Assigned technician is diagnosing the issue
 
         [Display(Name = "Scheduled")]
         Scheduled,          // Repair has been scheduled
@@ -26,7 +26,7 @@ namespace Project.Utilities.Enums
         Resolved,           // Fault has been fixed
 
         [Display(Name = "Cannot Repair")]
-        CannotRepair,       // Fault cannot be repaired, replacement needed
+        CannotRepair,       // Fault cannot be repaired; replacement needed
 
         [Display(Name = "Closed")]
         Closed,             // Case is fully closed (after customer confirmation)

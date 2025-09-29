@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,19 +17,26 @@ namespace Project.Controllers
     public class FridgeAllocationsController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public FridgeAllocationsController(ApplicationDbContext db)
+        public FridgeAllocationsController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
 
-        // GET: Allocations
+        // GET: FridgeAllocations
         public async Task<IActionResult> Index()
         {
             IQueryable<FridgeAllocation> query = _db.FridgeAllocations
                 .Include(a => a.Fridge)
+                    .ThenInclude(f => f.FridgeModel)
                 .Include(a => a.Customer)
-                .Include(a => a.AllocationLocation)
+                .Include(a => a.DeliveryLocation)
+                .Include(a => a.AllocatedBy)
+                    .ThenInclude(e => e.UserAccount)
+                .Include(a => a.ProcessedBy)
+                    .ThenInclude(e => e.UserAccount)
                 .Where(a => a.IsActive);
 
             // Role-based filtering
@@ -39,21 +47,33 @@ namespace Project.Controllers
                 {
                     query = query.Where(a => a.CustomerId == customer.Id);
                 }
+                else
+                {
+                    return RedirectToAction("Login", "Account");
+                }
             }
 
             var allocations = await query.OrderByDescending(a => a.AllocationDate).ToListAsync();
-            return View(allocations);
+
+            // Convert to ViewModel for consistent display
+            var vmList = allocations.Select(a => FridgeAllocationVM.FromEntity(a)).ToList();
+            return View(vmList);
         }
 
-        // GET: Allocations/Details/5
+        // GET: FridgeAllocations/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var allocation = await _db.FridgeAllocations
                 .Include(a => a.Fridge)
+                    .ThenInclude(f => f.FridgeModel)
                 .Include(a => a.Customer)
-                .Include(a => a.AllocationLocation)
+                .Include(a => a.DeliveryLocation)
                 .Include(a => a.AllocatedBy)
+                    .ThenInclude(e => e.UserAccount)
                 .Include(a => a.ProcessedBy)
+                    .ThenInclude(e => e.UserAccount)
+                .Include(a => a.MaintenanceVisits)
+                .Include(a => a.FaultReports)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (allocation == null || !allocation.IsActive)
@@ -71,48 +91,52 @@ namespace Project.Controllers
                 }
             }
 
-            return View(allocation);
+            var vm = FridgeAllocationVM.FromEntity(allocation);
+            return View(vm);
         }
 
-        // GET: Allocations/Upsert
+        // GET: FridgeAllocations/Upsert
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Upsert(int? id)
         {
-            var vm = new FridgeAllocationVM();
-            await PopulateDropdowns(vm);
+            FridgeAllocationVM vm = new FridgeAllocationVM();
 
             if (id == null || id == 0)
             {
                 // Create new allocation
                 vm.AllocationDate = DateTime.Now;
-                return View(vm);
+                vm.Status = AllocationStatus.Pending;
             }
-
-            // Edit existing allocation
-            var allocation = await _db.FridgeAllocations
-                .Include(a => a.Fridge)
-                .Include(a => a.Customer)
-                .FirstOrDefaultAsync(a => a.Id == id);
-
-            if (allocation == null || !allocation.IsActive)
+            else
             {
-                return NotFound();
+                // Edit existing allocation
+                var allocation = await _db.FridgeAllocations
+                    .Include(a => a.Fridge)
+                    .Include(a => a.Customer)
+                    .Include(a => a.DeliveryLocation)
+                    .Include(a => a.AllocatedBy)
+                    .Include(a => a.ProcessedBy)
+                    .FirstOrDefaultAsync(a => a.Id == id);
+
+                if (allocation == null || !allocation.IsActive)
+                {
+                    return NotFound();
+                }
+
+                if (!allocation.CanBeModified())
+                {
+                    TempData["error"] = "This allocation cannot be modified in its current status.";
+                    return RedirectToAction(nameof(Details), new { id = allocation.Id });
+                }
+
+                vm = FridgeAllocationVM.FromEntity(allocation);
             }
 
-            vm.Id = allocation.Id;
-            vm.FridgeId = allocation.FridgeId;
-            vm.CustomerId = allocation.CustomerId;
-            vm.AllocationDate = allocation.AllocationDate;
-            vm.AllocationLocationId = allocation.AllocationLocationId;
-            vm.DeallocationDate = allocation.ActualReturnDate;
-            vm.DeallocationReason = allocation.Notes;
-            vm.AllocatedByEmployeeId = allocation.AllocatedById;
-            vm.ProcessedByEmployeeId = allocation.ProcessedById;
-
+            await PopulateDropdowns(vm);
             return View(vm);
         }
 
-        // POST: Allocations/Upsert
+        // POST: FridgeAllocations/Upsert
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
@@ -122,19 +146,37 @@ namespace Project.Controllers
             {
                 try
                 {
+                    // Additional validation
+                    var validationErrors = vm.GetValidationErrors().ToList();
+                    if (validationErrors.Any())
+                    {
+                        foreach (var error in validationErrors)
+                        {
+                            ModelState.AddModelError("", error);
+                        }
+                        await PopulateDropdowns(vm);
+                        return View(vm);
+                    }
+
+                    // Check fridge availability
+                    var fridge = await _db.Fridges
+                        .Include(f => f.FridgeModel)
+                        .FirstOrDefaultAsync(f => f.Id == vm.FridgeId);
+
+                    if (fridge == null || fridge.Status != FridgeStatus.Available)
+                    {
+                        ModelState.AddModelError("FridgeId", "Selected fridge is not available for allocation.");
+                        await PopulateDropdowns(vm);
+                        return View(vm);
+                    }
+
                     if (vm.Id == 0)
                     {
                         // Create new allocation
-                        var allocation = new FridgeAllocation
-                        {
-                            FridgeId = vm.FridgeId,
-                            CustomerId = vm.CustomerId,
-                            AllocationDate = vm.AllocationDate,
-                            AllocationLocationId = vm.AllocationLocationId,
-                            AllocatedById = await GetCurrentEmployeeIdAsync(),
-                            ProcessedById = await GetCurrentEmployeeIdAsync(),
-                            CreatedAt = DateTime.Now
-                        };
+                        var allocation = vm.ToEntity();
+                        allocation.CreatedAt = DateTime.UtcNow;
+                        allocation.CreatedBy = User.Identity.Name;
+                        allocation.AllocatedByEmployeeId = await GetCurrentEmployeeIdAsync();
 
                         _db.FridgeAllocations.Add(allocation);
                         await _db.SaveChangesAsync();
@@ -153,16 +195,38 @@ namespace Project.Controllers
                             return NotFound();
                         }
 
+                        if (!allocation.CanBeModified())
+                        {
+                            TempData["error"] = "This allocation cannot be modified in its current status.";
+                            return RedirectToAction(nameof(Details), new { id = allocation.Id });
+                        }
+
+                        // Store original fridge ID for status update
+                        var originalFridgeId = allocation.FridgeId;
+
+                        // Update properties
                         allocation.FridgeId = vm.FridgeId;
                         allocation.CustomerId = vm.CustomerId;
+                        allocation.DeliveryLocationId = vm.DeliveryLocationId;
+                        allocation.Quantity = vm.Quantity;
                         allocation.AllocationDate = vm.AllocationDate;
-                        allocation.AllocationLocationId = vm.AllocationLocationId;
-                        allocation.ActualReturnDate = vm.DeallocationDate;
-                        allocation.Notes = vm.DeallocationReason;
-                        allocation.UpdatedAt = DateTime.Now;
+                        allocation.ExpectedReturnDate = vm.ExpectedReturnDate;
+                        allocation.ActualReturnDate = vm.ActualReturnDate;
+                        allocation.MonthlyRentalPrice = vm.MonthlyRentalPrice;
+                        allocation.Notes = vm.Notes;
+                        allocation.Status = vm.Status;
+                        allocation.ModifiedAt = DateTime.UtcNow;
+                        allocation.ModifiedBy = User.Identity.Name;
 
                         _db.FridgeAllocations.Update(allocation);
                         await _db.SaveChangesAsync();
+
+                        // Update fridge status if fridge was changed
+                        if (originalFridgeId != vm.FridgeId)
+                        {
+                            await UpdateFridgeStatus(originalFridgeId, FridgeStatus.Available);
+                            await UpdateFridgeStatus(vm.FridgeId, FridgeStatus.Allocated);
+                        }
 
                         TempData["success"] = "Allocation updated successfully";
                     }
@@ -172,6 +236,8 @@ namespace Project.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", $"Error saving allocation: {ex.Message}");
+                    // Log the exception
+                    System.Diagnostics.Debug.WriteLine($"Error in Upsert: {ex.Message}");
                 }
             }
 
@@ -179,12 +245,13 @@ namespace Project.Controllers
             return View(vm);
         }
 
-        // GET: Allocations/Deallocate/5
+        // GET: FridgeAllocations/Deallocate/5
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
         public async Task<IActionResult> Deallocate(int id)
         {
             var allocation = await _db.FridgeAllocations
                 .Include(a => a.Fridge)
+                    .ThenInclude(f => f.FridgeModel)
                 .Include(a => a.Customer)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
@@ -193,18 +260,29 @@ namespace Project.Controllers
                 return NotFound();
             }
 
+            if (!allocation.CanBeDeallocated())
+            {
+                TempData["error"] = "This allocation cannot be deallocated in its current status.";
+                return RedirectToAction(nameof(Details), new { id = allocation.Id });
+            }
+
             var vm = new DeallocationVM
             {
                 AllocationId = allocation.Id,
                 FridgeSerialNumber = allocation.Fridge?.SerialNumber ?? "Unknown",
-                CustomerName = allocation.Customer?.TradingName ?? "Unknown",
-                AllocationDate = allocation.AllocationDate
+                FridgeModel = allocation.Fridge?.FridgeModel?.DisplayName ?? "Unknown Model",
+                CustomerName = allocation.Customer?.TradingName ?? "Unknown Customer",
+                CustomerBusinessType = allocation.Customer?.BusinessType ?? BusinessType.SpazaShop,
+                AllocationDate = allocation.AllocationDate,
+                MonthlyRental = allocation.MonthlyRentalPrice,
+                Quantity = allocation.Quantity
             };
 
+            await PopulateDeallocationDropdowns(vm);
             return View(vm);
         }
 
-        // POST: Allocations/Deallocate/5
+        // POST: FridgeAllocations/Deallocate/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
@@ -212,30 +290,111 @@ namespace Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                var allocation = await _db.FridgeAllocations.FindAsync(vm.AllocationId);
+                var allocation = await _db.FridgeAllocations
+                    .Include(a => a.Fridge)
+                    .FirstOrDefaultAsync(a => a.Id == vm.AllocationId);
+
                 if (allocation == null)
                 {
                     return NotFound();
                 }
 
-                allocation.ActualReturnDate = vm.DeallocationDate;
-                allocation.Notes = vm.DeallocationReason;
-                allocation.UpdatedAt = DateTime.Now;
+                if (!allocation.CanBeDeallocated())
+                {
+                    TempData["error"] = "This allocation cannot be deallocated in its current status.";
+                    return RedirectToAction(nameof(Details), new { id = allocation.Id });
+                }
 
-                _db.FridgeAllocations.Update(allocation);
-                await _db.SaveChangesAsync();
+                // Validate deallocation date
+                if (vm.DeallocationDate < allocation.AllocationDate)
+                {
+                    ModelState.AddModelError("DeallocationDate", "Deallocation date cannot be before allocation date.");
+                    await PopulateDeallocationDropdowns(vm);
+                    return View(vm);
+                }
 
-                // Update fridge status back to available
-                await UpdateFridgeStatus(allocation.FridgeId, FridgeStatus.Available);
+                try
+                {
+                    // Set processed by information
+                    var currentEmployeeId = await GetCurrentEmployeeIdAsync();
+                    var currentEmployee = await _db.Employees
+                        .Include(e => e.UserAccount)
+                        .FirstOrDefaultAsync(e => e.Id == currentEmployeeId);
 
-                TempData["success"] = "Fridge deallocated successfully";
-                return RedirectToAction(nameof(Index));
+                    vm.SetProcessedBy(currentEmployee?.UserAccount?.FullName ?? User.Identity.Name, currentEmployeeId);
+
+                    // Apply deallocation to the allocation entity
+                    vm.ApplyToAllocation(allocation);
+                    allocation.ModifiedAt = DateTime.UtcNow;
+                    allocation.ModifiedBy = User.Identity.Name;
+
+                    _db.FridgeAllocations.Update(allocation);
+                    await _db.SaveChangesAsync();
+
+                    // Update fridge status based on return condition
+                    var newFridgeStatus = vm.CanBeReallocated ? FridgeStatus.Available :
+                                        vm.ShouldBeScrapped ? FridgeStatus.Scrapped : FridgeStatus.Quarantined;
+
+                    await UpdateFridgeStatus(allocation.FridgeId, newFridgeStatus);
+
+                    // If maintenance is required, create a maintenance request
+                    if (vm.RequiresMaintenance && !string.IsNullOrEmpty(vm.MaintenanceRequired))
+                    {
+                        await CreateMaintenanceRequest(allocation, vm);
+                    }
+
+                    TempData["success"] = "Fridge deallocated successfully";
+                    return RedirectToAction(nameof(Details), new { id = allocation.Id });
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Error deallocating fridge: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Error in Deallocate: {ex.Message}");
+                }
             }
 
+            await PopulateDeallocationDropdowns(vm);
             return View(vm);
         }
 
-        // POST: Allocations/Delete/5 (Soft Delete)
+        // GET: FridgeAllocations/CustomerAllocations
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> CustomerAllocations()
+        {
+            var customer = await GetCurrentCustomerAsync();
+            if (customer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var allocations = await _db.FridgeAllocations
+                .Include(a => a.Fridge)
+                    .ThenInclude(f => f.FridgeModel)
+                .Include(a => a.DeliveryLocation)
+                .Where(a => a.CustomerId == customer.Id && a.IsActive)
+                .OrderByDescending(a => a.AllocationDate)
+                .ToListAsync();
+
+            var vmList = allocations.Select(a => FridgeAllocationVM.FromEntity(a)).ToList();
+            return View(vmList);
+        }
+
+        // POST: FridgeAllocations/UpdateStatus/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
+        public async Task<IActionResult> UpdateStatus(int id, AllocationStatus newStatus, string? notes = null)
+        {
+            var allocation = await _db.FridgeAllocations.FindAsync(id);
+            if (allocation == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = allocation.Id });
+        }
+
+        // POST: FridgeAllocations/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminRole)]
@@ -247,123 +406,39 @@ namespace Project.Controllers
                 return NotFound();
             }
 
-            // Soft delete
-            allocation.UpdatedAt = DateTime.Now;
+            if (allocation.Status != AllocationStatus.Pending)
+            {
+                TempData["error"] = "Only pending allocations can be deleted.";
+                return RedirectToAction(nameof(Details), new { id = allocation.Id });
+            }
 
+            // Soft delete
+            allocation.IsActive = false;
+            allocation.ModifiedAt = DateTime.UtcNow;
+            allocation.ModifiedBy = User.Identity.Name;
+
+            // Update fridge status back to available
+            await UpdateFridgeStatus(allocation.FridgeId, FridgeStatus.Available);
+
+            _db.FridgeAllocations.Update(allocation);
             await _db.SaveChangesAsync();
+
             TempData["success"] = "Allocation deleted successfully";
             return RedirectToAction(nameof(Index));
         }
 
-        // Customer Cart Functionality (from your original code)
-        public async Task<IActionResult> Cart()
-        {
-            if (!User.IsInRole(SD.CustomerRole))
-            {
-                return Forbid();
-            }
-
-            var customer = await GetCurrentCustomerAsync();
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            var cartAllocations = await _db.FridgeAllocations
-                .Include(a => a.Fridge)
-                .Where(a => a.CustomerId == customer.Id && a.IsActive && a.ActualReturnDate == null)
-                .ToListAsync();
-
-            var vm = new AllocationCartVM
-            {
-                Allocations = cartAllocations,
-                Customer = customer
-            };
-
-            return View(vm);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = SD.CustomerRole)]
-        public async Task<IActionResult> SubmitRequest()
-        {
-            var customer = await GetCurrentCustomerAsync();
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                var cartAllocations = await _db.FridgeAllocations
-                    .Include(a => a.Fridge)
-                    .Where(a => a.CustomerId == customer.Id && a.IsActive && a.ActualReturnDate == null)
-                    .ToListAsync();
-
-                if (!cartAllocations.Any())
-                {
-                    TempData["error"] = "No fridges in cart to submit";
-                    return RedirectToAction(nameof(Cart));
-                }
-
-                // Create allocation request
-                var request = new AllocationRequestHeader
-                {
-                    CustomerId = customer.Id,
-                    RequestDate = DateTime.Now,
-                    FirstName = customer.UserAccount?.FirstName ?? "",
-                    LastName = customer.UserAccount?.LastName ?? "",
-                    PhoneNumber = customer.BusinessPhoneNumber,
-                    AddressLine1 = customer.AddressLine1,
-                    AddressLine2 = customer.AddressLine2,
-                    City = customer.City,
-                    Province = customer.Province,
-                    PostalCode = customer.PostalCode,
-                    Status = "Submitted",
-                    RequestTotal = cartAllocations.Sum(a => a.Fridge?.RentalPricePerMonth ?? 0)
-                };
-
-                _db.AllocationRequestHeaders.Add(request);
-                await _db.SaveChangesAsync();
-
-                // Create request details
-                foreach (var allocation in cartAllocations)
-                {
-                    var detail = new AllocationRequestDetail
-                    {
-                        RequestHeaderId = request.Id,
-                        FridgeId = allocation.FridgeId,
-                        Quantity = 1, // Each allocation is for one fridge
-                        Price = allocation.Fridge?.RentalPricePerMonth ?? 0
-                    };
-                    _db.AllocationRequestDetails.Add(detail);
-                }
-
-                await _db.SaveChangesAsync();
-                TempData["success"] = "Allocation request submitted successfully";
-                return RedirectToAction(nameof(RequestConfirmation), new { id = request.Id });
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = $"Error submitting request: {ex.Message}";
-                return RedirectToAction(nameof(Cart));
-            }
-        }
-
-        public IActionResult RequestConfirmation(int id)
-        {
-            return View(id);
-        }
+        #region Private Helper Methods
 
         private async Task PopulateDropdowns(FridgeAllocationVM vm)
         {
             vm.FridgeList = await _db.Fridges
-                .Where(f => f.Status == FridgeStatus.Available)
+                .Include(f => f.FridgeModel)
+                .Where(f => f.Status == FridgeStatus.Available && f.IsActive)
                 .OrderBy(f => f.SerialNumber)
                 .Select(f => new SelectListItem
                 {
                     Value = f.Id.ToString(),
-                    Text = $"{f.SerialNumber} - {f.Model ?? "Unknown"}"
+                    Text = $"{f.SerialNumber} - {f.FridgeModel.DisplayName} ({f.FridgeModel.CapacityLiters}L)"
                 })
                 .ToListAsync();
 
@@ -373,29 +448,59 @@ namespace Project.Controllers
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
-                    Text = c.TradingName
+                    Text = $"{c.TradingName} ({c.BusinessType})"
                 })
                 .ToListAsync();
 
             vm.LocationList = await _db.Locations
                 .Where(l => l.IsActive)
-                .OrderBy(l => l.Name)
+                .OrderBy(l => l.City)
                 .Select(l => new SelectListItem
                 {
                     Value = l.Id.ToString(),
-                    Text = l.Name
+                    Text = $"{l.AddressLine1} - {l.Suburb}, {l.City}"
                 })
                 .ToListAsync();
 
             vm.EmployeeList = await _db.Employees
+                .Include(e => e.UserAccount)
                 .Where(e => e.IsActive)
                 .OrderBy(e => e.UserAccount.LastName)
                 .Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
-                    Text = $"{e.UserAccount.FirstName} {e.UserAccount.LastName} ({e.EmployeeNumber})"
+                    Text = $"{e.UserAccount.FirstName} {e.UserAccount.LastName} - {e.EmployeeType}"
                 })
                 .ToListAsync();
+
+            vm.StatusList = Enum.GetValues<AllocationStatus>()
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ToString(),
+                    Text = s.ToString()
+                })
+                .ToList();
+
+            vm.RequestList = await _db.AllocationRequestHeaders
+                .Where(r => r.Status == AllocationRequestStatus.Approved && r.IsApproved)
+                .OrderByDescending(r => r.RequestDate)
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"Request #{r.Id:00000} - {r.Customer.TradingName} ({r.RequestDate:dd/MM/yyyy})"
+                })
+                .ToListAsync();
+        }
+
+        private async Task PopulateDeallocationDropdowns(DeallocationVM vm)
+        {
+            vm.FridgeConditionList = Enum.GetValues<FridgeCondition>()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.ToString(),
+                    Text = c.ToString()
+                })
+                .ToList();
         }
 
         private async Task<int> GetCurrentEmployeeIdAsync()
@@ -403,14 +508,13 @@ namespace Project.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var employee = await _db.Employees
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.IsActive);
-            return employee.Id;
+            return employee?.Id ?? 0;
         }
 
         private async Task<Customer?> GetCurrentCustomerAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _db.Customers
-                .Include(c => c.UserAccount)
                 .FirstOrDefaultAsync(c => c.UserId == userId && c.IsActive);
         }
 
@@ -420,11 +524,32 @@ namespace Project.Controllers
             if (fridge != null)
             {
                 fridge.Status = status;
-                fridge.ModifiedDate = DateTime.Now;
+                fridge.ModifiedAt = DateTime.UtcNow;
                 _db.Fridges.Update(fridge);
+                await _db.SaveChangesAsync();
             }
         }
+
+        private async Task CreateMaintenanceRequest(FridgeAllocation allocation, DeallocationVM vm)
+        {
+            var maintenanceRequest = new MaintenanceVisit
+            {
+                FridgeId = allocation.FridgeId,
+                CustomerId = allocation.CustomerId,
+                ScheduledDate = DateTime.UtcNow.AddDays(7), // Schedule for next week
+                Status = ServicingStatus.Scheduled,
+                IssueDescription = $"Maintenance required after deallocation: {vm.MaintenanceRequired}",
+                CreatedBy = User.Identity.Name,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _db.MaintenanceVisits.Add(maintenanceRequest);
+            await _db.SaveChangesAsync();
+        }
+
+        #endregion
     }
+
 
     //[Authorize]
     //public class FridgeAllocationsController : Controller
@@ -559,7 +684,7 @@ namespace Project.Controllers
     //    {
     //        return View(id);
     //    }
-    //    private decimal GetPriceBasedOnQuantity(Models.FridgeAllocation Allocation)
+    //    private decimal GetPriceBasedOnQuantity(Models.RelatedAllocation Allocation)
     //    {
 
 

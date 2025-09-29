@@ -1,22 +1,61 @@
 ﻿@model Project.Models.MaintenanceVisit
-
 @{
-    ViewBag.Title = "Maintenance Visit Details";
+    ViewData["Title"] = "Maintenance Visit Details";
 }
 
-<h2>Maintenance Visit Details</h2>
+<h2 class="mb-3">Maintenance Visit Details</h2>
 
-<div>
-    <strong>Scheduled Date:</strong> @Model.ScheduledDate.ToString("yyyy-MM-dd")<br />
-    <strong>Status:</strong> @Model.Status<br />
-    <strong>Customer:</strong> @Model.Customer?.TradingName<br />
-    <strong>Technician:</strong> @Model.AssignedTechnician?.UserAccount.FirstName<br />
-    <strong>Technician:</strong> @Model.AssignedTechnician?.UserAccount.LastName<br />
-    <strong>Fridge Serial:</strong> @Model.Fridge?.SerialNumber<br />
-    <strong>Fridge Model:</strong> @Model.Fridge?.Model<br />
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Scheduled Date</dt>
+            <dd class="col-sm-9">@Model.ScheduledDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+            <dt class="col-sm-3">Fridge</dt>
+            <dd class="col-sm-9">@Model.Fridge?.SerialNumber (@Model.Fridge?.FridgeModel?.ModelName)</dd>
+
+            <dt class="col-sm-3">Customer</dt>
+            <dd class="col-sm-9">@Model.Customer?.TradingName</dd>
+
+            <dt class="col-sm-3">Technician</dt>
+            <dd class="col-sm-9">@($"{Model.Technician?.UserAccount?.FirstName} {Model.Technician?.UserAccount?.LastName}")</dd>
+
+            <dt class="col-sm-3">Location</dt>
+            <dd class="col-sm-9">@Model.Location?.FullAddress</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+        </dl>
+    </div>
 </div>
 
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-warning" })
-    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
-</p>
+@if (Model.MaintenanceRecords != null && Model.MaintenanceRecords.Any())
+{
+    <h4 class="mt-4">Maintenance Records</h4>
+    <ul class="list-group">
+        @foreach (var record in Model.MaintenanceRecords)
+        {
+            <li class="list-group-item">
+                @record.ServiceDate.ToString("dd/MM/yyyy") - @record.ServiceNotes
+            </li>
+        }
+    </ul>
+}
+
+@if (Model.FaultRecords != null && Model.FaultRecords.Any())
+{
+    <h4 class="mt-4">Fault Reports</h4>
+    <ul class="list-group">
+        @foreach (var fault in Model.FaultRecords)
+        {
+            <li class="list-group-item">
+                @fault.Description (@fault.Status)
+            </li>
+        }
+    </ul>
+}
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+    <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning"><i class="bi bi-pencil"></i> Edit</a>
+</div>

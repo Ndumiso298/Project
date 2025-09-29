@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
@@ -15,78 +16,171 @@ namespace Project.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<LocationsController> _logger;
 
-        public LocationsController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
+        public LocationsController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment, ILogger<LocationsController> logger)
         {
             _db = db;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
 
         // GET: Locations
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, string provinceFilter, string cityFilter, string typeFilter, string statusFilter, int page = 1, int pageSize = 10)
         {
-            var locations = await _db.Locations
-                .Include(l => l.Employees)
-                .Include(l => l.Customers)
-                .Include(l => l.Fridges)
-                .Where(l => l.IsActive)
-                .OrderBy(l => l.Province)
-                .ThenBy(l => l.City)
-                .ThenBy(l => l.Suburb)
-                .ToListAsync();
+            try
+            {
+                var locationsQuery = _db.Locations
+                    .Include(l => l.Employees)
+                    .Include(l => l.Customers)
+                    .Include(l => l.Fridges)
+                    .Where(l => l.IsActive)
+                    .AsQueryable();
 
-            return View(locations);
+                // Apply filters
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    locationsQuery = locationsQuery.Where(l =>
+                        l.Suburb.Contains(searchString) ||
+                        l.City.Contains(searchString) ||
+                        l.Province.Contains(searchString) ||
+                        l.PostalCode.Contains(searchString));
+                }
+
+                if (!string.IsNullOrEmpty(provinceFilter) && provinceFilter != "All")
+                {
+                    locationsQuery = locationsQuery.Where(l => l.Province == provinceFilter);
+                }
+
+                if (!string.IsNullOrEmpty(cityFilter) && cityFilter != "All")
+                {
+                    locationsQuery = locationsQuery.Where(l => l.City == cityFilter);
+                }
+
+                // Pagination
+                var totalLocations = await locationsQuery.CountAsync();
+                var locations = await locationsQuery
+                    .OrderBy(l => l.Province)
+                    .ThenBy(l => l.City)
+                    .ThenBy(l => l.Suburb)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Convert to ViewModel for display
+                var locationVMs = locations.Select(l => new LocationVM
+                {
+                    Id = l.Id,
+                    AddressLine1 = l.AddressLine1,
+                    AddressLine2 = l.AddressLine2,
+                    Suburb = l.Suburb,
+                    City = l.City,
+                    Province = l.Province,
+                    PostalCode = l.PostalCode,
+                    Country = l.Country,
+                    IsActive = l.IsActive,
+                    CreatedAt = l.CreatedAt,
+                    CreatedBy = l.CreatedBy,
+                    ModifiedAt = l.ModifiedAt,
+                    ModifiedBy = l.ModifiedBy,
+                    TotalFridges = l.Fridges.Count(f => f.IsActive),
+                    AvailableFridges = l.Fridges.Count(f => f.IsActive && f.Status == FridgeStatus.Available),
+                    TotalCustomers = l.Customers.Count(c => c.IsActive),
+                    TotalEmployees = l.Employees.Count(e => e.IsActive),
+                    PendingMaintenance = l.MaintenanceVisits.Count(m => m.ScheduledDate >= DateTime.Now && m.Status == ServicingStatus.Scheduled),
+                    OpenFaults = l.FaultReports.Count(f => f.Status == FaultStatus.Acknowledged || f.Status == FaultStatus.InProgress)
+                }).ToList();
+
+                ViewBag.SearchString = searchString;
+                ViewBag.ProvinceFilter = provinceFilter;
+                ViewBag.CityFilter = cityFilter;
+                ViewBag.TypeFilter = typeFilter;
+                ViewBag.StatusFilter = statusFilter;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling(totalLocations / (double)pageSize);
+                ViewBag.PageSize = pageSize;
+
+                await PopulateFilterDropdowns();
+                return View(locationVMs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading locations index");
+                TempData["error"] = "An error occurred while loading locations.";
+                return View(new List<LocationVM>());
+            }
         }
 
         // GET: Locations/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var location = await _db.Locations
-                .Include(l => l.Employees).ThenInclude(e => e.UserAccount)
-                .Include(l => l.Customers).ThenInclude(c => c.UserAccount)
-                .Include(l => l.Fridges).ThenInclude(f => f.Status)
-                .Include(l => l.FridgeAllocations).ThenInclude(a => a.Fridge)
-                .Include(l => l.MaintenanceVisits).ThenInclude(m => m.AssignedTechnician)
-                .Include(l => l.FaultReports).ThenInclude(f => f.AssignedTechnician)
-                .FirstOrDefaultAsync(l => l.Id == id);
-
-            if (location == null || !location.IsActive)
+            try
             {
-                return NotFound();
+                var location = await _db.Locations
+                    .Include(l => l.Employees).ThenInclude(e => e.UserAccount)
+                    .Include(l => l.Customers).ThenInclude(c => c.UserAccount)
+                    .Include(l => l.Fridges).ThenInclude(f => f.FridgeModel)
+                    .Include(l => l.FridgeAllocations).ThenInclude(a => a.Fridge)
+                    .Include(l => l.MaintenanceVisits).ThenInclude(m => m.Technician)
+                    .Include(l => l.FaultReports).ThenInclude(f => f.AssignedTechnician)
+                    .FirstOrDefaultAsync(l => l.Id == id);
+
+                if (location == null || !location.IsActive)
+                {
+                    TempData["error"] = "Location not found or has been deactivated.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Prepare statistics for the dashboard
+                var stats = new
+                {
+                    EmployeeCount = location.Employees.Count(e => e.IsActive),
+                    CustomerCount = location.Customers.Count(c => c.IsActive),
+                    FridgeCount = location.Fridges.Count(f => f.IsActive),
+                    AvailableFridges = location.Fridges.Count(f => f.IsActive && f.Status == FridgeStatus.Available),
+                    ActiveAllocations = location.FridgeAllocations.Count(a => a.Status == AllocationStatus.Active),
+                    PendingMaintenance = location.MaintenanceVisits.Count(m => m.Status == ServicingStatus.Scheduled),
+                    OpenFaults = location.FaultReports.Count(f => f.Status == FaultStatus.Acknowledged || f.Status == FaultStatus.InProgress)
+                };
+
+                ViewBag.Stats = stats;
+                ViewBag.RecentActivities = await GetRecentActivities(id);
+
+                return View(location);
             }
-
-            // Get statistics for the dashboard
-            ViewBag.EmployeeCount = location.Employees.Count(e => e.IsActive);
-            ViewBag.CustomerCount = location.Customers.Count(c => c.IsActive);
-            ViewBag.FridgeCount = location.Fridges.Count(f => f.Status == FridgeStatus.Available);
-            ViewBag.ActiveAllocations = location.FridgeAllocations.Count(a => a.IsActive);
-            ViewBag.PendingMaintenance = location.MaintenanceVisits.Count(m => m.Status == ServicingStatus.Scheduled);
-            ViewBag.OpenFaults = location.FaultReports.Count(f => f.Status == FaultStatus.Reported || f.Status == FaultStatus.InProgress);
-
-            return View(location);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading location details for ID: {LocationId}", id);
+                TempData["error"] = "An error occurred while loading location details.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // GET: Locations/Upsert
         public async Task<IActionResult> Upsert(int? id)
         {
-            var vm = new LocationVM();
+            try
+            {
+                var vm = new LocationVM();
+                await PopulateDropdowns(vm);
 
-            if (id == null || id == 0)
-            {
-                // Create new location
-                return View(vm);
-            }
-            else
-            {
+                if (id == null || id == 0)
+                {
+                    // Create new location - set default values
+                    vm.Country = "South Africa";
+                    return View(vm);
+                }
+
                 // Edit existing location
                 var location = await _db.Locations.FindAsync(id);
                 if (location == null || !location.IsActive)
                 {
-                    return NotFound();
+                    TempData["error"] = "Location not found or has been deactivated.";
+                    return RedirectToAction(nameof(Index));
                 }
 
+                // Map entity to ViewModel
                 vm.Id = location.Id;
-                vm.Name = location.Name;
                 vm.AddressLine1 = location.AddressLine1;
                 vm.AddressLine2 = location.AddressLine2;
                 vm.Suburb = location.Suburb;
@@ -95,8 +189,21 @@ namespace Project.Controllers
                 vm.PostalCode = location.PostalCode;
                 vm.Country = location.Country;
                 vm.IsActive = location.IsActive;
+                vm.CreatedAt = location.CreatedAt;
+                vm.CreatedBy = location.CreatedBy;
+                vm.ModifiedAt = location.ModifiedAt;
+                vm.ModifiedBy = location.ModifiedBy;
+
+                // Add statistics for context
+                await PopulateLocationStatistics(vm, location.Id);
 
                 return View(vm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading location upsert page for ID: {LocationId}", id);
+                TempData["error"] = "An error occurred while loading the location form.";
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -105,94 +212,94 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(LocationVM vm)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (ModelState.IsValid)
                 {
-                    if (vm.Id == 0)
+                    if (ModelState.IsValid)
                     {
-                        // Create new location
-                        var location = new Location
+                        if (vm.Id == 0)
                         {
-                            Name = vm.Name?.Trim(),
-                            AddressLine1 = vm.AddressLine1.Trim(),
-                            AddressLine2 = vm.AddressLine2?.Trim(),
-                            Suburb = vm.Suburb.Trim(),
-                            City = vm.City.Trim(),
-                            Province = vm.Province.Trim(),
-                            PostalCode = vm.PostalCode.Trim(),
-                            Country = vm.Country.Trim(),
-                            IsActive = vm.IsActive,
-                            CreatedAt = DateTime.UtcNow
-                        };
-
-                        _db.Locations.Add(location);
-                        await _db.SaveChangesAsync();
-                        TempData["success"] = "Location created successfully";
-                    }
-                    else
-                    {
-                        // Update existing location
-                        var location = await _db.Locations.FindAsync(vm.Id);
-                        if (location == null)
+                            await CreateLocation(vm);
+                            TempData["success"] = "Location created successfully";
+                        }
+                        else
                         {
-                            return NotFound();
+                            await UpdateLocation(vm);
+                            TempData["success"] = "Location updated successfully";
                         }
 
-                        location.Name = vm.Name?.Trim();
-                        location.AddressLine1 = vm.AddressLine1.Trim();
-                        location.AddressLine2 = vm.AddressLine2?.Trim();
-                        location.Suburb = vm.Suburb.Trim();
-                        location.City = vm.City.Trim();
-                        location.Province = vm.Province.Trim();
-                        location.PostalCode = vm.PostalCode.Trim();
-                        location.Country = vm.Country.Trim();
-                        location.IsActive = vm.IsActive;
-                        location.UpdatedAt = DateTime.UtcNow;
-
-                        _db.Locations.Update(location);
-                        await _db.SaveChangesAsync();
-                        TempData["success"] = "Location updated successfully";
+                        return RedirectToAction(nameof(Index));
                     }
+                }
 
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException ex)
-                {
-                    ModelState.AddModelError("", "Error saving location. Please check your data and try again.");
-                    // Log the exception details
-                    System.Diagnostics.Debug.WriteLine($"Database update error: {ex.InnerException?.Message}");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"An error occurred: {ex.Message}");
-                }
+                // If validation fails, repopulate dropdowns
+                await PopulateDropdowns(vm);
+                TempData["error"] = "Please correct the validation errors.";
+                return View(vm);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Database error saving location");
+                ModelState.AddModelError("", "A database error occurred while saving the location. This location may already exist.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving location");
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
             }
 
-            // If we got here, something went wrong
+            await PopulateDropdowns(vm);
             return View(vm);
         }
 
         // GET: Locations/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var location = await _db.Locations
-                .Include(l => l.Employees)
-                .Include(l => l.Customers)
-                .Include(l => l.Fridges)
-                .FirstOrDefaultAsync(l => l.Id == id);
-
-            if (location == null || !location.IsActive)
+            try
             {
-                return NotFound();
+                var location = await _db.Locations
+                    .Include(l => l.Employees)
+                    .Include(l => l.Customers)
+                    .Include(l => l.Fridges)
+                    .Include(l => l.FridgeAllocations)
+                    .FirstOrDefaultAsync(l => l.Id == id);
+
+                if (location == null || !location.IsActive)
+                {
+                    TempData["error"] = "Location not found or already deleted.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Check dependencies for soft delete
+                var dependencyCheck = await CheckLocationDependencies(location);
+                ViewBag.CanDelete = dependencyCheck.CanDelete;
+                ViewBag.DependencyMessage = dependencyCheck.Message;
+
+                // Convert to ViewModel for display
+                var vm = new LocationVM
+                {
+                    Id = location.Id,
+                    AddressLine1 = location.AddressLine1,
+                    AddressLine2 = location.AddressLine2,
+                    Suburb = location.Suburb,
+                    City = location.City,
+                    Province = location.Province,
+                    PostalCode = location.PostalCode,
+                    Country = location.Country,
+                    TotalEmployees = location.Employees.Count(e => e.IsActive),
+                    TotalCustomers = location.Customers.Count(c => c.IsActive),
+                    TotalFridges = location.Fridges.Count(f => f.IsActive)
+                };
+
+                return View(vm);
             }
-
-            // Check if location can be deleted (has no active references)
-            ViewBag.CanDelete = !location.Employees.Any(e => e.IsActive) &&
-                               !location.Customers.Any(c => c.IsActive) &&
-                               !location.Fridges.Any(f => f.Status == FridgeStatus.Available);
-
-            return View(location);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading delete confirmation for location ID: {LocationId}", id);
+                TempData["error"] = "An error occurred while loading the delete confirmation.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // POST: Locations/Delete/5
@@ -200,61 +307,231 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var location = await _db.Locations
-                .Include(l => l.Employees)
-                .Include(l => l.Customers)
-                .Include(l => l.Fridges)
-                .FirstOrDefaultAsync(l => l.Id == id);
-
-            if (location == null)
+            try
             {
-                return NotFound();
+                var location = await _db.Locations
+                    .Include(l => l.Employees)
+                    .Include(l => l.Customers)
+                    .Include(l => l.Fridges)
+                    .Include(l => l.FridgeAllocations)
+                    .FirstOrDefaultAsync(l => l.Id == id);
+
+                if (location == null)
+                {
+                    TempData["error"] = "Location not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Check dependencies
+                var dependencyCheck = await CheckLocationDependencies(location);
+                if (!dependencyCheck.CanDelete)
+                {
+                    TempData["error"] = dependencyCheck.Message;
+                    return RedirectToAction(nameof(Delete), new { id });
+                }
+
+                // Soft delete (as per project checklist)
+                location.IsActive = false;
+                location.ModifiedAt = DateTime.UtcNow;
+                location.ModifiedBy = User.Identity.Name;
+
+                await _db.SaveChangesAsync();
+                TempData["success"] = "Location deactivated successfully.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting location with ID: {LocationId}", id);
+                TempData["error"] = "An error occurred while deactivating the location.";
             }
 
-            // Check if location has active references
-            if (location.Employees.Any(e => e.IsActive) ||
-                location.Customers.Any(c => c.IsActive) ||
-                location.Fridges.Any(f => f.Status == FridgeStatus.Available))
-            {
-                TempData["error"] = "Cannot delete location. It has active employees, customers, or fridges assigned.";
-                return RedirectToAction(nameof(Delete), new { id });
-            }
-
-            // Soft delete (as per project checklist)
-            location.IsActive = false;
-            location.UpdatedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync();
-            TempData["success"] = "Location deleted successfully";
             return RedirectToAction(nameof(Index));
         }
 
-        // AJAX: Check if location name exists
+        // AJAX: Check if location exists
         [AcceptVerbs("GET", "POST")]
-        public async Task<JsonResult> CheckLocationNameExists(string name, int id = 0)
+        public async Task<JsonResult> CheckLocationExists(string suburb, string city, string province, int id = 0)
         {
-            var exists = await _db.Locations
-                .AnyAsync(l => l.Name == name.Trim() && l.Id != id && l.IsActive);
+            try
+            {
+                var exists = await _db.Locations
+                    .AnyAsync(l => l.Id != id &&
+                                  l.IsActive &&
+                                  l.Suburb == suburb.Trim() &&
+                                  l.City == city.Trim() &&
+                                  l.Province == province.Trim());
 
-            return Json(!exists);
+                return Json(new { exists = !exists, message = exists ? "A location with this address already exists." : "" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking location existence");
+                return Json(new { exists = false, message = "Error checking location existence." });
+            }
         }
 
         // AJAX: Get locations by province
+        [HttpGet]
         public async Task<JsonResult> GetLocationsByProvince(string province)
         {
-            var locations = await _db.Locations
-                .Where(l => l.Province == province && l.IsActive)
-                .OrderBy(l => l.City)
-                .ThenBy(l => l.Suburb)
-                .Select(l => new { l.Id, DisplayName = $"{l.Suburb}, {l.City} - {l.Name}" })
-                .ToListAsync();
+            try
+            {
+                var locations = await _db.Locations
+                    .Where(l => l.Province == province && l.IsActive)
+                    .OrderBy(l => l.City)
+                    .ThenBy(l => l.Suburb)
+                    .Select(l => new { l.Id, DisplayName = $"{l.Suburb}, {l.City}" })
+                    .ToListAsync();
 
-            return Json(locations);
+                return Json(new { success = true, data = locations });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting locations by province: {Province}", province);
+                return Json(new { success = false, message = "Error loading locations." });
+            }
         }
 
         // AJAX: Get provinces
+        [HttpGet]
         public async Task<JsonResult> GetProvinces()
         {
+            try
+            {
+                var provinces = await _db.Locations
+                    .Where(l => l.IsActive)
+                    .Select(l => l.Province)
+                    .Distinct()
+                    .OrderBy(p => p)
+                    .ToListAsync();
+
+                return Json(new { success = true, data = provinces });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting provinces");
+                return Json(new { success = false, message = "Error loading provinces." });
+            }
+        }
+
+        // AJAX: Get cities by province
+        [HttpGet]
+        public async Task<JsonResult> GetCities(string province)
+        {
+            try
+            {
+                var cities = await _db.Locations
+                    .Where(l => l.Province == province && l.IsActive)
+                    .Select(l => l.City)
+                    .Distinct()
+                    .OrderBy(c => c)
+                    .ToListAsync();
+
+                return Json(new { success = true, data = cities });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting cities for province: {Province}", province);
+                return Json(new { success = false, message = "Error loading cities." });
+            }
+        }
+
+        // AJAX: Get suburbs by city
+        [HttpGet]
+        public async Task<JsonResult> GetSuburbs(string province, string city)
+        {
+            try
+            {
+                var suburbs = await _db.Locations
+                    .Where(l => l.Province == province && l.City == city && l.IsActive)
+                    .Select(l => l.Suburb)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToListAsync();
+
+                return Json(new { success = true, data = suburbs });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting suburbs for city: {City}, province: {Province}", city, province);
+                return Json(new { success = false, message = "Error loading suburbs." });
+            }
+        }
+
+        // AJAX: Toggle location status
+        [HttpPost]
+        public async Task<JsonResult> ToggleStatus(int id)
+        {
+            try
+            {
+                var location = await _db.Locations.FindAsync(id);
+                if (location == null)
+                {
+                    return Json(new { success = false, message = "Location not found." });
+                }
+
+                location.ModifiedAt = DateTime.UtcNow;
+                location.ModifiedBy = User.Identity.Name;
+
+                await _db.SaveChangesAsync();
+
+                return Json(new
+                {
+                    success = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error toggling location status for ID: {LocationId}", id);
+                return Json(new { success = false, message = "An error occurred while updating location status." });
+            }
+        }
+
+        #region Private Methods
+
+        private async Task CreateLocation(LocationVM vm)
+        {
+            var location = new Location
+            {
+                AddressLine1 = vm.AddressLine1.Trim(),
+                AddressLine2 = vm.AddressLine2?.Trim(),
+                Suburb = vm.Suburb.Trim(),
+                City = vm.City.Trim(),
+                Province = vm.Province.Trim(),
+                PostalCode = vm.PostalCode.Trim(),
+                Country = vm.Country.Trim(),
+                IsActive = vm.IsActive,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = User.Identity.Name
+            };
+
+            _db.Locations.Add(location);
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task UpdateLocation(LocationVM vm)
+        {
+            var location = await _db.Locations.FindAsync(vm.Id);
+            if (location == null) throw new Exception("Location not found");
+
+            location.AddressLine1 = vm.AddressLine1.Trim();
+            location.AddressLine2 = vm.AddressLine2?.Trim();
+            location.Suburb = vm.Suburb.Trim();
+            location.City = vm.City.Trim();
+            location.Province = vm.Province.Trim();
+            location.PostalCode = vm.PostalCode.Trim();
+            location.Country = vm.Country.Trim();
+            location.IsActive = vm.IsActive;
+            location.ModifiedAt = DateTime.UtcNow;
+            location.ModifiedBy = User.Identity.Name;
+
+            _db.Locations.Update(location);
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task PopulateDropdowns(LocationVM vm)
+        {
+
+            // Province dropdown for filter
             var provinces = await _db.Locations
                 .Where(l => l.IsActive)
                 .Select(l => l.Province)
@@ -262,33 +539,107 @@ namespace Project.Controllers
                 .OrderBy(p => p)
                 .ToListAsync();
 
-            return Json(provinces);
+            ViewBag.ProvinceList = provinces;
         }
 
-        // AJAX: Get cities by province
-        public async Task<JsonResult> GetCities(string province)
+        private async Task PopulateFilterDropdowns()
         {
+            // Province filter
+            var provinces = await _db.Locations
+                .Where(l => l.IsActive)
+                .Select(l => l.Province)
+                .Distinct()
+                .OrderBy(p => p)
+                .ToListAsync();
+
+            // City filter
             var cities = await _db.Locations
-                .Where(l => l.Province == province && l.IsActive)
+                .Where(l => l.IsActive)
                 .Select(l => l.City)
                 .Distinct()
                 .OrderBy(c => c)
                 .ToListAsync();
 
-            return Json(cities);
+            ViewBag.ProvinceList = provinces;
+            ViewBag.CityList = cities;
         }
 
-        // AJAX: Get suburbs by city
-        public async Task<JsonResult> GetSuburbs(string province, string city)
+        private async Task PopulateLocationStatistics(LocationVM vm, int locationId)
         {
-            var suburbs = await _db.Locations
-                .Where(l => l.Province == province && l.City == city && l.IsActive)
-                .Select(l => l.Suburb)
-                .Distinct()
-                .OrderBy(s => s)
-                .ToListAsync();
+            var stats = await _db.Locations
+                .Where(l => l.Id == locationId)
+                .Select(l => new
+                {
+                    TotalFridges = l.Fridges.Count(f => f.IsActive),
+                    AvailableFridges = l.Fridges.Count(f => f.IsActive && f.Status == FridgeStatus.Available),
+                    TotalCustomers = l.Customers.Count(c => c.IsActive),
+                    TotalEmployees = l.Employees.Count(e => e.IsActive),
+                    PendingMaintenance = l.MaintenanceVisits.Count(m => m.Status == ServicingStatus.Scheduled),
+                    OpenFaults = l.FaultReports.Count(f => f.Status == FaultStatus.Acknowledged || f.Status == FaultStatus.InProgress)
+                })
+                .FirstOrDefaultAsync();
 
-            return Json(suburbs);
+            if (stats != null)
+            {
+                vm.TotalFridges = stats.TotalFridges;
+                vm.AvailableFridges = stats.AvailableFridges;
+                vm.TotalCustomers = stats.TotalCustomers;
+                vm.TotalEmployees = stats.TotalEmployees;
+                vm.PendingMaintenance = stats.PendingMaintenance;
+                vm.OpenFaults = stats.OpenFaults;
+            }
         }
+
+        private async Task<(bool CanDelete, string Message)> CheckLocationDependencies(Location location)
+        {
+            var activeEmployees = location.Employees.Any(e => e.IsActive);
+            var activeCustomers = location.Customers.Any(c => c.IsActive);
+            var activeFridges = location.Fridges.Any(f => f.IsActive);
+            var activeAllocations = location.FridgeAllocations.Any(a => a.Status == AllocationStatus.Active);
+
+            if (activeEmployees || activeCustomers || activeFridges || activeAllocations)
+            {
+                var messages = new List<string>();
+                if (activeEmployees) messages.Add("active employees");
+                if (activeCustomers) messages.Add("active customers");
+                if (activeFridges) messages.Add("active fridges");
+                if (activeAllocations) messages.Add("active allocations");
+
+                return (false, $"Cannot delete location. It has {string.Join(", ", messages)} assigned.");
+            }
+
+            return (true, "Location can be safely deleted.");
+        }
+
+        private async Task<object> GetRecentActivities(int locationId)
+        {
+            var recentActivities = new
+            {
+                RecentAllocations = await _db.FridgeAllocations
+                    .Where(a => a.DeliveryLocationId == locationId)
+                    .OrderByDescending(a => a.AllocationDate)
+                    .Take(5)
+                    .Select(a => new { a.Id, a.Fridge.SerialNumber, a.Customer.TradingName, a.AllocationDate })
+                    .ToListAsync(),
+
+                RecentMaintenance = await _db.MaintenanceVisits
+                    .Where(m => m.Allocation.DeliveryLocationId == locationId)
+                    .OrderByDescending(m => m.ScheduledDate)
+                    .Take(5)
+                    .Select(m => new { m.Id, m.ScheduledDate, m.Technician.UserAccount.FirstName, m.Status })
+                    .ToListAsync(),
+
+                RecentFaults = await _db.FaultRecords
+                    .Where(f => f.FaultLocationId == locationId)
+                    .OrderByDescending(f => f.ReportedDate)
+                    .Take(5)
+                    .Select(f => new { f.Id, f.Fridge.SerialNumber, f.ReportedDate, f.Status })
+                    .ToListAsync()
+            };
+
+            return recentActivities;
+        }
+
+        #endregion
     }
 }

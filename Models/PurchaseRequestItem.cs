@@ -18,14 +18,13 @@ namespace Project.Models
         [Display(Name = "Purchase Request")]
         public virtual PurchaseRequest PurchaseRequest { get; set; } = null!;
 
-        [Required(ErrorMessage = "Fridge is required.")]
-        [Display(Name = "Fridge")]
-        public int FridgeId { get; set; }
+        [Required]
+        [Display(Name = "Fridge ModelName")]
+        public int FridgeModelId { get; set; }
 
-        [ForeignKey(nameof(FridgeId))]
+        [ForeignKey(nameof(FridgeModelId))]
         [ValidateNever]
-        [Display(Name = "Fridge")]
-        public virtual Fridge Fridge { get; set; } = null!;
+        public virtual FridgeModel FridgeModel { get; set; } = null!;
 
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000.")]

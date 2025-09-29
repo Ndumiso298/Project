@@ -1,0 +1,33 @@
+﻿@model Project.Models.ViewModels.FridgeAllocationVM
+
+@{
+    ViewData["Title"] = "Delete Allocation";
+}
+
+<h2 class="mb-3">Delete Allocation</h2>
+
+<div class="alert alert-warning">
+    <strong>Are you sure?</strong> This will mark the allocation as inactive (soft delete).
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Fridge</dt>
+    <dd class="col-sm-9">@Model.FridgeDetails?.SerialNumber (@Model.FridgeDetails?.FridgeModelDetails.ModelName)</dd>
+
+    <dt class="col-sm-3">Customer</dt>
+    <dd class="col-sm-9">@Model.CustomerDetails?.FullName</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Confirm Delete
+    </button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Cancel
+    </a>
+</form>

@@ -1,0 +1,227 @@
+﻿@model CompleteMaintenanceVM
+@{
+    ViewData["Title"] = "Complete Maintenance Visit";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-check-circle me-2"></i>Complete Maintenance Visit
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Details" asp-route-id="@Model.VisitId" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Visit
+            </a>
+        </div>
+    </div>
+
+    <form asp-action="Complete" method="post" id="completeForm">
+        <input asp-for="VisitId" type="hidden" />
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-check me-2"></i>Completion Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Visit Information -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Visit Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Fridge:</strong> @Model.FridgeInfo
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Customer:</strong> @Model.CustomerInfo
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Completion Details -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ActualDate" class="form-label"></label> *
+                                    <input asp-for="ActualDate" type="datetime-local" class="form-control" />
+                                    <span asp-validation-for="ActualDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Status" class="form-label"></label> *
+                                    <select asp-for="Status" class="form-select">
+                                        <option value="@ServicingStatus.Completed">Completed</option>
+                                        <option value="@ServicingStatus.Cancelled">Cancelled</option>
+                                    </select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Information -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceCost" class="form-label"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R</span>
+                                        <input asp-for="ServiceCost" class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="ServiceCost" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="IsChecklistCompleted" class="form-label"></label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsChecklistCompleted" />
+                                        <label class="form-check-label" asp-for="IsChecklistCompleted"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parts Used -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="PartsUsed" class="form-label"></label>
+                                    <textarea asp-for="PartsUsed" class="form-control" rows="3"
+                                              placeholder="List any parts used or replaced during this visit"></textarea>
+                                    <span asp-validation-for="PartsUsed" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technician Notes -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="TechnicianNotes" class="form-label"></label> *
+                                    <textarea asp-for="TechnicianNotes" class="form-control" rows="5"
+                                              placeholder="Detailed notes about the service performed, issues found, and any recommendations"></textarea>
+                                    <span asp-validation-for="TechnicianNotes" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Checklist Notes -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="ChecklistNotes" class="form-label"></label>
+                                    <textarea asp-for="ChecklistNotes" class="form-control" rows="3"
+                                              placeholder="Any additional checklist notes or observations"></textarea>
+                                    <span asp-validation-for="ChecklistNotes" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-6">
+                                <a asp-action="Details" asp-route-id="@Model.VisitId" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                            <div class="col-6 text-end">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check me-2"></i>Complete Visit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar - Quick Checklist -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list-check me-2"></i>Quick Checklist
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkTemp">
+                            <label class="form-check-label" for="checkTemp">Temperature check performed</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkSeals">
+                            <label class="form-check-label" for="checkSeals">Door seals inspected</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkCondenser">
+                            <label class="form-check-label" for="checkCondenser">Condenser coils cleaned</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkFans">
+                            <label class="form-check-label" for="checkFans">Fans and motors checked</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkCustomer">
+                            <label class="form-check-label" for="checkCustomer">Customer informed of work</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkSafety">
+                            <label class="form-check-label" for="checkSafety">Safety checks completed</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>Completion Tips
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="small">
+                            <li>Record all parts used for accurate billing</li>
+                            <li>Provide detailed notes for future reference</li>
+                            <li>Update fridge service history</li>
+                            <li>Inform customer of any follow-up needs</li>
+                            <li>Complete all safety checks</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Auto-populate current datetime
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = (now.getMonth() + 1).toString().padStart(2, '0');
+            var day = now.getDate().toString().padStart(2, '0');
+            var hours = now.getHours().toString().padStart(2, '0');
+            var minutes = now.getMinutes().toString().padStart(2, '0');
+
+            var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            $('#ActualDate').val(formattedDateTime);
+
+            // Checklist automation
+            $('.form-check-input').change(function () {
+                var checkedItems = $('.form-check-input:checked').length;
+                var totalItems = $('.form-check-input').length;
+
+                if (checkedItems === totalItems) {
+                    $('#IsChecklistCompleted').prop('checked', true);
+                }
+            });
+        });
+    </script>
+}

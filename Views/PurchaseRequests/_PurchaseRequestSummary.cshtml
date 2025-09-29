@@ -1,0 +1,108 @@
+﻿@model PurchaseRequest
+@{
+    var isOverdue = Model.RequiredByDate.HasValue &&
+                    Model.RequiredByDate.Value < DateTime.Today &&
+                    Model.Status != PurchaseRequestStatus.Approved &&
+                    Model.Status != PurchaseRequestStatus.Submitted;
+}
+
+<div class="card h-100">
+    <div class="card-header d-flex justify-content-between align-items-center @(isOverdue ? "bg-danger text-white" : "bg-light")">
+        <h6 class="mb-0">Request #@Model.Id</h6>
+        <span class="badge bg-@GetStatusBadge(Model.Status)">@Model.Status</span>
+    </div>
+    <div class="card-body">
+        <div class="mb-2">
+            <small class="text-muted">Requested By:</small>
+            <div class="fw-bold">@Model.RequestedBy?.UserAccount?.FullName</div>
+        </div>
+
+        <div class="mb-2">
+            <small class="text-muted">Reason:</small>
+            <div>@Model.Reason</div>
+            @if (!string.IsNullOrEmpty(Model.CustomReason))
+            {
+                <small class="text-muted">@Model.CustomReason</small>
+            }
+        </div>
+
+        <div class="mb-2">
+            <small class="text-muted">Urgency:</small>
+            <span class="badge bg-@GetUrgencyBadge(Model.Urgency)">@Model.Urgency</span>
+        </div>
+
+        <div class="mb-2">
+            <small class="text-muted">Required By:</small>
+            <div>@(Model.RequiredByDate?.ToString("dd/MM/yyyy") ?? "Not specified")</div>
+        </div>
+
+        <div class="mb-3">
+            <small class="text-muted">Items:</small>
+            <div>
+                @foreach (var item in Model.Items.Take(3))
+                {
+                    <div class="small">
+                        @item.Quantity x @item.FridgeModel?.Manufacturer @item.FridgeModel?.ModelName
+                    </div>
+                }
+                @if (Model.Items.Count > 3)
+                {
+                    <div class="small text-muted">+ @(Model.Items.Count - 3) more items</div>
+                }
+            </div>
+        </div>
+
+        <div class="row text-center">
+            <div class="col-6">
+                <div class="border rounded p-2">
+                    <div class="small text-muted">Estimated</div>
+                    <div class="fw-bold text-warning">R @Model.EstimatedTotalCost.ToString("N2")</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="border rounded p-2">
+                    <div class="small text-muted">Approved</div>
+                    <div class="fw-bold text-success">R @Model.ApprovedBudget.ToString("N2")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-transparent">
+        <div class="btn-group w-100" role="group">
+            <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i>
+            </a>
+            <button type="button" class="btn btn-sm btn-outline-danger"
+                    onclick="confirmDelete(@Model.Id, '@Model.Id')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusBadge(PurchaseRequestStatus status)
+    {
+        return status switch
+        {
+            PurchaseRequestStatus.Draft => "secondary",
+            PurchaseRequestStatus.UnderReview => "warning",
+            PurchaseRequestStatus.Approved => "success",
+            PurchaseRequestStatus.Rejected => "danger",
+            PurchaseRequestStatus.Submitted => "info",
+            _ => "secondary"
+        };
+    }
+
+    public string GetUrgencyBadge(PurchaseRequestUrgency urgency)
+    {
+        return urgency switch
+        {
+            PurchaseRequestUrgency.Low => "success",
+            PurchaseRequestUrgency.Medium => "warning",
+            PurchaseRequestUrgency.High => "danger",
+            PurchaseRequestUrgency.Critical => "dark",
+            _ => "secondary"
+        };
+    }
+}

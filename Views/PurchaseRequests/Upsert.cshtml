@@ -1,0 +1,384 @@
+﻿@model PurchaseRequestVM
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create Purchase Request" : "Edit Purchase Request";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-shopping-cart me-2"></i>@ViewData["Title"]
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <form asp-action="Upsert" method="post" id="purchaseRequestForm">
+        <div class="card">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <!-- Header Information -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="RequestedById" class="form-label"></label> *
+                            <select asp-for="RequestedById" asp-items="Model.EmployeeList" class="form-select">
+                                <option value="">-- Select Employee --</option>
+                            </select>
+                            <span asp-validation-for="RequestedById" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Reason" class="form-label"></label> *
+                            <select asp-for="Reason" asp-items="Model.ReasonList" class="form-select" id="reasonSelect">
+                                <option value="">-- Select Reason --</option>
+                            </select>
+                            <span asp-validation-for="Reason" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3" id="customReasonGroup" style="display: none;">
+                            <label asp-for="CustomReason" class="form-label"></label> *
+                            <input asp-for="CustomReason" class="form-control" placeholder="Please specify the reason..." />
+                            <span asp-validation-for="CustomReason" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label"></label> *
+                            <select asp-for="Status" asp-items="Model.StatusList" class="form-select"></select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Urgency" class="form-label"></label> *
+                            <select asp-for="Urgency" asp-items="Model.UrgencyList" class="form-select"></select>
+                            <span asp-validation-for="Urgency" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RequiredByDate" class="form-label"></label>
+                            <input asp-for="RequiredByDate" type="date" class="form-control" />
+                            <span asp-validation-for="RequiredByDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Information -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="EstimatedTotalCost" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">R</span>
+                                <input asp-for="EstimatedTotalCost" class="form-control" readonly id="estimatedTotalCost" />
+                            </div>
+                            <span asp-validation-for="EstimatedTotalCost" class="text-danger"></span>
+                            <div class="form-text">Calculated automatically from items</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="ApprovedBudget" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">R</span>
+                                <input asp-for="ApprovedBudget" class="form-control" />
+                            </div>
+                            <span asp-validation-for="ApprovedBudget" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Section -->
+                <div class="card mt-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>Request Items
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-success" id="addItemBtn">
+                            <i class="fas fa-plus me-1"></i>Add Item
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="itemsContainer">
+                            @for (int i = 0; i < Model.Items.Count; i++)
+                            {
+                                <div class="item-row border-bottom pb-3 mb-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Fridge Model *</label>
+                                                <select asp-for="Items[i].FridgeModelId" asp-items="Model.FridgeModelList" class="form-select fridge-model">
+                                                    <option value="">-- Select Model --</option>
+                                                </select>
+                                                <span asp-validation-for="Items[i].FridgeModelId" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantity *</label>
+                                                <input asp-for="Items[i].Quantity" type="number" min="1" class="form-control quantity" />
+                                                <span asp-validation-for="Items[i].Quantity" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Estimated Unit Price (R)</label>
+                                                <input asp-for="Items[i].EstimatedUnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" />
+                                                <span asp-validation-for="Items[i].EstimatedUnitPrice" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">Line Total (R)</label>
+                                                <input type="text" class="form-control line-total" readonly />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="mb-3">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-danger btn-sm remove-item w-100" title="Remove Item">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Notes</label>
+                                                <input asp-for="Items[i].Notes" class="form-control" placeholder="Optional notes..." />
+                                                <span asp-validation-for="Items[i].Notes" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input asp-for="Items[i].Id" type="hidden" />
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Empty template for new items -->
+                        <div id="itemTemplate" style="display: none;">
+                            <div class="item-row border-bottom pb-3 mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Fridge Model *</label>
+                                            <select name="Items[__index__].FridgeModelId" class="form-select fridge-model">
+                                                <option value="">-- Select Model --</option>
+                                                @foreach (var item in Model.FridgeModelList)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label class="form-label">Quantity *</label>
+                                            <input name="Items[__index__].Quantity" type="number" min="1" class="form-control quantity" value="1" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">Estimated Unit Price (R)</label>
+                                            <input name="Items[__index__].EstimatedUnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" value="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label class="form-label">Line Total (R)</label>
+                                            <input type="text" class="form-control line-total" readonly value="0.00" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="mb-3">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger btn-sm remove-item w-100" title="Remove Item">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Notes</label>
+                                            <input name="Items[__index__].Notes" class="form-control" placeholder="Optional notes..." />
+                                        </div>
+                                    </div>
+                                </div>
+                                <input name="Items[__index__].Id" type="hidden" value="0" />
+                            </div>
+                        </div>
+
+                        @if (!Model.Items.Any())
+                        {
+                            <div class="text-center py-4">
+                                <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">No items added yet. Click "Add Item" to start.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calculator me-2"></i>Request Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-primary" id="totalItems">0</h4>
+                                    <small class="text-muted">Total Items</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-warning" id="totalQuantity">0</h4>
+                                    <small class="text-muted">Total Quantity</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h4 class="text-success">R <span id="grandTotal">0.00</span></h4>
+                                    <small class="text-muted">Grand Total</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            @(Model.Id == 0 ? "Create Request" : "Update Request")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            let itemIndex = @Model.Items.Count;
+
+            // Show custom reason field when "Other" is selected
+            $('#reasonSelect').change(function () {
+                if ($(this).val() === 'Other') {
+                    $('#customReasonGroup').show();
+                    $('#CustomReason').prop('required', true);
+                } else {
+                    $('#customReasonGroup').hide();
+                    $('#CustomReason').prop('required', false);
+                }
+            });
+
+            // Trigger change on page load
+            $('#reasonSelect').trigger('change');
+
+            // Add new item
+            $('#addItemBtn').click(function () {
+                const template = $('#itemTemplate').html();
+                const newItem = template.replace(/__index__/g, itemIndex);
+                $('#itemsContainer').append(newItem);
+                itemIndex++;
+                updateCalculations();
+            });
+
+            // Remove item
+            $(document).on('click', '.remove-item', function () {
+                if ($('.item-row').length > 1) {
+                    $(this).closest('.item-row').remove();
+                    reindexItems();
+                    updateCalculations();
+                } else {
+                    Swal.fire('Warning', 'At least one item is required.', 'warning');
+                }
+            });
+
+            // Update calculations when quantity or price changes
+            $(document).on('input', '.quantity, .unit-price', function () {
+                updateLineTotal($(this).closest('.item-row'));
+                updateCalculations();
+            });
+
+            function updateLineTotal(row) {
+                const quantity = parseFloat(row.find('.quantity').val()) || 0;
+                const unitPrice = parseFloat(row.find('.unit-price').val()) || 0;
+                const lineTotal = quantity * unitPrice;
+                row.find('.line-total').val(lineTotal.toFixed(2));
+            }
+
+            function updateCalculations() {
+                let totalItems = 0;
+                let totalQuantity = 0;
+                let grandTotal = 0;
+
+                $('.item-row').each(function () {
+                    totalItems++;
+                    const quantity = parseFloat($(this).find('.quantity').val()) || 0;
+                    const unitPrice = parseFloat($(this).find('.unit-price').val()) || 0;
+
+                    totalQuantity += quantity;
+                    grandTotal += quantity * unitPrice;
+
+                    updateLineTotal($(this));
+                });
+
+                $('#totalItems').text(totalItems);
+                $('#totalQuantity').text(totalQuantity);
+                $('#grandTotal').text(grandTotal.toFixed(2));
+                $('#EstimatedTotalCost').val(grandTotal);
+            }
+
+            function reindexItems() {
+                $('.item-row').each(function (index) {
+                    $(this).find('select, input').each(function () {
+                        const name = $(this).attr('name');
+                        if (name) {
+                            $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
+                        }
+                    });
+                });
+                itemIndex = $('.item-row').length;
+            }
+
+            // Auto-populate required by date (1 week from now)
+        @if (Model.Id == 0)
+        {
+            <text>
+                    var nextWeek = new Date();
+                    nextWeek.setDate(nextWeek.getDate() + 7);
+                    var formattedDate = nextWeek.toISOString().split('T')[0];
+                    $('#RequiredByDate').val(formattedDate);
+            </text>
+        }
+
+            // Initialize calculations
+            updateCalculations();
+        });
+    </script>
+}

@@ -1,0 +1,228 @@
+﻿<!-- Views/Faults/Index.cshtml -->
+@model IEnumerable<FaultRecord>
+@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Project.Data
+
+@{
+    ViewData["Title"] = "Fault Management";
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var isCustomer = User.IsInRole(SD.CustomerRole);
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Title"]
+                            </h3>
+                        </div>
+                        @if (!isCustomer)
+                        {
+                            <div class="col-auto">
+                                <a class="btn btn-success" asp-action="Dashboard">
+                                    <i class="fas fa-chart-bar me-1"></i>Dashboard
+                                </a>
+                                <a class="btn btn-success" asp-action="Upsert">
+                                    <i class="fas fa-plus-circle me-1"></i>Report Fault
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-auto">
+                                <a class="btn btn-success" asp-action="Upsert">
+                                    <i class="fas fa-plus-circle me-1"></i>Report New Fault
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Filter Section -->
+                    <form method="get" class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" class="form-select" asp-items="ViewBag.StatusList">
+                                <option value="">All Statuses</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="customerName" class="form-label">Customer Name</label>
+                            <input type="text" name="customerName" class="form-control"
+                                   value="@ViewBag.CustomerName" placeholder="Search customer...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" name="location" class="form-control"
+                                   value="@ViewBag.Location" placeholder="Search location...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchString" class="form-label">Search</label>
+                            <input type="text" name="searchString" class="form-control"
+                                   value="@ViewBag.SearchString" placeholder="Search faults...">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter me-1"></i>Apply Filters
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-refresh me-1"></i>Clear Filters
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Faults Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Fault #</th>
+                                    <th>Reported Date</th>
+                                    <th>Fridge Serial</th>
+                                    <th>Customer</th>
+                                    <th>Description</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Assigned To</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var fault in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>#@fault.Id</strong>
+                                        </td>
+                                        <td>@fault.ReportedDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (fault.Fridge != null)
+                                            {
+                                                <span class="badge bg-secondary">@fault.Fridge.SerialNumber</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (fault.ReportedBy != null)
+                                            {
+                                                <div>@fault.ReportedBy.FirstName @fault.ReportedBy.LastName</div>
+                                                <small class="text-muted">@fault.ReportedBy.Email</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 200px;"
+                                                 title="@fault.Description">
+                                                @fault.Description
+                                            </div>
+                                        </td>
+                                        <td>@GetPriorityBadge(fault.Priority)</td>
+                                        <td>@GetStatusBadge(fault.Status)</td>
+                                        <td>
+                                            @if (fault.AssignedTechnician != null)
+                                            {
+                                                <span>@fault.AssignedTechnician.UserAccount?.FirstName @fault.AssignedTechnician.UserAccount?.LastName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Unassigned</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@fault.Id"
+                                                   class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (fault.Status == FaultStatus.Reported &&
+                                               (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerRole)))
+                                                {
+                                                    <a asp-action="Upsert" asp-route-id="@fault.Id"
+                                                       class="btn btn-sm btn-outline-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                }
+                                                @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.FaultTechnicianRole))
+                                                {
+                                                    <a asp-action="Process" asp-route-id="@fault.Id"
+                                                       class="btn btn-sm btn-outline-info" title="Process Fault">
+                                                        <i class="fas fa-cogs"></i>
+                                                    </a>
+                                                }
+                                                <a asp-action="Print" asp-route-id="@fault.Id"
+                                                   class="btn btn-sm btn-outline-secondary" title="Print Report">
+                                                    <i class="fas fa-print"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h4 class="text-muted">No Active Faults Found</h4>
+                            <p class="text-muted">All reported faults have been resolved or match your filter criteria.</p>
+                            <a asp-action="Upsert" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-1"></i>Report New Fault
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private IHtmlContent GetStatusBadge(FaultStatus status)
+    {
+        var badgeClass = status switch
+        {
+            FaultStatus.Reported => "bg-secondary",
+            FaultStatus.InProgress => "bg-info",
+            FaultStatus.Resolved => "bg-success",
+            FaultStatus.Closed => "bg-dark",
+            _ => "bg-secondary"
+        };
+
+        return Html.Raw($"<span class='badge {badgeClass}'>{status}</span>");
+    }
+
+    private IHtmlContent GetPriorityBadge(FaultPriority priority)
+    {
+        var badgeClass = priority switch
+        {
+            FaultPriority.Low => "bg-success",
+            FaultPriority.Medium => "bg-warning",
+            FaultPriority.High => "bg-danger",
+            FaultPriority.Critical => "bg-danger",
+            _ => "bg-secondary"
+        };
+
+        var icon = priority switch
+        {
+            FaultPriority.Low => "fa-arrow-down",
+            FaultPriority.Medium => "fa-minus",
+            FaultPriority.High => "fa-arrow-up",
+            FaultPriority.Critical => "fa-triangle-exclamation",
+            _ => "fa-minus"
+        };
+
+        return Html.Raw($"<span class='badge {badgeClass}'><i class='fas {icon} me-1'></i>{priority}</span>");
+    }
+}

@@ -2,18 +2,18 @@
 
 namespace Project.Utilities.Enums
 {
-    public enum RequestPriority
+    public enum CustomerRequestPriority
     {
         [Display(Name = "Low")]
-        Low,
+        Low,          // Minor urgency
 
         [Display(Name = "Medium")]
-        Medium,
+        Medium,       // Normal urgency
 
         [Display(Name = "High")]
-        High,
+        High,         // Urgent
 
         [Display(Name = "Critical")]
-        Critical
+        Critical      // Immediate attention required
     }
 }

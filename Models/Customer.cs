@@ -11,15 +11,19 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        public string? UserId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
         [ForeignKey(nameof(UserId))]
         [ValidateNever]
-        public virtual ApplicationUser? UserAccount { get; set; } = null!;
+        public virtual ApplicationUser UserAccount { get; set; } = null!;
 
-        public int? CustomerLiaisonId { get; set; }
+        [NotMapped]
+        [Display(Name = "Full Name")]
+        public string FullName => $"{UserAccount?.FirstName} {UserAccount?.LastName}";
 
-        [ForeignKey(nameof(CustomerLiaisonId))]
+        public int? AssignedEmployeeId { get; set; }
+
+        [ForeignKey(nameof(AssignedEmployeeId))]
         [ValidateNever]
         public virtual Employee? AssignedEmployee { get; set; } = null!;
 
@@ -32,6 +36,11 @@ namespace Project.Models
         [Display(Name = "Business Type")]
         public BusinessType BusinessType { get; set; }
 
+        [Display(Name = "VAT Number")]
+        [StringLength(20, ErrorMessage = "VAT number cannot exceed 20 characters.")]
+        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "VAT number must be 10 digits.")]
+        public string? VATNumber { get; set; }
+
         [Required(ErrorMessage = "Business Email is required.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         [StringLength(200, ErrorMessage = "Business Email cannot exceed 200 characters.")]
@@ -43,14 +52,18 @@ namespace Project.Models
         [Display(Name = "Business Phone")]
         public string BusinessPhoneNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Address Line 1 is required.")]
-        [StringLength(200, ErrorMessage = "Address Line 1 cannot exceed 200 characters.")]
+        [Required(ErrorMessage = "Address line 1 is required.")]
+        [StringLength(100, ErrorMessage = "Address line 1 cannot exceed 100 characters.")]
         [Display(Name = "Address Line 1")]
         public string AddressLine1 { get; set; } = string.Empty;
 
-        [StringLength(200, ErrorMessage = "Address Line 2 cannot exceed 200 characters.")]
+        [StringLength(100, ErrorMessage = "Address line 2 cannot exceed 100 characters.")]
         [Display(Name = "Address Line 2")]
-        public string? AddressLine2 { get; set; } = string.Empty;
+        public string? AddressLine2 { get; set; }
+
+        [Required(ErrorMessage = "Suburb is required.")]
+        [StringLength(50, ErrorMessage = "Suburb cannot exceed 50 characters.")]
+        public string Suburb { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "City is required.")]
         [StringLength(200, ErrorMessage = "City cannot exceed 200 characters.")]
@@ -74,21 +87,42 @@ namespace Project.Models
         [Display(Name = "Trading Location")]
         public virtual Location TradingLocation { get; set; } = null!;
 
-        [Display(Name = "Account Status")]
+        [Display(Name = "Credit Limit")]
+        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, 1000000, ErrorMessage = "Credit limit must be between 0 and 1,000,000.")]
+        public decimal CreditLimit { get; set; } = 0;
+
+        [Display(Name = "Payment Terms (days)")]
+        [Range(0, 90, ErrorMessage = "Payment terms must be between 0 and 90 days.")]
+        public int PaymentTermsDays { get; set; } = 30;
+
+
+        [Display(Name = "Active Status")]
         public bool IsActive { get; set; } = true;
 
-        [Display(Name = "Created At")]
+        [Display(Name = "Credit Status")]
+        public CreditStatus CreditStatus { get; set; } = CreditStatus.Good;
+
+        [Display(Name = "Created Date")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Display(Name = "Updated At")]
+        [Display(Name = "Created By")]
+        public string? CreatedBy { get; set; } = string.Empty;
+
+        [Display(Name = "Last Updated")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Updated By")]
+        public string? UpdatedBy { get; set; } = string.Empty;
 
         // Navigation properties
         [ValidateNever]
         public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
 
         [ValidateNever]
-        [Display(Name = "FridgeAllocation History")]
+        [Display(Name = "RelatedAllocation History")]
         public virtual ICollection<FridgeAllocation> AllocationHistory { get; set; } = new List<FridgeAllocation>();
 
         [Display(Name = "Reported Faults")]
@@ -102,5 +136,36 @@ namespace Project.Models
         [Display(Name = "Maintenance Schedules")]
         [ValidateNever]
         public virtual ICollection<MaintenanceVisit> MaintenanceSchedules { get; set; } = new List<MaintenanceVisit>();
+
+        [NotMapped]
+        [Display(Name = "Full Address")]
+        public string FullAddress
+        {
+            get
+            {
+                var address = AddressLine1;
+                if (!string.IsNullOrEmpty(AddressLine2)) address += $", {AddressLine2}";
+                address += $", {Suburb}, {City}, {Province}, {PostalCode}";
+                return address;
+            }
+        }
+
+        [NotMapped]
+        [Display(Name = "Current Fridge Count")]
+        public int CurrentFridgeCount => Fridges?.Count(f => f.IsActive) ?? 0;
+
+        [NotMapped]
+        [Display(Name = "Active Allocations")]
+        public int ActiveAllocations => AllocationHistory?.Count(a => a.IsActive) ?? 0;
+
+        [NotMapped]
+        [Display(Name = "Outstanding Balance")]
+        [DataType(DataType.Currency)]
+        public decimal OutstandingBalance { get; set; } // Would be calculated from invoices
+
+        [NotMapped]
+        [Display(Name = "Available Credit")]
+        [DataType(DataType.Currency)]
+        public decimal AvailableCredit => CreditLimit - OutstandingBalance;
     }
 }

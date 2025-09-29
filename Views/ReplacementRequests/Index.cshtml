@@ -4,174 +4,266 @@
 }
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="fas fa-exchange-alt me-2"></i>@ViewData["Title"]</h1>
-        @if (User.IsInRole("CustomerLiaison") || User.IsInRole("Administrator"))
-        {
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i>Create New
-                </a>
-        }
-    </div>
-
-    <!-- Success Message -->
-    @if (TempData["Success"] != null)
-    {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-    }
-
-    <!-- Filter Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All Statuses</option>
-                        @foreach (var status in Enum.GetValues(typeof(CustomerRequestStatus)))
-                        {
-                                <option value="@status" selected="@(Context.Request.Query["status"] == status.ToString())">
-                                @status
-                                </option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Priority</label>
-                    <select name="priority" class="form-select" onchange="this.form.submit()">
-                        <option value="">All Priorities</option>
-                        @foreach (var priority in Enum.GetValues(typeof(RequestPriority)))
-                        {
-                                <option value="@priority" selected="@(Context.Request.Query["priority"] == priority.ToString())">
-                                @priority
-                                </option>
-                        }
-                    </select>
-                </div>
-            </form>
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-exchange-alt me-2"></i>Replacement Requests
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Upsert" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>New Replacement Request
+            </a>
         </div>
     </div>
 
-    <!-- Requests Table -->
+    <!-- Replacement Requests Card -->
     <div class="card">
         <div class="card-body">
-            @if (!Model.Any())
+            @if (Model.Any())
             {
-                    <div class="text-center py-4">
-                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                        <h5>No replacement requests found</h5>
-                        <p class="text-muted">Get started by creating a new replacement request.</p>
-                    </div>
-            }
-            else
-            {
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Customer</th>
-                                    <th>Fridge Model</th>
-                                    <th>Type</th>
-                                    <th>Quantity</th>
-                                    <th>Priority</th>
-                                    <th>Status</th>
-                                    <th>Requested Date</th>
-                                    <th>Assigned To</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var item in Model)
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Request #</th>
+                                <th>Customer</th>
+                                <th>Fridge</th>
+                                <th>Request Type</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Requested Date</th>
+                                <th>Assigned To</th>
+                                <th>Response Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model)
                             {
-                                        <tr>
-                                            <td>#@item.Id</td>
-                                            <td>@item.FridgeAllocation?.Customer?.UserAccount.FirstName</td>
-                                            <td>@item.FridgeAllocation?.Fridge?.Model</td>
-                                            <td>
-                                                <span class="badge bg-info">@item.RequestType</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-secondary">@item.Quantity</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge @GetPriorityBadgeClass(item.Priority)">
-                                            @item.Priority
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="badge @GetStatusBadgeClass(item.Status)">
-                                            @item.Status
-                                                </span>
-                                            </td>
-                                            <td>@item.RequestedDate.ToString("dd/MM/yyyy")</td>
-                                            <td>
-                                        @if (item.AssignedEmployee != null)
+                                <tr>
+                                    <td>
+                                        <strong>#@request.Id</strong>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">@request.FridgeAllocation?.Customer?.TradingName</div>
+                                        <small class="text-muted">@request.FridgeAllocation?.Customer?.UserAccount?.FirstName @request.FridgeAllocation?.Customer?.UserAccount?.LastName</small>
+                                    </td>
+                                    <td>
+                                        @if (request.FridgeAllocation?.Fridge != null)
                                         {
-                                            @item.AssignedEmployee.UserAccount.FirstName
+                                            <a asp-controller="Fridges" asp-action="Details" asp-route-id="@request.FridgeAllocation.Fridge.Id"
+                                               class="text-decoration-none">
+                                                @request.FridgeAllocation.Fridge.SerialNumber
+                                            </a>
                                         }
                                         else
                                         {
-                                                        <span class="text-muted">Not assigned</span>
+                                            <span class="text-muted">N/A</span>
                                         }
-                                            </td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm">
-                                                    <a asp-action="Details" asp-route-id="@item.Id" 
-                                                       class="btn btn-outline-primary" title="Details">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                            @if (User.IsInRole("InventoryLiaison") || User.IsInRole("Administrator"))
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@GetRequestTypeBadge(request.RequestType)">
+                                            @request.RequestType
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@GetPriorityBadge(request.Priority)">
+                                            @request.Priority
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@GetStatusBadge(request.Status)">
+                                            @request.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @request.RequestedDate.ToString("dd/MM/yyyy")
+                                        <br>
+                                        <small class="text-muted">@request.RequestedDate.ToString("HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        @if (request.AssignedEmployee != null)
+                                        {
+                                            @request.AssignedEmployee.UserAccount?.FirstName @request.AssignedEmployee.UserAccount?.LastName
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not assigned</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (request.ResponseDate.HasValue)
+                                        {
+                                            @request.ResponseDate.Value.ToString("dd/MM/yyyy")
+                                            <br>
+                                            <small class="text-muted">@request.ResponseDate.Value.ToString("HH:mm")</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@request.Id"
+                                               class="btn btn-info btn-sm" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Upsert" asp-route-id="@request.Id"
+                                               class="btn btn-primary btn-sm" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @if (User.IsInRole(SD.AdminRole))
                                             {
-                                                            <a asp-action="Edit" asp-route-id="@item.Id" 
-                                                               class="btn btn-outline-secondary" title="Edit">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                        onclick="confirmDelete(@request.Id, '@request.Id')" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             }
-                                            @if (User.IsInRole("Administrator"))
-                                            {
-                                                            <a asp-action="Delete" asp-route-id="@item.Id" 
-                                                               class="btn btn-outline-danger" title="Delete">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
-                                            }
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                            </tbody>
-                        </table>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary Statistics -->
+                <div class="row mt-4">
+                    <div class="col-md-2 col-6">
+                        <div class="card bg-primary text-white text-center">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1">@Model.Count()</h6>
+                                <small class="card-text">Total</small>
+                            </div>
+                        </div>
                     </div>
+                    <div class="col-md-2 col-6">
+                        <div class="card bg-warning text-white text-center">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1">@Model.Count(r => r.Status == CustomerRequestStatus.Draft)</h6>
+                                <small class="card-text">Pending</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="card bg-info text-white text-center">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1">@Model.Count(r => r.Status == CustomerRequestStatus.InProgress)</h6>
+                                <small class="card-text">In Progress</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="card bg-success text-white text-center">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1">@Model.Count(r => r.Status == CustomerRequestStatus.Completed)</h6>
+                                <small class="card-text">Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="card bg-danger text-white text-center">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1">@Model.Count(r => r.Priority == CustomerRequestPriority.High || r.Priority == CustomerRequestPriority.Critical)</h6>
+                                <small class="card-text">High Priority</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-6">
+                        <div class="card bg-secondary text-white text-center">
+                            <div class="card-body py-2">
+                                <h6 class="card-title mb-1">@Model.Count(r => r.AssignedEmployeeId == null)</h6>
+                                <small class="card-text">Unassigned</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-exchange-alt fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">No Replacement Requests Found</h5>
+                    <p class="text-muted">Create your first replacement request to get started.</p>
+                    <a asp-action="Upsert" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-2"></i>Create First Request
+                    </a>
+                </div>
             }
         </div>
     </div>
 </div>
 
-@functions {
-    public string GetPriorityBadgeClass(RequestPriority priority)
-    {
-        return priority switch
-        {
-            RequestPriority.Low => "bg-success",
-            RequestPriority.Medium => "bg-warning",
-            RequestPriority.High => "bg-danger",
-            RequestPriority.Critical => "bg-dark",
-            _ => "bg-secondary"
-        };
-    }
+@section Scripts {
+    <script>
+        function confirmDelete(id, requestNumber) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete replacement request #${requestNumber}. This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('@Url.Action("DeleteConfirmed")', { id: id }, function () {
+                        Swal.fire(
+                            'Deleted!',
+                            'Replacement request has been deleted.',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    }).fail(function () {
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the replacement request.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+    </script>
+}
 
-    public string GetStatusBadgeClass(CustomerRequestStatus status)
+@functions {
+    public string GetStatusBadge(CustomerRequestStatus status)
     {
         return status switch
         {
-            CustomerRequestStatus.Draft => "bg-warning",
-            CustomerRequestStatus.InProgress => "bg-info",
-            CustomerRequestStatus.Completed => "bg-success",
-            CustomerRequestStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
+            CustomerRequestStatus.Draft => "warning",
+            CustomerRequestStatus.InProgress => "info",
+            CustomerRequestStatus.Completed => "success",
+            CustomerRequestStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+    }
+
+    public string GetPriorityBadge(CustomerRequestPriority priority)
+    {
+        return priority switch
+        {
+            CustomerRequestPriority.Low => "success",
+            CustomerRequestPriority.Medium => "warning",
+            CustomerRequestPriority.High => "danger",
+            CustomerRequestPriority.Critical => "dark",
+            _ => "secondary"
+        };
+    }
+
+    public string GetRequestTypeBadge(CustomerRequestType requestType)
+    {
+        return requestType switch
+        {
+            CustomerRequestType.Replacement => "primary",
+            CustomerRequestType.AdditionalUnits => "warning",
+            CustomerRequestType.TemporaryAllocation => "info",
+            CustomerRequestType.NewAllocation => "success",
+            _ => "secondary"
         };
     }
 }
