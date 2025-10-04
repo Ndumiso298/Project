@@ -21,12 +21,18 @@ namespace Project.Models.ViewModels
         public int AverageRentalDuration { get; set; }
         public int TotalFridges { get; set; }
         public bool HasStockIssues { get; set; }
+
+        // ===== REPLACEMENT-SPECIFIC =====
+        public int ReplacementItemCount { get; set; }
+        public bool HasReplacementItems => ReplacementItemCount > 0;
+
         public bool HasItems => ItemCount > 0;
         public bool IsEmpty => ItemCount == 0;
 
         [Display(Name = "Display Text")]
         public string DisplayText => HasItems
-               ? $"{ItemCount} model(s) - {TotalFridges} fridge(s)"
+               ? $"{ItemCount} model(s) - {TotalFridges} fridge(s)" +
+                 (HasReplacementItems ? $" ({ReplacementItemCount} replacements)" : "")
                : "Cart is empty";
 
         [Display(Name = "Financial Summary")]
@@ -41,7 +47,7 @@ namespace Project.Models.ViewModels
 
         [Display(Name = "Status Icon")]
         public string StatusIcon => !IsEmpty
-            ? (HasStockIssues ? "⚠️" : "✅")
+            ? (HasStockIssues ? "⚠️" : (HasReplacementItems ? "🔄" : "✅"))
             : "🛒";
 
         [Display(Name = "Can Checkout")]
@@ -56,7 +62,8 @@ namespace Project.Models.ViewModels
                 TotalFridges = cart.TotalFridges,
                 TotalMonthlyRental = cart.TotalMonthlyRental,
                 TotalContractValue = cart.TotalContractValue,
-                HasStockIssues = cart.HasStockIssues
+                HasStockIssues = cart.HasStockIssues,
+                ReplacementItemCount = cart.Items.Count(i => i.IsReplacementUnit)
             };
         }
 
@@ -69,7 +76,8 @@ namespace Project.Models.ViewModels
                 TotalFridges = items.Sum(i => i.Quantity),
                 TotalMonthlyRental = items.Sum(i => i.MonthlyTotal),
                 TotalContractValue = items.Sum(i => i.LineTotal),
-                HasStockIssues = items.Any(i => !i.HasSufficientStock)
+                HasStockIssues = items.Any(i => !i.HasSufficientStock),
+                ReplacementItemCount = items.Count(i => i.IsReplacementUnit)
             };
         }
     }

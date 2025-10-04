@@ -12,7 +12,7 @@
             <h1 class="h2 text-primary">
                 <i class="fas fa-map-marker-alt me-2"></i>@ViewData["Title"]
             </h1>
-            <p class="text-muted">Manage and track all business locations</p>
+            <p class="text-muted">Manage and track all business locations, fridges, and customer assignments</p>
         </div>
         <div class="col-auto">
             <a asp-action="Upsert" class="btn btn-primary">
@@ -37,19 +37,97 @@
         </div>
     }
 
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Locations
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-map-marker-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Active Fridges
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Sum(l => l.TotalFridges)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-refrigerator fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Customers
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Sum(l => l.TotalCustomers)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Maintenance
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Sum(l => l.PendingMaintenance)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search and Filter Card -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
-                <i class="fas fa-filter me-2"></i>Search & Filter
+                <i class="fas fa-filter me-2"></i>Search & Filter Locations
             </h5>
         </div>
         <div class="card-body">
             <form method="get" asp-action="Index" class="row g-3">
                 <div class="col-md-3">
-                    <label for="searchString" class="form-label">Search</label>
+                    <label for="searchString" class="form-label">Search Locations</label>
                     <input type="text" class="form-control" id="searchString" name="searchString"
-                           value="@ViewBag.SearchString" placeholder="Suburb, city, province, postal code...">
+                           value="@ViewBag.SearchString" placeholder="Search by suburb, city, province, postal code...">
                 </div>
 
                 <div class="col-md-2">
@@ -81,18 +159,23 @@
                 </div>
 
                 <div class="col-md-2">
-                    <label for="statusFilter" class="form-label">Status</label>
-                    <select class="form-select" id="statusFilter" name="statusFilter">
-                        <option value="">All Statuses</option>
-                        <option value="true" selected="@("true" == ViewBag.StatusFilter)">Active</option>
-                        <option value="false" selected="@("false" == ViewBag.StatusFilter)">Inactive</option>
+                    <label for="suburbFilter" class="form-label">Suburb</label>
+                    <select class="form-select" id="suburbFilter" name="suburbFilter">
+                        <option value="">All Suburbs</option>
+                        @if (ViewBag.SuburbList != null)
+                        {
+                            foreach (var suburb in ViewBag.SuburbList)
+                            {
+                                <option value="@suburb" selected="@(suburb == ViewBag.SuburbFilter)">@suburb</option>
+                            }
+                        }
                     </select>
                 </div>
 
                 <div class="col-md-3 d-flex align-items-end">
                     <div class="btn-group w-100" role="group">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i>Apply
+                            <i class="fas fa-search me-1"></i>Search
                         </button>
                         <a asp-action="Index" class="btn btn-outline-secondary">
                             <i class="fas fa-times me-1"></i>Clear
@@ -109,7 +192,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-list me-2"></i>Locations
+                        <i class="fas fa-list me-2"></i>Business Locations
                         <span class="badge bg-secondary ms-2">@Model.Count()</span>
                     </h5>
                 </div>
@@ -128,51 +211,81 @@
                     <table class="table table-hover table-striped mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Address</th>
-                                <th>Location</th>
-                                <th>Contact</th>
-                                <th>Statistics</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th>Actions</th>
+                                <th>Address Information</th>
+                                <th>Location Details</th>
+                                <th>Resource Statistics</th>
+                                <th>Service Status</th>
+                                <th>Audit Information</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                <tr class="@(!item.IsActive ? "table-warning" : "")">
+                                <tr class="@(item.IsDeleted ? "table-warning" : "")">
                                     <td>
-                                        <div class="fw-bold">@item.AddressLine1</div>
-                                        @if (!string.IsNullOrEmpty(item.AddressLine2))
+                                        <div class="fw-bold">@item.StreetAddress</div>
+                                        <small class="text-muted">Postal Code: @item.PostalCode</small>
+                                        @if (!string.IsNullOrEmpty(item.Country))
                                         {
-                                            <div class="small text-muted">@item.AddressLine2</div>
+                                            <div class="small text-info mt-1">
+                                                <i class="fas fa-globe me-1"></i>@item.Country
+                                            </div>
                                         }
-                                        <small class="text-muted">@item.PostalCode</small>
                                     </td>
                                     <td>
-                                        <div class="fw-semibold">@item.Suburb</div>
+                                        <div class="fw-semibold text-primary">@item.Suburb</div>
                                         <div class="small text-muted">
-                                            @item.City, @item.Province
+                                            <i class="fas fa-city me-1"></i>@item.City
                                         </div>
-                                        <small class="text-info">@item.Country</small>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-map me-1"></i>@item.Province
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <span class="badge bg-primary" title="Fridges">
-                                                <i class="fas fa-refrigerator me-1"></i>@item.TotalFridges
+                                        <!-- Fridge Statistics -->
+                                        <div class="mb-2">
+                                            <div class="d-flex align-items-center small mb-1">
+                                                <i class="fas fa-refrigerator me-2 text-primary"></i>
+                                                <span class="fw-semibold">Fridges:</span>
+                                                <span class="badge bg-primary ms-2">@item.TotalFridges Total</span>
+                                                <span class="badge bg-success ms-1">@item.AvailableFridges Available</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                @{
+                                                    var utilizationRate = item.TotalFridges > 0 ? (item.AvailableFridges * 100 / item.TotalFridges) : 0;
+                                                }
+                                                <div class="progress-bar bg-success" role="progressbar"
+                                                     style="width: @utilizationRate%"
+                                                     title="@utilizationRate% Available">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- People Statistics -->
+                                        <div class="d-flex flex-wrap gap-2 mt-2">
+                                            <span class="badge bg-info" title="Active Customers">
+                                                <i class="fas fa-users me-1"></i>@item.TotalCustomers Customers
                                             </span>
-                                            <span class="badge bg-success" title="Available Fridges">
-                                                @item.AvailableFridges
-                                            </span>
-                                            <span class="badge bg-info" title="Customers">
-                                                <i class="fas fa-users me-1"></i>@item.TotalCustomers
-                                            </span>
-                                            <span class="badge bg-warning" title="Employees">
-                                                <i class="fas fa-user-tie me-1"></i>@item.TotalEmployees
+                                            <span class="badge bg-warning" title="Active Employees">
+                                                <i class="fas fa-user-tie me-1"></i>@item.TotalEmployees Employees
                                             </span>
                                         </div>
-                                        <div class="small text-muted mt-1">
-                                            Utilization: @item.UtilizationRate
+
+                                        <!-- Service Statistics -->
+                                        <div class="d-flex flex-wrap gap-1 mt-2">
+                                            @if (item.PendingMaintenance > 0)
+                                            {
+                                                <span class="badge bg-warning text-dark" title="Pending Maintenance">
+                                                    <i class="fas fa-tools me-1"></i>@item.PendingMaintenance
+                                                </span>
+                                            }
+                                            @if (item.OpenFaults > 0)
+                                            {
+                                                <span class="badge bg-danger" title="Open Fault Reports">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>@item.OpenFaults
+                                                </span>
+                                            }
                                         </div>
                                     </td>
                                     <td>
@@ -180,29 +293,62 @@
                                             <input class="form-check-input status-toggle" type="checkbox"
                                                    data-location-id="@item.Id"
                                                    id="status-@item.Id"
-                                            @(item.IsActive ? "checked" : "")>
-                                            <label class="form-check-label small" for="status-@item.Id">
-                                                @(item.IsActive ? "Active" : "Inactive")
+                                            @(item.IsDeleted ? "" : "checked")>
+                                            <label class="form-check-label small fw-semibold" for="status-@item.Id">
+                                                @(item.IsDeleted ?
+                                                    "<span class='text-danger'>Inactive</span>" :
+                                                    "<span class='text-success'>Active</span>")
                                             </label>
+                                        </div>
+
+                                        @if (item.UpdatedAt.HasValue)
+                                        {
+                                            <div class="small text-muted mt-1">
+                                                <i class="fas fa-clock me-1"></i>
+                                                Updated: @item.UpdatedAt.Value.ToString("dd/MM/yyyy")
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted">
+                                            <div>
+                                                <i class="fas fa-calendar-plus me-1"></i>
+                                                Created: @item.CreatedAt.ToString("dd/MM/yyyy")
+                                            </div>
+                                            <div>
+                                                <i class="fas fa-user me-1"></i>
+                                                By: @(item.CreatedBy ?? "System")
+                                            </div>
+                                            @if (item.UpdatedBy != null)
+                                            {
+                                                <div>
+                                                    <i class="fas fa-edit me-1"></i>
+                                                    Modified: @(item.UpdatedBy)
+                                                </div>
+                                            }
                                         </div>
                                     </td>
                                     <td>
-                                        <div>@item.CreatedAt.ToString("dd/MM/yyyy")</div>
-                                        <small class="text-muted">by @(item.CreatedBy ?? "System")</small>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
+                                        <div class="d-flex flex-column gap-2 align-items-center">
+                                            <!-- View Details -->
                                             <a asp-action="Details" asp-route-id="@item.Id"
-                                               class="btn btn-outline-primary" title="View Details">
-                                                <i class="fas fa-eye"></i>
+                                               class="btn btn-sm btn-outline-primary w-100"
+                                               title="View Location Details">
+                                                <i class="fas fa-eye me-1"></i>Details
                                             </a>
+
+                                            <!-- Edit Location -->
                                             <a asp-action="Upsert" asp-route-id="@item.Id"
-                                               class="btn btn-outline-secondary" title="Edit">
-                                                <i class="fas fa-edit"></i>
+                                               class="btn btn-sm btn-outline-secondary w-100"
+                                               title="Edit Location">
+                                                <i class="fas fa-edit me-1"></i>Edit
                                             </a>
-                                            <button type="button" class="btn btn-outline-danger"
-                                                    title="Delete" onclick="confirmDelete(@item.Id, '@item.Suburb, @item.City')">
-                                                <i class="fas fa-trash"></i>
+
+                                            <!-- Deactivate Location -->
+                                            <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                                    title="Deactivate Location"
+                                                    onclick="confirmDelete(@item.Id, '@item.Suburb, @item.City', @item.TotalEmployees, @item.TotalCustomers, @item.TotalFridges)">
+                                                <i class="fas fa-trash me-1"></i>Deactivate
                                             </button>
                                         </div>
                                     </td>
@@ -215,7 +361,7 @@
                 <!-- Pagination -->
                 @if (ViewBag.TotalPages > 1)
                 {
-                    <div class="card-footer">
+                    <div class="card-footer bg-light">
                         <nav aria-label="Location pagination">
                             <ul class="pagination justify-content-center mb-0">
                                 <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
@@ -223,8 +369,10 @@
                                        asp-route-searchString="@ViewBag.SearchString"
                                        asp-route-provinceFilter="@ViewBag.ProvinceFilter"
                                        asp-route-cityFilter="@ViewBag.CityFilter"
-                                       asp-route-statusFilter="@ViewBag.StatusFilter"
-                                       asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                                       asp-route-suburbFilter="@ViewBag.SuburbFilter"
+                                       asp-route-page="@(ViewBag.CurrentPage - 1)">
+                                        <i class="fas fa-chevron-left me-1"></i>Previous
+                                    </a>
                                 </li>
 
                                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
@@ -234,7 +382,7 @@
                                            asp-route-searchString="@ViewBag.SearchString"
                                            asp-route-provinceFilter="@ViewBag.ProvinceFilter"
                                            asp-route-cityFilter="@ViewBag.CityFilter"
-                                           asp-route-statusFilter="@ViewBag.StatusFilter"
+                                           asp-route-suburbFilter="@ViewBag.SuburbFilter"
                                            asp-route-page="@i">@i</a>
                                     </li>
                                 }
@@ -244,23 +392,34 @@
                                        asp-route-searchString="@ViewBag.SearchString"
                                        asp-route-provinceFilter="@ViewBag.ProvinceFilter"
                                        asp-route-cityFilter="@ViewBag.CityFilter"
-                                       asp-route-statusFilter="@ViewBag.StatusFilter"
-                                       asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                                       asp-route-suburbFilter="@ViewBag.SuburbFilter"
+                                       asp-route-page="@(ViewBag.CurrentPage + 1)">
+                                        Next<i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
+
+                        <div class="text-center text-muted small mt-2">
+                            Showing @Model.Count() locations on page @ViewBag.CurrentPage of @ViewBag.TotalPages
+                        </div>
                     </div>
                 }
             }
             else
             {
                 <div class="text-center py-5">
-                    <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No locations found</h4>
-                    <p class="text-muted">Try adjusting your search criteria or add a new location.</p>
-                    <a asp-action="Upsert" class="btn btn-primary mt-2">
-                        <i class="fas fa-plus me-1"></i>Add First Location
-                    </a>
+                    <i class="fas fa-map-marker-alt fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Locations Found</h4>
+                    <p class="text-muted">No locations match your search criteria or no locations have been created yet.</p>
+                    <div class="mt-3">
+                        <a asp-action="Index" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-times me-1"></i>Clear Filters
+                        </a>
+                        <a asp-action="Upsert" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add First Location
+                        </a>
+                    </div>
                 </div>
             }
         </div>
@@ -271,40 +430,63 @@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-danger">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
                     <i class="fas fa-exclamation-triangle me-2"></i>Confirm Location Deactivation
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to deactivate location <strong id="deleteLocationAddress"></strong>?</p>
-
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Note:</strong> You will be taken to a detailed deactivation page where dependencies will be checked.
+                <div class="alert alert-warning">
+                    <h6 class="alert-heading mb-2">
+                        <i class="fas fa-info-circle me-2"></i>Deactivation Notice
+                    </h6>
+                    <p class="mb-2">You are about to deactivate the location: <strong id="deleteLocationAddress"></strong></p>
+                    <p class="mb-0">This action will make the location unavailable for new assignments but will preserve existing data.</p>
                 </div>
 
-                <div class="row small text-muted">
-                    <div class="col-4 text-center">
-                        <i class="fas fa-user-tie me-1"></i>
-                        <span id="employeeCount">0</span> employees
+                <div class="row text-center mt-3">
+                    <div class="col-md-4 mb-2">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-2">
+                                <i class="fas fa-user-tie fa-lg text-primary mb-2"></i>
+                                <div class="fw-bold text-primary" id="employeeCount">0</div>
+                                <small class="text-muted">Employees</small>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4 text-center">
-                        <i class="fas fa-users me-1"></i>
-                        <span id="customerCount">0</span> customers
+                    <div class="col-md-4 mb-2">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-2">
+                                <i class="fas fa-users fa-lg text-info mb-2"></i>
+                                <div class="fw-bold text-info" id="customerCount">0</div>
+                                <small class="text-muted">Customers</small>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4 text-center">
-                        <i class="fas fa-refrigerator me-1"></i>
-                        <span id="fridgeCount">0</span> fridges
+                    <div class="col-md-4 mb-2">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-2">
+                                <i class="fas fa-refrigerator fa-lg text-success mb-2"></i>
+                                <div class="fw-bold text-success" id="fridgeCount">0</div>
+                                <small class="text-muted">Fridges</small>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="alert alert-info mt-3">
+                    <h6 class="alert-heading mb-2">
+                        <i class="fas fa-shield-alt me-2"></i>Safety Check
+                    </h6>
+                    <p class="mb-0">You will be taken to a detailed deactivation page where all dependencies will be checked before proceeding.</p>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times me-1"></i>Cancel
                 </button>
-                <a id="deleteConfirmLink" class="btn btn-danger">
+                <a id="deleteConfirmLink" class="btn btn-warning">
                     <i class="fas fa-trash me-1"></i>Continue to Deactivation
                 </a>
             </div>
@@ -314,135 +496,179 @@
 
 @section Scripts {
     <script>
-        // Delete confirmation modal
-        function confirmDelete(id, address, employeeCount, customerCount, fridgeCount) {
-            document.getElementById('deleteLocationAddress').textContent = address;
-            document.getElementById('employeeCount').textContent = employeeCount;
-            document.getElementById('customerCount').textContent = customerCount;
-            document.getElementById('fridgeCount').textContent = fridgeCount;
+        document.addEventListener('DOMContentLoaded', function () {
+            // Delete confirmation modal
+            window.confirmDelete = function(id, address, employeeCount, customerCount, fridgeCount) {
+                document.getElementById('deleteLocationAddress').textContent = address;
+                document.getElementById('employeeCount').textContent = employeeCount;
+                document.getElementById('customerCount').textContent = customerCount;
+                document.getElementById('fridgeCount').textContent = fridgeCount;
 
-            const deleteLink = document.getElementById('deleteConfirmLink');
-            deleteLink.href = `/Location/Delete/${id}`;
+                const deleteLink = document.getElementById('deleteConfirmLink');
+                deleteLink.href = `@Url.Action("Delete", "Locations")/${id}`;
 
-            new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        }
-
-        // Status toggle functionality
-        document.querySelectorAll('.status-toggle').forEach(toggle => {
-            toggle.addEventListener('change', function() {
-                const locationId = this.dataset.locationId;
-                const isActive = this.checked;
-
-                fetch('/Location/ToggleStatus', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: JSON.stringify({ id: parseInt(locationId) })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Success', 'Location status updated successfully.', 'success');
-                        // Optionally reload the page or update UI
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showToast('Error', data.message || 'Failed to update status.', 'error');
-                        this.checked = !isActive; // Revert toggle
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error', 'An error occurred while updating status.', 'error');
-                    this.checked = !isActive; // Revert toggle
-                });
-            });
-        });
-
-        // Auto-submit form on filter changes
-        document.getElementById('provinceFilter').addEventListener('change', function() {
-            this.form.submit();
-        });
-
-        document.getElementById('cityFilter').addEventListener('change', function() {
-            this.form.submit();
-        });
-
-        document.getElementById('statusFilter').addEventListener('change', function() {
-            this.form.submit();
-        });
-
-        // Enhanced search with debounce
-        let searchTimeout;
-        document.getElementById('searchString').addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                this.form.submit();
-            }, 500);
-        });
-
-        // Dynamic city dropdown based on province selection
-        document.getElementById('provinceFilter').addEventListener('change', function() {
-            const province = this.value;
-            const cityDropdown = document.getElementById('cityFilter');
-
-            if (!province) {
-                // Reset to all cities if no province selected
-                cityDropdown.innerHTML = '<option value="">All Cities</option>';
-                return;
+                new bootstrap.Modal(document.getElementById('deleteModal')).show();
             }
 
-            fetch(`/Location/GetCities?province=${encodeURIComponent(province)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        cityDropdown.innerHTML = '<option value="">All Cities</option>';
-                        data.data.forEach(city => {
-                            const option = document.createElement('option');
-                            option.value = city;
-                            option.textContent = city;
-                            cityDropdown.appendChild(option);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error loading cities:', error));
-        });
+            // Status toggle functionality
+            document.querySelectorAll('.status-toggle').forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const locationId = this.dataset.locationId;
+                    const isActive = this.checked;
 
-        // Toast notification function
-        function showToast(title, message, type = 'info') {
-            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+                    // Show loading state
+                    const originalText = this.nextElementSibling.innerHTML;
+                    this.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
 
-            const toastId = 'toast-' + Date.now();
-            const toastHtml = `
-                <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <strong>${title}</strong><br>${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            `;
-
-            toastContainer.innerHTML += toastHtml;
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
-
-            toastElement.addEventListener('hidden.bs.toast', () => {
-                toastElement.remove();
+                    fetch('@Url.Action("ToggleStatus", "Locations")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ id: parseInt(locationId) })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Success', 'Location status updated successfully.', 'success');
+                            // Reload the page to reflect changes
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            showToast('Error', data.message || 'Failed to update location status.', 'error');
+                            this.checked = !isActive; // Revert toggle
+                            this.nextElementSibling.innerHTML = originalText;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Error', 'An error occurred while updating location status.', 'error');
+                        this.checked = !isActive; // Revert toggle
+                        this.nextElementSibling.innerHTML = originalText;
+                    });
+                });
             });
-        }
 
-        function createToastContainer() {
-            const container = document.createElement('div');
-            container.id = 'toastContainer';
-            container.className = 'toast-container position-fixed top-0 end-0 p-3';
-            container.style.zIndex = '1060';
-            document.body.appendChild(container);
-            return container;
-        }
+            // Auto-submit form on filter changes
+            document.getElementById('provinceFilter')?.addEventListener('change', function() {
+                this.form.submit();
+            });
+
+            document.getElementById('cityFilter')?.addEventListener('change', function() {
+                this.form.submit();
+            });
+
+            document.getElementById('suburbFilter')?.addEventListener('change', function() {
+                this.form.submit();
+            });
+
+            // Enhanced search with debounce
+            let searchTimeout;
+            document.getElementById('searchString')?.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.form.submit();
+                }, 500);
+            });
+
+            // Dynamic dropdown updates
+            const provinceFilter = document.getElementById('provinceFilter');
+            const cityFilter = document.getElementById('cityFilter');
+            const suburbFilter = document.getElementById('suburbFilter');
+
+            // Update cities when province changes
+            provinceFilter?.addEventListener('change', function() {
+                const province = this.value;
+                updateCitiesDropdown(province);
+                suburbFilter.innerHTML = '<option value="">All Suburbs</option>';
+            });
+
+            // Update suburbs when city changes
+            cityFilter?.addEventListener('change', function() {
+                const province = provinceFilter.value;
+                const city = this.value;
+                updateSuburbsDropdown(province, city);
+            });
+
+            function updateCitiesDropdown(province) {
+                if (!province) {
+                    cityFilter.innerHTML = '<option value="">All Cities</option>';
+                    return;
+                }
+
+                fetch(`@Url.Action("GetCities", "Locations")?province=${encodeURIComponent(province)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            cityFilter.innerHTML = '<option value="">All Cities</option>';
+                            data.data.forEach(city => {
+                                const option = document.createElement('option');
+                                option.value = city;
+                                option.textContent = city;
+                                cityFilter.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error loading cities:', error));
+            }
+
+            function updateSuburbsDropdown(province, city) {
+                if (!province || !city) {
+                    suburbFilter.innerHTML = '<option value="">All Suburbs</option>';
+                    return;
+                }
+
+                fetch(`@Url.Action("GetSuburbs", "Locations")?province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            suburbFilter.innerHTML = '<option value="">All Suburbs</option>';
+                            data.data.forEach(suburb => {
+                                const option = document.createElement('option');
+                                option.value = suburb;
+                                option.textContent = suburb;
+                                suburbFilter.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error loading suburbs:', error));
+            }
+
+            // Toast notification function
+            function showToast(title, message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+
+                const toastId = 'toast-' + Date.now();
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>${title}</strong><br>${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                `;
+
+                toastContainer.innerHTML += toastHtml;
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.remove();
+                });
+            }
+
+            function createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '1060';
+                document.body.appendChild(container);
+                return container;
+            }
+        });
     </script>
 
     <style>
@@ -453,6 +679,8 @@
 
         .table-hover tbody tr:hover {
             background-color: rgba(0, 123, 255, 0.075);
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
         }
 
         .form-check-input:checked {
@@ -460,9 +688,36 @@
             border-color: #198754;
         }
 
+        .progress {
+            background-color: #e9ecef;
+        }
+
         .pagination .page-item.active .page-link {
             background-color: #0d6efd;
             border-color: #0d6efd;
+        }
+
+        .card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+
+            .btn-group-vertical .btn {
+                margin-bottom: 0.25rem;
+            }
+
+            .modal-dialog {
+                margin: 0.5rem;
+            }
         }
     </style>
 }

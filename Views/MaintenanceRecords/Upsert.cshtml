@@ -3,221 +3,234 @@
     ViewData["Title"] = Model.Id == 0 ? "Create Maintenance Record" : "Edit Maintenance Record";
 }
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-6">
-            <h2 class="text-primary">
-                <i class="fas fa-tools me-2"></i>@ViewData["Title"]
-            </h2>
-        </div>
-        <div class="col-6 text-end">
-            <a asp-action="Index" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to List
-            </a>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        <i class="fas fa-clipboard-list me-2"></i>@ViewData["Title"]
+    </h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Maintenance Details</h5>
     </div>
+    <div class="card-body">
+        <form asp-action="Upsert" method="post" id="maintenanceForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <form asp-action="Upsert" method="post" id="maintenanceForm">
-        <div class="card">
-            <div class="card-body">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input asp-for="Id" type="hidden" />
+            @if (Model.Id > 0)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
 
+            <div class="row">
                 <!-- Basic Information -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="FridgeId" class="form-label"></label> *
-                            <select asp-for="FridgeId" asp-items="Model.FridgeList" class="form-select">
-                                <option value="">-- Select Fridge --</option>
-                            </select>
-                            <span asp-validation-for="FridgeId" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="TechnicianId" class="form-label"></label> *
-                            <select asp-for="TechnicianId" asp-items="Model.TechnicianList" class="form-select">
-                                <option value="">-- Select Technician --</option>
-                            </select>
-                            <span asp-validation-for="TechnicianId" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="MaintenanceVisitId" class="form-label"></label>
-                            <select asp-for="MaintenanceVisitId" asp-items="Model.VisitList" class="form-select">
-                                <option value="">-- Select Maintenance Visit --</option>
-                            </select>
-                            <span asp-validation-for="MaintenanceVisitId" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="ServiceDate" class="form-label"></label> *
-                            <input asp-for="ServiceDate" type="date" class="form-control" />
-                            <span asp-validation-for="ServiceDate" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="ServiceType" class="form-label"></label> *
-                            <select asp-for="ServiceType" asp-items="Model.ServiceTypeList" class="form-select"></select>
-                            <span asp-validation-for="ServiceType" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Cost" class="form-label"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">R</span>
-                                <input asp-for="Cost" class="form-control" />
-                            </div>
-                            <span asp-validation-for="Cost" class="text-danger"></span>
-                        </div>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FridgeId" class="form-label required"></label>
+                    <select asp-for="FridgeId" asp-items="Model.FridgeList" class="form-select">
+                        <option value="">-- Select Fridge --</option>
+                    </select>
+                    <span asp-validation-for="FridgeId" class="text-danger"></span>
                 </div>
 
-                <!-- Time Tracking -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="StartTime" class="form-label"></label>
-                            <input asp-for="StartTime" type="time" class="form-control" />
-                            <span asp-validation-for="StartTime" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="EndTime" class="form-label"></label>
-                            <input asp-for="EndTime" type="time" class="form-control" />
-                            <span asp-validation-for="EndTime" class="text-danger"></span>
-                        </div>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="TechnicianId" class="form-label required"></label>
+                    <select asp-for="TechnicianId" asp-items="Model.TechnicianList" class="form-select">
+                        <option value="">-- Select Technician --</option>
+                    </select>
+                    <span asp-validation-for="TechnicianId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ServiceDate" class="form-label required"></label>
+                    <input asp-for="ServiceDate" class="form-control datepicker" />
+                    <span asp-validation-for="ServiceDate" class="text-danger"></span>
                 </div>
 
-                <!-- Warranty Information -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card bg-light mb-3">
-                            <div class="card-body">
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" asp-for="IsWarrantyClaim" />
-                                    <label class="form-check-label fw-bold" asp-for="IsWarrantyClaim"></label>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MaintenanceVisitId" class="form-label"></label>
+                    <select asp-for="MaintenanceVisitId" asp-items="Model.VisitList" class="form-select">
+                        <option value="">-- Select Visit (Optional) --</option>
+                    </select>
+                    <span asp-validation-for="MaintenanceVisitId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Technical Checks -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="fas fa-check-circle me-2"></i>Technical Checklist</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-check-label fw-bold">Compressor Working</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="CompressorWorking" value="true">
+                                    <label class="form-check-label">Yes</label>
                                 </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="CompressorWorking" value="false">
+                                    <label class="form-check-label">No</label>
+                                </div>
+                            </div>
+                        </div>
 
-                                <div id="warrantyFields" style="@(Model.IsWarrantyClaim ? "display:block;" : "display:none;")">
-                                    <div class="mb-3">
-                                        <label asp-for="WarrantyReference" class="form-label"></label>
-                                        <input asp-for="WarrantyReference" class="form-control" placeholder="Enter warranty reference number" />
-                                        <span asp-validation-for="WarrantyReference" class="text-danger"></span>
-                                    </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-check-label fw-bold">Condenser Clean</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="CondenserClean" value="true">
+                                    <label class="form-check-label">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="CondenserClean" value="false">
+                                    <label class="form-check-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-check-label fw-bold">Door Seal Intact</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="DoorSealIntact" value="true">
+                                    <label class="form-check-label">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="DoorSealIntact" value="false">
+                                    <label class="form-check-label">No</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Description & Notes -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <label asp-for="Description" class="form-label"></label>
-                            <textarea asp-for="Description" class="form-control" rows="3"
-                                      placeholder="Brief description of the maintenance work performed"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ConditionRating" class="form-label">Condition Rating (1-5)</label>
+                            <input asp-for="ConditionRating" class="form-control" type="number" min="1" max="5" />
+                            <span asp-validation-for="ConditionRating" class="text-danger"></span>
+                            <small class="form-text text-muted">1 = Poor, 5 = Excellent</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TemperatureReading" class="form-label">Temperature Reading (°C)</label>
+                            <input asp-for="TemperatureReading" class="form-control" type="number" step="0.1" min="-30" max="10" />
+                            <span asp-validation-for="TemperatureReading" class="text-danger"></span>
+                            <small class="form-text text-muted">Ideal: 2°C to 4°C</small>
                         </div>
                     </div>
-                </div>
 
-                <!-- Service Notes -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <label asp-for="ServiceNotes" class="form-label"></label>
-                            <textarea asp-for="ServiceNotes" class="form-control" rows="5"
-                                      placeholder="Detailed service notes, observations, and findings"></textarea>
-                            <span asp-validation-for="ServiceNotes" class="text-danger"></span>
-                            <div class="form-text">Include any specific issues found, repairs made, and recommendations.</div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsChecklistCompleted" class="form-check-input" />
+                            <label asp-for="IsChecklistCompleted" class="form-check-label required">
+                                Service checklist completed
+                            </label>
                         </div>
+                        <span asp-validation-for="IsChecklistCompleted" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ChecklistNotes" class="form-label">Checklist Notes</label>
+                        <textarea asp-for="ChecklistNotes" class="form-control" rows="3"
+                                  placeholder="Add any notes about the checklist completion..."></textarea>
+                        <span asp-validation-for="ChecklistNotes" class="text-danger"></span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Parts Used -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <label asp-for="PartsUsed" class="form-label"></label>
-                            <textarea asp-for="PartsUsed" class="form-control" rows="3"
-                                      placeholder="List of parts used in this maintenance (one per line)"></textarea>
-                            <span asp-validation-for="PartsUsed" class="text-danger"></span>
-                            <div class="form-text">Enter each part on a new line. Format: Part Name - Quantity - Serial Number (if applicable)</div>
+            <!-- Service Notes -->
+            <div class="mb-3">
+                <label asp-for="ServiceNotes" class="form-label">Service Notes & Observations</label>
+                <textarea asp-for="ServiceNotes" class="form-control" rows="4"
+                          placeholder="Describe the service performed, observations, and any issues found..."></textarea>
+                <span asp-validation-for="ServiceNotes" class="text-danger"></span>
+            </div>
+
+            <!-- Follow-up Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>Follow-up Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="FollowUpRequired" class="form-check-input" id="followUpRequired" />
+                            <label asp-for="FollowUpRequired" class="form-check-label">
+                                Follow-up service required
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="followUpSection" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label asp-for="FollowUpDate" class="form-label">Follow-up Date</label>
+                                <input asp-for="FollowUpDate" class="form-control datepicker" />
+                                <span asp-validation-for="FollowUpDate" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-6">
-                        @if (Model.Id != 0)
-                        {
-                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-action="Index" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
-                        }
-                    </div>
-                    <div class="col-6 text-end">
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <div>
+                    @if (Model.Id > 0)
+                    {
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>
-                            @(Model.Id == 0 ? "Create Record" : "Update Record")
+                            <i class="fas fa-save me-1"></i>Update Record
                         </button>
-                    </div>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Create Record
+                        </button>
+                    }
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
     <script>
-        $(document).ready(function () {
-            // Toggle warranty fields
-            $('#IsWarrantyClaim').change(function () {
+        $(document).ready(function() {
+            // Auto-set service date to today if not set
+            if (!$('#ServiceDate').val()) {
+                $('#ServiceDate').val('@DateTime.Now.ToString("dd/MM/yyyy")');
+            }
+
+            // Toggle follow-up section
+            $('#followUpRequired').change(function() {
                 if ($(this).is(':checked')) {
-                    $('#warrantyFields').show();
-                    $('#WarrantyReference').prop('required', true);
+                    $('#followUpSection').show();
                 } else {
-                    $('#warrantyFields').hide();
-                    $('#WarrantyReference').prop('required', false);
+                    $('#followUpSection').hide();
                 }
             });
 
-            // Time validation
-            $('#StartTime, #EndTime').change(function () {
-                const startTime = $('#StartTime').val();
-                const endTime = $('#EndTime').val();
+            // Trigger change on page load
+            $('#followUpRequired').trigger('change');
 
-                if (startTime && endTime && startTime >= endTime) {
-                    $('#EndTime').addClass('is-invalid');
-                    $('<div class="invalid-feedback">End time must be after start time</div>').insertAfter('#EndTime');
-                } else {
-                    $('#EndTime').removeClass('is-invalid');
-                    $('.invalid-feedback').remove();
+            // Fridge selection - show current condition
+            $('#FridgeId').change(function() {
+                var fridgeId = $(this).val();
+                if (fridgeId) {
+                    // In real app, fetch fridge details via AJAX
+                    console.log('Fridge selected:', fridgeId);
                 }
             });
-
-            // Auto-populate current date if creating new record
-        @if (Model.Id == 0 && !Model.ServiceDate.HasValue)
-        {
-            <text>
-                    $('#ServiceDate').val(new Date().toISOString().split('T')[0]);
-            </text>
-        }
         });
     </script>
 }

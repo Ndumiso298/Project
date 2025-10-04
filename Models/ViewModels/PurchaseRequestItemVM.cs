@@ -8,7 +8,7 @@ namespace Project.Models.ViewModels
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "Fridge ModelName")]
+        [Display(Name = "Fridge Model")]
         public int FridgeModelId { get; set; }
 
         public IEnumerable<SelectListItem>? FridgeModelList { get; set; }

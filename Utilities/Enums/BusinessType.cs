@@ -28,6 +28,9 @@ namespace Project.Utilities.Enums
         [Display(Name = "Liquor Store")]
         LiquorStore,
 
+        [Display(Name = "Chain Store")]
+        ChainStore,
+
         [Display(Name = "Other")]
         Other
     }

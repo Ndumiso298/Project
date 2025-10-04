@@ -10,6 +10,7 @@ namespace Project.Models.ViewModels
         public List<AllocationCartItemVM> Items { get; set; } = new();
         public AllocationCartItemVM NewItem { get; set; } = new();
 
+        // ===== CUSTOMER INFORMATION =====
         public int? CustomerId { get; set; }
 
         [Display(Name = "Customer")]
@@ -21,25 +22,51 @@ namespace Project.Models.ViewModels
         [Display(Name = "Customer Location")]
         public string CustomerLocation { get; set; } = "N/A";
 
-        // Contact Information (Enhanced with validation)
+        // ===== CONTACT INFORMATION =====
         [Required(ErrorMessage = "Contact person is required.")]
         [StringLength(100, ErrorMessage = "Contact person cannot exceed 100 characters.")]
-        [Display(Name = "Contact Person *")]
+        [Display(Name = "Contact Person")]
         public string ContactPerson { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone number is required.")]
         [Phone(ErrorMessage = "Please enter a valid phone number.")]
         [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters.")]
-        [Display(Name = "Phone Number *")]
-        public string PhoneNumber { get; set; } = string.Empty;
+        [Display(Name = "Contact Phone Number")]
+        public string ContactPhoneNumber { get; set; } = string.Empty;
 
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-        [Display(Name = "Email Address")]
-        public string? Email { get; set; }
+        [Display(Name = "Contact Email Address")]
+        public string? ContactEmail { get; set; }
 
-        // Delivery Information (Enhanced with validation)
+        // ===== REQUEST TYPE & PRIORITY =====
+        [Required(ErrorMessage = "Request type is required.")]
+        [Display(Name = "Request Type")]
+        public CustomerRequestType RequestType { get; set; } = CustomerRequestType.NewAllocation;
+
+        [Required(ErrorMessage = "Priority is required.")]
+        [Display(Name = "Priority")]
+        public CustomerRequestPriority Priority { get; set; } = CustomerRequestPriority.Medium;
+
+        // ===== REPLACEMENT-SPECIFIC FIELDS =====
+        [Display(Name = "Replacing Allocation")]
+        public int? ReplacingAllocationId { get; set; }
+
+        [Display(Name = "Replacing Fridge")]
+        public int? ReplacingFridgeId { get; set; }
+
+        [Display(Name = "Related Fault")]
+        public int? RelatedFaultRecordId { get; set; }
+
+        [Display(Name = "Urgent Replacement")]
+        public bool IsUrgentReplacement { get; set; }
+
+        [StringLength(1000, ErrorMessage = "Replacement reason cannot exceed 1000 characters.")]
+        [Display(Name = "Replacement Reason")]
+        public string? ReplacementReason { get; set; }
+
+        // ===== DELIVERY INFORMATION =====
         [Required(ErrorMessage = "Delivery location is required.")]
-        [Display(Name = "Delivery Location *")]
+        [Display(Name = "Delivery Location")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid delivery location.")]
         public int? DeliveryLocationId { get; set; }
 
@@ -52,21 +79,12 @@ namespace Project.Models.ViewModels
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PreferredDeliveryDate { get; set; }
 
-        // Request Information
-        [Required(ErrorMessage = "Request type is required.")]
-        [Display(Name = "Request Type *")]
-        public CustomerRequestType RequestType { get; set; } = CustomerRequestType.NewAllocation;
-
-        [Required(ErrorMessage = "Priority is required.")]
-        [Display(Name = "Priority *")]
-        public CustomerRequestPriority Priority { get; set; } = CustomerRequestPriority.Medium;
-
-        // Financial Information
+        // ===== FINANCIAL INFORMATION =====
         [Display(Name = "Discount Percentage")]
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100 percent.")]
         public decimal DiscountPercentage { get; set; }
 
-        // Dropdown Lists (Added for form functionality)
+        // ===== DROPDOWN LISTS =====
         [ValidateNever]
         public IEnumerable<SelectListItem>? CustomerList { get; set; }
 
@@ -79,7 +97,16 @@ namespace Project.Models.ViewModels
         [ValidateNever]
         public IEnumerable<SelectListItem>? PriorityList { get; set; }
 
-        // Summary Statistics
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? ReplacementAllocationList { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? FaultRecordList { get; set; }
+
+        // ===== COMPUTED PROPERTIES =====
+        [Display(Name = "Is Replacement Request")]
+        public bool IsReplacementRequest => RequestType == CustomerRequestType.Replacement;
+
         [Display(Name = "Total Models Requested")]
         public int TotalModels => Items.Count;
 
@@ -107,7 +134,6 @@ namespace Project.Models.ViewModels
             ? $"{Items.Average(i => i.RentalDurationMonths):F1} months"
             : "N/A";
 
-        // Stock Validation
         [Display(Name = "All Items Available")]
         public bool AllItemsAvailable => Items.All(i => i.HasSufficientStock);
 
@@ -117,7 +143,6 @@ namespace Project.Models.ViewModels
         [Display(Name = "Has Stock Issues")]
         public bool HasStockIssues => Items.Any(i => !i.HasSufficientStock);
 
-        // Validation Properties
         [Display(Name = "Is Valid")]
         public bool IsValid => CustomerId.HasValue &&
                               CustomerId > 0 &&
@@ -125,7 +150,8 @@ namespace Project.Models.ViewModels
                               AllItemsAvailable &&
                               DeliveryLocationId.HasValue &&
                               !string.IsNullOrWhiteSpace(ContactPerson) &&
-                              !string.IsNullOrWhiteSpace(PhoneNumber);
+                              !string.IsNullOrWhiteSpace(ContactPhoneNumber) &&
+                              ValidateReplacementSpecificRules();
 
         [Display(Name = "Can Submit")]
         public bool CanSubmit => IsValid;
@@ -133,7 +159,16 @@ namespace Project.Models.ViewModels
         [Display(Name = "Is Empty")]
         public bool IsEmpty => !Items.Any();
 
-        // Business Logic Methods
+        // ===== VALIDATION METHODS =====
+        private bool ValidateReplacementSpecificRules()
+        {
+            if (!IsReplacementRequest) return true;
+
+            // Replacement-specific validation
+            return ReplacingAllocationId.HasValue &&
+                   !string.IsNullOrWhiteSpace(ReplacementReason);
+        }
+
         public IEnumerable<string> GetValidationErrors()
         {
             var errors = new List<string>();
@@ -147,11 +182,20 @@ namespace Project.Models.ViewModels
             if (string.IsNullOrWhiteSpace(ContactPerson))
                 errors.Add("Contact person is required");
 
-            if (string.IsNullOrWhiteSpace(PhoneNumber))
+            if (string.IsNullOrWhiteSpace(ContactPhoneNumber))
                 errors.Add("Phone number is required");
 
             if (!Items.Any())
                 errors.Add("At least one fridge model is required");
+
+            // Replacement-specific validation
+            if (IsReplacementRequest)
+            {
+                if (!ReplacingAllocationId.HasValue)
+                    errors.Add("Replacement requests must specify which allocation is being replaced");
+                if (string.IsNullOrWhiteSpace(ReplacementReason))
+                    errors.Add("Replacement reason is required for replacement requests");
+            }
 
             var stockErrors = Items.Where(i => !i.HasSufficientStock)
                 .Select(i => $"{i.ModelName}: Only {i.AvailableStock} available, requested {i.Quantity}");
@@ -162,6 +206,24 @@ namespace Project.Models.ViewModels
             errors.AddRange(invalidItems);
 
             return errors;
+        }
+
+        // ===== BUSINESS METHODS =====
+        public void MarkAsReplacementFor(int allocationId, int fridgeId, int? faultRecordId, string reason)
+        {
+            RequestType = CustomerRequestType.Replacement;
+            ReplacingAllocationId = allocationId;
+            ReplacingFridgeId = fridgeId;
+            RelatedFaultRecordId = faultRecordId;
+            ReplacementReason = reason;
+            Priority = CustomerRequestPriority.High;
+            IsUrgentReplacement = true;
+
+            // Auto-configure items for replacement (typically 1:1)
+            foreach (var item in Items)
+            {
+                item.MarkAsReplacement();
+            }
         }
 
         public void ApplyCustomerDiscount(decimal discountPercentage)
@@ -181,19 +243,19 @@ namespace Project.Models.ViewModels
             if (customer != null)
             {
                 CustomerId = customer.Id;
-                CustomerName = customer.TradingName;
+                CustomerName = customer.BusinessName;
                 CustomerBusinessType = customer.BusinessType;
                 CustomerLocation = customer.TradingLocation?.ToString() ?? "N/A";
 
                 // Set default contact info from customer
                 if (string.IsNullOrWhiteSpace(ContactPerson))
-                    ContactPerson = customer.FullName;
+                    ContactPerson = customer.ContactPerson;
 
-                if (string.IsNullOrWhiteSpace(PhoneNumber))
-                    PhoneNumber = customer.BusinessPhoneNumber;
+                if (string.IsNullOrWhiteSpace(ContactPhoneNumber))
+                    ContactPhoneNumber = customer.BusinessPhoneNumber;
 
-                if (string.IsNullOrWhiteSpace(Email))
-                    Email = customer.BusinessEmail;
+                if (string.IsNullOrWhiteSpace(ContactEmail))
+                    ContactEmail = customer.BusinessEmail;
             }
         }
 
@@ -201,6 +263,7 @@ namespace Project.Models.ViewModels
         {
             Items.Clear();
             DiscountPercentage = 0;
+            // Don't clear customer and contact info
         }
 
         public void RemoveItem(Guid tempId)
@@ -222,23 +285,62 @@ namespace Project.Models.ViewModels
             return Items.Any(i => i.FridgeModelId == fridgeModelId);
         }
 
-        // Mapping to Request
+        // ===== MAPPING METHODS =====
         public AllocationRequestHeaderVM ToRequestHeaderVM()
         {
             return new AllocationRequestHeaderVM
             {
                 CustomerId = CustomerId ?? 0,
                 ContactPerson = ContactPerson,
-                PhoneNumber = PhoneNumber,
-                Email = Email,
+                ContactPhoneNumber = ContactPhoneNumber,
+                ContactEmail = ContactEmail,
                 DeliveryLocationId = DeliveryLocationId ?? 0,
                 DeliveryInstructions = DeliveryInstructions,
                 PreferredDeliveryDate = PreferredDeliveryDate,
                 RequestType = RequestType,
                 Priority = Priority,
                 DiscountPercentage = DiscountPercentage,
+                ReplacingAllocationId = ReplacingAllocationId,
+                ReplacingFridgeId = ReplacingFridgeId,
+                RelatedFaultRecordId = RelatedFaultRecordId,
+                IsUrgentReplacement = IsUrgentReplacement,
+                ReplacementReason = ReplacementReason,
                 RequestDetails = Items.Select(i => i.ToRequestDetailVM()).ToList()
             };
+        }
+
+        // ===== FACTORY METHODS =====
+        public static AllocationCartVM CreateReplacementCart(FridgeAllocation allocationToReplace, FaultRecord faultRecord, string reason)
+        {
+            var cart = new AllocationCartVM
+            {
+                CustomerId = allocationToReplace.CustomerId,
+                RequestType = CustomerRequestType.Replacement,
+                Priority = CustomerRequestPriority.High,
+                IsUrgentReplacement = faultRecord.Priority == FaultPriority.Critical,
+                ReplacementReason = reason
+            };
+
+            cart.UpdateCustomerInfo(allocationToReplace.Customer);
+            cart.MarkAsReplacementFor(
+                allocationToReplace.Id,
+                allocationToReplace.FridgeId,
+                faultRecord.Id,
+                reason
+            );
+
+            // Auto-add replacement item
+            var replacementItem = new AllocationCartItemVM
+            {
+                FridgeModelId = allocationToReplace.Fridge.FridgeModelId,
+                Quantity = 1, // Replacements are typically 1:1
+                RentalDurationMonths = 12, // Default duration
+                IsReplacementUnit = true
+            };
+
+            cart.Items.Add(replacementItem);
+
+            return cart;
         }
     }
 }

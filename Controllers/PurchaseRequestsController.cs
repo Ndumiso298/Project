@@ -109,7 +109,7 @@ namespace Project.Controllers
                         existing.Quantity = itemVm.Quantity;
                         existing.EstimatedUnitPrice = itemVm.EstimatedUnitPrice;
                         existing.Notes = itemVm.Notes;
-                        existing.ModifiedDate = DateTime.UtcNow;
+                        existing.UpdatedAt = DateTime.UtcNow;
                     }
                     else
                     {
@@ -119,8 +119,8 @@ namespace Project.Controllers
                             Quantity = itemVm.Quantity,
                             EstimatedUnitPrice = itemVm.EstimatedUnitPrice,
                             Notes = itemVm.Notes,
-                            CreatedDate = DateTime.UtcNow,
-                            ModifiedDate = DateTime.UtcNow
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
                         });
                     }
                 }
@@ -228,8 +228,8 @@ namespace Project.Controllers
                     Quantity = i.Quantity,
                     EstimatedUnitPrice = i.EstimatedUnitPrice,
                     Notes = i.Notes,
-                    CreatedDate = DateTime.UtcNow,
-                    ModifiedDate = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 }).ToList()
             };
         }

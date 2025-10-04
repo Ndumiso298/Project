@@ -46,7 +46,7 @@ namespace Project.Controllers
                 {
                     searchString = searchString.ToLower();
                     query = query.Where(r =>
-                        r.Customer.TradingName.ToLower().Contains(searchString) ||
+                        r.Customer.BusinessName.ToLower().Contains(searchString) ||
                         r.ContactPerson.ToLower().Contains(searchString) ||
                         r.ContactPhoneNumber.Contains(searchString) ||
                         r.Id.ToString().Contains(searchString));
@@ -77,7 +77,7 @@ namespace Project.Controllers
                         Id = r.Id,
                         RequestDate = r.RequestDate,
                         Status = r.Status,
-                        CustomerName = r.Customer.TradingName,
+                        CustomerName = r.Customer.BusinessName,
                         ContactPerson = r.ContactPerson,
                         BusinessType = r.Customer.BusinessType,
                         TotalItems = r.TotalQuantity,
@@ -573,16 +573,16 @@ namespace Project.Controllers
         {
             vm.CustomerList = await _db.Customers
                 .Where(c => c.IsActive)
-                .OrderBy(c => c.TradingName)
+                .OrderBy(c => c.BusinessName)
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
-                    Text = $"{c.TradingName} ({c.BusinessType})"
+                    Text = $"{c.BusinessName} ({c.BusinessType})"
                 })
                 .ToListAsync();
 
             vm.LocationList = await _db.Locations
-                .Where(l => l.IsActive)
+                .Where(l => l.IsDeleted)
                 .OrderBy(l => l.City)
                 .ThenBy(l => l.Suburb)
                 .Select(l => new SelectListItem
@@ -614,19 +614,16 @@ namespace Project.Controllers
         private async Task PopulateCustomerDataAsync(AllocationRequestHeaderVM vm, Customer customer)
         {
             vm.CustomerId = customer.Id;
-            vm.ContactPerson = customer.FullName;
-            vm.PhoneNumber = customer.BusinessPhoneNumber;
-            vm.Email = customer.BusinessEmail;
-            vm.DeliveryLocationId = customer.LocationId;
-            vm.CustomerName = customer.TradingName;
+            vm.ContactPhoneNumber = customer.BusinessPhoneNumber;
+            vm.ContactEmail = customer.BusinessEmail;
+            vm.DeliveryLocationId = customer.TradingLocation.Id;
+            vm.CustomerName = customer.BusinessName;
             vm.CustomerBusinessType = customer.BusinessType;
         }
 
         private async Task<int> CreateAllocationRequestAsync(AllocationRequestHeaderVM vm)
         {
-            var request = vm.ToEntity(
-                User.FindFirstValue(ClaimTypes.NameIdentifier),
-                User.Identity?.Name);
+            var request = vm.ToEntity();
             request.CreatedAt = DateTime.UtcNow;
             request.CreatedBy = User.Identity?.Name;
 
@@ -658,8 +655,8 @@ namespace Project.Controllers
             request.RequestType = vm.RequestType;
             request.Priority = vm.Priority;
             request.ContactPerson = vm.ContactPerson;
-            request.ContactPhoneNumber = vm.PhoneNumber;
-            request.ContactEmail = vm.Email;
+            request.ContactPhoneNumber = vm.ContactPhoneNumber;
+            request.ContactEmail = vm.ContactEmail;
             request.DeliveryLocationId = vm.DeliveryLocationId;
             request.DeliveryInstructions = vm.DeliveryInstructions;
             request.PreferredDeliveryDate = vm.PreferredDeliveryDate;
@@ -703,7 +700,7 @@ namespace Project.Controllers
                         DeliveryLocationId = request.DeliveryLocationId,
                         AllocationRequestHeaderId = request.Id,
                         AllocatedByEmployeeId = currentEmployeeId,
-                        Status = AllocationStatus.Active,
+                        AllocationStatus = AllocationStatus.Active,
                         Quantity = 1,
                         AllocationDate = DateTime.UtcNow,
                         MonthlyRentalPrice = detail.FridgeModel.MonthlyRentalPrice,
@@ -715,7 +712,7 @@ namespace Project.Controllers
 
                     // Update fridge status
                     fridge.Status = FridgeStatus.Allocated;
-                    fridge.ModifiedAt = DateTime.UtcNow;
+                    fridge.UpdatedAt = DateTime.UtcNow;
                 }
             }
 
@@ -755,7 +752,7 @@ namespace Project.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var employee = await _db.Employees
-                .FirstOrDefaultAsync(e => e.UserId == userId && e.IsActive);
+                .FirstOrDefaultAsync(e => e.UserId == userId && !e.UserAccount.IsDeleted);
             return employee?.Id ?? 1; // Default to admin if not found
         }
 
@@ -779,7 +776,7 @@ namespace Project.Controllers
     //        IEnumerable<AllocationRequestHeader> objRequestHeaders;
 
 
-    //        if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole))
+    //        if (User.IsInRole(Roles.AdminRole) || User.IsInRole(Roles.CustomerSupportRole))
     //        {
     //            objRequestHeaders = _db.AllocationRequestHeaders.Include(a=>a.Customer).ToList();
     //        }
@@ -837,7 +834,7 @@ namespace Project.Controllers
     //        RequestHeaderFromDb.FirstName = RequestVM.RequestHeader.FirstName;
     //        RequestHeaderFromDb.LastName = RequestVM.RequestHeader.LastName;
     //        RequestHeaderFromDb.PhoneNumber = RequestVM.RequestHeader.PhoneNumber;
-    //        RequestHeaderFromDb.AddressLine1 = RequestVM.RequestHeader.AddressLine1;
+    //        RequestHeaderFromDb.StreetAddress = RequestVM.RequestHeader.StreetAddress;
     //        RequestHeaderFromDb.AddressLine2 = RequestVM.RequestHeader.AddressLine2;
     //        RequestHeaderFromDb.City = RequestVM.RequestHeader.City;
     //        RequestHeaderFromDb.Province = RequestVM.RequestHeader.Province;
@@ -885,7 +882,7 @@ namespace Project.Controllers
     //        //AllocationRequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
     //        RequestHeader.Carrier = RequestVM.RequestHeader.Carrier;
     //        RequestHeader.ShippingDate = DateTime.Now;
-    //        if (RequestHeader.Status == SD.PaymentStatusDelayedPayment)
+    //        if (RequestHeader.Status == Roles.PaymentStatusDelayedPayment)
     //        {
     //            RequestHeader.PaymentDueDate = DateTime.Now.AddDays(30);
     //        }

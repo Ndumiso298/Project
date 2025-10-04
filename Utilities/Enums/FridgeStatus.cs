@@ -4,29 +4,26 @@ namespace Project.Utilities.Enums
 {
     public enum FridgeStatus
     {
-        [Display(Name = "Available (Warehouse Stock)")]
-        Available,            // In a Location/Warehouse, ready for allocation
+        [Display(Name = "Available")]
+        Available,            // In warehouse, ready for allocation
 
-        [Display(Name = "Pending Allocation")]
-        PendingAllocation,    // Requested by customer, awaiting Inventory Liaison approval
-
-        [Display(Name = "Allocated (Customer Site)")]
+        [Display(Name = "Allocated")]
         Allocated,            // Currently with a customer
 
-        [Display(Name = "In Service / Repair")] // Clearer name for technician work
-        InService,            // Repair or maintenance (used by Fault/Maintenance Techs)
+        [Display(Name = "Under Maintenance")]
+        UnderMaintenance,     // Being serviced or repaired
+
+        [Display(Name = "Faulty")]
+        Faulty,               // Has reported fault, needs attention
 
         [Display(Name = "In Transit")]
-        InTransit,            // Being moved between locations or to/from customer
+        InTransit,            // Being moved between locations
 
-        [Display(Name = "Quality Control")]
-        QualityControl,       // Being inspected after service/repair
-
-        [Display(Name = "Quarantined (Blocked)")]
-        Quarantined,          // Temporarily held for investigation (e.g., failed QC)
+        [Display(Name = "Quarantined")]
+        Quarantined,          // Temporarily held for inspection
 
         [Display(Name = "Scrapped")]
-        Scrapped,             // Marked for disposal (Soft Delete equivalent for Inventory)
+        Scrapped,             // Marked for disposal
 
         [Display(Name = "Lost/Stolen")]
         LostStolen            // Missing inventory

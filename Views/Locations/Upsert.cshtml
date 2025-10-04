@@ -40,6 +40,8 @@
                 @if (!isCreate)
                 {
                     <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="CreatedBy" />
                 }
 
                 <!-- Validation Summary -->
@@ -52,27 +54,22 @@
                             <i class="fas fa-home me-2"></i>Address Information
                         </h5>
 
-                        <!-- Address Line 1 -->
+                        <!-- Street Address (Required) -->
                         <div class="mb-3">
-                            <label asp-for="AddressLine1" class="form-label required"></label>
-                            <input asp-for="AddressLine1" class="form-control"
-                                   placeholder="Enter street address, building name, etc." />
-                            <span asp-validation-for="AddressLine1" class="text-danger"></span>
-                        </div>
-
-                        <!-- Address Line 2 -->
-                        <div class="mb-3">
-                            <label asp-for="AddressLine2" class="form-label"></label>
-                            <input asp-for="AddressLine2" class="form-control"
-                                   placeholder="Unit number, suite, building section (optional)" />
-                            <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                            <label asp-for="StreetAddress" class="form-label required"></label>
+                            <input asp-for="StreetAddress" class="form-control"
+                                   placeholder="Enter street address, building name, etc."
+                                   required />
+                            <span asp-validation-for="StreetAddress" class="text-danger"></span>
                         </div>
 
                         <!-- Suburb -->
                         <div class="mb-3">
                             <label asp-for="Suburb" class="form-label required"></label>
                             <input asp-for="Suburb" class="form-control"
-                                   placeholder="Enter suburb name" id="suburbInput" />
+                                   placeholder="Enter suburb name"
+                                   id="suburbInput"
+                                   required />
                             <span asp-validation-for="Suburb" class="text-danger"></span>
                         </div>
 
@@ -80,7 +77,10 @@
                         <div class="mb-3">
                             <label asp-for="City" class="form-label required"></label>
                             <input asp-for="City" class="form-control"
-                                   placeholder="Enter city name" id="cityInput" list="citiesList" />
+                                   placeholder="Enter city name"
+                                   id="cityInput"
+                                   list="citiesList"
+                                   required />
                             <datalist id="citiesList"></datalist>
                             <span asp-validation-for="City" class="text-danger"></span>
                         </div>
@@ -95,7 +95,7 @@
                         <!-- Province -->
                         <div class="mb-3">
                             <label asp-for="Province" class="form-label required"></label>
-                            <select asp-for="Province" class="form-select" id="provinceSelect">
+                            <select asp-for="Province" class="form-select" id="provinceSelect" required>
                                 <option value="">-- Select Province --</option>
                                 @if (ViewBag.ProvinceList != null)
                                 {
@@ -112,24 +112,43 @@
                         <div class="mb-3">
                             <label asp-for="PostalCode" class="form-label required"></label>
                             <input asp-for="PostalCode" class="form-control"
-                                   placeholder="Enter 4-digit postal code" maxlength="4" />
+                                   placeholder="Enter 4-digit postal code"
+                                   maxlength="4"
+                                   pattern="[0-9]{4}"
+                                   title="Please enter a valid 4-digit postal code"
+                                   required />
                             <span asp-validation-for="PostalCode" class="text-danger"></span>
                         </div>
 
                         <!-- Country -->
                         <div class="mb-3">
                             <label asp-for="Country" class="form-label required"></label>
-                            <input asp-for="Country" class="form-control" />
+                            <input asp-for="Country" class="form-control"
+                                   value="@(string.IsNullOrEmpty(Model.Country) ? "South Africa" : Model.Country)"
+                                   required /> 
                             <span asp-validation-for="Country" class="text-danger"></span>
                         </div>
 
-                        <!-- Active Status -->
+                        <!-- Status Section -->
                         <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input asp-for="IsActive" class="form-check-input" type="checkbox">
-                                <label asp-for="IsActive" class="form-check-label"></label>
+                            <h6 class="border-bottom pb-2 mb-3">Status</h6>
+
+                            <!-- Active Status -->
+                            <div class="form-check form-switch mb-2">
+                                <input asp-for="IsDeleted" class="form-check-input" type="checkbox">
+                                <label asp-for="IsDeleted" class="form-check-label fw-bold"></label>
+                                <div class="form-text">Active locations are available for new allocations and operations.</div>
                             </div>
-                            <span asp-validation-for="IsActive" class="text-danger"></span>
+
+                            <!-- Deleted Status (Only show for editing, read-only) -->
+                            @if (!isCreate)
+                            {
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsDeleted" class="form-check-input" type="checkbox" disabled>
+                                    <label asp-for="IsDeleted" class="form-check-label text-muted"></label>
+                                    <div class="form-text text-muted">Soft delete status - managed by system.</div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -143,17 +162,55 @@
                                     <i class="fas fa-eye me-2"></i>Address Preview
                                 </h6>
                                 <p class="card-text" id="addressPreview">
-                                    @Model.FullAddress
+                                    @Model.CompleteAddress
                                 </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    This is how the address will appear throughout the system.
+                                </small>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Statistics Preview (Only for editing) -->
+                @if (!isCreate)
+                {
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-chart-bar me-2"></i>Current Location Statistics
+                                    </h6>
+                                    <div class="row text-center">
+                                        <div class="col-3">
+                                            <h4 class="mb-0">@Model.TotalFridges</h4>
+                                            <small>Total Fridges</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <h4 class="mb-0">@Model.AvailableFridges</h4>
+                                            <small>Available</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <h4 class="mb-0">@Model.TotalCustomers</h4>
+                                            <small>Customers</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <h4 class="mb-0">@Model.TotalEmployees</h4>
+                                            <small>Employees</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <!-- Form Actions -->
                 <div class="row mt-4">
                     <div class="col-12">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center">
                             <a asp-action="Index" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-1"></i>Cancel
                             </a>
@@ -163,8 +220,11 @@
                                     <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
                                         <i class="fas fa-eye me-1"></i>View Details
                                     </a>
+                                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </a>
                                 }
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
                                     <i class="fas fa-save me-1"></i>@(isCreate ? "Create Location" : "Update Location")
                                 </button>
                             </div>
@@ -182,53 +242,69 @@
     }
 
     <script>
-        // Address preview update
+        // Enhanced address preview update
         function updateAddressPreview() {
             const addressLine1 = document.getElementById('AddressLine1').value;
             const addressLine2 = document.getElementById('AddressLine2').value;
-            const suburb = document.getElementById('suburbInput').value;
-            const city = document.getElementById('cityInput').value;
-            const province = document.getElementById('provinceSelect').value;
+            const suburb = document.getElementById('Suburb').value;
+            const city = document.getElementById('City').value;
+            const province = document.getElementById('Province').value;
             const postalCode = document.getElementById('PostalCode').value;
             const country = document.getElementById('Country').value;
 
             let address = addressLine1;
-            if (addressLine2) address += ', ' + addressLine2;
+            if (addressLine2 && addressLine2.trim() !== '') {
+                address += ', ' + addressLine2;
+            }
             if (suburb) address += ', ' + suburb;
             if (city) address += ', ' + city;
             if (province) address += ', ' + province;
             if (postalCode) address += ', ' + postalCode;
             if (country) address += ', ' + country;
 
-            document.getElementById('addressPreview').textContent = address || 'Enter address details to see preview...';
+            const previewElement = document.getElementById('addressPreview');
+            previewElement.textContent = address || 'Enter address details to see preview...';
+
+            // Add visual feedback for empty required fields
+            previewElement.className = address ? 'card-text text-success' : 'card-text text-muted';
         }
 
         // Attach event listeners to all address fields
-        ['AddressLine1', 'AddressLine2', 'suburbInput', 'cityInput', 'provinceSelect', 'PostalCode', 'Country']
-            .forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', updateAddressPreview);
-                    element.addEventListener('change', updateAddressPreview);
-                }
-            });
+        const addressFields = ['AddressLine1', 'AddressLine2', 'Suburb', 'City', 'Province', 'PostalCode', 'Country'];
+        addressFields.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', updateAddressPreview);
+                element.addEventListener('change', updateAddressPreview);
+                element.addEventListener('blur', updateAddressPreview);
+            }
+        });
 
-        // Dynamic city loading based on province
-        document.getElementById('provinceSelect').addEventListener('change', function() {
+        // Enhanced dynamic city loading based on province
+        document.getElementById('Province').addEventListener('change', function() {
             const province = this.value;
-            const cityInput = document.getElementById('cityInput');
+            const cityInput = document.getElementById('City');
             const citiesList = document.getElementById('citiesList');
 
             if (!province) {
                 citiesList.innerHTML = '';
+                cityInput.value = '';
+                updateAddressPreview();
                 return;
             }
 
-            fetch(`/Location/GetCities?province=${encodeURIComponent(province)}`)
-                .then(response => response.json())
+            // Show loading state
+            cityInput.disabled = true;
+            cityInput.placeholder = 'Loading cities...';
+
+            fetch(`/Locations/GetCities?province=${encodeURIComponent(province)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.success) {
-                        citiesList.innerHTML = '';
+                    citiesList.innerHTML = '';
+                    if (data.success && data.data && data.data.length > 0) {
                         data.data.forEach(city => {
                             const option = document.createElement('option');
                             option.value = city;
@@ -236,47 +312,121 @@
                         });
                     }
                 })
-                .catch(error => console.error('Error loading cities:', error));
+                .catch(error => {
+                    console.error('Error loading cities:', error);
+                    // Fallback to manual input
+                })
+                .finally(() => {
+                    cityInput.disabled = false;
+                    cityInput.placeholder = 'Enter city name';
+                    updateAddressPreview();
+                });
         });
 
-        // Location uniqueness check
-        document.getElementById('suburbInput').addEventListener('blur', function() {
-            const suburb = this.value;
-            const city = document.getElementById('cityInput').value;
-            const province = document.getElementById('provinceSelect').value;
+        // Enhanced location uniqueness check
+        function checkLocationUniqueness() {
+            const suburb = document.getElementById('Suburb').value;
+            const city = document.getElementById('City').value;
+            const province = document.getElementById('Province').value;
             const locationId = @Model.Id;
 
             if (!suburb || !city || !province) return;
 
-            fetch(`/Location/CheckLocationExists?suburb=${encodeURIComponent(suburb)}&city=${encodeURIComponent(city)}&province=${encodeURIComponent(province)}&id=${locationId}`)
+            fetch(`/Locations/CheckLocationExists?suburb=${encodeURIComponent(suburb)}&city=${encodeURIComponent(city)}&province=${encodeURIComponent(province)}&id=${locationId}`)
                 .then(response => response.json())
                 .then(data => {
-                    const feedback = document.getElementById('locationExistsFeedback');
+                    const suburbInput = document.getElementById('Suburb');
+                    let feedback = document.getElementById('locationExistsFeedback');
+
                     if (!feedback) {
-                        const div = document.createElement('div');
-                        div.id = 'locationExistsFeedback';
-                        div.className = data.exists ? 'valid-feedback' : 'invalid-feedback';
-                        div.textContent = data.message;
-                        this.parentNode.appendChild(div);
-                    } else {
-                        feedback.className = data.exists ? 'valid-feedback' : 'invalid-feedback';
-                        feedback.textContent = data.message;
+                        feedback = document.createElement('div');
+                        feedback.id = 'locationExistsFeedback';
+                        suburbInput.parentNode.appendChild(feedback);
                     }
 
-                    this.classList.remove('is-valid', 'is-invalid');
-                    this.classList.add(data.exists ? 'is-valid' : 'is-invalid');
+                    if (data.exists) {
+                        feedback.className = 'invalid-feedback d-block';
+                        feedback.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i>${data.message}`;
+                        suburbInput.classList.add('is-invalid');
+                        suburbInput.classList.remove('is-valid');
+                    } else {
+                        feedback.className = 'valid-feedback d-block';
+                        feedback.innerHTML = `<i class="fas fa-check-circle me-1"></i>Location is available`;
+                        suburbInput.classList.add('is-valid');
+                        suburbInput.classList.remove('is-invalid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking location uniqueness:', error);
                 });
+        }
+
+        // Attach uniqueness check to relevant fields
+        ['Suburb', 'City', 'Province'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('blur', checkLocationUniqueness);
+                element.addEventListener('change', checkLocationUniqueness);
+            }
         });
 
-        // Form submission handler
+        // Enhanced form submission handler
         document.getElementById('locationForm').addEventListener('submit', function(e) {
-            const submitBtn = this.querySelector('button[type="submit"]');
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+
+            // Re-enable button after 5 seconds in case submission fails
+            setTimeout(() => {
+                if (submitBtn.disabled) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }, 5000);
         });
 
-        // Initialize address preview
-        document.addEventListener('DOMContentLoaded', updateAddressPreview);
+        // Postal code validation
+        document.getElementById('PostalCode').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAddressPreview();
+
+            // Set default country if empty
+            const countryField = document.getElementById('Country');
+            if (countryField && !countryField.value) {
+                countryField.value = 'South Africa';
+            }
+
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Auto-save draft functionality (optional)
+        let autoSaveTimeout;
+        function autoSaveDraft() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                const formData = new FormData(document.getElementById('locationForm'));
+                // Could implement local storage auto-save here
+                console.log('Auto-save triggered');
+            }, 2000);
+        }
+
+        // Attach auto-save to form fields
+        document.querySelectorAll('#locationForm input, #locationForm select').forEach(element => {
+            element.addEventListener('input', autoSaveDraft);
+        });
     </script>
 
     <style>
@@ -287,11 +437,38 @@
 
         .form-label {
             font-weight: 500;
+            color: #495057;
         }
 
         #addressPreview {
             min-height: 24px;
             font-style: italic;
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .btn-group .btn {
+            margin-left: 0.5rem;
+        }
+
+        /* Enhanced focus styles */
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Status section styling */
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
         }
     </style>
 }

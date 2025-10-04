@@ -11,30 +11,19 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        public string? UserId { get; set; } = string.Empty;
+        // ===== USER ACCOUNT RELATIONSHIP =====
+        [Required]
+        public string UserId { get; set; } = string.Empty;
 
         [ForeignKey(nameof(UserId))]
         [ValidateNever]
-        public virtual ApplicationUser? UserAccount { get; set; } = null!;
+        public virtual ApplicationUser UserAccount { get; set; } = null!;
 
-        [NotMapped]
-        [Display(Name = "Full Name")]
-        public string FullName => UserAccount != null ? $"{UserAccount.FirstName} {UserAccount.LastName}" : TradingName;
-
-        [NotMapped]
-        [Display(Name = "Contact Person")]
-        public string ContactPerson => UserAccount != null ? $"{UserAccount.FirstName} {UserAccount.LastName}" : "Not Specified";
-
-        public int? AssignedEmployeeId { get; set; }
-
-        [ForeignKey(nameof(AssignedEmployeeId))]
-        [ValidateNever]
-        public virtual Employee? AssignedEmployee { get; set; } = null!;
-
-        [Required(ErrorMessage = "Trading Name is required.")]
-        [StringLength(200, ErrorMessage = "Trading Name cannot exceed 200 characters.")]
-        [Display(Name = "Trading Name")]
-        public string TradingName { get; set; } = string.Empty;
+        // ===== BUSINESS INFORMATION =====
+        [Required(ErrorMessage = "Business Name is required.")]
+        [StringLength(200, ErrorMessage = "Business Name cannot exceed 200 characters.")]
+        [Display(Name = "Business Name")]
+        public string BusinessName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Business Type is required.")]
         [Display(Name = "Business Type")]
@@ -49,6 +38,16 @@ namespace Project.Models
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "VAT number must be 10 digits.")]
         public string? VATNumber { get; set; }
 
+        [Display(Name = "Operating Hours")]
+        [StringLength(100, ErrorMessage = "Operating hours cannot exceed 100 characters.")]
+        public string? OperatingHours { get; set; }
+
+        [Display(Name = "Customer Since")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CustomerSince { get; set; } = DateTime.UtcNow;
+
+        // ===== CONTACT INFORMATION =====
         [Required(ErrorMessage = "Business Email is required.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         [StringLength(200, ErrorMessage = "Business Email cannot exceed 200 characters.")]
@@ -64,50 +63,50 @@ namespace Project.Models
         [StringLength(20, ErrorMessage = "Alternative phone cannot exceed 20 characters.")]
         public string? AlternativePhone { get; set; }
 
-        public int LocationId { get; set; }
-
-        [ForeignKey(nameof(LocationId))]
-        [ValidateNever]
-        [Display(Name = "Trading Location")]
-        public virtual Location TradingLocation { get; set; } = null!;
-
-        [Required(ErrorMessage = "Address line 1 is required.")]
-        [StringLength(100, ErrorMessage = "Address line 1 cannot exceed 100 characters.")]
-        [Display(Name = "Address Line 1")]
-        public string AddressLine1 { get; set; } = string.Empty;
-
-        [StringLength(100, ErrorMessage = "Address line 2 cannot exceed 100 characters.")]
-        [Display(Name = "Address Line 2")]
-        public string? AddressLine2 { get; set; }
+        // ===== ADDRESS INFORMATION =====
+        [Required(ErrorMessage = "Street Address is required.")]
+        [StringLength(100, ErrorMessage = "Street Address cannot exceed 100 characters.")]
+        [Display(Name = "Street Address")]
+        public string StreetAddress { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Suburb is required.")]
         [StringLength(50, ErrorMessage = "Suburb cannot exceed 50 characters.")]
         public string Suburb { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "City is required.")]
-        [StringLength(200, ErrorMessage = "City cannot exceed 200 characters.")]
+        [StringLength(50, ErrorMessage = "City cannot exceed 50 characters.")]
         [Display(Name = "City")]
         public string City { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Province is required.")]
-        [StringLength(200, ErrorMessage = "Province cannot exceed 200 characters.")]
+        [StringLength(50, ErrorMessage = "Province cannot exceed 50 characters.")]
         [Display(Name = "Province")]
         public string Province { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Postal Code is required.")]
         [StringLength(10, ErrorMessage = "Postal Code cannot exceed 10 characters.")]
+        [RegularExpression(@"^\d{4}$", ErrorMessage = "Postal code must be 4 digits")]
         [Display(Name = "Postal Code")]
         public string PostalCode { get; set; } = string.Empty;
 
+        // ===== COMPANY LOCATION RELATIONSHIP (Optional) =====
+        [Display(Name = "Trading Location")]
+        public int? TradingLocationId { get; set; }
 
+        [ForeignKey(nameof(TradingLocationId))]
+        [ValidateNever]
+        public virtual Location? TradingLocation { get; set; }
+
+        // ===== FINANCIAL INFORMATION =====
         [Display(Name = "Credit Limit")]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0, 1000000, ErrorMessage = "Credit limit must be between 0 and 1,000,000.")]
         public decimal CreditLimit { get; set; } = 5000.00m;
 
-        [Display(Name = "Current Balance")]
+        [Display(Name = "Outstanding Balance")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal CurrentBalance { get; set; } = 0.00m;
+        [DataType(DataType.Currency)]
+        public decimal OutstandingBalance { get; set; } = 0.00m;
 
         [Display(Name = "Payment Terms (days)")]
         [Range(0, 90, ErrorMessage = "Payment terms must be between 0 and 90 days.")]
@@ -117,95 +116,70 @@ namespace Project.Models
         [Range(0, 100, ErrorMessage = "Discount rate must be between 0 and 100 percent.")]
         public decimal DiscountRate { get; set; } = 0.00m;
 
-        [Display(Name = "Active Status")]
-        public bool IsActive { get; set; } = true;
-
         [Display(Name = "Credit Status")]
-        public CreditStatus CreditStatus { get; set; } = CreditStatus.Good;
+        public CreditStatus CreditStatus { get; set; } = CreditStatus.Pending;
 
-        [Display(Name = "Customer Since")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime CustomerSince { get; set; } = DateTime.UtcNow;
+        // ===== CUSTOMER STATUS =====
+        [Required(ErrorMessage = "Customer status is required.")]
+        [Display(Name = "Customer Status")]
+        public AccountStatus AccountStatus { get; set; } = AccountStatus.PendingApproval;
 
-        [Display(Name = "Created Date")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [StringLength(500, ErrorMessage = "Rejection reason cannot exceed 500 characters.")]
+        [Display(Name = "Rejection Reason")]
+        public string? RejectionReason { get; set; }
 
-        [Display(Name = "Created By")]
-        public string? CreatedBy { get; set; } = string.Empty;
+        [Url(ErrorMessage = "Please enter a valid document URL.")]
+        [Display(Name = "Business Document Path")]
+        public string? BusinessDocumentPath { get; set; }
 
-        [Display(Name = "Last Updated")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime? UpdatedAt { get; set; }
+        [Display(Name = "Declined At")]
+        public DateTime? DeclinedAt { get; set; }
 
-        [Display(Name = "Updated By")]
-        public string? UpdatedBy { get; set; } = string.Empty;
+        [Display(Name = "Is Deleted")]
+        public bool IsDeleted { get; set; } = false;
 
-        [Display(Name = "Operating Hours")]
-        [StringLength(100, ErrorMessage = "Operating hours cannot exceed 100 characters.")]
-        public string? OperatingHours { get; set; }
+        // ===== EMPLOYEE ASSIGNMENT =====
+        public int? AssignedEmployeeId { get; set; }
 
-        // Navigation properties
+        [ForeignKey(nameof(AssignedEmployeeId))]
         [ValidateNever]
-        public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
+        public virtual Employee? AssignedEmployee { get; set; }
 
-        [ValidateNever]
-        [Display(Name = "RelatedAllocation History")]
-        public virtual ICollection<FridgeAllocation> AllocationHistory { get; set; } = new List<FridgeAllocation>();
+        // ===== COMPUTED PROPERTIES =====
+        [NotMapped]
+        [Display(Name = "Contact Person")]
+        public string ContactPerson => UserAccount != null ? $"{UserAccount.FirstName} {UserAccount.LastName}" : "Not Specified";
 
-        [Display(Name = "Reported Faults")]
-        [ValidateNever]
-        public virtual ICollection<FaultRecord>? ReportedFaults { get; set; } = new List<FaultRecord>();
+        [NotMapped]
+        [Display(Name = "Is Approved")]
+        public bool IsActive => AccountStatus == AccountStatus.Approved;
 
-        [Display(Name = "Fridge Requests")]
-        [ValidateNever]
-        public virtual ICollection<ReplacementRequest> FridgeRequests { get; set; } = new List<ReplacementRequest>();
-
-        [Display(Name = "Maintenance Schedules")]
-        [ValidateNever]
-        public virtual ICollection<MaintenanceVisit> MaintenanceSchedules { get; set; } = new List<MaintenanceVisit>();
+        [NotMapped]
+        public bool CanLogin => UserAccount?.IsAccountActive == true && AccountStatus == AccountStatus.Approved;
 
         [NotMapped]
         [Display(Name = "Full Address")]
-        public string FullAddress
-        {
-            get
-            {
-                var address = AddressLine1;
-                if (!string.IsNullOrEmpty(AddressLine2)) address += $", {AddressLine2}";
-                address += $", {Suburb}, {City}, {Province}, {PostalCode}";
-                return address;
-            }
-        }
-
-        [NotMapped]
-        [Display(Name = "Current Fridge Count")]
-        public int CurrentFridgeCount => Fridges?.Count(f => f.IsActive) ?? 0;
-
-        [NotMapped]
-        [Display(Name = "Active Allocations")]
-        public int ActiveAllocations => AllocationHistory?.Count(a => a.IsActive) ?? 0;
-
-        [NotMapped]
-        [Display(Name = "Outstanding Balance")]
-        [DataType(DataType.Currency)]
-        public decimal OutstandingBalance => CurrentBalance;
+        public string FullAddress => $"{StreetAddress}, {Suburb}, {City}, {Province}, {PostalCode}";
 
         [NotMapped]
         [Display(Name = "Available Credit")]
         [DataType(DataType.Currency)]
         public decimal AvailableCredit => CreditLimit - OutstandingBalance;
 
-        [NotMapped]
-        public bool HasActiveFridgeAllocations => ActiveAllocations > 0;
+        // ===== NAVIGATION PROPERTIES =====
+        [ValidateNever]
+        public virtual ICollection<Fridge> Fridges { get; set; } = new List<Fridge>();
 
-        [NotMapped]
-        [Display(Name = "Has Overdue Payments")]
-        public bool HasOverduePayments => OutstandingBalance > 0 && CreditStatus == CreditStatus.Blacklisted;
+        [ValidateNever]
+        [Display(Name = "Allocation History")]
+        public virtual ICollection<FridgeAllocation> AllocationHistory { get; set; } = new List<FridgeAllocation>();
 
-        [NotMapped]
-        [Display(Name = "Is Credit Limited")]
-        public bool IsCreditLimited => AvailableCredit <= CreditLimit * 0.1m; // Less than 10% credit available
+        [Display(Name = "Reported Faults")]
+        [ValidateNever]
+        public virtual ICollection<FaultRecord> ReportedFaults { get; set; } = new List<FaultRecord>();
+
+        [Display(Name = "Maintenance Schedules")]
+        [ValidateNever]
+        public virtual ICollection<MaintenanceVisit> MaintenanceSchedules { get; set; } = new List<MaintenanceVisit>();
     }
 }

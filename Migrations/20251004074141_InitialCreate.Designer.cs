@@ -12,8 +12,8 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250929114917_initialCreate")]
-    partial class initialCreate
+    [Migration("20251004074141_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,13 +27,13 @@ namespace Project.Migrations
 
             modelBuilder.Entity("FaultRecordMaintenanceVisit", b =>
                 {
-                    b.Property<int>("FaultRecordsId")
+                    b.Property<int>("CreatedFaultsId")
                         .HasColumnType("int");
 
                     b.Property<int>("MaintenanceVisitsId")
                         .HasColumnType("int");
 
-                    b.HasKey("FaultRecordsId", "MaintenanceVisitsId");
+                    b.HasKey("CreatedFaultsId", "MaintenanceVisitsId");
 
                     b.HasIndex("MaintenanceVisitsId");
 
@@ -200,32 +200,32 @@ namespace Project.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "1",
+                            UserId = "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1",
                             RoleId = "admin_role_id"
                         },
                         new
                         {
-                            UserId = "2",
+                            UserId = "b5a771e9-2f8b-437a-9d0e-7f8b901cde12",
                             RoleId = "customer_support_role_id"
                         },
                         new
                         {
-                            UserId = "3",
+                            UserId = "c6d882fa-47b9-448b-a9e0-8f9b012d3e45",
                             RoleId = "stock_controller_role_id"
                         },
                         new
                         {
-                            UserId = "4",
+                            UserId = "d7e9930b-58c0-459c-ba1f-9a0a123b4c56",
                             RoleId = "fault_technician_role_id"
                         },
                         new
                         {
-                            UserId = "5",
+                            UserId = "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e",
                             RoleId = "maintenance_technician_role_id"
                         },
                         new
                         {
-                            UserId = "6",
+                            UserId = "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d",
                             RoleId = "customer_role_id"
                         });
                 });
@@ -264,18 +264,10 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("FridgeModelId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -286,6 +278,15 @@ namespace Project.Migrations
                     b.Property<string>("SpecialRequirements")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -332,36 +333,41 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DeliveryInstructions")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("DeliveryLocationId")
+                    b.Property<int?>("DeliveryLocationId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("DiscountPercentage")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsUrgentReplacement")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("PreferredDeliveryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RelatedFaultRecordId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReplacementReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("ReplacingAllocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReplacingFridgeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("RequestDate")
@@ -386,14 +392,19 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("DeliveryLocationId");
+
+                    b.HasIndex("RelatedFaultRecordId");
+
+                    b.HasIndex("ReplacingAllocationId");
+
+                    b.HasIndex("ReplacingFridgeId");
 
                     b.ToTable("AllocationRequestHeaders");
                 });
@@ -406,8 +417,8 @@ namespace Project.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("AccountStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("BusinessDocumentPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -417,11 +428,7 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DOB")
                         .HasColumnType("datetime2");
@@ -433,24 +440,15 @@ namespace Project.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FailedLoginAttempts")
-                        .HasColumnType("int");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsEmailVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPhoneVerified")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLoginDate")
@@ -464,17 +462,11 @@ namespace Project.Migrations
                     b.Property<DateTime?>("LastPasswordChangeDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("LocationId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTime?>("LockoutEndDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -493,9 +485,18 @@ namespace Project.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePictureContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("ProfilePictureData")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("ProfilePictureUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -507,16 +508,13 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -531,170 +529,152 @@ namespace Project.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1",
                             AccessFailedCount = 0,
-                            AccountStatus = 1,
-                            ConcurrencyStamp = "1b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            ConcurrencyStamp = "a1b234c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
+                            DOB = new DateTime(2000, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@smartchill.com",
                             EmailConfirmed = true,
-                            EmployeeId = 1,
-                            FailedLoginAttempts = 0,
                             FirstName = "Collins",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsPhoneVerified = true,
+                            IsApproved = false,
+                            IsDeleted = false,
                             LastName = "Khosa",
-                            LocationId = 6,
                             LockoutEnabled = true,
                             NormalizedEmail = "ADMIN@SMARTCHILL.COM",
                             NormalizedUserName = "ADMIN@SMARTCHILL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEC49uuNxXXoCcTXxkO9GmRv9Jz+E6cbTQoVBPoFcr9+L977JCzJDPRmOCW9SSW9jyw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPnCBNS4PQrj9JjSqAy+/nbTPMO96RWdfTCFgw3szc75Ya9qzppIj5hExCx+939AXA==",
                             PhoneNumber = "+27645347790",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "1b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            SecurityStamp = "c1fa9012-34b5-4c6d-8e7f-56a7890bc123",
                             TwoFactorEnabled = false,
+                            UpdatedBy = "",
                             UserName = "admin@smartchill.com"
                         },
                         new
                         {
-                            Id = "2",
+                            Id = "b5a771e9-2f8b-437a-9d0e-7f8b901cde12",
                             AccessFailedCount = 0,
-                            AccountStatus = 1,
-                            ConcurrencyStamp = "2b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            ConcurrencyStamp = "c3d456f7-a8b0-4c1d-9e2f-3a4b5c6d7e8f",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
+                            DOB = new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "customersupport@smartchill.com",
                             EmailConfirmed = true,
-                            EmployeeId = 2,
-                            FailedLoginAttempts = 0,
                             FirstName = "Andries",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsPhoneVerified = true,
+                            IsApproved = false,
+                            IsDeleted = false,
                             LastName = "Tatane",
-                            LocationId = 10,
                             LockoutEnabled = true,
                             NormalizedEmail = "CUSTOMERSUPPORT@SMARTCHILL.COM",
                             NormalizedUserName = "CUSTOMERSUPPORT@SMARTCHILL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE3rLZWl1k1LKukpPaX8Z5s3h13n0PUijXvaKvB+Sq7f6d0liN5td44hMBNHZ25prA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJCYyOYrt4DQxf2S2oQNQcsnBrk62cJ0lD/TO9jyPjZPSPjNtr8bfJJdAiurSLXCoA==",
                             PhoneNumber = "+27710737734",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "2b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            SecurityStamp = "d2c345e6-f7a8-4b0c-9d1e-2f3a4b5c6d7e",
                             TwoFactorEnabled = false,
+                            UpdatedBy = "",
                             UserName = "customersupport@smartchill.com"
                         },
                         new
                         {
-                            Id = "3",
+                            Id = "c6d882fa-47b9-448b-a9e0-8f9b012d3e45",
                             AccessFailedCount = 0,
-                            AccountStatus = 1,
-                            ConcurrencyStamp = "3b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            ConcurrencyStamp = "d5f789ab-c0de-4e1f-9a2b-7c8d9e0f1234",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
+                            DOB = new DateTime(1999, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "stockcontroller@smartchill.com",
                             EmailConfirmed = true,
-                            EmployeeId = 3,
-                            FailedLoginAttempts = 0,
                             FirstName = "Mido",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsPhoneVerified = true,
+                            IsApproved = false,
+                            IsDeleted = false,
                             LastName = "Macia",
-                            LocationId = 2,
                             LockoutEnabled = true,
                             NormalizedEmail = "STOCKCONTROLLER@SMARTCHILL.COM",
                             NormalizedUserName = "STOCKCONTROLLER@SMARTCHILL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBeWGdj2q05lprgHqV5DSKoJwTfu3m036UbwFznfQ72lkQ+boElmG9oha1DvPa4Fbg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPkY/rStc/I5dEJC7Tf4f7K5BmZtnGp9BJoEcgkBakMTiCv+1+uqMSwUiq3Dd41qUw==",
                             PhoneNumber = "+27662934430",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "3b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            SecurityStamp = "f4e678a9-b0c1-4d3e-9f5a-6b7c8d9e0f12",
                             TwoFactorEnabled = false,
+                            UpdatedBy = "",
                             UserName = "stockcontroller@smartchill.com"
                         },
                         new
                         {
-                            Id = "4",
+                            Id = "d7e9930b-58c0-459c-ba1f-9a0a123b4c56",
                             AccessFailedCount = 0,
-                            AccountStatus = 1,
-                            ConcurrencyStamp = "4b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            ConcurrencyStamp = "f7a9bcde-1e23-4f3a-9c4d-1e5f6a7b8c9d",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
+                            DOB = new DateTime(1983, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "faulttechnician@smartchill.com",
                             EmailConfirmed = true,
-                            EmployeeId = 4,
-                            FailedLoginAttempts = 0,
                             FirstName = "Nathaniel",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsPhoneVerified = true,
+                            IsApproved = false,
+                            IsDeleted = false,
                             LastName = "Julies",
-                            LocationId = 5,
                             LockoutEnabled = true,
                             NormalizedEmail = "FAULTTECHNICIAN@SMARTCHILL.COM",
                             NormalizedUserName = "FAULTTECHNICIAN@SMARTCHILL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJvZgYSv/3PP+7+nSjByuXdCtO/usPVGop/QFwhtN963A3/FNg6bjO7iNPC2nq5ZHw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPJec7Z6Whl567yC7vG6SRzw1P4CRoYlLsCD9wNlEE5wia0ld5fAEHYu514lO+Sgww==",
                             PhoneNumber = "+27798946438",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "4b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            SecurityStamp = "e6f89abc-0d12-4f2e-8b3c-0d4e5f6a7b8c",
                             TwoFactorEnabled = false,
+                            UpdatedBy = "",
                             UserName = "faulttechnician@smartchill.com"
                         },
                         new
                         {
-                            Id = "5",
+                            Id = "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e",
                             AccessFailedCount = 0,
-                            AccountStatus = 1,
-                            ConcurrencyStamp = "5b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            ConcurrencyStamp = "b8c9d0e1-3f45-4a6b-9f7c-8d9e0f1a2b3c",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
+                            DOB = new DateTime(1978, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "maintenancetechnician@smartchill.com",
                             EmailConfirmed = true,
-                            EmployeeId = 5,
-                            FailedLoginAttempts = 0,
                             FirstName = "Latiefa",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsPhoneVerified = true,
+                            IsApproved = false,
+                            IsDeleted = false,
                             LastName = "Freeman",
-                            LocationId = 5,
                             LockoutEnabled = true,
                             NormalizedEmail = "MAINTENANCETECHNICIAN@SMARTCHILL.COM",
                             NormalizedUserName = "MAINTENANCETECHNICIAN@SMARTCHILL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJi0G3lY69bFoqrnXds1xFBCid4BOJuNtuvoLSBtGZbJdHVGwrHiIbf89nrCdDgHaw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOxQsf/HgOCUTxhc1O53mdHCWfG9mD2jlehUVSxCJEzz9Qo4+oExWujRWPfMwu9IQA==",
                             PhoneNumber = "+27614836998",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "5b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            SecurityStamp = "a7b8c9d0-2f34-4e5a-9f6b-7c8d9e0f1a2b",
                             TwoFactorEnabled = false,
+                            UpdatedBy = "",
                             UserName = "maintenancetechnician@smartchill.com"
                         },
                         new
                         {
-                            Id = "6",
+                            Id = "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d",
                             AccessFailedCount = 0,
-                            AccountStatus = 1,
-                            ConcurrencyStamp = "6b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            ConcurrencyStamp = "d0e1f2a3-5b67-4c8d-9e0f-1a2b3c4d5e6f",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            CustomerId = 1,
+                            DOB = new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "naterobertson@gmail.com",
                             EmailConfirmed = true,
-                            FailedLoginAttempts = 0,
                             FirstName = "Nathan",
-                            IsActive = true,
-                            IsEmailVerified = true,
-                            IsPhoneVerified = true,
+                            IsApproved = false,
+                            IsDeleted = false,
                             LastName = "Robertson",
-                            LocationId = 1,
                             LockoutEnabled = true,
                             NormalizedEmail = "NATEROBERTSON@GMAIL.COM",
                             NormalizedUserName = "NATEROBERTSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFq/PoeA3ZcTwiVBo/XHzZlpVWhTaz11oX8IZRU9evqC6BaAswH68CrUCCpnr7/a9w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBNX/94VxAPgZaJ/z2xiwMgkLZSIxV948K2Qm8xuhwKAcfoYWym6CMKeKFp9dGYc+g==",
                             PhoneNumber = "+27691745946",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "6b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a",
+                            SecurityStamp = "c9d0e1f2-4a56-4b7c-8d9e-0f1a2b3c4d5f",
                             TwoFactorEnabled = false,
+                            UpdatedBy = "",
                             UserName = "naterobertson@gmail.com"
                         });
                 });
@@ -707,14 +687,8 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressLine1")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AddressLine2")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("AccountStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("AlternativePhone")
                         .HasMaxLength(20)
@@ -723,7 +697,15 @@ namespace Project.Migrations
                     b.Property<int?>("AssignedEmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("BusinessDocumentPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BusinessEmail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("BusinessName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -738,14 +720,8 @@ namespace Project.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("CreditLimit")
                         .HasColumnType("decimal(18,2)");
@@ -753,24 +729,27 @@ namespace Project.Migrations
                     b.Property<int>("CreditStatus")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("CurrentBalance")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("CustomerSince")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeclinedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("DiscountRate")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("OperatingHours")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("OutstandingBalance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("PaymentTermsDays")
                         .HasColumnType("int");
@@ -782,30 +761,32 @@ namespace Project.Migrations
 
                     b.Property<string>("Province")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("RegistrationNumber")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("StreetAddress")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Suburb")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("TradingName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("TradingLocationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VATNumber")
@@ -818,9 +799,10 @@ namespace Project.Migrations
 
                     b.HasIndex("LocationId");
 
+                    b.HasIndex("TradingLocationId");
+
                     b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Customers");
 
@@ -828,32 +810,29 @@ namespace Project.Migrations
                         new
                         {
                             Id = 1,
-                            AddressLine1 = "12 Voortrekker Road",
+                            AccountStatus = 1,
                             AlternativePhone = "+27836549871",
                             AssignedEmployeeId = 2,
                             BusinessEmail = "orders@boereworspalace.co.za",
+                            BusinessName = "Boerewors Palace",
                             BusinessPhoneNumber = "+27218765432",
                             BusinessType = 1,
                             City = "Paarl",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
                             CreditLimit = 50000.00m,
-                            CreditStatus = 0,
-                            CurrentBalance = 1250.50m,
+                            CreditStatus = 1,
                             CustomerSince = new DateTime(2023, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiscountRate = 5.00m,
-                            IsActive = true,
-                            LocationId = 1,
+                            IsDeleted = false,
                             OperatingHours = "Mon-Fri: 7:00-18:00, Sat: 7:00-14:00, Sun: Closed",
+                            OutstandingBalance = 1250.50m,
                             PaymentTermsDays = 30,
                             PostalCode = "7646",
                             Province = "Western Cape",
                             RegistrationNumber = "2024/123456/07",
+                            StreetAddress = "12 Voortrekker Road",
                             Suburb = "Paarl",
-                            TradingName = "Boerewors Palace",
-                            UpdatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedBy = "System",
-                            UserId = "6",
+                            TradingLocationId = 1,
+                            UserId = "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d",
                             VATNumber = "4871253690"
                         });
                 });
@@ -869,33 +848,16 @@ namespace Project.Migrations
                     b.Property<int>("AvailabilityStatus")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EmployeeNumber")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("EmployeeType")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
-                    b.Property<int>("EmploymentType")
+                    b.Property<int>("EmployeeType")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -926,14 +888,10 @@ namespace Project.Migrations
                         {
                             Id = 1,
                             AvailabilityStatus = 0,
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
                             EmployeeNumber = "EMP00001",
-                            EmployeeType = "Administrator",
-                            EmploymentType = 0,
-                            IsActive = true,
-                            UpdatedBy = "",
-                            UserId = "1",
+                            EmployeeType = 0,
+                            IsDeleted = false,
+                            UserId = "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1",
                             WorkEmail = "admin@smartchill.com",
                             WorkLocationId = 6,
                             WorkPhone = "+27645347790"
@@ -942,14 +900,10 @@ namespace Project.Migrations
                         {
                             Id = 2,
                             AvailabilityStatus = 0,
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
                             EmployeeNumber = "EMP00002",
-                            EmployeeType = "CustomerSupport",
-                            EmploymentType = 0,
-                            IsActive = true,
-                            UpdatedBy = "",
-                            UserId = "2",
+                            EmployeeType = 1,
+                            IsDeleted = false,
+                            UserId = "b5a771e9-2f8b-437a-9d0e-7f8b901cde12",
                             WorkEmail = "customersupport@smartchill.com",
                             WorkLocationId = 10,
                             WorkPhone = "+27710737734"
@@ -958,14 +912,10 @@ namespace Project.Migrations
                         {
                             Id = 3,
                             AvailabilityStatus = 0,
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
                             EmployeeNumber = "EMP00003",
-                            EmployeeType = "StockController",
-                            EmploymentType = 0,
-                            IsActive = true,
-                            UpdatedBy = "",
-                            UserId = "3",
+                            EmployeeType = 2,
+                            IsDeleted = false,
+                            UserId = "c6d882fa-47b9-448b-a9e0-8f9b012d3e45",
                             WorkEmail = "stockcontroller@smartchill.com",
                             WorkLocationId = 2,
                             WorkPhone = "+27662934430"
@@ -974,14 +924,10 @@ namespace Project.Migrations
                         {
                             Id = 4,
                             AvailabilityStatus = 0,
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
                             EmployeeNumber = "EMP00004",
-                            EmployeeType = "FaultTechnician",
-                            EmploymentType = 0,
-                            IsActive = true,
-                            UpdatedBy = "",
-                            UserId = "4",
+                            EmployeeType = 3,
+                            IsDeleted = false,
+                            UserId = "d7e9930b-58c0-459c-ba1f-9a0a123b4c56",
                             WorkEmail = "faulttechnician@smartchill.com",
                             WorkLocationId = 5,
                             WorkPhone = "+27798946438"
@@ -990,14 +936,10 @@ namespace Project.Migrations
                         {
                             Id = 5,
                             AvailabilityStatus = 0,
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
                             EmployeeNumber = "EMP00005",
-                            EmployeeType = "MaintenanceTechnician",
-                            EmploymentType = 0,
-                            IsActive = true,
-                            UpdatedBy = "",
-                            UserId = "5",
+                            EmployeeType = 4,
+                            IsDeleted = false,
+                            UserId = "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e",
                             WorkEmail = "maintenancetechnician@smartchill.com",
                             WorkLocationId = 5,
                             WorkPhone = "+27614836998"
@@ -1012,14 +954,11 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AcknowledgedDate")
+                    b.Property<DateTime?>("AssignedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("AssignedTechnicianId")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("BillingAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Category")
                         .HasColumnType("int");
@@ -1029,6 +968,9 @@ namespace Project.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("CustomerBilled")
                         .HasColumnType("bit");
@@ -1043,12 +985,6 @@ namespace Project.Migrations
                     b.Property<bool>("CustomerInformed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("CustomerNotifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CustomerSatisfactionRating")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -1057,9 +993,6 @@ namespace Project.Migrations
                     b.Property<string>("DocumentationUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("EstimatedCompletionDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("FaultCode")
                         .IsRequired()
@@ -1082,9 +1015,6 @@ namespace Project.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsWarrantyClaim")
-                        .HasColumnType("bit");
-
                     b.Property<decimal?>("LaborCost")
                         .HasColumnType("decimal(18,2)");
 
@@ -1095,10 +1025,16 @@ namespace Project.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PartsReplaced")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ReplacementRecommended")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ReplacementRequestId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReportedById")
@@ -1108,9 +1044,16 @@ namespace Project.Migrations
                     b.Property<DateTime>("ReportedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("RequiresReplacement")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ResolutionDetails")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ResolutionPhotosUrl")
                         .HasMaxLength(500)
@@ -1119,23 +1062,11 @@ namespace Project.Migrations
                     b.Property<DateTime?>("ResolvedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RootCause")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("ScheduledDate")
+                    b.Property<DateTime?>("ResponseDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<string>("TechnicalDiagnosis")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("TechnicianNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -1145,11 +1076,11 @@ namespace Project.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("WarrantyApproved")
-                        .HasColumnType("bit");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("WorkStartedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("WarrantyCovered")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -1162,6 +1093,8 @@ namespace Project.Migrations
                     b.HasIndex("FridgeAllocationId");
 
                     b.HasIndex("FridgeId");
+
+                    b.HasIndex("ReplacementRequestId");
 
                     b.HasIndex("ReportedById");
 
@@ -1194,23 +1127,14 @@ namespace Project.Migrations
                     b.Property<int>("FridgeModelId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsScrapped")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("LastFaultDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LastServiceDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("NextServiceDue")
                         .HasColumnType("datetime2");
@@ -1235,6 +1159,12 @@ namespace Project.Migrations
 
                     b.Property<int>("TotalServiceCount")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("WarrantyExpiryDate")
                         .HasColumnType("datetime2");
@@ -1269,21 +1199,22 @@ namespace Project.Migrations
                     b.Property<DateTime>("AllocationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("AllocationRequestHeaderId")
+                    b.Property<int>("AllocationRequestHeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AllocationStatus")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<int?>("DeliveryLocationId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ExpectedReturnDate")
@@ -1292,15 +1223,8 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("MonthlyRentalPrice")
                         .HasColumnType("decimal(18,2)");
@@ -1315,8 +1239,17 @@ namespace Project.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("ReplacedAllocationId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("ReplacementRequestHeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1331,6 +1264,10 @@ namespace Project.Migrations
                     b.HasIndex("FridgeId");
 
                     b.HasIndex("ProcessedByEmployeeId");
+
+                    b.HasIndex("ReplacedAllocationId");
+
+                    b.HasIndex("ReplacementRequestHeaderId");
 
                     b.ToTable("FridgeAllocations");
                 });
@@ -1354,8 +1291,7 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1382,13 +1318,7 @@ namespace Project.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsFrostFree")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsScrapped")
                         .HasColumnType("bit");
 
                     b.Property<string>("Manufacturer")
@@ -1409,17 +1339,7 @@ namespace Project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<decimal>("MonthlyRentalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("PowerConsumption")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("PurchasePrice")
@@ -1431,22 +1351,20 @@ namespace Project.Migrations
                     b.Property<int>("ServiceIntervalMonths")
                         .HasColumnType("int");
 
-                    b.Property<string>("TemperatureRange")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<string>("Voltage")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("WarrantyPeriodMonths")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("WeightKg")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -1460,798 +1378,538 @@ namespace Project.Migrations
                             Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Compact upright fridge perfect for small businesses with limited space. Energy efficient and reliable.",
+                            Description = "Compact upright fridge ideal for limited-space spaza shops.",
                             Dimensions = "85×55×60",
                             EnergyRating = "A",
                             HasDigitalDisplay = false,
                             HasGlassDoor = false,
                             HasLock = true,
                             ImageUrl = "/images/fridges/defy-compact-100l.jpg",
-                            IsActive = true,
                             IsFrostFree = true,
-                            IsScrapped = false,
                             Manufacturer = "Defy",
                             MinimumStockLevel = 3,
                             ModelCode = "DEF-C100",
                             ModelName = "Compact 100L",
                             MonthlyRentalPrice = 299.00m,
-                            PowerConsumption = 180m,
                             PurchasePrice = 3499.00m,
                             ReorderQuantity = 5,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "2°C to 8°C",
+                            Status = 0,
                             Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 45m
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 2,
                             CapacityLiters = 150,
-                            Color = "Silver",
+                            Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Reliable commercial fridge with digital temperature control and robust construction.",
-                            Dimensions = "90×60×65",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
+                            Description = "Sturdy chest freezer for high-volume frozen storage.",
+                            Dimensions = "85×70×60",
+                            EnergyRating = "B",
+                            HasDigitalDisplay = false,
                             HasGlassDoor = false,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/lg-business-cool-150l.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "LG",
+                            HasLock = false,
+                            ImageUrl = "/images/fridges/defy-chest-150l.jpg",
+                            IsFrostFree = false,
+                            Manufacturer = "Defy",
                             MinimumStockLevel = 2,
-                            ModelCode = "LG-BC150",
-                            ModelName = "Business Cool 150L",
-                            MonthlyRentalPrice = 399.00m,
-                            PowerConsumption = 210m,
-                            PurchasePrice = 4599.00m,
+                            ModelCode = "DEF-CF150",
+                            ModelName = "Classic Chest 150L",
+                            MonthlyRentalPrice = 319.00m,
+                            PurchasePrice = 3899.00m,
                             ReorderQuantity = 4,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "1°C to 10°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 52m
+                            ServiceIntervalMonths = 12,
+                            Status = 0,
+                            Type = 1,
+                            WarrantyPeriodMonths = 36
                         },
                         new
                         {
                             Id = 3,
-                            CapacityLiters = 120,
+                            CapacityLiters = 200,
                             Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Budget-friendly frost-free fridge ideal for small retail spaces and startups.",
-                            Dimensions = "88×58×62",
+                            Description = "Vertical freezer with adjustable shelves and frost-free tech.",
+                            Dimensions = "170×58×60",
                             EnergyRating = "B",
-                            HasDigitalDisplay = false,
+                            HasDigitalDisplay = true,
                             HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/hisense-frostfree-120l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/hisense-upright-freezer-200l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
                             Manufacturer = "Hisense",
-                            MinimumStockLevel = 4,
-                            ModelCode = "HIS-FF120",
-                            ModelName = "FrostFree 120L",
-                            MonthlyRentalPrice = 259.00m,
-                            PowerConsumption = 195m,
-                            PurchasePrice = 2999.00m,
-                            ReorderQuantity = 6,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "3°C to 8°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 48m
+                            MinimumStockLevel = 2,
+                            ModelCode = "HIS-UF200",
+                            ModelName = "Upright Freezer 200L",
+                            MonthlyRentalPrice = 429.00m,
+                            PurchasePrice = 4999.00m,
+                            ReorderQuantity = 3,
+                            ServiceIntervalMonths = 12,
+                            Status = 0,
+                            Type = 2,
+                            WarrantyPeriodMonths = 36
                         },
                         new
                         {
                             Id = 4,
-                            CapacityLiters = 180,
-                            Color = "Stainless Steel",
+                            CapacityLiters = 200,
+                            Color = "Silver",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Medium capacity commercial fridge with digital controls and efficient cooling.",
-                            Dimensions = "95×65×68",
+                            Description = "Glass-fronted display fridge with internal LED lighting.",
+                            Dimensions = "180×58×60",
                             EnergyRating = "A+",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
+                            HasDigitalDisplay = false,
+                            HasGlassDoor = true,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/samsung-commercial-180l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/galaxy-display-200l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Samsung",
+                            Manufacturer = "Galaxy",
                             MinimumStockLevel = 2,
-                            ModelCode = "SAM-C180",
-                            ModelName = "Commercial 180L",
-                            MonthlyRentalPrice = 449.00m,
-                            PowerConsumption = 225m,
-                            PurchasePrice = 5199.00m,
-                            ReorderQuantity = 4,
+                            ModelCode = "GAL-DF200",
+                            ModelName = "Display Chiller 200L",
+                            MonthlyRentalPrice = 499.00m,
+                            PurchasePrice = 5499.00m,
+                            ReorderQuantity = 3,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "0°C to 8°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 58m
+                            Status = 0,
+                            Type = 3,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 5,
-                            CapacityLiters = 150,
-                            Color = "White",
+                            CapacityLiters = 120,
+                            Color = "Black",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Energy-efficient chest freezer perfect for frozen goods storage in small businesses.",
-                            Dimensions = "85×55×80",
+                            Description = "Slim beverage cooler for cans and bottles display.",
+                            Dimensions = "90×50×60",
                             EnergyRating = "A",
                             HasDigitalDisplay = false,
-                            HasGlassDoor = false,
+                            HasGlassDoor = true,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/kic-chest-150l.jpg",
-                            IsActive = true,
-                            IsFrostFree = false,
-                            IsScrapped = false,
-                            Manufacturer = "KIC",
+                            ImageUrl = "/images/fridges/lg-beverage-120l.jpg",
+                            IsFrostFree = true,
+                            Manufacturer = "LG",
                             MinimumStockLevel = 3,
-                            ModelCode = "KIC-SC150",
-                            ModelName = "Small Chest 150L",
-                            MonthlyRentalPrice = 279.00m,
-                            PowerConsumption = 190m,
-                            PurchasePrice = 3299.00m,
+                            ModelCode = "LG-BC120",
+                            ModelName = "Beverage Cooler 120L",
+                            MonthlyRentalPrice = 389.00m,
+                            PurchasePrice = 4299.00m,
                             ReorderQuantity = 5,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "-18°C to -25°C",
-                            Type = 1,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 42m
+                            Status = 0,
+                            Type = 4,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 6,
-                            CapacityLiters = 280,
-                            Color = "Black Glass",
+                            CapacityLiters = 120,
+                            Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Professional glass door display fridge perfect for bars and restaurants showcasing beverages.",
-                            Dimensions = "185×65×70",
+                            Description = "Under-counter fridge perfect for back-bar integration.",
+                            Dimensions = "82×60×57",
                             EnergyRating = "A",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = true,
+                            HasDigitalDisplay = false,
+                            HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/bartech-glass-display-280l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/defy-undercounter-120l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Bartech",
-                            MinimumStockLevel = 2,
-                            ModelCode = "BAR-GD280",
-                            ModelName = "Glass Display 280L",
-                            MonthlyRentalPrice = 699.00m,
-                            PowerConsumption = 320m,
-                            PurchasePrice = 7899.00m,
-                            ReorderQuantity = 3,
-                            ServiceIntervalMonths = 4,
-                            TemperatureRange = "2°C to 6°C",
-                            Type = 3,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 95m
+                            Manufacturer = "Defy",
+                            MinimumStockLevel = 3,
+                            ModelCode = "DEF-UC120",
+                            ModelName = "Undercounter 120L",
+                            MonthlyRentalPrice = 349.00m,
+                            PurchasePrice = 4299.00m,
+                            ReorderQuantity = 5,
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
+                            Type = 5,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 7,
-                            CapacityLiters = 150,
-                            Color = "Stainless Steel",
+                            CapacityLiters = 100,
+                            Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Professional undercounter fridge built for commercial kitchens with stainless steel construction.",
-                            Dimensions = "85×60×70",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
+                            Description = "Under-counter freezer module for compact storage.",
+                            Dimensions = "82×60×57",
+                            EnergyRating = "B",
+                            HasDigitalDisplay = false,
                             HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/foster-undercounter-150l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/lg-undercounter-freezer-100l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Foster",
+                            Manufacturer = "LG",
                             MinimumStockLevel = 2,
-                            ModelCode = "FOS-UC150",
-                            ModelName = "Undercounter 150L",
-                            MonthlyRentalPrice = 549.00m,
-                            PowerConsumption = 280m,
-                            PurchasePrice = 6299.00m,
+                            ModelCode = "LG-UCF100",
+                            ModelName = "Undercounter Freezer 100L",
+                            MonthlyRentalPrice = 369.00m,
+                            PurchasePrice = 4299.00m,
                             ReorderQuantity = 3,
-                            ServiceIntervalMonths = 4,
-                            TemperatureRange = "1°C to 7°C",
-                            Type = 5,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 68m
+                            ServiceIntervalMonths = 12,
+                            Status = 0,
+                            Type = 6,
+                            WarrantyPeriodMonths = 36
                         },
                         new
                         {
                             Id = 8,
-                            CapacityLiters = 200,
+                            CapacityLiters = 50,
                             Color = "Black",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Dedicated beverage cooler with multiple shelves, perfect for canned drinks and bottles.",
-                            Dimensions = "85×60×65",
+                            Description = "Temperature-controlled wine cooler with glass door.",
+                            Dimensions = "85×50×60",
                             EnergyRating = "A",
                             HasDigitalDisplay = true,
                             HasGlassDoor = true,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/true-beverage-200l.jpg",
-                            IsActive = true,
+                            HasLock = false,
+                            ImageUrl = "/images/fridges/kic-wine-50l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "True",
-                            MinimumStockLevel = 2,
-                            ModelCode = "TRU-BC200",
-                            ModelName = "Beverage Cooler 200L",
-                            MonthlyRentalPrice = 499.00m,
-                            PowerConsumption = 240m,
+                            Manufacturer = "KIC",
+                            MinimumStockLevel = 1,
+                            ModelCode = "KIC-WC50",
+                            ModelName = "Wine Cooler 50L",
+                            MonthlyRentalPrice = 519.00m,
                             PurchasePrice = 5799.00m,
-                            ReorderQuantity = 4,
+                            ReorderQuantity = 2,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "3°C to 8°C",
-                            Type = 4,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 55m
+                            Status = 0,
+                            Type = 7,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 9,
-                            CapacityLiters = 25,
-                            Color = "Stainless Steel",
+                            CapacityLiters = 300,
+                            Color = "Grey",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Commercial ice maker producing up to 25kg of ice per day, essential for bars and restaurants.",
-                            Dimensions = "75×55×65",
-                            EnergyRating = "A",
+                            Description = "Combined fridge-freezer with separate temperature zones.",
+                            Dimensions = "175×70×65",
+                            EnergyRating = "A+",
                             HasDigitalDisplay = true,
                             HasGlassDoor = false,
-                            HasLock = false,
-                            ImageUrl = "/images/fridges/hoshizaki-ice-maker.jpg",
-                            IsActive = true,
+                            HasLock = true,
+                            ImageUrl = "/images/fridges/samsung-combi-300l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Hoshizaki",
+                            Manufacturer = "Samsung",
                             MinimumStockLevel = 1,
-                            ModelCode = "HOS-IM25",
-                            ModelName = "Ice Maker Pro",
-                            MonthlyRentalPrice = 429.00m,
-                            PowerConsumption = 180m,
-                            PurchasePrice = 4899.00m,
+                            ModelCode = "SAM-CBF300",
+                            ModelName = "Combi 300L",
+                            MonthlyRentalPrice = 599.00m,
+                            PurchasePrice = 6499.00m,
                             ReorderQuantity = 2,
-                            ServiceIntervalMonths = 3,
-                            TemperatureRange = "N/A",
-                            Type = 9,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 48m
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
+                            Type = 8,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 10,
-                            CapacityLiters = 120,
-                            Color = "Black Glass",
+                            CapacityLiters = 0,
+                            Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Dual-zone wine cooler with precise temperature control for red and white wines.",
+                            Description = "High-capacity ice maker, up to 50kg daily output.",
                             Dimensions = "85×60×60",
-                            EnergyRating = "A+",
+                            EnergyRating = "B",
                             HasDigitalDisplay = true,
-                            HasGlassDoor = true,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/perlick-wine-cooler.jpg",
-                            IsActive = true,
+                            HasGlassDoor = false,
+                            HasLock = false,
+                            ImageUrl = "/images/fridges/kic-ice-maker-50kg.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Perlick",
+                            Manufacturer = "KIC",
                             MinimumStockLevel = 1,
-                            ModelCode = "PER-WC120",
-                            ModelName = "Wine Cooler 120L",
-                            MonthlyRentalPrice = 399.00m,
-                            PowerConsumption = 160m,
-                            PurchasePrice = 4599.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "5°C to 18°C",
-                            Type = 7,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 52m
+                            ModelCode = "KIC-IM50",
+                            ModelName = "Ice Maker Pro",
+                            MonthlyRentalPrice = 799.00m,
+                            PurchasePrice = 8999.00m,
+                            ReorderQuantity = 1,
+                            ServiceIntervalMonths = 12,
+                            Status = 0,
+                            Type = 9,
+                            WarrantyPeriodMonths = 36
                         },
                         new
                         {
                             Id = 11,
-                            CapacityLiters = 500,
-                            Color = "Stainless Steel",
+                            CapacityLiters = 80,
+                            Color = "Black",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Large multi-deck display fridge for supermarkets with excellent product visibility.",
-                            Dimensions = "200×120×80",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
+                            Description = "Slim bottle cooler with glass door, ideal for display.",
+                            Dimensions = "82×43×58",
+                            EnergyRating = "A",
+                            HasDigitalDisplay = false,
                             HasGlassDoor = true,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/hussmann-multideck-500l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/hisense-bottle-80l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Hussmann",
-                            MinimumStockLevel = 1,
-                            ModelCode = "HUS-MD500",
-                            ModelName = "Multi-Deck 500L",
-                            MonthlyRentalPrice = 1199.00m,
-                            PowerConsumption = 580m,
-                            PurchasePrice = 13999.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 3,
-                            TemperatureRange = "2°C to 6°C",
-                            Type = 3,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 220m
+                            Manufacturer = "Hisense",
+                            MinimumStockLevel = 4,
+                            ModelCode = "HIS-BC80",
+                            ModelName = "Bottle Cooler 80L",
+                            MonthlyRentalPrice = 289.00m,
+                            PurchasePrice = 3299.00m,
+                            ReorderQuantity = 6,
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
+                            Type = 10,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 12,
-                            CapacityLiters = 350,
-                            Color = "Glass Door",
+                            CapacityLiters = 250,
+                            Color = "Grey",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "High-capacity bottle cooler designed for liquor stores and large bars.",
-                            Dimensions = "190×70×75",
-                            EnergyRating = "A",
+                            Description = "High-capacity upright fridge for beverage storage.",
+                            Dimensions = "175×70×68",
+                            EnergyRating = "A+",
                             HasDigitalDisplay = true,
-                            HasGlassDoor = true,
+                            HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/beverage-air-bottle-350l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/samsung-upright-250l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Beverage-Air",
-                            MinimumStockLevel = 1,
-                            ModelCode = "BEV-BC350",
-                            ModelName = "Bottle Cooler 350L",
-                            MonthlyRentalPrice = 849.00m,
-                            PowerConsumption = 420m,
-                            PurchasePrice = 9899.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 4,
-                            TemperatureRange = "3°C to 7°C",
-                            Type = 10,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 125m
+                            Manufacturer = "Samsung",
+                            MinimumStockLevel = 2,
+                            ModelCode = "SAM-UF250",
+                            ModelName = "Upright Fridge 250L",
+                            MonthlyRentalPrice = 599.00m,
+                            PurchasePrice = 6499.00m,
+                            ReorderQuantity = 4,
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
+                            Type = 0,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 13,
-                            CapacityLiters = 400,
-                            Color = "Stainless Steel",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            Description = "Professional combination fridge-freezer unit for commercial kitchens and hotels.",
-                            Dimensions = "185×80×75",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/traulsen-combi-400l.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Traulsen",
-                            MinimumStockLevel = 1,
-                            ModelCode = "TRA-C400",
-                            ModelName = "Combi 400L",
-                            MonthlyRentalPrice = 999.00m,
-                            PowerConsumption = 480m,
-                            PurchasePrice = 11599.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 3,
-                            TemperatureRange = "-18°C to 5°C",
-                            Type = 8,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 145m
-                        },
-                        new
-                        {
-                            Id = 14,
                             CapacityLiters = 300,
                             Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Large upright freezer with multiple shelves for organized frozen storage.",
-                            Dimensions = "180×70×70",
-                            EnergyRating = "A",
-                            HasDigitalDisplay = true,
+                            Description = "Large chest freezer for bulk frozen inventory.",
+                            Dimensions = "90×85×65",
+                            EnergyRating = "B",
+                            HasDigitalDisplay = false,
                             HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/victory-upright-freezer-300l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/whirlpool-chest-300l.jpg",
+                            IsFrostFree = false,
+                            Manufacturer = "Whirlpool",
+                            MinimumStockLevel = 1,
+                            ModelCode = "WHR-CF300",
+                            ModelName = "Chest Freezer 300L",
+                            MonthlyRentalPrice = 489.00m,
+                            PurchasePrice = 5599.00m,
+                            ReorderQuantity = 2,
+                            ServiceIntervalMonths = 12,
+                            Status = 0,
+                            Type = 1,
+                            WarrantyPeriodMonths = 36
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CapacityLiters = 350,
+                            Color = "Silver",
+                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Description = "Extra-large glass display fridge for retail aisles.",
+                            Dimensions = "190×80×70",
+                            EnergyRating = "A+",
+                            HasDigitalDisplay = false,
+                            HasGlassDoor = true,
+                            HasLock = true,
+                            ImageUrl = "/images/fridges/bosch-display-350l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Victory",
-                            MinimumStockLevel = 2,
-                            ModelCode = "VIC-UF300",
-                            ModelName = "Upright Freezer 300L",
-                            MonthlyRentalPrice = 599.00m,
-                            PowerConsumption = 350m,
-                            PurchasePrice = 6999.00m,
-                            ReorderQuantity = 3,
+                            Manufacturer = "Bosch",
+                            MinimumStockLevel = 1,
+                            ModelCode = "BOS-GDF350",
+                            ModelName = "Glass Display 350L",
+                            MonthlyRentalPrice = 799.00m,
+                            PurchasePrice = 8999.00m,
+                            ReorderQuantity = 2,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "-18°C to -25°C",
-                            Type = 2,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 98m
+                            Status = 0,
+                            Type = 3,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 15,
-                            CapacityLiters = 1000,
+                            CapacityLiters = 150,
                             Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Modular walk-in cooler system for large-scale storage in supermarkets and hotels.",
-                            Dimensions = "240×200×220",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
+                            Description = "Medium-size beverage cooler with fan-forced cooling.",
+                            Dimensions = "150×60×60",
+                            EnergyRating = "A",
+                            HasDigitalDisplay = false,
+                            HasGlassDoor = true,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/norlake-walk-in.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/kelvinator-beverage-150l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Nor-Lake",
-                            MinimumStockLevel = 0,
-                            ModelCode = "NOR-WIC1000",
-                            ModelName = "Walk-In Cooler",
-                            MonthlyRentalPrice = 2499.00m,
-                            PowerConsumption = 1200m,
-                            PurchasePrice = 28999.00m,
-                            ReorderQuantity = 1,
-                            ServiceIntervalMonths = 2,
-                            TemperatureRange = "1°C to 4°C",
-                            Type = 0,
-                            Voltage = "380V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 450m
+                            Manufacturer = "Kelvinator",
+                            MinimumStockLevel = 2,
+                            ModelCode = "KEL-BC150",
+                            ModelName = "Beverage Cooler 150L",
+                            MonthlyRentalPrice = 519.00m,
+                            PurchasePrice = 5799.00m,
+                            ReorderQuantity = 4,
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
+                            Type = 4,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 16,
-                            CapacityLiters = 250,
-                            Color = "Stainless Steel",
+                            CapacityLiters = 100,
+                            Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Specialized undercounter fridge with roll-down door for pizza restaurants.",
-                            Dimensions = "85×75×70",
+                            Description = "Compact under-counter fridge for limited space.",
+                            Dimensions = "82×60×57",
                             EnergyRating = "A",
-                            HasDigitalDisplay = true,
+                            HasDigitalDisplay = false,
                             HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/delfield-pizza-prep.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/rh-undercounter-100l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Delfield",
-                            MinimumStockLevel = 1,
-                            ModelCode = "DEL-PP250",
-                            ModelName = "Pizza Prep 250L",
-                            MonthlyRentalPrice = 549.00m,
-                            PowerConsumption = 280m,
-                            PurchasePrice = 6399.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 4,
-                            TemperatureRange = "1°C to 5°C",
+                            Manufacturer = "Russell Hobbs",
+                            MinimumStockLevel = 3,
+                            ModelCode = "RH-UC100",
+                            ModelName = "UnderCounter 100L",
+                            MonthlyRentalPrice = 319.00m,
+                            PurchasePrice = 3799.00m,
+                            ReorderQuantity = 5,
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
                             Type = 5,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 72m
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 17,
-                            CapacityLiters = 150,
-                            Color = "Stainless Steel",
+                            CapacityLiters = 120,
+                            Color = "White",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Undercounter drawer freezer for easy access in commercial kitchens.",
-                            Dimensions = "85×60×70",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
+                            Description = "Under-counter freezer for back-bar deployment.",
+                            Dimensions = "82×60×57",
+                            EnergyRating = "B",
+                            HasDigitalDisplay = false,
                             HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/avantco-drawer-freezer.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/hisense-undercounter-freezer-120l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Avantco",
-                            MinimumStockLevel = 1,
-                            ModelCode = "AVA-DF150",
-                            ModelName = "Drawer Freezer 150L",
-                            MonthlyRentalPrice = 479.00m,
-                            PowerConsumption = 260m,
-                            PurchasePrice = 5599.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 4,
-                            TemperatureRange = "-18°C to -22°C",
+                            Manufacturer = "Hisense",
+                            MinimumStockLevel = 2,
+                            ModelCode = "HIS-UCF120",
+                            ModelName = "UnderCounter Freezer 120L",
+                            MonthlyRentalPrice = 399.00m,
+                            PurchasePrice = 4599.00m,
+                            ReorderQuantity = 3,
+                            ServiceIntervalMonths = 12,
+                            Status = 0,
                             Type = 6,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 65m
+                            WarrantyPeriodMonths = 36
                         },
                         new
                         {
                             Id = 18,
-                            CapacityLiters = 180,
+                            CapacityLiters = 70,
                             Color = "Black",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Compact beverage center with glass door and adjustable shelving.",
-                            Dimensions = "85×55×60",
+                            Description = "Stylish wine cooler with precise temperature control.",
+                            Dimensions = "85×50×60",
                             EnergyRating = "A",
                             HasDigitalDisplay = true,
                             HasGlassDoor = true,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/summit-beverage-center.jpg",
-                            IsActive = true,
+                            HasLock = false,
+                            ImageUrl = "/images/fridges/defy-wine-70l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Summit",
-                            MinimumStockLevel = 2,
-                            ModelCode = "SUM-BC180",
-                            ModelName = "Beverage Center 180L",
-                            MonthlyRentalPrice = 429.00m,
-                            PowerConsumption = 220m,
-                            PurchasePrice = 4999.00m,
-                            ReorderQuantity = 3,
+                            Manufacturer = "Defy",
+                            MinimumStockLevel = 1,
+                            ModelCode = "DEF-WC70",
+                            ModelName = "Wine Cooler 70L",
+                            MonthlyRentalPrice = 579.00m,
+                            PurchasePrice = 6299.00m,
+                            ReorderQuantity = 2,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "3°C to 8°C",
-                            Type = 4,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 58m
+                            Status = 0,
+                            Type = 7,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 19,
-                            CapacityLiters = 100,
+                            CapacityLiters = 450,
                             Color = "Stainless Steel",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Specialized kegerator for draft beer systems in bars and restaurants.",
-                            Dimensions = "90×55×60",
-                            EnergyRating = "A",
+                            Description = "Large combi fridge-freezer with water dispenser.",
+                            Dimensions = "179×91×76",
+                            EnergyRating = "A+",
                             HasDigitalDisplay = true,
-                            HasGlassDoor = true,
+                            HasGlassDoor = false,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/edgestar-kegerator.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/lg-combi-450l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "EdgeStar",
+                            Manufacturer = "LG",
                             MinimumStockLevel = 1,
-                            ModelCode = "EDG-K100",
-                            ModelName = "Kegerator 100L",
-                            MonthlyRentalPrice = 599.00m,
-                            PowerConsumption = 180m,
-                            PurchasePrice = 6999.00m,
+                            ModelCode = "LG-CBF450",
+                            ModelName = "Combi 450L",
+                            MonthlyRentalPrice = 1099.00m,
+                            PurchasePrice = 11999.00m,
                             ReorderQuantity = 2,
-                            ServiceIntervalMonths = 3,
-                            TemperatureRange = "2°C to 6°C",
-                            Type = 4,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 52m
+                            ServiceIntervalMonths = 6,
+                            Status = 0,
+                            Type = 8,
+                            WarrantyPeriodMonths = 24
                         },
                         new
                         {
                             Id = 20,
-                            CapacityLiters = 140,
+                            CapacityLiters = 90,
                             Color = "Silver",
                             CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            Description = "Portable dual-zone fridge-freezer combination for flexible commercial use.",
-                            Dimensions = "95×55×65",
+                            Description = "Bottle cooler with glass door and internal LED.",
+                            Dimensions = "90×50×60",
                             EnergyRating = "A",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
-                            HasLock = false,
-                            ImageUrl = "/images/fridges/whynter-dual-zone.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Whynter",
-                            MinimumStockLevel = 2,
-                            ModelCode = "WHY-DZ140",
-                            ModelName = "Dual Zone 140L",
-                            MonthlyRentalPrice = 399.00m,
-                            PowerConsumption = 200m,
-                            PurchasePrice = 4699.00m,
-                            ReorderQuantity = 3,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "-18°C to 10°C",
-                            Type = 8,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 48m
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CapacityLiters = 350,
-                            Color = "Stainless Steel",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            Description = "Professional-grade upright fridge with advanced temperature management.",
-                            Dimensions = "190×75×75",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/frigidaire-professional-350l.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Frigidaire",
-                            MinimumStockLevel = 1,
-                            ModelCode = "FRI-P350",
-                            ModelName = "Professional 350L",
-                            MonthlyRentalPrice = 799.00m,
-                            PowerConsumption = 380m,
-                            PurchasePrice = 9299.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 4,
-                            TemperatureRange = "0°C to 7°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 110m
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CapacityLiters = 200,
-                            Color = "White",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            Description = "Reliable commercial fridge with robust construction and energy efficiency.",
-                            Dimensions = "92×65×68",
-                            EnergyRating = "A",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/kelvinator-commercial-200l.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Kelvinator",
-                            MinimumStockLevel = 3,
-                            ModelCode = "KEL-C200",
-                            ModelName = "Commercial 200L",
-                            MonthlyRentalPrice = 379.00m,
-                            PowerConsumption = 240m,
-                            PurchasePrice = 4399.00m,
-                            ReorderQuantity = 4,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "2°C to 8°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 62m
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CapacityLiters = 130,
-                            Color = "Silver",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            Description = "Economical and eco-friendly fridge with low power consumption.",
-                            Dimensions = "86×56×62",
-                            EnergyRating = "A++",
                             HasDigitalDisplay = false,
-                            HasGlassDoor = false,
+                            HasGlassDoor = true,
                             HasLock = true,
-                            ImageUrl = "/images/fridges/midea-ecocool-130l.jpg",
-                            IsActive = true,
+                            ImageUrl = "/images/fridges/whirlpool-bottle-90l.jpg",
                             IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Midea",
+                            Manufacturer = "Whirlpool",
                             MinimumStockLevel = 4,
-                            ModelCode = "MID-EC130",
-                            ModelName = "EcoCool 130L",
-                            MonthlyRentalPrice = 229.00m,
-                            PowerConsumption = 150m,
-                            PurchasePrice = 2699.00m,
+                            ModelCode = "WHR-BC90",
+                            ModelName = "Bottle Cooler 90L",
+                            MonthlyRentalPrice = 329.00m,
+                            PurchasePrice = 3899.00m,
                             ReorderQuantity = 6,
                             ServiceIntervalMonths = 6,
-                            TemperatureRange = "3°C to 8°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 46m
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CapacityLiters = 250,
-                            Color = "Silver",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            Description = "Advanced inverter technology fridge with precise temperature control and quiet operation.",
-                            Dimensions = "170×60×65",
-                            EnergyRating = "A++",
-                            HasDigitalDisplay = true,
-                            HasGlassDoor = false,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/panasonic-inverter-250l.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Panasonic",
-                            MinimumStockLevel = 2,
-                            ModelCode = "PAN-I250",
-                            ModelName = "Inverter 250L",
-                            MonthlyRentalPrice = 549.00m,
-                            PowerConsumption = 200m,
-                            PurchasePrice = 6399.00m,
-                            ReorderQuantity = 3,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "0°C to 8°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 36,
-                            WeightKg = 68m
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CapacityLiters = 180,
-                            Color = "Cream",
-                            CreatedAt = new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "System",
-                            Description = "Stylish retro-design fridge perfect for boutique hotels and premium bars.",
-                            Dimensions = "125×60×65",
-                            EnergyRating = "A+",
-                            HasDigitalDisplay = false,
-                            HasGlassDoor = false,
-                            HasLock = true,
-                            ImageUrl = "/images/fridges/smeg-retro-180l.jpg",
-                            IsActive = true,
-                            IsFrostFree = true,
-                            IsScrapped = false,
-                            Manufacturer = "Smeg",
-                            MinimumStockLevel = 1,
-                            ModelCode = "SME-R180",
-                            ModelName = "Retro 180L",
-                            MonthlyRentalPrice = 699.00m,
-                            PowerConsumption = 220m,
-                            PurchasePrice = 7999.00m,
-                            ReorderQuantity = 2,
-                            ServiceIntervalMonths = 6,
-                            TemperatureRange = "2°C to 8°C",
-                            Type = 0,
-                            Voltage = "220-240V",
-                            WarrantyPeriodMonths = 24,
-                            WeightKg = 58m
+                            Status = 0,
+                            Type = 10,
+                            WarrantyPeriodMonths = 24
                         });
                 });
 
@@ -2263,19 +1921,25 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressLine1")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AddressLine2")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ContactPerson")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("Country")
                         .IsRequired()
@@ -2286,18 +1950,26 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("LocationCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("LocationType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OperatingHours")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
@@ -2308,10 +1980,21 @@ namespace Project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("StreetAddress")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Suburb")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -2321,132 +2004,211 @@ namespace Project.Migrations
                         new
                         {
                             Id = 1,
-                            AddressLine1 = "12 Voortrekker Road",
+                            Capacity = 60,
                             City = "Paarl",
+                            ContactEmail = "sophie@paarlspaza.co.za",
+                            ContactPerson = "Sophie van der Merwe",
+                            ContactPhone = "+27 21 865 1234",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 15, 8, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "PAARL-SPZ",
+                            LocationType = 5,
+                            Name = "Paarl Spaza Shop",
+                            OperatingHours = "08:00 – 20:00",
                             PostalCode = "7646",
                             Province = "Western Cape",
+                            StreetAddress = "12 Voortrekker Road",
                             Suburb = "Paarl"
                         },
                         new
                         {
                             Id = 2,
-                            AddressLine1 = "45 Mitchell Street",
+                            Capacity = 80,
                             City = "East London",
+                            ContactEmail = "sipho@bereaconvenience.co.za",
+                            ContactPerson = "Sipho Mkhize",
+                            ContactPhone = "+27 43 743 5567",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 16, 9, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "BEREA-CSV",
+                            LocationType = 5,
+                            Name = "Berea Convenience Store",
+                            OperatingHours = "07:00 – 21:00",
                             PostalCode = "5241",
                             Province = "Eastern Cape",
+                            StreetAddress = "45 Mitchell Street",
                             Suburb = "Berea"
                         },
                         new
                         {
                             Id = 3,
-                            AddressLine1 = "88 Goble Road",
-                            AddressLine2 = "Unit 5",
+                            Capacity = 40,
                             City = "Johannesburg",
+                            ContactEmail = "thabo@yeovilleshebeen.co.za",
+                            ContactPerson = "Thabo Khumalo",
+                            ContactPhone = "+27 11 482 3344",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 17, 10, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "YEOV-SHB",
+                            LocationType = 5,
+                            Name = "Yeoville Shebeen",
+                            OperatingHours = "10:00 – 23:00",
                             PostalCode = "2198",
                             Province = "Gauteng",
+                            StreetAddress = "88 Goble Road",
                             Suburb = "Yeoville"
                         },
                         new
                         {
                             Id = 4,
-                            AddressLine1 = "15 Jan Shoba Street",
+                            Capacity = 200,
                             City = "Pretoria",
+                            ContactEmail = "cw@campusdepot.example.com",
+                            ContactPerson = "Claire van Wyk",
+                            ContactPhone = "+27 12 420 5000",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 18, 11, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "HATF-DEPOT",
+                            LocationType = 0,
+                            Name = "Hatfield Campus Depot",
+                            OperatingHours = "08:00 – 17:00",
                             PostalCode = "0028",
                             Province = "Gauteng",
+                            StreetAddress = "15 Jan Shoba Street",
                             Suburb = "Hatfield"
                         },
                         new
                         {
                             Id = 5,
-                            AddressLine1 = "247 Florida Road",
+                            Capacity = 300,
                             City = "Durban",
+                            ContactEmail = "lindiwe@distmorningside.co.za",
+                            ContactPerson = "Lindiwe Dlamini",
+                            ContactPhone = "+27 31 577 8900",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 19, 12, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "MORN-HUB",
+                            LocationType = 0,
+                            Name = "Morningside Distribution Hub",
+                            OperatingHours = "07:00 – 18:00",
                             PostalCode = "4001",
                             Province = "KwaZulu-Natal",
+                            StreetAddress = "247 Florida Road",
                             Suburb = "Morningside"
                         },
                         new
                         {
                             Id = 6,
-                            AddressLine1 = "88 Kerk Street",
+                            Capacity = 250,
                             City = "Potchefstroom",
+                            ContactEmail = "jan@potchdepot.co.za",
+                            ContactPerson = "Jan van der Merwe",
+                            ContactPhone = "+27 18 299 4000",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 20, 13, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "POTCH-DEP",
+                            LocationType = 0,
+                            Name = "Potchefstroom Depot",
+                            OperatingHours = "08:30 – 17:30",
                             PostalCode = "2531",
                             Province = "North West",
+                            StreetAddress = "88 Kerk Street",
                             Suburb = "Potchefstroom"
                         },
                         new
                         {
                             Id = 7,
-                            AddressLine1 = "22 Beatrix Street",
+                            Capacity = 100,
                             City = "Bloemfontein",
+                            ContactEmail = "nokuthula@arcadiaservice.co.za",
+                            ContactPerson = "Nokuthula Mokoena",
+                            ContactPhone = "+27 51 432 2100",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 21, 14, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "ARCA-SVC",
+                            LocationType = 2,
+                            Name = "Arcadia Service Centre",
+                            OperatingHours = "09:00 – 17:00",
                             PostalCode = "9301",
                             Province = "Free State",
+                            StreetAddress = "22 Beatrix Street",
                             Suburb = "Arcadia"
                         },
                         new
                         {
                             Id = 8,
-                            AddressLine1 = "45 Colinton Road",
+                            Capacity = 400,
                             City = "Cape Town",
+                            ContactEmail = "peter@newlandswhs.co.za",
+                            ContactPerson = "Peter Adams",
+                            ContactPhone = "+27 21 650 1234",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 22, 15, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "NEWL-WHS",
+                            LocationType = 0,
+                            Name = "Newlands Central Warehouse",
+                            OperatingHours = "08:00 – 18:00",
                             PostalCode = "7700",
                             Province = "Western Cape",
+                            StreetAddress = "45 Colinton Road",
                             Suburb = "Newlands"
                         },
                         new
                         {
                             Id = 9,
-                            AddressLine1 = "1 Kerk Street",
+                            Capacity = 45,
                             City = "Dullstroom",
+                            ContactEmail = "mpho@dullstroomspaza.co.za",
+                            ContactPerson = "Mpho Khumalo",
+                            ContactPhone = "+27 13 253 4021",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 23, 16, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "DULL-SPZ",
+                            LocationType = 5,
+                            Name = "Dullstroom Spaza Shop",
+                            OperatingHours = "08:00 – 19:00",
                             PostalCode = "1110",
                             Province = "Mpumalanga",
+                            StreetAddress = "1 Kerk Street",
                             Suburb = "Dullstroom"
                         },
                         new
                         {
                             Id = 10,
-                            AddressLine1 = "12 Schröder Street",
+                            Capacity = 150,
                             City = "Kimberley",
+                            ContactEmail = "cheryl.schroeder@mandela.ac.za",
+                            ContactPerson = "Cheryl Schröder",
+                            ContactPhone = "+27 53 831 9000",
                             Country = "South Africa",
                             CreatedAt = new DateTime(2024, 1, 24, 17, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "System",
-                            IsActive = true,
+                            IsDeleted = false,
+                            LocationCode = "KIMB-SUP",
+                            LocationType = 6,
+                            Name = "Kimberley Supplier Yard",
+                            OperatingHours = "07:30 – 16:30",
                             PostalCode = "8301",
                             Province = "Northern Cape",
+                            StreetAddress = "12 Schröder Street",
                             Suburb = "Kimberley"
                         });
                 });
@@ -2459,39 +2221,20 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("Cost")
-                        .IsRequired()
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsWarrantyClaim")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<int?>("MaintenanceVisitId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PartsUsed")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime?>("ServiceDate")
                         .IsRequired()
@@ -2501,19 +2244,14 @@ namespace Project.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<int>("ServiceType")
-                        .HasMaxLength(20)
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StartTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("TechnicianId")
                         .HasColumnType("int");
 
-                    b.Property<string>("WarrantyReference")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -2534,13 +2272,16 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ActualEndTime")
+                    b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ActualStartTime")
+                    b.Property<DateTime?>("ActualStartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("AllocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AssignedTechnicianId")
                         .HasColumnType("int");
 
                     b.Property<string>("ChecklistNotes")
@@ -2563,12 +2304,11 @@ namespace Project.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustomerNote")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<int?>("CustomerRating")
                         .HasColumnType("int");
+
+                    b.Property<bool>("FaultsFound")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("FollowUpDate")
                         .HasColumnType("datetime2");
@@ -2579,20 +2319,13 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsChecklistCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("IssueDescription")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IssuesFound")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("MaintenanceDetails")
@@ -2602,26 +2335,20 @@ namespace Project.Migrations
                     b.Property<bool>("MaintenancePerformed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ModifiedAt")
+                    b.Property<DateTime?>("NextServiceDue")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ReplacementReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("PartsReplaced")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<bool>("ReplacementRecommended")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("ScheduledDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("ServiceCost")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TechnicianId")
                         .HasColumnType("int");
 
                     b.Property<string>("TechnicianNotes")
@@ -2631,20 +2358,23 @@ namespace Project.Migrations
                     b.Property<decimal?>("TemperatureReading")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("VisitType")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AllocationId");
+
+                    b.HasIndex("AssignedTechnicianId");
 
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("FridgeId");
 
                     b.HasIndex("LocationId");
-
-                    b.HasIndex("TechnicianId");
 
                     b.ToTable("MaintenanceVisits");
                 });
@@ -2673,12 +2403,18 @@ namespace Project.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomReason")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal?>("EstimatedTotalCost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Reason")
                         .HasColumnType("int");
@@ -2697,6 +2433,9 @@ namespace Project.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Urgency")
                         .HasColumnType("int");
@@ -2718,8 +2457,11 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("EstimatedUnitPrice")
                         .HasColumnType("decimal(18,2)");
@@ -2727,8 +2469,8 @@ namespace Project.Migrations
                     b.Property<int>("FridgeModelId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -2746,6 +2488,12 @@ namespace Project.Migrations
                     b.Property<int>("QuantityReceived")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FridgeModelId");
@@ -2755,113 +2503,11 @@ namespace Project.Migrations
                     b.ToTable("PurchaseRequestItems");
                 });
 
-            modelBuilder.Entity("Project.Models.ReplacementRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("AssignedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("AssignedEmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FaultRecordId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("FaultyFridgeReturned")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("FridgeAllocationId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MaintenanceRecordId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("ReplacementDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ReplacementFridgeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RequestType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("RequestedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ResponseDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ResponseNotes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("ReturnDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedEmployeeId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("FaultRecordId");
-
-                    b.HasIndex("FridgeAllocationId");
-
-                    b.HasIndex("MaintenanceRecordId");
-
-                    b.HasIndex("ReplacementFridgeId");
-
-                    b.ToTable("ReplacementRequests");
-                });
-
             modelBuilder.Entity("FaultRecordMaintenanceVisit", b =>
                 {
                     b.HasOne("Project.Models.FaultRecord", null)
                         .WithMany()
-                        .HasForeignKey("FaultRecordsId")
+                        .HasForeignKey("CreatedFaultsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2932,7 +2578,7 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.HasOne("Project.Models.FridgeModel", "FridgeModel")
-                        .WithMany("AllocationRequestDetails")
+                        .WithMany()
                         .HasForeignKey("FridgeModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2952,22 +2598,29 @@ namespace Project.Migrations
 
                     b.HasOne("Project.Models.Location", "DeliveryLocation")
                         .WithMany()
-                        .HasForeignKey("DeliveryLocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DeliveryLocationId");
+
+                    b.HasOne("Project.Models.FaultRecord", "RelatedFaultRecord")
+                        .WithMany()
+                        .HasForeignKey("RelatedFaultRecordId");
+
+                    b.HasOne("Project.Models.FridgeAllocation", "ReplacingAllocation")
+                        .WithMany()
+                        .HasForeignKey("ReplacingAllocationId");
+
+                    b.HasOne("Project.Models.Fridge", "ReplacingFridge")
+                        .WithMany()
+                        .HasForeignKey("ReplacingFridgeId");
 
                     b.Navigation("Customer");
 
                     b.Navigation("DeliveryLocation");
-                });
 
-            modelBuilder.Entity("Project.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("Project.Models.Location", "PrimaryLocation")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
+                    b.Navigation("RelatedFaultRecord");
 
-                    b.Navigation("PrimaryLocation");
+                    b.Navigation("ReplacingAllocation");
+
+                    b.Navigation("ReplacingFridge");
                 });
 
             modelBuilder.Entity("Project.Models.Customer", b =>
@@ -2976,15 +2629,20 @@ namespace Project.Migrations
                         .WithMany("ManagedCustomers")
                         .HasForeignKey("AssignedEmployeeId");
 
-                    b.HasOne("Project.Models.Location", "TradingLocation")
+                    b.HasOne("Project.Models.Location", null)
                         .WithMany("Customers")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("Project.Models.Location", "TradingLocation")
+                        .WithMany()
+                        .HasForeignKey("TradingLocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Project.Models.ApplicationUser", "UserAccount")
                         .WithOne("Customer")
-                        .HasForeignKey("Project.Models.Customer", "UserId");
+                        .HasForeignKey("Project.Models.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AssignedEmployee");
 
@@ -3003,7 +2661,8 @@ namespace Project.Migrations
 
                     b.HasOne("Project.Models.Location", "WorkLocation")
                         .WithMany("Employees")
-                        .HasForeignKey("WorkLocationId");
+                        .HasForeignKey("WorkLocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("UserAccount");
 
@@ -3024,7 +2683,7 @@ namespace Project.Migrations
                         .WithMany("FaultReports")
                         .HasForeignKey("FaultLocationId");
 
-                    b.HasOne("Project.Models.FridgeAllocation", "RelatedAllocation")
+                    b.HasOne("Project.Models.FridgeAllocation", null)
                         .WithMany("FaultReports")
                         .HasForeignKey("FridgeAllocationId");
 
@@ -3034,8 +2693,12 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.ApplicationUser", "ReportedBy")
+                    b.HasOne("Project.Models.AllocationRequestHeader", "ReplacementRequest")
                         .WithMany()
+                        .HasForeignKey("ReplacementRequestId");
+
+                    b.HasOne("Project.Models.ApplicationUser", "ReportedBy")
+                        .WithMany("ReportedFaults")
                         .HasForeignKey("ReportedById")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3046,14 +2709,14 @@ namespace Project.Migrations
 
                     b.Navigation("Fridge");
 
-                    b.Navigation("RelatedAllocation");
+                    b.Navigation("ReplacementRequest");
 
                     b.Navigation("ReportedBy");
                 });
 
             modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
-                    b.HasOne("Project.Models.Customer", null)
+                    b.HasOne("Project.Models.Customer", "CurrentCustomer")
                         .WithMany("Fridges")
                         .HasForeignKey("CustomerId");
 
@@ -3069,9 +2732,9 @@ namespace Project.Migrations
 
                     b.HasOne("Project.Models.Location", "CurrentLocation")
                         .WithMany("Fridges")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
+
+                    b.Navigation("CurrentCustomer");
 
                     b.Navigation("CurrentLocation");
 
@@ -3086,9 +2749,11 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.AllocationRequestHeader", "AllocationRequestHeader")
+                    b.HasOne("Project.Models.AllocationRequestHeader", "RequestHeader")
                         .WithMany("Allocations")
-                        .HasForeignKey("AllocationRequestHeaderId");
+                        .HasForeignKey("AllocationRequestHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany("AllocationHistory")
@@ -3098,9 +2763,7 @@ namespace Project.Migrations
 
                     b.HasOne("Project.Models.Location", "DeliveryLocation")
                         .WithMany("FridgeAllocations")
-                        .HasForeignKey("DeliveryLocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DeliveryLocationId");
 
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany("AllocationHistory")
@@ -3112,9 +2775,16 @@ namespace Project.Migrations
                         .WithMany("ProcessedAllocations")
                         .HasForeignKey("ProcessedByEmployeeId");
 
-                    b.Navigation("AllocatedBy");
+                    b.HasOne("Project.Models.FridgeAllocation", "ReplacedAllocation")
+                        .WithMany("ReplacementAllocations")
+                        .HasForeignKey("ReplacedAllocationId");
 
-                    b.Navigation("AllocationRequestHeader");
+                    b.HasOne("Project.Models.AllocationRequestHeader", "ReplacementRequestHeader")
+                        .WithMany("ReplacementAllocations")
+                        .HasForeignKey("ReplacementRequestHeaderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AllocatedBy");
 
                     b.Navigation("Customer");
 
@@ -3123,6 +2793,12 @@ namespace Project.Migrations
                     b.Navigation("Fridge");
 
                     b.Navigation("ProcessedBy");
+
+                    b.Navigation("ReplacedAllocation");
+
+                    b.Navigation("ReplacementRequestHeader");
+
+                    b.Navigation("RequestHeader");
                 });
 
             modelBuilder.Entity("Project.Models.MaintenanceRecord", b =>
@@ -3134,7 +2810,7 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.HasOne("Project.Models.MaintenanceVisit", "MaintenanceVisit")
-                        .WithMany("MaintenanceRecords")
+                        .WithMany()
                         .HasForeignKey("MaintenanceVisitId");
 
                     b.HasOne("Project.Models.Employee", "Technician")
@@ -3156,6 +2832,12 @@ namespace Project.Migrations
                         .WithMany("MaintenanceVisits")
                         .HasForeignKey("AllocationId");
 
+                    b.HasOne("Project.Models.Employee", "AssignedTechnician")
+                        .WithMany("MaintenanceVisits")
+                        .HasForeignKey("AssignedTechnicianId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany("MaintenanceSchedules")
                         .HasForeignKey("CustomerId")
@@ -3170,25 +2852,17 @@ namespace Project.Migrations
 
                     b.HasOne("Project.Models.Location", "Location")
                         .WithMany("MaintenanceVisits")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Project.Models.Employee", "Technician")
-                        .WithMany("MaintenanceVisits")
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
 
                     b.Navigation("Allocation");
+
+                    b.Navigation("AssignedTechnician");
 
                     b.Navigation("Customer");
 
                     b.Navigation("Fridge");
 
                     b.Navigation("Location");
-
-                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("Project.Models.PurchaseRequest", b =>
@@ -3227,48 +2901,11 @@ namespace Project.Migrations
                     b.Navigation("PurchaseRequest");
                 });
 
-            modelBuilder.Entity("Project.Models.ReplacementRequest", b =>
-                {
-                    b.HasOne("Project.Models.Employee", "AssignedEmployee")
-                        .WithMany()
-                        .HasForeignKey("AssignedEmployeeId");
-
-                    b.HasOne("Project.Models.Customer", null)
-                        .WithMany("FridgeRequests")
-                        .HasForeignKey("CustomerId");
-
-                    b.HasOne("Project.Models.FaultRecord", "FaultRecord")
-                        .WithMany("ReplacementRequests")
-                        .HasForeignKey("FaultRecordId");
-
-                    b.HasOne("Project.Models.FridgeAllocation", "FridgeAllocation")
-                        .WithMany()
-                        .HasForeignKey("FridgeAllocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Project.Models.MaintenanceRecord", "MaintenanceRecord")
-                        .WithMany()
-                        .HasForeignKey("MaintenanceRecordId");
-
-                    b.HasOne("Project.Models.Fridge", "ReplacementFridge")
-                        .WithMany()
-                        .HasForeignKey("ReplacementFridgeId");
-
-                    b.Navigation("AssignedEmployee");
-
-                    b.Navigation("FaultRecord");
-
-                    b.Navigation("FridgeAllocation");
-
-                    b.Navigation("MaintenanceRecord");
-
-                    b.Navigation("ReplacementFridge");
-                });
-
             modelBuilder.Entity("Project.Models.AllocationRequestHeader", b =>
                 {
                     b.Navigation("Allocations");
+
+                    b.Navigation("ReplacementAllocations");
 
                     b.Navigation("RequestDetails");
                 });
@@ -3278,13 +2915,13 @@ namespace Project.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Employee");
+
+                    b.Navigation("ReportedFaults");
                 });
 
             modelBuilder.Entity("Project.Models.Customer", b =>
                 {
                     b.Navigation("AllocationHistory");
-
-                    b.Navigation("FridgeRequests");
 
                     b.Navigation("Fridges");
 
@@ -3314,11 +2951,6 @@ namespace Project.Migrations
                     b.Navigation("RequestedPurchaseRequests");
                 });
 
-            modelBuilder.Entity("Project.Models.FaultRecord", b =>
-                {
-                    b.Navigation("ReplacementRequests");
-                });
-
             modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
                     b.Navigation("AllocationHistory");
@@ -3333,12 +2965,12 @@ namespace Project.Migrations
                     b.Navigation("FaultReports");
 
                     b.Navigation("MaintenanceVisits");
+
+                    b.Navigation("ReplacementAllocations");
                 });
 
             modelBuilder.Entity("Project.Models.FridgeModel", b =>
                 {
-                    b.Navigation("AllocationRequestDetails");
-
                     b.Navigation("Fridges");
                 });
 
@@ -3355,11 +2987,6 @@ namespace Project.Migrations
                     b.Navigation("Fridges");
 
                     b.Navigation("MaintenanceVisits");
-                });
-
-            modelBuilder.Entity("Project.Models.MaintenanceVisit", b =>
-                {
-                    b.Navigation("MaintenanceRecords");
                 });
 
             modelBuilder.Entity("Project.Models.PurchaseRequest", b =>

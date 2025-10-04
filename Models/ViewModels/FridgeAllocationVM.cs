@@ -12,22 +12,29 @@ namespace Project.Models.ViewModels
 
         // Core Relationships
         [Required(ErrorMessage = "Fridge selection is required.")]
-        [Display(Name = "Fridge *")]
+        [Display(Name = "Fridge")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid fridge.")]
         public int FridgeId { get; set; }
 
         [Required(ErrorMessage = "Customer selection is required.")]
-        [Display(Name = "Customer *")]
+        [Display(Name = "Customer")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid customer.")]
         public int CustomerId { get; set; }
 
-        [Required(ErrorMessage = "Delivery location is required.")]
-        [Display(Name = "Delivery Location *")]
+        [Display(Name = "Delivery Location")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid delivery location.")]
-        public int DeliveryLocationId { get; set; }
+        public int? DeliveryLocationId { get; set; }
 
+        // ===== REPLACEMENT TRACKING =====
+        [Display(Name = "Replaced Allocation")]
+        public int? ReplacedAllocationId { get; set; }
+
+        [Display(Name = "Replacement Request")]
+        public int? ReplacementRequestId { get; set; }
+
+        // Employee Assignments
         [Required(ErrorMessage = "Allocating employee is required.")]
-        [Display(Name = "Allocated By *")]
+        [Display(Name = "Allocated By")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid employee.")]
         public int AllocatedByEmployeeId { get; set; }
 
@@ -36,20 +43,15 @@ namespace Project.Models.ViewModels
         public int? ProcessedByEmployeeId { get; set; }
 
         [Display(Name = "Request Reference")]
-        public int? AllocationRequestHeaderId { get; set; }
+        public int AllocationRequestHeaderId { get; set; }
 
         // Status and Dates
         [Required(ErrorMessage = "Allocation status is required.")]
-        [Display(Name = "Status *")]
+        [Display(Name = "Status")]
         public AllocationStatus Status { get; set; } = AllocationStatus.Pending;
 
-        [Required(ErrorMessage = "Quantity is required.")]
-        [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
-        [Display(Name = "Quantity *")]
-        public int Quantity { get; set; } = 1;
-
         [Required(ErrorMessage = "Allocation date is required.")]
-        [Display(Name = "Allocation Date *")]
+        [Display(Name = "Allocation Date")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime AllocationDate { get; set; } = DateTime.Now;
@@ -68,21 +70,31 @@ namespace Project.Models.ViewModels
 
         // Pricing
         [Required(ErrorMessage = "Monthly rental price is required.")]
-        [Display(Name = "Monthly Rental Price (R) *")]
+        [Display(Name = "Monthly Rental Price (R)")]
         [Range(0, 10000, ErrorMessage = "Monthly rental must be between R0 and R10,000.")]
         [DataType(DataType.Currency)]
         public decimal MonthlyRentalPrice { get; set; }
+
+        [Required(ErrorMessage = "Quantity is required.")]
+        [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
+        [Display(Name = "Quantity")]
+        public int Quantity { get; set; }
+
+        [Display(Name = "Is Deleted")]
+        public bool IsDeleted { get; set; } = false;
+
 
         // Notes
         [StringLength(500, ErrorMessage = "Allocation notes cannot exceed 500 characters.")]
         [Display(Name = "Allocation Notes")]
         public string? Notes { get; set; }
 
+        // Navigation Collections (for display only)
         [Display(Name = "Maintenance Visits")]
-        public ICollection<MaintenanceVisit>? MaintenanceVisits { get; set; }
+        public ICollection<MaintenanceVisitVM>? MaintenanceVisits { get; set; }
 
         [Display(Name = "Fault Reports")]
-        public ICollection<FaultRecord>? FaultReports { get; set; }
+        public ICollection<FaultRecordVM>? FaultReports { get; set; }
 
         // Dropdown Lists
         [ValidateNever]
@@ -103,11 +115,10 @@ namespace Project.Models.ViewModels
         [ValidateNever]
         public IEnumerable<SelectListItem>? RequestList { get; set; }
 
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? ReplacementAllocationList { get; set; }
+
         // Display Properties
-
-        [Display(Name = "Fridge Model Details")]
-        public FridgeModelVM? FridgeModelDetails { get; set; }
-
         [Display(Name = "Fridge Details")]
         public FridgeVM? FridgeDetails { get; set; }
 
@@ -123,13 +134,18 @@ namespace Project.Models.ViewModels
         [Display(Name = "Processed By")]
         public string? ProcessedByEmployeeName { get; set; }
 
-        // Computed Properties
-        [Display(Name = "Total Monthly Rental")]
-        [DataType(DataType.Currency)]
-        public decimal TotalMonthlyRental => MonthlyRentalPrice * Quantity;
+        [Display(Name = "Replaced Allocation")]
+        public string? ReplacedAllocationDisplay { get; set; }
 
+        // ===== COMPUTED PROPERTIES =====
         [Display(Name = "Is Active")]
         public bool IsActive => Status == AllocationStatus.Active;
+
+        [Display(Name = "Is Replacement")]
+        public bool IsReplacement => ReplacedAllocationId.HasValue;
+
+        [Display(Name = "Has Been Replaced")]
+        public bool HasBeenReplaced { get; set; }
 
         [Display(Name = "Is Overdue")]
         public bool IsOverdue => ExpectedReturnDate.HasValue &&
@@ -161,7 +177,7 @@ namespace Project.Models.ViewModels
                 if (!endDate.HasValue) return 0;
 
                 var months = Math.Ceiling((endDate.Value - AllocationDate).TotalDays / 30.0);
-                return TotalMonthlyRental * (decimal)Math.Max(0, months);
+                return MonthlyRentalPrice * (decimal)Math.Max(0, months);
             }
         }
 
@@ -180,20 +196,22 @@ namespace Project.Models.ViewModels
         public bool CanEdit => Status == AllocationStatus.Pending;
 
         [Display(Name = "Can Deallocate")]
-        public bool CanDeallocate => Status == AllocationStatus.Active;
+        public bool CanDeallocate => Status == AllocationStatus.Active && !HasBeenReplaced;
+
+        [Display(Name = "Can Replace")]
+        public bool CanReplace => IsActive && (FaultReports?.Any(f => f.IsResolved) == false);
 
         [Display(Name = "Status Badge Class")]
         public string StatusBadgeClass => Status switch
         {
             AllocationStatus.Pending => "bg-warning",
             AllocationStatus.Active => "bg-success",
-            AllocationStatus.Suspended => "bg-danger",
             AllocationStatus.Completed => "bg-info",
             AllocationStatus.Cancelled => "bg-secondary",
             _ => "bg-secondary"
         };
 
-        // Validation
+        // ===== VALIDATION METHODS =====
         public bool IsValidForSubmission()
         {
             return FridgeId > 0 &&
@@ -201,8 +219,7 @@ namespace Project.Models.ViewModels
                    DeliveryLocationId > 0 &&
                    AllocatedByEmployeeId > 0 &&
                    AllocationDate <= DateTime.Now &&
-                   MonthlyRentalPrice > 0 &&
-                   Quantity > 0;
+                   MonthlyRentalPrice > 0;
         }
 
         public IEnumerable<string> GetValidationErrors()
@@ -215,7 +232,6 @@ namespace Project.Models.ViewModels
             if (AllocatedByEmployeeId <= 0) errors.Add("Allocating employee is required");
             if (AllocationDate > DateTime.Now) errors.Add("Allocation date cannot be in the future");
             if (MonthlyRentalPrice <= 0) errors.Add("Monthly rental price must be greater than 0");
-            if (Quantity <= 0) errors.Add("Quantity must be greater than 0");
             if (ExpectedReturnDate.HasValue && ExpectedReturnDate <= AllocationDate)
                 errors.Add("Expected return date must be after allocation date");
             if (ActualReturnDate.HasValue && ActualReturnDate <= AllocationDate)
@@ -224,7 +240,7 @@ namespace Project.Models.ViewModels
             return errors;
         }
 
-        // Mapping Methods
+        // ===== MAPPING METHODS =====
         public FridgeAllocation ToEntity()
         {
             return new FridgeAllocation
@@ -233,11 +249,11 @@ namespace Project.Models.ViewModels
                 FridgeId = FridgeId,
                 CustomerId = CustomerId,
                 DeliveryLocationId = DeliveryLocationId,
+                ReplacedAllocationId = ReplacedAllocationId,
                 AllocatedByEmployeeId = AllocatedByEmployeeId,
                 ProcessedByEmployeeId = ProcessedByEmployeeId,
                 AllocationRequestHeaderId = AllocationRequestHeaderId,
-                Status = Status,
-                Quantity = Quantity,
+                AllocationStatus = Status,
                 AllocationDate = AllocationDate,
                 ExpectedReturnDate = ExpectedReturnDate,
                 ActualReturnDate = ActualReturnDate,
@@ -248,27 +264,42 @@ namespace Project.Models.ViewModels
 
         public static FridgeAllocationVM FromEntity(FridgeAllocation entity)
         {
+            if (entity == null) return new FridgeAllocationVM();
+
             return new FridgeAllocationVM
             {
                 Id = entity.Id,
                 FridgeId = entity.FridgeId,
                 CustomerId = entity.CustomerId,
-                DeliveryLocationId = entity.DeliveryLocationId ?? 0,
+                DeliveryLocationId = entity.DeliveryLocationId,
+                ReplacedAllocationId = entity.ReplacedAllocationId,
                 AllocatedByEmployeeId = entity.AllocatedByEmployeeId,
                 ProcessedByEmployeeId = entity.ProcessedByEmployeeId,
                 AllocationRequestHeaderId = entity.AllocationRequestHeaderId,
-                Status = entity.Status,
-                Quantity = entity.Quantity,
+                Status = entity.AllocationStatus,
                 AllocationDate = entity.AllocationDate,
                 ExpectedReturnDate = entity.ExpectedReturnDate,
                 ActualReturnDate = entity.ActualReturnDate,
                 MonthlyRentalPrice = entity.MonthlyRentalPrice,
-                MaintenanceVisits = entity.MaintenanceVisits,
-                FaultReports = entity.FaultReports,
                 Notes = entity.Notes,
                 AllocatedByEmployeeName = entity.AllocatedBy?.FullName,
                 ProcessedByEmployeeName = entity.ProcessedBy?.FullName,
+                ReplacedAllocationDisplay = entity.ReplacedAllocation?.DisplayName,
+                HasBeenReplaced = entity.ReplacementAllocations?.Any(r => r.IsActive) == true,
+                FridgeDetails = entity.Fridge != null ? FridgeVM.FromEntity(entity.Fridge) : null,
+                CustomerDetails = entity.Customer != null ? UserManagementVM.FromEntity(entity.Customer) : null,
+                LocationDetails = entity.DeliveryLocation != null ? LocationVM.FromEntity(entity.DeliveryLocation) : null
             };
+        }
+
+        // ===== BUSINESS METHODS =====
+        public void MarkAsReplacementFor(int existingAllocationId, string notes = "")
+        {
+            ReplacedAllocationId = existingAllocationId;
+            if (!string.IsNullOrEmpty(notes))
+            {
+                Notes = $"Replacement allocation. {notes}";
+            }
         }
     }
 }

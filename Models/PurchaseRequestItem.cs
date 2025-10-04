@@ -10,16 +10,13 @@ namespace Project.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Purchase request is required.")]
-        [Display(Name = "Purchase Request")]
         public int PurchaseRequestId { get; set; }
 
         [ForeignKey(nameof(PurchaseRequestId))]
         [ValidateNever]
-        [Display(Name = "Purchase Request")]
         public virtual PurchaseRequest PurchaseRequest { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Fridge ModelName")]
         public int FridgeModelId { get; set; }
 
         [ForeignKey(nameof(FridgeModelId))]
@@ -28,18 +25,15 @@ namespace Project.Models
 
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000.")]
-        [Display(Name = "Quantity")]
         public int Quantity { get; set; }
 
         // Optional: Estimated pricing
-        [Display(Name = "Estimated Unit Price (R)")]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0, 100000, ErrorMessage = "Estimated price must be a positive value.")]
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Estimated price must be a valid monetary value.")]
         public decimal? EstimatedUnitPrice { get; set; }
 
         [NotMapped]
-        [Display(Name = "Estimated Line Total (R)")]
         [DataType(DataType.Currency)]
         public decimal EstimatedLineTotal =>
             EstimatedUnitPrice.HasValue
@@ -48,20 +42,16 @@ namespace Project.Models
 
         [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters.")]
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Notes")]
         public string? Notes { get; set; }
 
         // Tracking for fulfillment
-        [Display(Name = "Quantity Ordered")]
         [Range(0, 1000, ErrorMessage = "Quantity ordered must be between 0 and 1000.")]
         public int QuantityOrdered { get; set; }
 
-        [Display(Name = "Quantity Received")]
         [Range(0, 1000, ErrorMessage = "Quantity received must be between 0 and 1000.")]
         public int QuantityReceived { get; set; }
 
         [NotMapped]
-        [Display(Name = "Pending Quantity")]
         public int PendingQuantity => Math.Max(0, Quantity - QuantityReceived);
 
         [NotMapped]
@@ -76,13 +66,22 @@ namespace Project.Models
             }
         }
 
-        // Audit fields
-        [Display(Name = "Created Date")]
-        [DataType(DataType.DateTime)]
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        // Metadata
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Display(Name = "Last Modified")]
-        [DataType(DataType.DateTime)]
-        public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
+        [Display(Name = "Created By")]
+        public string? CreatedBy { get; set; } = string.Empty;
+
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Is Deleted")]
+        public bool IsDeleted { get; set; } = false;
+
+        [Display(Name = "Updated By")]
+        public string? UpdatedBy { get; set; } = string.Empty;
     }
 }

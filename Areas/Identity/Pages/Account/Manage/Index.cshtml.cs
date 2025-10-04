@@ -66,9 +66,14 @@ namespace Project.Areas.Identity.Pages.Account.Manage
             [Display(Name = "User Role")]
             public string? UserRole { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Location is required.")]
-            [Display(Name = "Primary Location")]
-            public int? LocationId { get; set; }
+            //[Required(ErrorMessage = "Location is required.")]
+            //[Display(Name = "Primary Location")]
+            //public int? LocationId { get; set; }
+
+            [BindProperty]
+            [Display(Name = "Profile Picture")]
+            [DataType(DataType.Upload)]
+            public IFormFile? ProfilePictureFile { get; set; }
 
             [Display(Name = "Profile Picture URL")]
             [DataType(DataType.ImageUrl)]
@@ -93,7 +98,6 @@ namespace Project.Areas.Identity.Pages.Account.Manage
                 DOB = user.DOB,
                 PhoneNumber = user.PhoneNumber,
                 UserRole = user.UserRole,
-                LocationId = user.LocationId,
                 ProfilePictureUrl = user.ProfilePictureUrl,
                 LocationOptions = _db.Locations
                     .OrderBy(l => l.City)
@@ -125,6 +129,61 @@ namespace Project.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            // --- Start: Handle File Upload ---
+            if (Input.ProfilePictureFile != null && Input.ProfilePictureFile.Length > 0)
+            {
+                    // Validate file size (e.g., 5MB limit)
+                if (Input.ProfilePictureFile.Length > 5 * 1024 * 1024)
+                {
+                    ModelState.AddModelError("Input.ProfilePictureFile", "The file is too large. Maximum size is 5MB.");
+                    return Page();
+                }
+
+                // Validate file extension
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(Input.ProfilePictureFile.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    ModelState.AddModelError("Input.ProfilePictureFile", "Invalid file type. Allowed types: JPG, PNG, GIF.");
+                    return Page();
+                }
+
+                // Option 1: Convert to byte array and store in the database
+                using (var memoryStream = new MemoryStream())
+                {
+                    await Input.ProfilePictureFile.CopyToAsync(memoryStream);
+                    // Upload the file if less than 2 MB (example additional check)
+                    if (memoryStream.Length < 2097152)
+                    {
+                        user.ProfilePictureData = memoryStream.ToArray(); // Save byte array to user entity
+                        user.ProfilePictureContentType = Input.ProfilePictureFile.ContentType;
+                        // Optionally clear the URL if storing in database
+                        user.ProfilePictureUrl = null;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Input.ProfilePictureFile", "The file is too large.");
+                    }
+                }
+
+                // Option 2: Save as a physical file to wwwroot
+                /*
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "avatars");
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + Input.ProfilePictureFile.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                Directory.CreateDirectory(uploadsFolder); // Ensure directory exists
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Input.ProfilePictureFile.CopyToAsync(fileStream);
+                }
+                user.ProfilePictureUrl = "/uploads/avatars/" + uniqueFileName; // Save URL to user entity
+                */
+            }
+            // --- End: Handle File Upload ---
+
+            // ... your existing code to update other user properties (FirstName, PhoneNumber, etc.)
+
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
@@ -142,6 +201,25 @@ namespace Project.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            // Update other user properties
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            user.DOB = Input.DOB;
+            user.PhoneNumber = Input.PhoneNumber;
+            //user.LocationId = Input.LocationId;
+
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return Page();
+            }
+
+            await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();

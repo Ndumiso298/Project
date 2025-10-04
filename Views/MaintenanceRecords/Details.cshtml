@@ -1,473 +1,173 @@
-﻿@model MaintenanceVisit
+﻿@model MaintenanceRecord
 @{
-    ViewData["Title"] = "Maintenance Visit Details";
+    ViewData["Title"] = $"Maintenance Record - {Model.ServiceDate:dd/MM/yyyy}";
 }
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-6">
-            <h2 class="text-primary">
-                <i class="fas fa-calendar-check me-2"></i>Maintenance Visit #@Model.Id
-            </h2>
-        </div>
-        <div class="col-6 text-end">
-            <a asp-action="Index" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to List
-            </a>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        <i class="fas fa-clipboard-list me-2"></i>Maintenance Record
+        <small class="text-muted">@Model.ServiceDate?.ToString("dd/MM/yyyy")</small>
+    </h1>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to List
+        </a>
+        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i>Edit
+        </a>
     </div>
+</div>
 
-    <div class="row">
-        <!-- Main Details -->
-        <div class="col-lg-8">
-            <!-- Visit Information -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Visit Information
-                    </h5>
+<div class="row">
+    <!-- Main Information -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Service Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-40">Service Date:</th>
+                                <td>@Model.ServiceDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                            <tr>
+                                <th>Fridge:</th>
+                                <td>
+                                    <strong>@Model.Fridge?.SerialNumber</strong><br>
+                                    <small class="text-muted">@Model.Fridge?.FridgeModel?.Manufacturer @Model.Fridge?.FridgeModel?.ModelName</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Technician:</th>
+                                <td>@Model.Technician?.UserAccount?.FirstName @Model.Technician?.UserAccount?.LastName</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                        </table>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Visit ID:</dt>
-                                <dd class="col-sm-8">#@Model.Id</dd>
 
-                                <dt class="col-sm-4">Scheduled Date:</dt>
-                                <dd class="col-sm-8">
-                                    @Model.ScheduledDate.ToString("dd/MM/yyyy HH:mm")
-                                    @if (Model.ScheduledDate < DateTime.Now && Model.Status != ServicingStatus.Completed && Model.Status != ServicingStatus.Cancelled)
-                                    {
-                                        <span class="badge bg-danger ms-2">Overdue</span>
-                                    }
-                                </dd>
-
-                                <dt class="col-sm-4">Visit Type:</dt>
-                                <dd class="col-sm-8">
-                                    <span class="badge bg-@GetVisitTypeBadge(Model.VisitType)">
-                                        @Model.VisitType
-                                    </span>
-                                </dd>
-
-                                <dt class="col-sm-4">Status:</dt>
-                                <dd class="col-sm-8">
-                                    <span class="badge bg-@GetStatusBadge(Model.Status)">
-                                        @Model.Status
-                                    </span>
-                                </dd>
-                            </dl>
+                <!-- Service Notes -->
+                @if (!string.IsNullOrEmpty(Model.ServiceNotes))
+                {
+                    <div class="mt-4">
+                        <h6><i class="fas fa-sticky-note me-2"></i>Service Notes</h6>
+                        <div class="border rounded p-3 bg-light">
+                            @Html.Raw(Model.ServiceNotes?.Replace("\n", "<br>"))
                         </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Actual Start:</dt>
-                                <dd class="col-sm-8">
-                                    @if (Model.ActualStartTime.HasValue)
-                                    {
-                                        @Model.ActualStartTime.Value.ToString("dd/MM/yyyy HH:mm")
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">Not started</span>
-                                    }
-                                </dd>
+                    </div>
+                }
 
-                                <dt class="col-sm-4">Actual End:</dt>
-                                <dd class="col-sm-8">
-                                    @if (Model.ActualEndTime.HasValue)
-                                    {
-                                        @Model.ActualEndTime.Value.ToString("dd/MM/yyyy HH:mm")
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">Not completed</span>
-                                    }
-                                </dd>
-
-                                <dt class="col-sm-4">Service Cost:</dt>
-                                <dd class="col-sm-8">
-                                    @if (Model.ServiceCost > 0)
-                                    {
-                                        <span class="fw-bold text-success">R @(Model.ServiceCost?.ToString("N2") ?? "-")</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">-</span>
-                                    }
-                                </dd>
-
-                                <dt class="col-sm-4">Follow-up Required:</dt>
-                                <dd class="col-sm-8">
-                                    @if (Model.FollowUpRequired)
-                                    {
-                                        <span class="badge bg-warning">Yes</span>
-                                        @if (Model.FollowUpDate.HasValue)
-                                        {
-                                            <div class="mt-1">
-                                                <small class="text-muted">Scheduled: @Model.FollowUpDate.Value.ToString("dd/MM/yyyy")</small>
-                                            </div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">No</span>
-                                    }
-                                </dd>
-                            </dl>
+@*         <!-- Technical Checks -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Technical Checks</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas @(Model.CompressorWorking == true ? "fa-check text-success" : "fa-times text-danger") fa-2x mb-2"></i>
+                            <div>Compressor</div>
+                            <small class="text-muted">@(Model.CompressorWorking == true ? "Working" : "Not Working")</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas @(Model.CondenserClean == true ? "fa-check text-success" : "fa-times text-danger") fa-2x mb-2"></i>
+                            <div>Condenser</div>
+                            <small class="text-muted">@(Model.CondenserClean == true ? "Clean" : "Dirty")</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas @(Model.DoorSealIntact == true ? "fa-check text-success" : "fa-times text-danger") fa-2x mb-2"></i>
+                            <div>Door Seal</div>
+                            <small class="text-muted">@(Model.DoorSealIntact == true ? "Intact" : "Damaged")</small>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div> *@
 
-            <!-- Customer & Equipment -->
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Fridge Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-refrigerator me-2"></i>Fridge Information</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Fridge != null)
+                {
+                    <strong>@Model.Fridge.SerialNumber</strong>
+
+                    <br>
+                    <small class="text-muted">
+                        @Model.Fridge.FridgeModel?.Manufacturer @Model.Fridge.FridgeModel?.ModelName<br>
+                        Capacity: @Model.Fridge.FridgeModel?.CapacityLiters liters<br>
+                        Status: <span class="badge bg-info">@Model.Fridge.Status</span><br>
+                        Condition: <span class="badge bg-success">@Model.Fridge.Condition</span>
+                    </small>
+                }
+            </div>
+        </div>
+
+        <!-- Related Visit -->
+        @if (Model.MaintenanceVisitId.HasValue && Model.MaintenanceVisit != null)
+        {
             <div class="card mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-users me-2"></i>Customer & Equipment Details
-                    </h5>
+                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Related Visit</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Customer Information</h6>
-                            <dl>
-                                <dt>Customer:</dt>
-                                <dd>@Model.Customer?.TradingName</dd>
-
-                                <dt>Contact:</dt>
-                                <dd>@Model.Customer?.UserAccount?.FirstName @Model.Customer?.UserAccount?.LastName</dd>
-
-                                <dt>Email:</dt>
-                                <dd>@Model.Customer?.UserAccount?.Email</dd>
-
-                                <dt>Phone:</dt>
-                                <dd>@Model.Customer?.UserAccount?.PhoneNumber</dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>Equipment Information</h6>
-                            <dl>
-                                <dt>Fridge:</dt>
-                                <dd>
-                                    <a asp-controller="Fridges" asp-action="Details" asp-route-id="@Model.FridgeId"
-                                       class="text-decoration-none">
-                                        @Model.Fridge?.SerialNumber
-                                    </a>
-                                </dd>
-
-                                <dt>Model:</dt>
-                                <dd>@Model.Fridge?.FridgeModel?.Manufacturer @Model.Fridge?.FridgeModel?.ModelName</dd>
-
-                                <dt>Location:</dt>
-                                <dd>@Model.Location?.FullAddress</dd>
-
-                                <dt>Technician:</dt>
-                                <dd>
-                                    @if (Model.Technician != null)
-                                    {
-                                        @Model.Technician.UserAccount?.FirstName @Model.Technician.UserAccount?.LastName
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">Not assigned</span>
-                                    }
-                                </dd>
-                            </dl>
-                        </div>
+                    <strong>Visit #@Model.MaintenanceVisit.Id</strong><br>
+                    <small class="text-muted">
+                        Scheduled: @Model.MaintenanceVisit.ScheduledDate.ToString("dd/MM/yyyy")<br>
+                        Status: <span class="badge @Model.MaintenanceVisit.StatusBadgeClass">@Model.MaintenanceVisit.Status</span>
+                    </small>
+                    <div class="mt-2">
+                        <a asp-controller="MaintenanceVisits" asp-action="Details"
+                           asp-route-id="@Model.MaintenanceVisit.Id" class="btn btn-outline-info btn-sm">
+                            View Visit Details
+                        </a>
                     </div>
                 </div>
             </div>
+        }
 
-            <!-- Service Details -->
-            @if (Model.Status == ServicingStatus.Completed || Model.Status == ServicingStatus.InProgress)
-            {
-                <div class="card mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-clipboard-list me-2"></i>Service Details
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Service Information</h6>
-                                <dl>
-                                    <dt>Issues Found:</dt>
-                                    <dd>@(Model.IssuesFound ? "Yes" : "No")</dd>
-
-                                    <dt>Maintenance Performed:</dt>
-                                    <dd>@(Model.MaintenancePerformed ? "Yes" : "No")</dd>
-
-                                    <dt>Condition Rating:</dt>
-                                    <dd>
-                                        @if (Model.ConditionRating.HasValue)
-                                        {
-                                            for (int i = 0; i < 5; i++)
-                                            {
-                                                if (i < Model.ConditionRating.Value)
-                                                {
-                                                    <i class="fas fa-star text-warning"></i>
-                                                }
-                                                else
-                                                {
-                                                    <i class="far fa-star text-muted"></i>
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">Not rated</span>
-                                        }
-                                    </dd>
-
-                                    <dt>Temperature Reading:</dt>
-                                    <dd>
-                                        @if (Model.TemperatureReading.HasValue)
-                                        {
-                                            <span>@Model.TemperatureReading.Value.ToString("N1")°C</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">Not recorded</span>
-                                        }
-                                    </dd>
-                                </dl>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Checklist & Parts</h6>
-                                <dl>
-                                    <dt>Checklist Completed:</dt>
-                                    <dd>
-                                        @if (Model.IsChecklistCompleted)
-                                        {
-                                            <span class="badge bg-success">Yes</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-warning">No</span>
-                                        }
-                                    </dd>
-
-                                    <dt>Parts Replaced:</dt>
-                                    <dd>
-                                        @if (!string.IsNullOrEmpty(Model.PartsReplaced))
-                                        {
-                                            <div class="bg-light p-2 rounded">
-                                                @Html.Raw(Model.PartsReplaced.Replace("\n", "<br>"))
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">No parts replaced</span>
-                                        }
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-
-                        <!-- Notes -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h6>Technician Notes</h6>
-                                @if (!string.IsNullOrEmpty(Model.TechnicianNotes))
-                                {
-                                    <div class="bg-light p-3 rounded">
-                                        @Html.Raw(Model.TechnicianNotes.Replace("\n", "<br>"))
-                                    </div>
-                                }
-                                else
-                                {
-                                    <p class="text-muted">No technician notes recorded.</p>
-                                }
-                            </div>
-                        </div>
-
-                        @if (!string.IsNullOrEmpty(Model.IssueDescription))
-                        {
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <h6>Issue Description</h6>
-                                    <div class="bg-light p-3 rounded">
-                                        @Html.Raw(Model.IssueDescription.Replace("\n", "<br>"))
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(Model.MaintenanceDetails))
-                        {
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <h6>Maintenance Details</h6>
-                                    <div class="bg-light p-3 rounded">
-                                        @Html.Raw(Model.MaintenanceDetails.Replace("\n", "<br>"))
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Quick Actions -->
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt me-2"></i>Quick Actions
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
-                            <i class="fas fa-edit me-2"></i>Edit Visit
-                        </a>
-
-                        @if (Model.Status == ServicingStatus.Scheduled || Model.Status == ServicingStatus.InProgress)
-                        {
-                            <a asp-action="Complete" asp-route-id="@Model.Id" class="btn btn-success">
-                                <i class="fas fa-check me-2"></i>Complete Visit
-                            </a>
-                        }
-
-                        <a asp-controller="Fridges" asp-action="Details" asp-route-id="@Model.FridgeId"
-                           class="btn btn-outline-primary">
-                            <i class="fas fa-refrigerator me-2"></i>View Fridge
-                        </a>
-
-                        <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId"
-                           class="btn btn-outline-info">
-                            <i class="fas fa-user me-2"></i>View Customer
-                        </a>
-
-                        @if (User.IsInRole(SD.AdminRole))
-                        {
-                            <button type="button" class="btn btn-danger"
-                                    onclick="confirmDelete(@Model.Id, '@Model.ScheduledDate.ToString("dd/MM/yyyy")')">
-                                <i class="fas fa-trash me-2"></i>Delete Visit
-                            </button>
-                        }
-                    </div>
-                </div>
+        <!-- Audit Information -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Audit Information</h5>
             </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <strong>Created:</strong><br>
+                    @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm") by @Model.CreatedBy<br><br>
 
-            <!-- Related Records -->
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-link me-2"></i>Related Records
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <h6>Maintenance Records</h6>
-                    @if (Model.MaintenanceRecords?.Any() == true)
+                    @if (Model.UpdatedAt.HasValue)
                     {
-                        <div class="list-group list-group-flush">
-                            @foreach (var record in Model.MaintenanceRecords.Take(3))
-                            {
-                                <a asp-controller="MaintenanceRecords" asp-action="Details" asp-route-id="@record.Id"
-                                   class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <small>@(record.ServiceDate?.ToString("dd/MM/yyyy") ?? "-")</small>
-                                        <span class="badge bg-@GetServiceTypeBadge(record.ServiceType)">@record.ServiceType</span>
-                                    </div>
-                                    <small class="text-muted">@record.Description</small>
-                                </a>
-                            }
-                        </div>
-                        <div class="text-center mt-2">
-                            <a asp-controller="MaintenanceRecords" asp-action="Index" asp-route-visitId="@Model.Id"
-                               class="btn btn-sm btn-outline-warning">View All</a>
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No maintenance records linked</p>
-                        <a asp-controller="MaintenanceRecords" asp-action="Upsert" asp-route-visitId="@Model.Id"
-                           class="btn btn-sm btn-warning">Create Record</a>
-                    }
-                </div>
-            </div>
+                        <strong>Last Updated:</strong>
 
-            <!-- Visit Metadata -->
-            <div class="card">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-database me-2"></i>Visit Information
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <dl>
-                        <dt>Created Date:</dt>
-                        <dd class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                        <dt>Last Modified:</dt>
-                        <dd class="text-muted">
-                            @(Model.ModifiedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")
-                        </dd>
-
-                        <dt>Status:</dt>
-                        <dd>
-                            @if (Model.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
+                        <br>
+                        @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                        @Model.UpdatedBy
                             }
-                            else
-                            {
-                                <span class="badge bg-danger">Inactive</span>
-                            }
-                        </dd>
-                    </dl>
-                </div>
+                </small>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        function confirmDelete(id, scheduledDate) {
-            // Same implementation as in Index view
-        }
-    </script>
-}
-
-@functions {
-    public string GetStatusBadge(ServicingStatus status)
-    {
-        return status switch
-        {
-            ServicingStatus.Scheduled => "primary",
-            ServicingStatus.InProgress => "warning",
-            ServicingStatus.Completed => "success",
-            ServicingStatus.Cancelled => "danger",
-            _ => "secondary"
-        };
+<style>
+    .star-rating {
+        font-size: 1.1em;
     }
-
-    public string GetVisitTypeBadge(ServicingType serviceType)
-    {
-        return serviceType switch
-        {
-            ServicingType.Installation => "primary",
-            ServicingType.PreventiveMaintenance => "warning",
-            ServicingType.CorrectiveMaintenance => "danger",
-            ServicingType.Inspection => "success",
-            _ => "secondary"
-        };
-    }
-
-    public string GetServiceTypeBadge(ServicingType serviceType)
-    {
-        return serviceType switch
-        {
-            ServicingType.Installation => "primary",
-            ServicingType.PreventiveMaintenance => "warning",
-            ServicingType.CorrectiveMaintenance => "danger",
-            ServicingType.Inspection => "success",
-            _ => "secondary"
-        };
-    }
-}
+</style>

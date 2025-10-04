@@ -35,10 +35,10 @@ namespace Project.Controllers
                     .Include(v => v.Fridge)
                     .Include(v => v.Customer)
                     .ThenInclude(c => c.UserAccount)
-                    .Include(v => v.Technician)
+                    .Include(v => v.AssignedTechnician)
                     .ThenInclude(t => t.UserAccount)
                     .Include(v => v.Location)
-                    .Where(v => v.IsActive);
+                    .Where(v => !v.IsDeleted);
 
                 // Status-based filtering
                 if (!string.IsNullOrEmpty(status) && status != "All")
@@ -79,10 +79,10 @@ namespace Project.Controllers
                 {
                     query = query.Where(v =>
                         v.Fridge.SerialNumber.Contains(search) ||
-                        v.Customer.TradingName.Contains(search) ||
-                        (v.Technician != null &&
-                         (v.Technician.UserAccount.FirstName.Contains(search) ||
-                          v.Technician.UserAccount.LastName.Contains(search))) ||
+                        v.Customer.BusinessName.Contains(search) ||
+                        (v.AssignedTechnician != null &&
+                         (v.AssignedTechnician.UserAccount.FirstName.Contains(search) ||
+                          v.AssignedTechnician.UserAccount.LastName.Contains(search))) ||
                         v.Location.FullAddress.Contains(search));
                 }
 
@@ -116,12 +116,12 @@ namespace Project.Controllers
                     .Include(v => v.Fridge)
                     .Include(v => v.Customer)
                     .ThenInclude(c => c.UserAccount)
-                    .Include(v => v.Technician)
+                    .Include(v => v.AssignedTechnician)
                     .ThenInclude(t => t.UserAccount)
                     .Include(v => v.Location)
-                    .Include(v => v.MaintenanceRecords)
-                    .Include(v => v.FaultRecords)
-                    .FirstOrDefaultAsync(v => v.Id == id && v.IsActive);
+                    .Include(v => v.MaintenanceDetails)
+                    .Include(v => v.FaultsFound)
+                    .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
 
                 if (visit == null)
                 {
@@ -164,9 +164,9 @@ namespace Project.Controllers
                             vm.AllocationId = allocationId;
                             vm.FridgeId = allocation.FridgeId;
                             vm.CustomerId = allocation.CustomerId;
-                            vm.LocationId = allocation.DeliveryLocationId ?? 0;
+                            vm.TradingLocationId = allocation.DeliveryLocationId ?? 0;
                             vm.LocationInfo = allocation.DeliveryLocation?.FullAddress;
-                            vm.CustomerInfo = allocation.Customer?.TradingName;
+                            vm.CustomerInfo = allocation.Customer?.BusinessName;
                             vm.FridgeInfo = $"{allocation.Fridge?.SerialNumber} - {allocation.Fridge?.FridgeModel?.ModelName}";
                         }
                     }
@@ -178,9 +178,9 @@ namespace Project.Controllers
                 var visit = await _db.MaintenanceVisits
                     .Include(v => v.Fridge)
                     .Include(v => v.Customer)
-                    .Include(v => v.Technician)
+                    .Include(v => v.AssignedTechnician)
                     .Include(v => v.Location)
-                    .FirstOrDefaultAsync(v => v.Id == id && v.IsActive);
+                    .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
 
                 if (visit == null)
                 {
@@ -234,7 +234,7 @@ namespace Project.Controllers
                 {
                     // Update existing visit
                     var visit = await _db.MaintenanceVisits
-                        .FirstOrDefaultAsync(v => v.Id == vm.Id && v.IsActive);
+                        .FirstOrDefaultAsync(v => v.Id == vm.Id && !v.IsDeleted);
 
                     if (visit == null)
                     {
@@ -243,7 +243,7 @@ namespace Project.Controllers
                     }
 
                     MapViewModelToEntity(vm, visit);
-                    visit.ModifiedAt = DateTime.Now;
+                    visit.UpdatedAt = DateTime.Now;
 
                     _db.MaintenanceVisits.Update(visit);
                     await _db.SaveChangesAsync();
@@ -273,7 +273,7 @@ namespace Project.Controllers
                     .ThenInclude(f => f.FridgeModel)
                     .Include(v => v.Customer)
                     .Include(v => v.Location)
-                    .FirstOrDefaultAsync(v => v.Id == id && v.IsActive);
+                    .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
 
                 if (visit == null)
                 {
@@ -285,8 +285,7 @@ namespace Project.Controllers
                 {
                     VisitId = visit.Id,
                     FridgeInfo = $"{visit.Fridge?.FridgeModel?.Manufacturer} {visit.Fridge?.FridgeModel?.ModelName} - {visit.Fridge?.SerialNumber}",
-                    CustomerInfo = $"{visit.Customer?.TradingName} - {visit.Location?.FullAddress}",
-                    ActualDate = DateTime.Now,
+                    CustomerInfo = $"{visit.Customer?.BusinessName} - {visit.Location?.FullAddress}",
                     Status = ServicingStatus.Completed
                 };
 
@@ -314,7 +313,7 @@ namespace Project.Controllers
                 }
 
                 var visit = await _db.MaintenanceVisits
-                    .FirstOrDefaultAsync(v => v.Id == vm.VisitId && v.IsActive);
+                    .FirstOrDefaultAsync(v => v.Id == vm.VisitId && !v.IsDeleted);
 
                 if (visit == null)
                 {
@@ -323,20 +322,11 @@ namespace Project.Controllers
                 }
 
                 // Update visit with completion details
-                visit.ActualEndTime = vm.ActualDate;
                 visit.Status = vm.Status;
                 visit.TechnicianNotes = vm.TechnicianNotes;
-                visit.PartsReplaced = vm.PartsUsed;
-                visit.ServiceCost = vm.ServiceCost;
                 visit.IsChecklistCompleted = vm.IsChecklistCompleted;
                 visit.ChecklistNotes = vm.ChecklistNotes;
-                visit.ModifiedAt = DateTime.Now;
-
-                // Set start time if not already set
-                if (!visit.ActualStartTime.HasValue)
-                {
-                    visit.ActualStartTime = vm.ActualDate;
-                }
+                visit.UpdatedAt = DateTime.Now;
 
                 _db.MaintenanceVisits.Update(visit);
                 await _db.SaveChangesAsync();
@@ -361,7 +351,7 @@ namespace Project.Controllers
             try
             {
                 var visit = await _db.MaintenanceVisits
-                    .FirstOrDefaultAsync(v => v.Id == id && v.IsActive);
+                    .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
 
                 if (visit == null)
                 {
@@ -370,8 +360,8 @@ namespace Project.Controllers
                 }
 
                 // Soft delete
-                visit.IsActive = false;
-                visit.ModifiedAt = DateTime.Now;
+                visit.IsDeleted = true;
+                visit.UpdatedAt = DateTime.Now;
 
                 await _db.SaveChangesAsync();
                 TempData["success"] = "Maintenance visit deleted successfully";
@@ -392,19 +382,19 @@ namespace Project.Controllers
             {
                 var dashboard = new MaintenanceDashboardVM
                 {
-                    TotalVisits = await _db.MaintenanceVisits.CountAsync(v => v.IsActive),
+                    TotalVisits = await _db.MaintenanceVisits.CountAsync(v => !v.IsDeleted),
                     ScheduledVisits = await _db.MaintenanceVisits
-                        .CountAsync(v => v.IsActive && v.Status == ServicingStatus.Scheduled),
+                        .CountAsync(v => !v.IsDeleted && v.Status == ServicingStatus.Scheduled),
                     CompletedVisits = await _db.MaintenanceVisits
-                        .CountAsync(v => v.IsActive && v.Status == ServicingStatus.Completed),
+                        .CountAsync(v => !v.IsDeleted && v.Status == ServicingStatus.Completed),
                     InProgressVisits = await _db.MaintenanceVisits
-                        .CountAsync(v => v.IsActive && v.Status == ServicingStatus.InProgress),
+                        .CountAsync(v => !v.IsDeleted && v.Status == ServicingStatus.InProgress),
                     OverdueVisits = await _db.MaintenanceVisits
                         .Include(v => v.Fridge)
                         .Include(v => v.Customer)
-                        .Include(v => v.Technician)
+                        .Include(v => v.AssignedTechnician)
                         .ThenInclude(t => t.UserAccount)
-                        .Where(v => v.IsActive &&
+                        .Where(v => !v.IsDeleted &&
                                    (v.Status == ServicingStatus.Scheduled || v.Status == ServicingStatus.InProgress) &&
                                    v.ScheduledDate < DateTime.Today)
                         .OrderBy(v => v.ScheduledDate)
@@ -412,9 +402,9 @@ namespace Project.Controllers
                     UpcomingVisits = await _db.MaintenanceVisits
                         .Include(v => v.Fridge)
                         .Include(v => v.Customer)
-                        .Include(v => v.Technician)
+                        .Include(v => v.AssignedTechnician)
                         .ThenInclude(t => t.UserAccount)
-                        .Where(v => v.IsActive &&
+                        .Where(v => !v.IsDeleted &&
                                    v.Status == ServicingStatus.Scheduled &&
                                    v.ScheduledDate >= DateTime.Today &&
                                    v.ScheduledDate <= DateTime.Today.AddDays(7))
@@ -441,11 +431,11 @@ namespace Project.Controllers
             {
                 vm.CustomerList = await _db.Customers
                     .Where(c => c.IsActive)
-                    .OrderBy(c => c.TradingName)
+                    .OrderBy(c => c.BusinessName)
                     .Select(c => new SelectListItem
                     {
                         Value = c.Id.ToString(),
-                        Text = $"{c.TradingName} - {c.UserAccount.FirstName} {c.UserAccount.LastName}"
+                        Text = $"{c.BusinessName} - {c.UserAccount.FirstName} {c.UserAccount.LastName}"
                     })
                     .ToListAsync();
 
@@ -472,7 +462,7 @@ namespace Project.Controllers
                     .ToListAsync();
 
                 vm.LocationList = await _db.Locations
-                    .Where(l => l.IsActive)
+                    .Where(l => l.IsDeleted)
                     .OrderBy(l => l.FullAddress)
                     .Select(l => new SelectListItem
                     {
@@ -482,7 +472,6 @@ namespace Project.Controllers
                     .ToListAsync();
 
                 vm.StatusList = GetServicingStatusList();
-                vm.VisitTypeList = GetVisitTypeList();
             }
             catch (Exception ex)
             {
@@ -493,7 +482,6 @@ namespace Project.Controllers
                 vm.TechnicianList ??= new List<SelectListItem>();
                 vm.LocationList ??= new List<SelectListItem>();
                 vm.StatusList ??= new List<SelectListItem>();
-                vm.VisitTypeList ??= new List<SelectListItem>();
             }
         }
 
@@ -503,26 +491,20 @@ namespace Project.Controllers
             vm.CustomerId = entity.CustomerId;
             vm.FridgeId = entity.FridgeId;
             vm.AllocationId = entity.AllocationId;
-            vm.TechnicianId = entity.TechnicianId;
-            vm.LocationId = entity.LocationId;
+            vm.AssignedTechnicianId = entity.AssignedTechnicianId;
+            vm.TradingLocationId = entity.LocationId;
             vm.ScheduledDate = entity.ScheduledDate;
-            vm.VisitType = entity.VisitType;
             vm.Status = entity.Status;
-            vm.ActualStartTime = entity.ActualStartTime;
-            vm.ActualEndTime = entity.ActualEndTime;
             vm.TechnicianNotes = entity.TechnicianNotes;
-            vm.PartsReplaced = entity.PartsReplaced;
-            vm.ServiceCost = entity.ServiceCost;
-            vm.ConditionRating = entity.ConditionRating;
-            vm.TemperatureReading = entity.TemperatureReading;
-            vm.IssuesFound = entity.IssuesFound;
-            vm.IssueDescription = entity.IssueDescription;
-            vm.MaintenancePerformed = entity.MaintenancePerformed;
-            vm.MaintenanceDetails = entity.MaintenanceDetails;
-            vm.FollowUpRequired = entity.FollowUpRequired;
-            vm.FollowUpDate = entity.FollowUpDate;
-            vm.IsChecklistCompleted = entity.IsChecklistCompleted;
-            vm.ChecklistNotes = entity.ChecklistNotes;
+            //vm.TemperatureReading = entity.TemperatureReading;
+            //vm.IssuesFound = entity.IssuesFound;
+            //vm.IssueDescription = entity.IssueDescription;
+            //vm.MaintenancePerformed = entity.MaintenancePerformed;
+            //vm.MaintenanceDetails = entity.MaintenanceDetails;
+            //vm.FollowUpRequired = entity.FollowUpRequired;
+            //vm.FollowUpDate = entity.FollowUpDate;
+            //vm.IsChecklistCompleted = entity.IsChecklistCompleted;
+            //vm.ChecklistNotes = entity.ChecklistNotes;
         }
 
         private MaintenanceVisit MapViewModelToEntity(MaintenanceVisitVM vm, MaintenanceVisit? entity = null)
@@ -532,33 +514,28 @@ namespace Project.Controllers
             entity.CustomerId = vm.CustomerId;
             entity.FridgeId = vm.FridgeId;
             entity.AllocationId = vm.AllocationId;
-            entity.TechnicianId = vm.TechnicianId;
-            entity.LocationId = vm.LocationId;
+            entity.AssignedTechnicianId = vm.AssignedTechnicianId;
+            entity.LocationId = vm.TradingLocationId;
             entity.ScheduledDate = vm.ScheduledDate;
-            entity.VisitType = vm.VisitType;
             entity.Status = vm.Status;
-            entity.ActualStartTime = vm.ActualStartTime;
-            entity.ActualEndTime = vm.ActualEndTime;
             entity.TechnicianNotes = vm.TechnicianNotes;
-            entity.PartsReplaced = vm.PartsReplaced;
-            entity.ServiceCost = vm.ServiceCost;
-            entity.ConditionRating = vm.ConditionRating;
-            entity.TemperatureReading = vm.TemperatureReading;
-            entity.IssuesFound = vm.IssuesFound;
-            entity.IssueDescription = vm.IssueDescription;
-            entity.MaintenancePerformed = vm.MaintenancePerformed;
-            entity.MaintenanceDetails = vm.MaintenanceDetails;
-            entity.FollowUpRequired = vm.FollowUpRequired;
-            entity.FollowUpDate = vm.FollowUpDate;
-            entity.IsChecklistCompleted = vm.IsChecklistCompleted;
-            entity.ChecklistNotes = vm.ChecklistNotes;
-            entity.IsActive = true;
+            //entity.ConditionRating = vm.ConditionRating;
+            //entity.TemperatureReading = vm.TemperatureReading;
+            //entity.IssuesFound = vm.IssuesFound;
+            //entity.IssueDescription = vm.IssueDescription;
+            //entity.MaintenancePerformed = vm.MaintenancePerformed;
+            //entity.MaintenanceDetails = vm.MaintenanceDetails;
+            //entity.FollowUpRequired = vm.FollowUpRequired;
+            //entity.FollowUpDate = vm.FollowUpDate;
+            //entity.IsChecklistCompleted = vm.IsChecklistCompleted;
+            //entity.ChecklistNotes = vm.ChecklistNotes;
+            entity.IsDeleted = false;
 
             if (entity.Id == 0)
             {
                 entity.CreatedAt = DateTime.Now;
             }
-            entity.ModifiedAt = DateTime.Now;
+            entity.UpdatedAt = DateTime.Now;
 
             return entity;
         }
@@ -573,18 +550,6 @@ namespace Project.Controllers
                 })
                 .ToList();
         }
-
-        private List<SelectListItem> GetVisitTypeList()
-        {
-            return Enum.GetValues<ServicingType>()
-                .Select(v => new SelectListItem
-                {
-                    Value = v.ToString(),
-                    Text = v.ToString()
-                })
-                .ToList();
-        }
-
         #endregion
     }
 

@@ -59,7 +59,7 @@
 
                         <!-- Right Column - Location & Profile Picture -->
                         <div class="col-md-6">
-                            <div class="card mb-4 border-0 shadow-sm">
+@*                             <div class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
                                     <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Location</h5>
                                 </div>
@@ -70,24 +70,24 @@
                                         <span asp-validation-for="Input.LocationId" class="text-danger"></span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> *@
 
                             <div class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
                                     <h5 class="mb-0"><i class="bi bi-image me-2"></i>Profile Picture</h5>
                                 </div>
                                 <div class="card-body">
-                                    <!-- URL Input -->
+@*                                     <!-- URL Input -->
                                     <div class="form-floating mb-3">
                                         <input asp-for="Input.ProfilePictureUrl" class="form-control" placeholder="Paste image URL" />
                                         <label asp-for="Input.ProfilePictureUrl">Profile Picture URL</label>
                                         <span asp-validation-for="Input.ProfilePictureUrl" class="text-danger"></span>
-                                    </div>
+                                    </div> *@
 
-                                    <!-- File Upload Alternative -->
                                     <div class="mb-3">
-                                        <label for="profileImageUpload" class="form-label">Or upload an image</label>
-                                        <input type="file" id="profileImageUpload" class="form-control" accept="image/*" />
+                                        <label asp-for="Input.ProfilePictureFile" class="form-label">Upload an image</label>
+                                        <input type="file" asp-for="Input.ProfilePictureFile" class="form-control" accept="image/*" />
+                                        <span asp-validation-for="Input.ProfilePictureFile" class="text-danger"></span>
                                         <small class="text-muted">Max file size: 5MB. Supported formats: JPG, PNG, GIF</small>
                                     </div>
 
@@ -124,8 +124,8 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // Image preview for file upload
-        document.getElementById('profileImageUpload').addEventListener('change', function(e) {
+        // Image preview for file upload - updated selector
+        document.querySelector('input[name="Input.ProfilePictureFile"]').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -133,14 +133,6 @@
                     document.getElementById('profileImagePreview').src = e.target.result;
                 }
                 reader.readAsDataURL(file);
-            }
-        });
-
-        // Image preview for URL input
-        document.getElementById('Input_ProfilePictureUrl').addEventListener('blur', function() {
-            const url = this.value;
-            if (url) {
-                document.getElementById('profileImagePreview').src = url;
             }
         });
     </script>

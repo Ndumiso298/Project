@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project.Migrations
 {
     /// <inheritdoc />
-    public partial class initialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,6 +28,47 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DOB = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ProfilePictureData = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    ProfilePictureContentType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastPasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusinessDocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FridgeModels",
                 columns: table => new
                 {
@@ -36,18 +77,14 @@ namespace Project.Migrations
                     Manufacturer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ModelName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ModelCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CapacityLiters = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    CapacityLiters = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    MonthlyRentalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     EnergyRating = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     Dimensions = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    WeightKg = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Color = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    Voltage = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    PowerConsumption = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    TemperatureRange = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    MonthlyRentalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     HasGlassDoor = table.Column<bool>(type: "bit", nullable: false),
                     HasDigitalDisplay = table.Column<bool>(type: "bit", nullable: false),
                     HasLock = table.Column<bool>(type: "bit", nullable: false),
@@ -56,13 +93,12 @@ namespace Project.Migrations
                     WarrantyPeriodMonths = table.Column<int>(type: "int", nullable: false),
                     MinimumStockLevel = table.Column<int>(type: "int", nullable: false),
                     ReorderQuantity = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsScrapped = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,18 +111,25 @@ namespace Project.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AddressLine1 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AddressLine2 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LocationType = table.Column<int>(type: "int", nullable: false),
+                    LocationCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    StreetAddress = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Suburb = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Province = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Country = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ContactPerson = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ContactPhone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ContactEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    OperatingHours = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Capacity = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -112,55 +155,6 @@ namespace Project.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: true),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    DOB = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: true),
-                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    AccountStatus = table.Column<int>(type: "int", nullable: false),
-                    IsEmailVerified = table.Column<bool>(type: "bit", nullable: false),
-                    IsPhoneVerified = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastPasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FailedLoginAttempts = table.Column<int>(type: "int", nullable: false),
-                    LockoutEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Locations_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Locations",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -256,17 +250,12 @@ namespace Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EmployeeNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    EmployeeType = table.Column<int>(type: "int", nullable: false),
                     AvailabilityStatus = table.Column<int>(type: "int", nullable: false),
-                    EmployeeType = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
-                    EmploymentType = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     WorkPhone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     WorkEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    WorkLocationId = table.Column<int>(type: "int", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    WorkLocationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -281,7 +270,8 @@ namespace Project.Migrations
                         name: "FK_Employees_Locations_WorkLocationId",
                         column: x => x.WorkLocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -290,34 +280,34 @@ namespace Project.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    AssignedEmployeeId = table.Column<int>(type: "int", nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
-                    TradingName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BusinessName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     BusinessType = table.Column<int>(type: "int", nullable: false),
                     RegistrationNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     VATNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    OperatingHours = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CustomerSince = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BusinessEmail = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     BusinessPhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     AlternativePhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    AddressLine1 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AddressLine2 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    StreetAddress = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Suburb = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Province = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Province = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    TradingLocationId = table.Column<int>(type: "int", nullable: true),
                     CreditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CurrentBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OutstandingBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentTermsDays = table.Column<int>(type: "int", nullable: false),
                     DiscountRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreditStatus = table.Column<int>(type: "int", nullable: false),
-                    CustomerSince = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OperatingHours = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    AccountStatus = table.Column<int>(type: "int", nullable: false),
+                    RejectionReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    BusinessDocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeclinedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    AssignedEmployeeId = table.Column<int>(type: "int", nullable: true),
+                    LocationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -326,7 +316,8 @@ namespace Project.Migrations
                         name: "FK_Customers_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customers_Employees_AssignedEmployeeId",
                         column: x => x.AssignedEmployeeId,
@@ -335,6 +326,11 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_Customers_Locations_LocationId",
                         column: x => x.LocationId,
+                        principalTable: "Locations",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Customers_Locations_TradingLocationId",
+                        column: x => x.TradingLocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -359,7 +355,10 @@ namespace Project.Migrations
                     ApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ApprovalNotes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -378,54 +377,6 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AllocationRequestHeaders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RequestNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RequestType = table.Column<int>(type: "int", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ContactPerson = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ContactPhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    ContactEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    DeliveryLocationId = table.Column<int>(type: "int", nullable: false),
-                    DeliveryInstructions = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    PreferredDeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DiscountPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SpecialNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    ApprovedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ApprovalNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AllocationRequestHeaders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AllocationRequestHeaders_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AllocationRequestHeaders_Locations_DeliveryLocationId",
-                        column: x => x.DeliveryLocationId,
-                        principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Fridges",
                 columns: table => new
                 {
@@ -433,24 +384,23 @@ namespace Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SerialNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FridgeModelId = table.Column<int>(type: "int", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: true),
                     CustomerId = table.Column<int>(type: "int", nullable: true),
-                    EmployeeId = table.Column<int>(type: "int", nullable: true),
                     Condition = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Supplier = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     WarrantyExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastServiceDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NextServiceDue = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TotalServiceCount = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsScrapped = table.Column<bool>(type: "bit", nullable: false),
+                    LastFaultDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -475,8 +425,7 @@ namespace Project.Migrations
                         name: "FK_Fridges_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -492,8 +441,11 @@ namespace Project.Migrations
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     QuantityOrdered = table.Column<int>(type: "int", nullable: false),
                     QuantityReceived = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -522,27 +474,76 @@ namespace Project.Migrations
                     FridgeModelId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     RentalDurationMonths = table.Column<int>(type: "int", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SpecialRequirements = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AllocationRequestDetails", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AllocationRequestDetails_AllocationRequestHeaders_AllocationRequestHeaderId",
-                        column: x => x.AllocationRequestHeaderId,
-                        principalTable: "AllocationRequestHeaders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AllocationRequestDetails_FridgeModels_FridgeModelId",
                         column: x => x.FridgeModelId,
                         principalTable: "FridgeModels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AllocationRequestHeaders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RequestType = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    ReplacingAllocationId = table.Column<int>(type: "int", nullable: true),
+                    ReplacingFridgeId = table.Column<int>(type: "int", nullable: true),
+                    RelatedFaultRecordId = table.Column<int>(type: "int", nullable: true),
+                    IsUrgentReplacement = table.Column<bool>(type: "bit", nullable: false),
+                    ReplacementReason = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    ContactPerson = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ContactPhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    ContactEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeliveryLocationId = table.Column<int>(type: "int", nullable: true),
+                    DeliveryInstructions = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    PreferredDeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DiscountPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SpecialNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ApprovedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApprovalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ApprovalNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AllocationRequestHeaders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AllocationRequestHeaders_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AllocationRequestHeaders_Fridges_ReplacingFridgeId",
+                        column: x => x.ReplacingFridgeId,
+                        principalTable: "Fridges",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AllocationRequestHeaders_Locations_DeliveryLocationId",
+                        column: x => x.DeliveryLocationId,
+                        principalTable: "Locations",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -555,20 +556,22 @@ namespace Project.Migrations
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     AllocatedByEmployeeId = table.Column<int>(type: "int", nullable: false),
                     ProcessedByEmployeeId = table.Column<int>(type: "int", nullable: true),
-                    DeliveryLocationId = table.Column<int>(type: "int", nullable: false),
-                    AllocationRequestHeaderId = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    DeliveryLocationId = table.Column<int>(type: "int", nullable: true),
+                    AllocationRequestHeaderId = table.Column<int>(type: "int", nullable: false),
+                    ReplacementRequestHeaderId = table.Column<int>(type: "int", nullable: true),
+                    ReplacedAllocationId = table.Column<int>(type: "int", nullable: true),
+                    AllocationStatus = table.Column<int>(type: "int", nullable: false),
                     AllocationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpectedReturnDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ActualReturnDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     MonthlyRentalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -577,7 +580,14 @@ namespace Project.Migrations
                         name: "FK_FridgeAllocations_AllocationRequestHeaders_AllocationRequestHeaderId",
                         column: x => x.AllocationRequestHeaderId,
                         principalTable: "AllocationRequestHeaders",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_FridgeAllocations_AllocationRequestHeaders_ReplacementRequestHeaderId",
+                        column: x => x.ReplacementRequestHeaderId,
+                        principalTable: "AllocationRequestHeaders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_FridgeAllocations_Customers_CustomerId",
                         column: x => x.CustomerId,
@@ -596,6 +606,11 @@ namespace Project.Migrations
                         principalTable: "Employees",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_FridgeAllocations_FridgeAllocations_ReplacedAllocationId",
+                        column: x => x.ReplacedAllocationId,
+                        principalTable: "FridgeAllocations",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_FridgeAllocations_Fridges_FridgeId",
                         column: x => x.FridgeId,
                         principalTable: "Fridges",
@@ -605,8 +620,7 @@ namespace Project.Migrations
                         name: "FK_FridgeAllocations_Locations_DeliveryLocationId",
                         column: x => x.DeliveryLocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -616,50 +630,52 @@ namespace Project.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FaultCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FridgeId = table.Column<int>(type: "int", nullable: false),
-                    FridgeAllocationId = table.Column<int>(type: "int", nullable: true),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
                     FaultLocationId = table.Column<int>(type: "int", nullable: true),
                     AssignedTechnicianId = table.Column<int>(type: "int", nullable: true),
                     ReportedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Category = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
-                    ReportedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AcknowledgedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ScheduledDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EstimatedCompletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    WorkStartedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ResolvedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ClosedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TechnicalDiagnosis = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    RootCause = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ResolutionDetails = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    TechnicianNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    LaborHours = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    LaborCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PartsCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PartsReplaced = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsWarrantyClaim = table.Column<bool>(type: "bit", nullable: false),
-                    WarrantyApproved = table.Column<bool>(type: "bit", nullable: true),
-                    CustomerBilled = table.Column<bool>(type: "bit", nullable: false),
-                    BillingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    CustomerInformed = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerNotifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CustomerSatisfactionRating = table.Column<int>(type: "int", nullable: true),
-                    CustomerFeedback = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    PartsReplaced = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     FaultPhotosUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ResolutionPhotosUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     DocumentationUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ResolutionDetails = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    ResolutionNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    RequiresReplacement = table.Column<bool>(type: "bit", nullable: false),
+                    ReplacementRecommended = table.Column<bool>(type: "bit", nullable: false),
+                    ReplacementRequestId = table.Column<int>(type: "int", nullable: true),
+                    ReportedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AssignedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ResponseDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ResolvedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClosedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LaborHours = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    LaborCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PartsCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    WarrantyCovered = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerBilled = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerInformed = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerFeedback = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: true),
+                    FridgeAllocationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FaultRecords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FaultRecords_AllocationRequestHeaders_ReplacementRequestId",
+                        column: x => x.ReplacementRequestId,
+                        principalTable: "AllocationRequestHeaders",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_FaultRecords_AspNetUsers_ReportedById",
                         column: x => x.ReportedById,
@@ -701,36 +717,34 @@ namespace Project.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ScheduledDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VisitType = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     FridgeId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     AllocationId = table.Column<int>(type: "int", nullable: true),
-                    TechnicianId = table.Column<int>(type: "int", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    AssignedTechnicianId = table.Column<int>(type: "int", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: true),
+                    ActualStartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ActualEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsChecklistCompleted = table.Column<bool>(type: "bit", nullable: false),
                     ChecklistNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    ActualStartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActualEndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ConditionRating = table.Column<int>(type: "int", nullable: true),
                     TemperatureReading = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    IssuesFound = table.Column<bool>(type: "bit", nullable: false),
-                    IssueDescription = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    FaultsFound = table.Column<bool>(type: "bit", nullable: false),
+                    ReplacementRecommended = table.Column<bool>(type: "bit", nullable: false),
+                    ReplacementReason = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     MaintenancePerformed = table.Column<bool>(type: "bit", nullable: false),
                     MaintenanceDetails = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    PartsReplaced = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ServiceCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    TechnicianNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     FollowUpRequired = table.Column<bool>(type: "bit", nullable: false),
                     FollowUpDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TechnicianNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    CustomerNote = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CustomerRating = table.Column<int>(type: "int", nullable: true),
+                    NextServiceDue = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CustomerFeedback = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerRating = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -742,8 +756,8 @@ namespace Project.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_MaintenanceVisits_Employees_TechnicianId",
-                        column: x => x.TechnicianId,
+                        name: "FK_MaintenanceVisits_Employees_AssignedTechnicianId",
+                        column: x => x.AssignedTechnicianId,
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -762,23 +776,22 @@ namespace Project.Migrations
                         name: "FK_MaintenanceVisits_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "FaultRecordMaintenanceVisit",
                 columns: table => new
                 {
-                    FaultRecordsId = table.Column<int>(type: "int", nullable: false),
+                    CreatedFaultsId = table.Column<int>(type: "int", nullable: false),
                     MaintenanceVisitsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FaultRecordMaintenanceVisit", x => new { x.FaultRecordsId, x.MaintenanceVisitsId });
+                    table.PrimaryKey("PK_FaultRecordMaintenanceVisit", x => new { x.CreatedFaultsId, x.MaintenanceVisitsId });
                     table.ForeignKey(
-                        name: "FK_FaultRecordMaintenanceVisit_FaultRecords_FaultRecordsId",
-                        column: x => x.FaultRecordsId,
+                        name: "FK_FaultRecordMaintenanceVisit_FaultRecords_CreatedFaultsId",
+                        column: x => x.CreatedFaultsId,
                         principalTable: "FaultRecords",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -800,18 +813,12 @@ namespace Project.Migrations
                     TechnicianId = table.Column<int>(type: "int", nullable: false),
                     MaintenanceVisitId = table.Column<int>(type: "int", nullable: true),
                     ServiceDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ServiceType = table.Column<int>(type: "int", maxLength: 20, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     ServiceNotes = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PartsUsed = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsWarrantyClaim = table.Column<bool>(type: "bit", nullable: false),
-                    WarrantyReference = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -835,73 +842,6 @@ namespace Project.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ReplacementRequests",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FridgeAllocationId = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
-                    FaultRecordId = table.Column<int>(type: "int", nullable: true),
-                    MaintenanceRecordId = table.Column<int>(type: "int", nullable: true),
-                    AssignedEmployeeId = table.Column<int>(type: "int", nullable: true),
-                    RequestType = table.Column<int>(type: "int", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    RequestedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AssignedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ResponseDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ResponseNotes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ReplacementFridgeId = table.Column<int>(type: "int", nullable: true),
-                    ReplacementDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FaultyFridgeReturned = table.Column<bool>(type: "bit", nullable: false),
-                    ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReplacementRequests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReplacementRequests_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ReplacementRequests_Employees_AssignedEmployeeId",
-                        column: x => x.AssignedEmployeeId,
-                        principalTable: "Employees",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ReplacementRequests_FaultRecords_FaultRecordId",
-                        column: x => x.FaultRecordId,
-                        principalTable: "FaultRecords",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ReplacementRequests_FridgeAllocations_FridgeAllocationId",
-                        column: x => x.FridgeAllocationId,
-                        principalTable: "FridgeAllocations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ReplacementRequests_Fridges_ReplacementFridgeId",
-                        column: x => x.ReplacementFridgeId,
-                        principalTable: "Fridges",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ReplacementRequests_MaintenanceRecords_MaintenanceRecordId",
-                        column: x => x.MaintenanceRecordId,
-                        principalTable: "MaintenanceRecords",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -916,65 +856,60 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "FridgeModels",
-                columns: new[] { "Id", "CapacityLiters", "Color", "CreatedAt", "CreatedBy", "Description", "Dimensions", "EnergyRating", "HasDigitalDisplay", "HasGlassDoor", "HasLock", "ImageUrl", "IsActive", "IsFrostFree", "IsScrapped", "Manufacturer", "MinimumStockLevel", "ModelCode", "ModelName", "ModifiedAt", "ModifiedBy", "MonthlyRentalPrice", "PowerConsumption", "PurchasePrice", "ReorderQuantity", "ServiceIntervalMonths", "TemperatureRange", "Type", "Voltage", "WarrantyPeriodMonths", "WeightKg" },
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "BusinessDocumentPath", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "DOB", "Email", "EmailConfirmed", "FirstName", "IsApproved", "IsDeleted", "LastLoginDate", "LastName", "LastPasswordChangeDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureContentType", "ProfilePictureData", "ProfilePictureUrl", "RejectionReason", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UpdatedBy", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 100, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Compact upright fridge perfect for small businesses with limited space. Energy efficient and reliable.", "85×55×60", "A", false, false, true, "/images/fridges/defy-compact-100l.jpg", true, true, false, "Defy", 3, "DEF-C100", "Compact 100L", null, null, 299.00m, 180m, 3499.00m, 5, 6, "2°C to 8°C", 0, "220-240V", 24, 45m },
-                    { 2, 150, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Reliable commercial fridge with digital temperature control and robust construction.", "90×60×65", "A+", true, false, true, "/images/fridges/lg-business-cool-150l.jpg", true, true, false, "LG", 2, "LG-BC150", "Business Cool 150L", null, null, 399.00m, 210m, 4599.00m, 4, 6, "1°C to 10°C", 0, "220-240V", 36, 52m },
-                    { 3, 120, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Budget-friendly frost-free fridge ideal for small retail spaces and startups.", "88×58×62", "B", false, false, true, "/images/fridges/hisense-frostfree-120l.jpg", true, true, false, "Hisense", 4, "HIS-FF120", "FrostFree 120L", null, null, 259.00m, 195m, 2999.00m, 6, 6, "3°C to 8°C", 0, "220-240V", 24, 48m },
-                    { 4, 180, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Medium capacity commercial fridge with digital controls and efficient cooling.", "95×65×68", "A+", true, false, true, "/images/fridges/samsung-commercial-180l.jpg", true, true, false, "Samsung", 2, "SAM-C180", "Commercial 180L", null, null, 449.00m, 225m, 5199.00m, 4, 6, "0°C to 8°C", 0, "220-240V", 36, 58m },
-                    { 5, 150, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Energy-efficient chest freezer perfect for frozen goods storage in small businesses.", "85×55×80", "A", false, false, true, "/images/fridges/kic-chest-150l.jpg", true, false, false, "KIC", 3, "KIC-SC150", "Small Chest 150L", null, null, 279.00m, 190m, 3299.00m, 5, 6, "-18°C to -25°C", 1, "220-240V", 24, 42m },
-                    { 6, 280, "Black Glass", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Professional glass door display fridge perfect for bars and restaurants showcasing beverages.", "185×65×70", "A", true, true, true, "/images/fridges/bartech-glass-display-280l.jpg", true, true, false, "Bartech", 2, "BAR-GD280", "Glass Display 280L", null, null, 699.00m, 320m, 7899.00m, 3, 4, "2°C to 6°C", 3, "220-240V", 24, 95m },
-                    { 7, 150, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Professional undercounter fridge built for commercial kitchens with stainless steel construction.", "85×60×70", "A+", true, false, true, "/images/fridges/foster-undercounter-150l.jpg", true, true, false, "Foster", 2, "FOS-UC150", "Undercounter 150L", null, null, 549.00m, 280m, 6299.00m, 3, 4, "1°C to 7°C", 5, "220-240V", 36, 68m },
-                    { 8, 200, "Black", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Dedicated beverage cooler with multiple shelves, perfect for canned drinks and bottles.", "85×60×65", "A", true, true, true, "/images/fridges/true-beverage-200l.jpg", true, true, false, "True", 2, "TRU-BC200", "Beverage Cooler 200L", null, null, 499.00m, 240m, 5799.00m, 4, 6, "3°C to 8°C", 4, "220-240V", 24, 55m },
-                    { 9, 25, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Commercial ice maker producing up to 25kg of ice per day, essential for bars and restaurants.", "75×55×65", "A", true, false, false, "/images/fridges/hoshizaki-ice-maker.jpg", true, true, false, "Hoshizaki", 1, "HOS-IM25", "Ice Maker Pro", null, null, 429.00m, 180m, 4899.00m, 2, 3, "N/A", 9, "220-240V", 24, 48m },
-                    { 10, 120, "Black Glass", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Dual-zone wine cooler with precise temperature control for red and white wines.", "85×60×60", "A+", true, true, true, "/images/fridges/perlick-wine-cooler.jpg", true, true, false, "Perlick", 1, "PER-WC120", "Wine Cooler 120L", null, null, 399.00m, 160m, 4599.00m, 2, 6, "5°C to 18°C", 7, "220-240V", 36, 52m },
-                    { 11, 500, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Large multi-deck display fridge for supermarkets with excellent product visibility.", "200×120×80", "A+", true, true, true, "/images/fridges/hussmann-multideck-500l.jpg", true, true, false, "Hussmann", 1, "HUS-MD500", "Multi-Deck 500L", null, null, 1199.00m, 580m, 13999.00m, 2, 3, "2°C to 6°C", 3, "220-240V", 24, 220m },
-                    { 12, 350, "Glass Door", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "High-capacity bottle cooler designed for liquor stores and large bars.", "190×70×75", "A", true, true, true, "/images/fridges/beverage-air-bottle-350l.jpg", true, true, false, "Beverage-Air", 1, "BEV-BC350", "Bottle Cooler 350L", null, null, 849.00m, 420m, 9899.00m, 2, 4, "3°C to 7°C", 10, "220-240V", 24, 125m },
-                    { 13, 400, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Professional combination fridge-freezer unit for commercial kitchens and hotels.", "185×80×75", "A+", true, false, true, "/images/fridges/traulsen-combi-400l.jpg", true, true, false, "Traulsen", 1, "TRA-C400", "Combi 400L", null, null, 999.00m, 480m, 11599.00m, 2, 3, "-18°C to 5°C", 8, "220-240V", 36, 145m },
-                    { 14, 300, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Large upright freezer with multiple shelves for organized frozen storage.", "180×70×70", "A", true, false, true, "/images/fridges/victory-upright-freezer-300l.jpg", true, true, false, "Victory", 2, "VIC-UF300", "Upright Freezer 300L", null, null, 599.00m, 350m, 6999.00m, 3, 6, "-18°C to -25°C", 2, "220-240V", 24, 98m },
-                    { 15, 1000, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Modular walk-in cooler system for large-scale storage in supermarkets and hotels.", "240×200×220", "A+", true, false, true, "/images/fridges/norlake-walk-in.jpg", true, true, false, "Nor-Lake", 0, "NOR-WIC1000", "Walk-In Cooler", null, null, 2499.00m, 1200m, 28999.00m, 1, 2, "1°C to 4°C", 0, "380V", 24, 450m },
-                    { 16, 250, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Specialized undercounter fridge with roll-down door for pizza restaurants.", "85×75×70", "A", true, false, true, "/images/fridges/delfield-pizza-prep.jpg", true, true, false, "Delfield", 1, "DEL-PP250", "Pizza Prep 250L", null, null, 549.00m, 280m, 6399.00m, 2, 4, "1°C to 5°C", 5, "220-240V", 24, 72m },
-                    { 17, 150, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Undercounter drawer freezer for easy access in commercial kitchens.", "85×60×70", "A+", true, false, true, "/images/fridges/avantco-drawer-freezer.jpg", true, true, false, "Avantco", 1, "AVA-DF150", "Drawer Freezer 150L", null, null, 479.00m, 260m, 5599.00m, 2, 4, "-18°C to -22°C", 6, "220-240V", 24, 65m },
-                    { 18, 180, "Black", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Compact beverage center with glass door and adjustable shelving.", "85×55×60", "A", true, true, true, "/images/fridges/summit-beverage-center.jpg", true, true, false, "Summit", 2, "SUM-BC180", "Beverage Center 180L", null, null, 429.00m, 220m, 4999.00m, 3, 6, "3°C to 8°C", 4, "220-240V", 24, 58m },
-                    { 19, 100, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Specialized kegerator for draft beer systems in bars and restaurants.", "90×55×60", "A", true, true, true, "/images/fridges/edgestar-kegerator.jpg", true, true, false, "EdgeStar", 1, "EDG-K100", "Kegerator 100L", null, null, 599.00m, 180m, 6999.00m, 2, 3, "2°C to 6°C", 4, "220-240V", 24, 52m },
-                    { 20, 140, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Portable dual-zone fridge-freezer combination for flexible commercial use.", "95×55×65", "A", true, false, false, "/images/fridges/whynter-dual-zone.jpg", true, true, false, "Whynter", 2, "WHY-DZ140", "Dual Zone 140L", null, null, 399.00m, 200m, 4699.00m, 3, 6, "-18°C to 10°C", 8, "220-240V", 24, 48m },
-                    { 21, 350, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Professional-grade upright fridge with advanced temperature management.", "190×75×75", "A+", true, false, true, "/images/fridges/frigidaire-professional-350l.jpg", true, true, false, "Frigidaire", 1, "FRI-P350", "Professional 350L", null, null, 799.00m, 380m, 9299.00m, 2, 4, "0°C to 7°C", 0, "220-240V", 36, 110m },
-                    { 22, 200, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Reliable commercial fridge with robust construction and energy efficiency.", "92×65×68", "A", true, false, true, "/images/fridges/kelvinator-commercial-200l.jpg", true, true, false, "Kelvinator", 3, "KEL-C200", "Commercial 200L", null, null, 379.00m, 240m, 4399.00m, 4, 6, "2°C to 8°C", 0, "220-240V", 24, 62m },
-                    { 23, 130, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Economical and eco-friendly fridge with low power consumption.", "86×56×62", "A++", false, false, true, "/images/fridges/midea-ecocool-130l.jpg", true, true, false, "Midea", 4, "MID-EC130", "EcoCool 130L", null, null, 229.00m, 150m, 2699.00m, 6, 6, "3°C to 8°C", 0, "220-240V", 24, 46m },
-                    { 24, 250, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Advanced inverter technology fridge with precise temperature control and quiet operation.", "170×60×65", "A++", true, false, true, "/images/fridges/panasonic-inverter-250l.jpg", true, true, false, "Panasonic", 2, "PAN-I250", "Inverter 250L", null, null, 549.00m, 200m, 6399.00m, 3, 6, "0°C to 8°C", 0, "220-240V", 36, 68m },
-                    { 25, 180, "Cream", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Stylish retro-design fridge perfect for boutique hotels and premium bars.", "125×60×65", "A+", false, false, true, "/images/fridges/smeg-retro-180l.jpg", true, true, false, "Smeg", 1, "SME-R180", "Retro 180L", null, null, 699.00m, 220m, 7999.00m, 2, 6, "2°C to 8°C", 0, "220-240V", 24, 58m }
+                    { "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d", 0, null, "d0e1f2a3-5b67-4c8d-9e0f-1a2b3c4d5e6f", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "naterobertson@gmail.com", true, "Nathan", false, false, null, "Robertson", null, true, null, "NATEROBERTSON@GMAIL.COM", "NATEROBERTSON@GMAIL.COM", "AQAAAAIAAYagAAAAEBNX/94VxAPgZaJ/z2xiwMgkLZSIxV948K2Qm8xuhwKAcfoYWym6CMKeKFp9dGYc+g==", "+27691745946", true, null, null, null, null, "c9d0e1f2-4a56-4b7c-8d9e-0f1a2b3c4d5f", false, null, "", "naterobertson@gmail.com" },
+                    { "b5a771e9-2f8b-437a-9d0e-7f8b901cde12", 0, null, "c3d456f7-a8b0-4c1d-9e2f-3a4b5c6d7e8f", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "customersupport@smartchill.com", true, "Andries", false, false, null, "Tatane", null, true, null, "CUSTOMERSUPPORT@SMARTCHILL.COM", "CUSTOMERSUPPORT@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEJCYyOYrt4DQxf2S2oQNQcsnBrk62cJ0lD/TO9jyPjZPSPjNtr8bfJJdAiurSLXCoA==", "+27710737734", true, null, null, null, null, "d2c345e6-f7a8-4b0c-9d1e-2f3a4b5c6d7e", false, null, "", "customersupport@smartchill.com" },
+                    { "c6d882fa-47b9-448b-a9e0-8f9b012d3e45", 0, null, "d5f789ab-c0de-4e1f-9a2b-7c8d9e0f1234", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", new DateTime(1999, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "stockcontroller@smartchill.com", true, "Mido", false, false, null, "Macia", null, true, null, "STOCKCONTROLLER@SMARTCHILL.COM", "STOCKCONTROLLER@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEPkY/rStc/I5dEJC7Tf4f7K5BmZtnGp9BJoEcgkBakMTiCv+1+uqMSwUiq3Dd41qUw==", "+27662934430", true, null, null, null, null, "f4e678a9-b0c1-4d3e-9f5a-6b7c8d9e0f12", false, null, "", "stockcontroller@smartchill.com" },
+                    { "d7e9930b-58c0-459c-ba1f-9a0a123b4c56", 0, null, "f7a9bcde-1e23-4f3a-9c4d-1e5f6a7b8c9d", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", new DateTime(1983, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "faulttechnician@smartchill.com", true, "Nathaniel", false, false, null, "Julies", null, true, null, "FAULTTECHNICIAN@SMARTCHILL.COM", "FAULTTECHNICIAN@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEPJec7Z6Whl567yC7vG6SRzw1P4CRoYlLsCD9wNlEE5wia0ld5fAEHYu514lO+Sgww==", "+27798946438", true, null, null, null, null, "e6f89abc-0d12-4f2e-8b3c-0d4e5f6a7b8c", false, null, "", "faulttechnician@smartchill.com" },
+                    { "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1", 0, null, "a1b234c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", new DateTime(2000, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@smartchill.com", true, "Collins", false, false, null, "Khosa", null, true, null, "ADMIN@SMARTCHILL.COM", "ADMIN@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEPnCBNS4PQrj9JjSqAy+/nbTPMO96RWdfTCFgw3szc75Ya9qzppIj5hExCx+939AXA==", "+27645347790", true, null, null, null, null, "c1fa9012-34b5-4c6d-8e7f-56a7890bc123", false, null, "", "admin@smartchill.com" },
+                    { "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e", 0, null, "b8c9d0e1-3f45-4a6b-9f7c-8d9e0f1a2b3c", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", new DateTime(1978, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "maintenancetechnician@smartchill.com", true, "Latiefa", false, false, null, "Freeman", null, true, null, "MAINTENANCETECHNICIAN@SMARTCHILL.COM", "MAINTENANCETECHNICIAN@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEOxQsf/HgOCUTxhc1O53mdHCWfG9mD2jlehUVSxCJEzz9Qo4+oExWujRWPfMwu9IQA==", "+27614836998", true, null, null, null, null, "a7b8c9d0-2f34-4e5a-9f6b-7c8d9e0f1a2b", false, null, "", "maintenancetechnician@smartchill.com" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "FridgeModels",
+                columns: new[] { "Id", "CapacityLiters", "Color", "CreatedAt", "CreatedBy", "Description", "Dimensions", "EnergyRating", "HasDigitalDisplay", "HasGlassDoor", "HasLock", "ImageUrl", "IsFrostFree", "Manufacturer", "MinimumStockLevel", "ModelCode", "ModelName", "MonthlyRentalPrice", "PurchasePrice", "ReorderQuantity", "ServiceIntervalMonths", "Status", "Type", "UpdatedAt", "UpdatedBy", "WarrantyPeriodMonths" },
+                values: new object[,]
+                {
+                    { 1, 100, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Compact upright fridge ideal for limited-space spaza shops.", "85×55×60", "A", false, false, true, "/images/fridges/defy-compact-100l.jpg", true, "Defy", 3, "DEF-C100", "Compact 100L", 299.00m, 3499.00m, 5, 6, 0, 0, null, null, 24 },
+                    { 2, 150, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Sturdy chest freezer for high-volume frozen storage.", "85×70×60", "B", false, false, false, "/images/fridges/defy-chest-150l.jpg", false, "Defy", 2, "DEF-CF150", "Classic Chest 150L", 319.00m, 3899.00m, 4, 12, 0, 1, null, null, 36 },
+                    { 3, 200, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Vertical freezer with adjustable shelves and frost-free tech.", "170×58×60", "B", true, false, true, "/images/fridges/hisense-upright-freezer-200l.jpg", true, "Hisense", 2, "HIS-UF200", "Upright Freezer 200L", 429.00m, 4999.00m, 3, 12, 0, 2, null, null, 36 },
+                    { 4, 200, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Glass-fronted display fridge with internal LED lighting.", "180×58×60", "A+", false, true, true, "/images/fridges/galaxy-display-200l.jpg", true, "Galaxy", 2, "GAL-DF200", "Display Chiller 200L", 499.00m, 5499.00m, 3, 6, 0, 3, null, null, 24 },
+                    { 5, 120, "Black", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Slim beverage cooler for cans and bottles display.", "90×50×60", "A", false, true, true, "/images/fridges/lg-beverage-120l.jpg", true, "LG", 3, "LG-BC120", "Beverage Cooler 120L", 389.00m, 4299.00m, 5, 6, 0, 4, null, null, 24 },
+                    { 6, 120, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Under-counter fridge perfect for back-bar integration.", "82×60×57", "A", false, false, true, "/images/fridges/defy-undercounter-120l.jpg", true, "Defy", 3, "DEF-UC120", "Undercounter 120L", 349.00m, 4299.00m, 5, 6, 0, 5, null, null, 24 },
+                    { 7, 100, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Under-counter freezer module for compact storage.", "82×60×57", "B", false, false, true, "/images/fridges/lg-undercounter-freezer-100l.jpg", true, "LG", 2, "LG-UCF100", "Undercounter Freezer 100L", 369.00m, 4299.00m, 3, 12, 0, 6, null, null, 36 },
+                    { 8, 50, "Black", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Temperature-controlled wine cooler with glass door.", "85×50×60", "A", true, true, false, "/images/fridges/kic-wine-50l.jpg", true, "KIC", 1, "KIC-WC50", "Wine Cooler 50L", 519.00m, 5799.00m, 2, 6, 0, 7, null, null, 24 },
+                    { 9, 300, "Grey", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Combined fridge-freezer with separate temperature zones.", "175×70×65", "A+", true, false, true, "/images/fridges/samsung-combi-300l.jpg", true, "Samsung", 1, "SAM-CBF300", "Combi 300L", 599.00m, 6499.00m, 2, 6, 0, 8, null, null, 24 },
+                    { 10, 0, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "High-capacity ice maker, up to 50kg daily output.", "85×60×60", "B", true, false, false, "/images/fridges/kic-ice-maker-50kg.jpg", true, "KIC", 1, "KIC-IM50", "Ice Maker Pro", 799.00m, 8999.00m, 1, 12, 0, 9, null, null, 36 },
+                    { 11, 80, "Black", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Slim bottle cooler with glass door, ideal for display.", "82×43×58", "A", false, true, true, "/images/fridges/hisense-bottle-80l.jpg", true, "Hisense", 4, "HIS-BC80", "Bottle Cooler 80L", 289.00m, 3299.00m, 6, 6, 0, 10, null, null, 24 },
+                    { 12, 250, "Grey", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "High-capacity upright fridge for beverage storage.", "175×70×68", "A+", true, false, true, "/images/fridges/samsung-upright-250l.jpg", true, "Samsung", 2, "SAM-UF250", "Upright Fridge 250L", 599.00m, 6499.00m, 4, 6, 0, 0, null, null, 24 },
+                    { 13, 300, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Large chest freezer for bulk frozen inventory.", "90×85×65", "B", false, false, true, "/images/fridges/whirlpool-chest-300l.jpg", false, "Whirlpool", 1, "WHR-CF300", "Chest Freezer 300L", 489.00m, 5599.00m, 2, 12, 0, 1, null, null, 36 },
+                    { 14, 350, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Extra-large glass display fridge for retail aisles.", "190×80×70", "A+", false, true, true, "/images/fridges/bosch-display-350l.jpg", true, "Bosch", 1, "BOS-GDF350", "Glass Display 350L", 799.00m, 8999.00m, 2, 6, 0, 3, null, null, 24 },
+                    { 15, 150, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Medium-size beverage cooler with fan-forced cooling.", "150×60×60", "A", false, true, true, "/images/fridges/kelvinator-beverage-150l.jpg", true, "Kelvinator", 2, "KEL-BC150", "Beverage Cooler 150L", 519.00m, 5799.00m, 4, 6, 0, 4, null, null, 24 },
+                    { 16, 100, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Compact under-counter fridge for limited space.", "82×60×57", "A", false, false, true, "/images/fridges/rh-undercounter-100l.jpg", true, "Russell Hobbs", 3, "RH-UC100", "UnderCounter 100L", 319.00m, 3799.00m, 5, 6, 0, 5, null, null, 24 },
+                    { 17, 120, "White", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Under-counter freezer for back-bar deployment.", "82×60×57", "B", false, false, true, "/images/fridges/hisense-undercounter-freezer-120l.jpg", true, "Hisense", 2, "HIS-UCF120", "UnderCounter Freezer 120L", 399.00m, 4599.00m, 3, 12, 0, 6, null, null, 36 },
+                    { 18, 70, "Black", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Stylish wine cooler with precise temperature control.", "85×50×60", "A", true, true, false, "/images/fridges/defy-wine-70l.jpg", true, "Defy", 1, "DEF-WC70", "Wine Cooler 70L", 579.00m, 6299.00m, 2, 6, 0, 7, null, null, 24 },
+                    { 19, 450, "Stainless Steel", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Large combi fridge-freezer with water dispenser.", "179×91×76", "A+", true, false, true, "/images/fridges/lg-combi-450l.jpg", true, "LG", 1, "LG-CBF450", "Combi 450L", 1099.00m, 11999.00m, 2, 6, 0, 8, null, null, 24 },
+                    { 20, 90, "Silver", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "Bottle cooler with glass door and internal LED.", "90×50×60", "A", false, true, true, "/images/fridges/whirlpool-bottle-90l.jpg", true, "Whirlpool", 4, "WHR-BC90", "Bottle Cooler 90L", 329.00m, 3899.00m, 6, 6, 0, 10, null, null, 24 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Locations",
-                columns: new[] { "Id", "AddressLine1", "AddressLine2", "City", "Country", "CreatedAt", "CreatedBy", "IsActive", "ModifiedAt", "ModifiedBy", "PostalCode", "Province", "Suburb" },
+                columns: new[] { "Id", "Capacity", "City", "ContactEmail", "ContactPerson", "ContactPhone", "Country", "CreatedAt", "CreatedBy", "IsDeleted", "LocationCode", "LocationType", "Name", "OperatingHours", "PostalCode", "Province", "StreetAddress", "Suburb", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, "12 Voortrekker Road", null, "Paarl", "South Africa", new DateTime(2024, 1, 15, 8, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "7646", "Western Cape", "Paarl" },
-                    { 2, "45 Mitchell Street", null, "East London", "South Africa", new DateTime(2024, 1, 16, 9, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "5241", "Eastern Cape", "Berea" },
-                    { 3, "88 Goble Road", "Unit 5", "Johannesburg", "South Africa", new DateTime(2024, 1, 17, 10, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "2198", "Gauteng", "Yeoville" },
-                    { 4, "15 Jan Shoba Street", null, "Pretoria", "South Africa", new DateTime(2024, 1, 18, 11, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "0028", "Gauteng", "Hatfield" },
-                    { 5, "247 Florida Road", null, "Durban", "South Africa", new DateTime(2024, 1, 19, 12, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "4001", "KwaZulu-Natal", "Morningside" },
-                    { 6, "88 Kerk Street", null, "Potchefstroom", "South Africa", new DateTime(2024, 1, 20, 13, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "2531", "North West", "Potchefstroom" },
-                    { 7, "22 Beatrix Street", null, "Bloemfontein", "South Africa", new DateTime(2024, 1, 21, 14, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "9301", "Free State", "Arcadia" },
-                    { 8, "45 Colinton Road", null, "Cape Town", "South Africa", new DateTime(2024, 1, 22, 15, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "7700", "Western Cape", "Newlands" },
-                    { 9, "1 Kerk Street", null, "Dullstroom", "South Africa", new DateTime(2024, 1, 23, 16, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "1110", "Mpumalanga", "Dullstroom" },
-                    { 10, "12 Schröder Street", null, "Kimberley", "South Africa", new DateTime(2024, 1, 24, 17, 0, 0, 0, DateTimeKind.Utc), "System", true, null, null, "8301", "Northern Cape", "Kimberley" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "AccountStatus", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "CustomerId", "DOB", "Email", "EmailConfirmed", "EmployeeId", "FailedLoginAttempts", "FirstName", "IsActive", "IsEmailVerified", "IsPhoneVerified", "LastLoginDate", "LastName", "LastPasswordChangeDate", "LocationId", "LockoutEnabled", "LockoutEnd", "LockoutEndDate", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePictureUrl", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UpdatedBy", "UserName" },
-                values: new object[,]
-                {
-                    { "1", 0, 1, "1b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", null, null, "admin@smartchill.com", true, 1, 0, "Collins", true, true, true, null, "Khosa", null, 6, true, null, null, "ADMIN@SMARTCHILL.COM", "ADMIN@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEC49uuNxXXoCcTXxkO9GmRv9Jz+E6cbTQoVBPoFcr9+L977JCzJDPRmOCW9SSW9jyw==", "+27645347790", true, null, "1b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", false, null, null, "admin@smartchill.com" },
-                    { "2", 0, 1, "2b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", null, null, "customersupport@smartchill.com", true, 2, 0, "Andries", true, true, true, null, "Tatane", null, 10, true, null, null, "CUSTOMERSUPPORT@SMARTCHILL.COM", "CUSTOMERSUPPORT@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEE3rLZWl1k1LKukpPaX8Z5s3h13n0PUijXvaKvB+Sq7f6d0liN5td44hMBNHZ25prA==", "+27710737734", true, null, "2b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", false, null, null, "customersupport@smartchill.com" },
-                    { "3", 0, 1, "3b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", null, null, "stockcontroller@smartchill.com", true, 3, 0, "Mido", true, true, true, null, "Macia", null, 2, true, null, null, "STOCKCONTROLLER@SMARTCHILL.COM", "STOCKCONTROLLER@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEBeWGdj2q05lprgHqV5DSKoJwTfu3m036UbwFznfQ72lkQ+boElmG9oha1DvPa4Fbg==", "+27662934430", true, null, "3b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", false, null, null, "stockcontroller@smartchill.com" },
-                    { "4", 0, 1, "4b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", null, null, "faulttechnician@smartchill.com", true, 4, 0, "Nathaniel", true, true, true, null, "Julies", null, 5, true, null, null, "FAULTTECHNICIAN@SMARTCHILL.COM", "FAULTTECHNICIAN@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEJvZgYSv/3PP+7+nSjByuXdCtO/usPVGop/QFwhtN963A3/FNg6bjO7iNPC2nq5ZHw==", "+27798946438", true, null, "4b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", false, null, null, "faulttechnician@smartchill.com" },
-                    { "5", 0, 1, "5b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", null, null, "maintenancetechnician@smartchill.com", true, 5, 0, "Latiefa", true, true, true, null, "Freeman", null, 5, true, null, null, "MAINTENANCETECHNICIAN@SMARTCHILL.COM", "MAINTENANCETECHNICIAN@SMARTCHILL.COM", "AQAAAAIAAYagAAAAEJi0G3lY69bFoqrnXds1xFBCid4BOJuNtuvoLSBtGZbJdHVGwrHiIbf89nrCdDgHaw==", "+27614836998", true, null, "5b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", false, null, null, "maintenancetechnician@smartchill.com" },
-                    { "6", 0, 1, "6b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", 1, null, "naterobertson@gmail.com", true, null, 0, "Nathan", true, true, true, null, "Robertson", null, 1, true, null, null, "NATEROBERTSON@GMAIL.COM", "NATEROBERTSON@GMAIL.COM", "AQAAAAIAAYagAAAAEFq/PoeA3ZcTwiVBo/XHzZlpVWhTaz11oX8IZRU9evqC6BaAswH68CrUCCpnr7/a9w==", "+27691745946", true, null, "6b4b0b6a-0a3a-4a2a-8a1a-5a5a5a5a5a5a", false, null, null, "naterobertson@gmail.com" }
+                    { 1, 60, "Paarl", "sophie@paarlspaza.co.za", "Sophie van der Merwe", "+27 21 865 1234", "South Africa", new DateTime(2024, 1, 15, 8, 0, 0, 0, DateTimeKind.Utc), "System", false, "PAARL-SPZ", 5, "Paarl Spaza Shop", "08:00 – 20:00", "7646", "Western Cape", "12 Voortrekker Road", "Paarl", null, null },
+                    { 2, 80, "East London", "sipho@bereaconvenience.co.za", "Sipho Mkhize", "+27 43 743 5567", "South Africa", new DateTime(2024, 1, 16, 9, 0, 0, 0, DateTimeKind.Utc), "System", false, "BEREA-CSV", 5, "Berea Convenience Store", "07:00 – 21:00", "5241", "Eastern Cape", "45 Mitchell Street", "Berea", null, null },
+                    { 3, 40, "Johannesburg", "thabo@yeovilleshebeen.co.za", "Thabo Khumalo", "+27 11 482 3344", "South Africa", new DateTime(2024, 1, 17, 10, 0, 0, 0, DateTimeKind.Utc), "System", false, "YEOV-SHB", 5, "Yeoville Shebeen", "10:00 – 23:00", "2198", "Gauteng", "88 Goble Road", "Yeoville", null, null },
+                    { 4, 200, "Pretoria", "cw@campusdepot.example.com", "Claire van Wyk", "+27 12 420 5000", "South Africa", new DateTime(2024, 1, 18, 11, 0, 0, 0, DateTimeKind.Utc), "System", false, "HATF-DEPOT", 0, "Hatfield Campus Depot", "08:00 – 17:00", "0028", "Gauteng", "15 Jan Shoba Street", "Hatfield", null, null },
+                    { 5, 300, "Durban", "lindiwe@distmorningside.co.za", "Lindiwe Dlamini", "+27 31 577 8900", "South Africa", new DateTime(2024, 1, 19, 12, 0, 0, 0, DateTimeKind.Utc), "System", false, "MORN-HUB", 0, "Morningside Distribution Hub", "07:00 – 18:00", "4001", "KwaZulu-Natal", "247 Florida Road", "Morningside", null, null },
+                    { 6, 250, "Potchefstroom", "jan@potchdepot.co.za", "Jan van der Merwe", "+27 18 299 4000", "South Africa", new DateTime(2024, 1, 20, 13, 0, 0, 0, DateTimeKind.Utc), "System", false, "POTCH-DEP", 0, "Potchefstroom Depot", "08:30 – 17:30", "2531", "North West", "88 Kerk Street", "Potchefstroom", null, null },
+                    { 7, 100, "Bloemfontein", "nokuthula@arcadiaservice.co.za", "Nokuthula Mokoena", "+27 51 432 2100", "South Africa", new DateTime(2024, 1, 21, 14, 0, 0, 0, DateTimeKind.Utc), "System", false, "ARCA-SVC", 2, "Arcadia Service Centre", "09:00 – 17:00", "9301", "Free State", "22 Beatrix Street", "Arcadia", null, null },
+                    { 8, 400, "Cape Town", "peter@newlandswhs.co.za", "Peter Adams", "+27 21 650 1234", "South Africa", new DateTime(2024, 1, 22, 15, 0, 0, 0, DateTimeKind.Utc), "System", false, "NEWL-WHS", 0, "Newlands Central Warehouse", "08:00 – 18:00", "7700", "Western Cape", "45 Colinton Road", "Newlands", null, null },
+                    { 9, 45, "Dullstroom", "mpho@dullstroomspaza.co.za", "Mpho Khumalo", "+27 13 253 4021", "South Africa", new DateTime(2024, 1, 23, 16, 0, 0, 0, DateTimeKind.Utc), "System", false, "DULL-SPZ", 5, "Dullstroom Spaza Shop", "08:00 – 19:00", "1110", "Mpumalanga", "1 Kerk Street", "Dullstroom", null, null },
+                    { 10, 150, "Kimberley", "cheryl.schroeder@mandela.ac.za", "Cheryl Schröder", "+27 53 831 9000", "South Africa", new DateTime(2024, 1, 24, 17, 0, 0, 0, DateTimeKind.Utc), "System", false, "KIMB-SUP", 6, "Kimberley Supplier Yard", "07:30 – 16:30", "8301", "Northern Cape", "12 Schröder Street", "Kimberley", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -982,30 +917,30 @@ namespace Project.Migrations
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[,]
                 {
-                    { "admin_role_id", "1" },
-                    { "customer_support_role_id", "2" },
-                    { "stock_controller_role_id", "3" },
-                    { "fault_technician_role_id", "4" },
-                    { "maintenance_technician_role_id", "5" },
-                    { "customer_role_id", "6" }
+                    { "customer_role_id", "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d" },
+                    { "customer_support_role_id", "b5a771e9-2f8b-437a-9d0e-7f8b901cde12" },
+                    { "stock_controller_role_id", "c6d882fa-47b9-448b-a9e0-8f9b012d3e45" },
+                    { "fault_technician_role_id", "d7e9930b-58c0-459c-ba1f-9a0a123b4c56" },
+                    { "admin_role_id", "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1" },
+                    { "maintenance_technician_role_id", "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Employees",
-                columns: new[] { "Id", "AvailabilityStatus", "CreatedAt", "CreatedBy", "EmployeeNumber", "EmployeeType", "EmploymentType", "IsActive", "UpdatedAt", "UpdatedBy", "UserId", "WorkEmail", "WorkLocationId", "WorkPhone" },
+                columns: new[] { "Id", "AvailabilityStatus", "EmployeeNumber", "EmployeeType", "IsDeleted", "UserId", "WorkEmail", "WorkLocationId", "WorkPhone" },
                 values: new object[,]
                 {
-                    { 1, 0, new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "EMP00001", "Administrator", 0, true, null, "", "1", "admin@smartchill.com", 6, "+27645347790" },
-                    { 2, 0, new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "EMP00002", "CustomerSupport", 0, true, null, "", "2", "customersupport@smartchill.com", 10, "+27710737734" },
-                    { 3, 0, new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "EMP00003", "StockController", 0, true, null, "", "3", "stockcontroller@smartchill.com", 2, "+27662934430" },
-                    { 4, 0, new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "EMP00004", "FaultTechnician", 0, true, null, "", "4", "faulttechnician@smartchill.com", 5, "+27798946438" },
-                    { 5, 0, new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "EMP00005", "MaintenanceTechnician", 0, true, null, "", "5", "maintenancetechnician@smartchill.com", 5, "+27614836998" }
+                    { 1, 0, "EMP00001", 0, false, "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1", "admin@smartchill.com", 6, "+27645347790" },
+                    { 2, 0, "EMP00002", 1, false, "b5a771e9-2f8b-437a-9d0e-7f8b901cde12", "customersupport@smartchill.com", 10, "+27710737734" },
+                    { 3, 0, "EMP00003", 2, false, "c6d882fa-47b9-448b-a9e0-8f9b012d3e45", "stockcontroller@smartchill.com", 2, "+27662934430" },
+                    { 4, 0, "EMP00004", 3, false, "d7e9930b-58c0-459c-ba1f-9a0a123b4c56", "faulttechnician@smartchill.com", 5, "+27798946438" },
+                    { 5, 0, "EMP00005", 4, false, "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e", "maintenancetechnician@smartchill.com", 5, "+27614836998" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Customers",
-                columns: new[] { "Id", "AddressLine1", "AddressLine2", "AlternativePhone", "AssignedEmployeeId", "BusinessEmail", "BusinessPhoneNumber", "BusinessType", "City", "CreatedAt", "CreatedBy", "CreditLimit", "CreditStatus", "CurrentBalance", "CustomerSince", "DiscountRate", "IsActive", "LocationId", "OperatingHours", "PaymentTermsDays", "PostalCode", "Province", "RegistrationNumber", "Suburb", "TradingName", "UpdatedAt", "UpdatedBy", "UserId", "VATNumber" },
-                values: new object[] { 1, "12 Voortrekker Road", null, "+27836549871", 2, "orders@boereworspalace.co.za", "+27218765432", 1, "Paarl", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", 50000.00m, 0, 1250.50m, new DateTime(2023, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 5.00m, true, 1, "Mon-Fri: 7:00-18:00, Sat: 7:00-14:00, Sun: Closed", 30, "7646", "Western Cape", "2024/123456/07", "Paarl", "Boerewors Palace", new DateTime(2025, 2, 14, 0, 0, 0, 0, DateTimeKind.Utc), "System", "6", "4871253690" });
+                columns: new[] { "Id", "AccountStatus", "AlternativePhone", "AssignedEmployeeId", "BusinessDocumentPath", "BusinessEmail", "BusinessName", "BusinessPhoneNumber", "BusinessType", "City", "CreditLimit", "CreditStatus", "CustomerSince", "DeclinedAt", "DiscountRate", "IsDeleted", "LocationId", "OperatingHours", "OutstandingBalance", "PaymentTermsDays", "PostalCode", "Province", "RegistrationNumber", "RejectionReason", "StreetAddress", "Suburb", "TradingLocationId", "UserId", "VATNumber" },
+                values: new object[] { 1, 1, "+27836549871", 2, null, "orders@boereworspalace.co.za", "Boerewors Palace", "+27218765432", 1, "Paarl", 50000.00m, 1, new DateTime(2023, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 5.00m, false, null, "Mon-Fri: 7:00-18:00, Sat: 7:00-14:00, Sun: Closed", 1250.50m, 30, "7646", "Western Cape", "2024/123456/07", null, "12 Voortrekker Road", "Paarl", 1, "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d", "4871253690" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AllocationRequestDetails_AllocationRequestHeaderId",
@@ -1026,6 +961,21 @@ namespace Project.Migrations
                 name: "IX_AllocationRequestHeaders_DeliveryLocationId",
                 table: "AllocationRequestHeaders",
                 column: "DeliveryLocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AllocationRequestHeaders_RelatedFaultRecordId",
+                table: "AllocationRequestHeaders",
+                column: "RelatedFaultRecordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AllocationRequestHeaders_ReplacingAllocationId",
+                table: "AllocationRequestHeaders",
+                column: "ReplacingAllocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AllocationRequestHeaders_ReplacingFridgeId",
+                table: "AllocationRequestHeaders",
+                column: "ReplacingFridgeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -1060,11 +1010,6 @@ namespace Project.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_LocationId",
-                table: "AspNetUsers",
-                column: "LocationId");
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -1082,11 +1027,15 @@ namespace Project.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customers_TradingLocationId",
+                table: "Customers",
+                column: "TradingLocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Customers_UserId",
                 table: "Customers",
                 column: "UserId",
-                unique: true,
-                filter: "[UserId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_UserId",
@@ -1130,6 +1079,11 @@ namespace Project.Migrations
                 column: "FridgeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FaultRecords_ReplacementRequestId",
+                table: "FaultRecords",
+                column: "ReplacementRequestId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FaultRecords_ReportedById",
                 table: "FaultRecords",
                 column: "ReportedById");
@@ -1163,6 +1117,16 @@ namespace Project.Migrations
                 name: "IX_FridgeAllocations_ProcessedByEmployeeId",
                 table: "FridgeAllocations",
                 column: "ProcessedByEmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FridgeAllocations_ReplacedAllocationId",
+                table: "FridgeAllocations",
+                column: "ReplacedAllocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FridgeAllocations_ReplacementRequestHeaderId",
+                table: "FridgeAllocations",
+                column: "ReplacementRequestHeaderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fridges_CustomerId",
@@ -1205,6 +1169,11 @@ namespace Project.Migrations
                 column: "AllocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MaintenanceVisits_AssignedTechnicianId",
+                table: "MaintenanceVisits",
+                column: "AssignedTechnicianId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceVisits_CustomerId",
                 table: "MaintenanceVisits",
                 column: "CustomerId");
@@ -1218,11 +1187,6 @@ namespace Project.Migrations
                 name: "IX_MaintenanceVisits_LocationId",
                 table: "MaintenanceVisits",
                 column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MaintenanceVisits_TechnicianId",
-                table: "MaintenanceVisits",
-                column: "TechnicianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchaseRequestItems_FridgeModelId",
@@ -1244,40 +1208,44 @@ namespace Project.Migrations
                 table: "PurchaseRequests",
                 column: "RequestedById");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ReplacementRequests_AssignedEmployeeId",
-                table: "ReplacementRequests",
-                column: "AssignedEmployeeId");
+            migrationBuilder.AddForeignKey(
+                name: "FK_AllocationRequestDetails_AllocationRequestHeaders_AllocationRequestHeaderId",
+                table: "AllocationRequestDetails",
+                column: "AllocationRequestHeaderId",
+                principalTable: "AllocationRequestHeaders",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ReplacementRequests_CustomerId",
-                table: "ReplacementRequests",
-                column: "CustomerId");
+            migrationBuilder.AddForeignKey(
+                name: "FK_AllocationRequestHeaders_FaultRecords_RelatedFaultRecordId",
+                table: "AllocationRequestHeaders",
+                column: "RelatedFaultRecordId",
+                principalTable: "FaultRecords",
+                principalColumn: "Id");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ReplacementRequests_FaultRecordId",
-                table: "ReplacementRequests",
-                column: "FaultRecordId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReplacementRequests_FridgeAllocationId",
-                table: "ReplacementRequests",
-                column: "FridgeAllocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReplacementRequests_MaintenanceRecordId",
-                table: "ReplacementRequests",
-                column: "MaintenanceRecordId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReplacementRequests_ReplacementFridgeId",
-                table: "ReplacementRequests",
-                column: "ReplacementFridgeId");
+            migrationBuilder.AddForeignKey(
+                name: "FK_AllocationRequestHeaders_FridgeAllocations_ReplacingAllocationId",
+                table: "AllocationRequestHeaders",
+                column: "ReplacingAllocationId",
+                principalTable: "FridgeAllocations",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_FaultRecords_AllocationRequestHeaders_ReplacementRequestId",
+                table: "FaultRecords");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_FridgeAllocations_AllocationRequestHeaders_AllocationRequestHeaderId",
+                table: "FridgeAllocations");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_FridgeAllocations_AllocationRequestHeaders_ReplacementRequestHeaderId",
+                table: "FridgeAllocations");
+
             migrationBuilder.DropTable(
                 name: "AllocationRequestDetails");
 
@@ -1300,31 +1268,28 @@ namespace Project.Migrations
                 name: "FaultRecordMaintenanceVisit");
 
             migrationBuilder.DropTable(
-                name: "PurchaseRequestItems");
+                name: "MaintenanceRecords");
 
             migrationBuilder.DropTable(
-                name: "ReplacementRequests");
+                name: "PurchaseRequestItems");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "MaintenanceVisits");
+
+            migrationBuilder.DropTable(
                 name: "PurchaseRequests");
+
+            migrationBuilder.DropTable(
+                name: "AllocationRequestHeaders");
 
             migrationBuilder.DropTable(
                 name: "FaultRecords");
 
             migrationBuilder.DropTable(
-                name: "MaintenanceRecords");
-
-            migrationBuilder.DropTable(
-                name: "MaintenanceVisits");
-
-            migrationBuilder.DropTable(
                 name: "FridgeAllocations");
-
-            migrationBuilder.DropTable(
-                name: "AllocationRequestHeaders");
 
             migrationBuilder.DropTable(
                 name: "Fridges");

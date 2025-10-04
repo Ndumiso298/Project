@@ -19,7 +19,7 @@
                         <div>
                             <div class="fw-bold">@record.Fridge?.SerialNumber</div>
                             <small class="text-muted">
-                                @(record.ServiceDate?.ToString("dd/MM/yyyy") ?? "-") - @record.ServiceType
+                                @(record.ServiceDate?.ToString("dd/MM/yyyy") ?? "-")
                             </small>
                         </div>
                         <a asp-controller="MaintenanceRecords" asp-action="Details" asp-route-id="@record.Id"

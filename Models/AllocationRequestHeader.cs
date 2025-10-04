@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Project.Utilities.Enums;
 using Project.Helpers;
+using Project.Data;
 
 namespace Project.Models
 {
@@ -13,18 +14,17 @@ namespace Project.Models
         {
             RequestDate = DateTime.UtcNow;
             Status = AllocationRequestStatus.Draft;
+            Priority = CustomerRequestPriority.Medium; // Default priority
             RequestDetails = new List<AllocationRequestDetail>();
             Allocations = new List<FridgeAllocation>();
             CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
-            RequestNumber = GenerateRequestNumber();
+            ReplacementAllocations = new List<FridgeAllocation>(); // Track what gets replaced
         }
 
         [Key]
-        [Display(Name = "Request ID")]
         public int Id { get; set; }
 
-        // Request Information
+        // ===== REQUEST INFORMATION =====
         [Required]
         [StringLength(20)]
         [Display(Name = "Request Number")]
@@ -32,32 +32,60 @@ namespace Project.Models
 
         [Required(ErrorMessage = "Request date is required.")]
         [DataType(DataType.DateTime)]
-        [Display(Name = "Request Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Request Date")]
         public DateTime RequestDate { get; set; }
 
         [Required(ErrorMessage = "Request type is required.")]
         [Display(Name = "Request Type")]
         public CustomerRequestType RequestType { get; set; } = CustomerRequestType.NewAllocation;
 
-        [Required(ErrorMessage = "Priority is required.")]
-        [Display(Name = "Priority")]
-        public CustomerRequestPriority Priority { get; set; } = CustomerRequestPriority.Medium;
-
         [Required(ErrorMessage = "Status is required.")]
-        [Display(Name = "Status")]
+        [Display(Name = "Request Status")]
         public AllocationRequestStatus Status { get; set; }
 
-        // Customer Information
+        // ===== PRIORITY FIELD (MISSING) =====
+        [Required(ErrorMessage = "Priority is required.")]
+        [Display(Name = "Priority")]
+        public CustomerRequestPriority Priority { get; set; }
+
+        // ===== REPLACEMENT-SPECIFIC FIELDS =====
+        [Display(Name = "Replacing Allocation")]
+        public int? ReplacingAllocationId { get; set; }
+
+        [ForeignKey(nameof(ReplacingAllocationId))]
+        [ValidateNever]
+        public virtual FridgeAllocation? ReplacingAllocation { get; set; }
+
+        [Display(Name = "Replacing Fridge")]
+        public int? ReplacingFridgeId { get; set; }
+
+        [ForeignKey(nameof(ReplacingFridgeId))]
+        [ValidateNever]
+        public virtual Fridge? ReplacingFridge { get; set; }
+
+        [Display(Name = "Related Fault")]
+        public int? RelatedFaultRecordId { get; set; }
+
+        [ForeignKey(nameof(RelatedFaultRecordId))]
+        [ValidateNever]
+        public virtual FaultRecord? RelatedFaultRecord { get; set; }
+
+        [Display(Name = "Is Urgent Replacement")]
+        public bool IsUrgentReplacement { get; set; }
+
+        [StringLength(1000, ErrorMessage = "Replacement reason cannot exceed 1000 characters.")]
+        [Display(Name = "Replacement Reason")]
+        public string? ReplacementReason { get; set; }
+
+        // ===== CUSTOMER INFORMATION =====
         [Required(ErrorMessage = "Customer is required.")]
-        [Display(Name = "Customer")]
         public int CustomerId { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
         [ValidateNever]
         public virtual Customer Customer { get; set; } = null!;
 
-        // Contact Information (Added missing ContactPerson field for consistency with VM)
         [Required(ErrorMessage = "Contact person is required.")]
         [StringLength(100, ErrorMessage = "Contact person cannot exceed 100 characters.")]
         [Display(Name = "Contact Person")]
@@ -66,7 +94,7 @@ namespace Project.Models
         [Required(ErrorMessage = "Contact phone number is required.")]
         [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters.")]
         [Phone]
-        [Display(Name = "Contact Phone Number")]
+        [Display(Name = "Contact Phone")]
         public string ContactPhoneNumber { get; set; } = string.Empty;
 
         [EmailAddress]
@@ -74,70 +102,94 @@ namespace Project.Models
         [Display(Name = "Contact Email")]
         public string? ContactEmail { get; set; }
 
-        // Delivery Information
-        [Required(ErrorMessage = "Delivery location is required.")]
-        [Display(Name = "Delivery Location")]
-        public int DeliveryLocationId { get; set; }
+        // ===== DELIVERY INFORMATION =====
+        //[Required(ErrorMessage = "Delivery location is required.")]
+        public int? DeliveryLocationId { get; set; }
 
         [ForeignKey(nameof(DeliveryLocationId))]
         [ValidateNever]
-        public virtual Location DeliveryLocation { get; set; } = null!;
+        public virtual Location? DeliveryLocation { get; set; } = null!;
 
         [StringLength(500, ErrorMessage = "Delivery instructions cannot exceed 500 characters.")]
         [Display(Name = "Delivery Instructions")]
         public string? DeliveryInstructions { get; set; }
 
-        [Display(Name = "Preferred Delivery Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [DateGreaterThan("RequestDate", ErrorMessage = "Preferred delivery date must be after request date.")]
+        [Display(Name = "Preferred Delivery Date")]
         public DateTime? PreferredDeliveryDate { get; set; }
 
-        // Pricing and Discount
-        [Display(Name = "Discount Percentage")]
+        // ===== PRICING AND DISCOUNT =====
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100 percent.")]
+        [Display(Name = "Discount Percentage")]
         public decimal DiscountPercentage { get; set; }
 
-        [Display(Name = "Special Notes")]
         [StringLength(1000, ErrorMessage = "Special notes cannot exceed 1000 characters.")]
+        [Display(Name = "Special Notes")]
         public string? SpecialNotes { get; set; }
 
-        // Navigation Properties
+        // ===== NAVIGATION PROPERTIES =====
         [ValidateNever]
         [Display(Name = "Request Details")]
         public virtual ICollection<AllocationRequestDetail> RequestDetails { get; set; }
 
         [ValidateNever]
-        [Display(Name = "Fridge Allocations")]
+        [InverseProperty(nameof(FridgeAllocation.RequestHeader))]
         public virtual ICollection<FridgeAllocation> Allocations { get; set; }
+          = new List<FridgeAllocation>();
 
-        // Audit Fields
-        [Display(Name = "Created Date")]
-        public DateTime CreatedAt { get; set; }
 
-        [Display(Name = "Updated Date")]
-        public DateTime? UpdatedAt { get; set; }
+        // ===== REPLACEMENT TRACKING =====
+        [ValidateNever]
+        [InverseProperty(nameof(FridgeAllocation.ReplacementRequestHeader))]
+        public virtual ICollection<FridgeAllocation> ReplacementAllocations { get; set; }
+    = new List<FridgeAllocation>();
 
-        [StringLength(450)]
-        [Display(Name = "Created By")]
-        public string? CreatedBy { get; set; }
-
-        [StringLength(450)]
-        [Display(Name = "Updated By")]
-        public string? UpdatedBy { get; set; }
-
-        // Approval Information
+        // ===== APPROVAL INFORMATION =====
         [Display(Name = "Approved By")]
         public string? ApprovedBy { get; set; }
 
         [Display(Name = "Approval Date")]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? ApprovalDate { get; set; }
 
         [StringLength(1000, ErrorMessage = "Approval notes cannot exceed 1000 characters.")]
         [Display(Name = "Approval Notes")]
         public string? ApprovalNotes { get; set; }
 
-        // Computed Properties
+        // ===== AUDIT FIELDS =====
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Created At")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Display(Name = "Created By")]
+        public string? CreatedBy { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Updated At")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Display(Name = "Updated By")]
+        public string? UpdatedBy { get; set; }
+
+        // ===== COMPUTED PROPERTIES =====
+        [NotMapped]
+        [Display(Name = "Is Replacement Request")]
+        public bool IsReplacementRequest => RequestType == CustomerRequestType.Replacement;
+
+        [NotMapped]
+        [Display(Name = "Is New Allocation")]
+        public bool IsNewAllocation => RequestType == CustomerRequestType.NewAllocation;
+
+        [NotMapped]
+        [Display(Name = "Is Additional Units")]
+        public bool IsAdditionalUnits => RequestType == CustomerRequestType.AdditionalUnits;
+
+        [NotMapped]
+        [Display(Name = "Has Existing Fault")]
+        public bool HasExistingFault => RelatedFaultRecordId.HasValue;
+
         [NotMapped]
         [Display(Name = "Total Monthly Rental")]
         [DataType(DataType.Currency)]
@@ -175,34 +227,29 @@ namespace Project.Models
 
         [NotMapped]
         [Display(Name = "Display Name")]
-        public string DisplayName => $"Request #{Id:00000} - {Customer?.TradingName ?? "Unknown Customer"}";
+        public string DisplayName => $"Request #{RequestNumber} - {Customer?.BusinessName ?? "Unknown Customer"}";
 
-        // Business Logic Methods
-        private static string GenerateRequestNumber()
-        {
-            return $"REQ-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper()}";
-        }
+        [NotMapped]
+        [Display(Name = "Request Summary")]
+        public string RequestSummary =>
+            $"{Customer?.BusinessName} - {TotalQuantity} fridges - {Status}";
 
-        // Soft delete implementation
-        [Display(Name = "Is Deleted")]
-        public bool IsDeleted { get; set; }
-
-        [Display(Name = "Deleted Date")]
-        public DateTime? DeletedAt { get; set; }
-
-        [StringLength(450)]
-        [Display(Name = "Deleted By")]
-        public string? DeletedBy { get; set; }
-
-
+        // ===== ENHANCED BUSINESS LOGIC METHODS =====
         public bool CanTransitionTo(AllocationRequestStatus newStatus)
         {
             return Status switch
             {
                 AllocationRequestStatus.Draft => newStatus == AllocationRequestStatus.Submitted,
-                AllocationRequestStatus.Submitted => newStatus == AllocationRequestStatus.UnderReview || newStatus == AllocationRequestStatus.Rejected,
-                AllocationRequestStatus.UnderReview => newStatus == AllocationRequestStatus.Approved || newStatus == AllocationRequestStatus.Rejected,
-                AllocationRequestStatus.Approved => newStatus == AllocationRequestStatus.Approved || newStatus == AllocationRequestStatus.Cancelled,
+                AllocationRequestStatus.Submitted => newStatus == AllocationRequestStatus.UnderReview ||
+                                                   newStatus == AllocationRequestStatus.AdditionalInfoRequired,
+                AllocationRequestStatus.UnderReview => newStatus == AllocationRequestStatus.Approved ||
+                                                      newStatus == AllocationRequestStatus.Rejected ||
+                                                      newStatus == AllocationRequestStatus.AdditionalInfoRequired,
+                AllocationRequestStatus.AdditionalInfoRequired => newStatus == AllocationRequestStatus.UnderReview,
+                AllocationRequestStatus.Approved => newStatus == AllocationRequestStatus.InProgress ||
+                                                   newStatus == AllocationRequestStatus.Completed ||
+                                                   newStatus == AllocationRequestStatus.Cancelled,
+                AllocationRequestStatus.InProgress => newStatus == AllocationRequestStatus.Completed,
                 _ => false
             };
         }
@@ -224,6 +271,58 @@ namespace Project.Models
             }
         }
 
+        public bool CanBeProcessedAsReplacement()
+        {
+            return IsReplacementRequest &&
+                   ReplacingFridgeId.HasValue &&
+                   ReplacingFridge?.Status == FridgeStatus.Faulty;
+        }
+
+        public void MarkAsReplacementFor(FridgeAllocation existingAllocation, FaultRecord faultRecord, string reason)
+        {
+            RequestType = CustomerRequestType.Replacement;
+            ReplacingAllocationId = existingAllocation.Id;
+            ReplacingFridgeId = existingAllocation.FridgeId;
+            RelatedFaultRecordId = faultRecord.Id;
+            ReplacementReason = reason;
+            Priority = CustomerRequestPriority.High; // Replacements are typically higher priority
+            IsUrgentReplacement = faultRecord.Priority == FaultPriority.Critical;
+        }
+
+        // New method for creating replacement from fault
+        public static AllocationRequestHeader CreateReplacementRequest(FridgeAllocation allocationToReplace,
+            FaultRecord faultRecord, string reason, string createdBy)
+        {
+            var request = new AllocationRequestHeader
+            {
+                RequestType = CustomerRequestType.Replacement,
+                CustomerId = allocationToReplace.CustomerId,
+                ContactPerson = allocationToReplace.Customer.ContactPerson,
+                ContactPhoneNumber = allocationToReplace.Customer.BusinessPhoneNumber,
+                ContactEmail = allocationToReplace.Customer.BusinessEmail,
+                DeliveryLocationId = allocationToReplace.DeliveryLocationId ?? allocationToReplace.Customer.TradingLocationId,
+                Priority = CustomerRequestPriority.High,
+                Status = AllocationRequestStatus.Draft,
+                ReplacementReason = reason,
+                ReplacingAllocationId = allocationToReplace.Id,
+                ReplacingFridgeId = allocationToReplace.FridgeId,
+                RelatedFaultRecordId = faultRecord.Id,
+                IsUrgentReplacement = faultRecord.Priority == FaultPriority.Critical,
+                CreatedBy = createdBy
+            };
+
+            // Auto-add the replacement fridge detail
+            request.RequestDetails.Add(new AllocationRequestDetail
+            {
+                FridgeModelId = allocationToReplace.Fridge.FridgeModelId,
+                Quantity = 1,
+                RentalDurationMonths = 12, // Default duration
+                UnitPrice = allocationToReplace.Fridge.FridgeModel.MonthlyRentalPrice
+            });
+
+            return request;
+        }
+
         public (bool isValid, List<string> errors) ValidateForSubmission()
         {
             var errors = new List<string>();
@@ -243,13 +342,21 @@ namespace Project.Models
             if (!RequestDetails.Any())
                 errors.Add("At least one fridge item is required");
 
-            // Business rule: Maximum total quantity
-            if (TotalQuantity > 100)
-                errors.Add("Total quantity cannot exceed 100 units per request");
+            // Replacement-specific validation
+            if (IsReplacementRequest)
+            {
+                if (!ReplacingAllocationId.HasValue)
+                    errors.Add("Replacement requests must specify which allocation is being replaced");
 
-            // Business rule: Maximum contract value
-            if (TotalContractValue > 100000)
-                errors.Add("Total contract value cannot exceed R100,000");
+                if (string.IsNullOrWhiteSpace(ReplacementReason))
+                    errors.Add("Replacement reason is required for replacement requests");
+            }
+
+            if (TotalQuantity > 50)
+                errors.Add("Total quantity cannot exceed 50 units per request");
+
+            if (TotalContractValue > 50000)
+                errors.Add("Total contract value cannot exceed R50,000");
 
             return (!errors.Any(), errors);
         }
@@ -259,16 +366,93 @@ namespace Project.Models
             return RequestDetails.All(detail =>
             {
                 var availableStock = GetAvailableStockForModel(detail.FridgeModelId);
-                return detail.IsQuantityAvailable(availableStock);
+                return detail.Quantity <= availableStock;
             });
         }
 
         public int GetAvailableStockForModel(int fridgeModelId)
         {
-            // This would typically call a service to get current stock levels
-            // For now, returning a placeholder - would be implemented with proper inventory service
-            return 10; // Placeholder
+            // This would query your fridge inventory
+            // Placeholder implementation
+            return _dbContext?.Fridges?.Count(f =>
+                f.FridgeModelId == fridgeModelId &&
+                f.Status == FridgeStatus.Available) ?? 10;
         }
 
+        public void GenerateRequestNumber()
+        {
+            if (string.IsNullOrEmpty(RequestNumber))
+            {
+                var prefix = RequestType switch
+                {
+                    CustomerRequestType.Replacement => "REP",
+                    CustomerRequestType.AdditionalUnits => "ADD",
+                    _ => "REQ"
+                };
+                RequestNumber = $"{prefix}-{DateTime.UtcNow:yyyyMMdd}-{Id:00000}";
+            }
+        }
+
+        // Method to process the request and create allocations
+        public List<FridgeAllocation> ProcessApprovedRequest(int processedByEmployeeId, string processedBy)
+        {
+            var newAllocations = new List<FridgeAllocation>();
+
+            if (Status != AllocationRequestStatus.Approved)
+                return newAllocations;
+
+            foreach (var detail in RequestDetails)
+            {
+                for (int i = 0; i < detail.Quantity; i++)
+                {
+                    var allocation = new FridgeAllocation
+                    {
+                        FridgeId = GetAvailableFridgeId(detail.FridgeModelId), // You need to implement this
+                        CustomerId = CustomerId,
+                        AllocatedByEmployeeId = processedByEmployeeId,
+                        DeliveryLocationId = DeliveryLocationId,
+                        AllocationStatus = AllocationStatus.Active,
+                        AllocationDate = DateTime.UtcNow,
+                        MonthlyRentalPrice = detail.UnitPrice,
+                        AllocationRequestHeaderId = Id,
+                        CreatedBy = processedBy
+                    };
+
+                    newAllocations.Add(allocation);
+                    Allocations.Add(allocation);
+                }
+            }
+
+            // If this is a replacement, deactivate the old allocation
+            if (IsReplacementRequest && ReplacingAllocationId.HasValue)
+            {
+                var oldAllocation = _dbContext?.FridgeAllocations
+                    .FirstOrDefault(a => a.Id == ReplacingAllocationId.Value);
+
+                if (oldAllocation != null)
+                {
+                    oldAllocation.UpdateStatus(AllocationStatus.Completed, processedBy,
+                        $"Replaced by allocation request #{RequestNumber}");
+                    ReplacementAllocations.Add(oldAllocation);
+                }
+            }
+
+            UpdateStatus(AllocationRequestStatus.InProgress, processedBy);
+            return newAllocations;
+        }
+
+        private int GetAvailableFridgeId(int fridgeModelId)
+        {
+            // Implement logic to find available fridge of specified model
+            // This is a placeholder
+            var availableFridge = _dbContext?.Fridges
+                .FirstOrDefault(f => f.FridgeModelId == fridgeModelId && f.Status == FridgeStatus.Available);
+            return availableFridge?.Id ?? 0;
+        }
+
+        // This would be set from your DbContext
+        [NotMapped]
+        private ApplicationDbContext? _dbContext { get; set; }
+        public void SetDbContext(ApplicationDbContext dbContext) => _dbContext = dbContext;
     }
 }

@@ -43,21 +43,21 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="LocationId" class="form-label"></label> *
-                            <select asp-for="LocationId" asp-items="Model.LocationList" class="form-select">
+                            <label asp-for="TradingLocationId" class="form-label"></label> *
+                            <select asp-for="TradingLocationId" asp-items="Model.LocationList" class="form-select">
                                 <option value="">-- Select Location --</option>
                             </select>
-                            <span asp-validation-for="LocationId" class="text-danger"></span>
+                            <span asp-validation-for="TradingLocationId" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label asp-for="TechnicianId" class="form-label"></label>
-                            <select asp-for="TechnicianId" asp-items="Model.TechnicianList" class="form-select">
+                            <label asp-for="AssignedTechnicianId" class="form-label"></label>
+                            <select asp-for="AssignedTechnicianId" asp-items="Model.TechnicianList" class="form-select">
                                 <option value="">-- Select Technician --</option>
                             </select>
-                            <span asp-validation-for="TechnicianId" class="text-danger"></span>
+                            <span asp-validation-for="AssignedTechnicianId" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
@@ -67,13 +67,6 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="VisitType" class="form-label"></label> *
-                                    <select asp-for="VisitType" asp-items="Model.VisitTypeList" class="form-select"></select>
-                                    <span asp-validation-for="VisitType" class="text-danger"></span>
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label asp-for="Status" class="form-label"></label> *
@@ -110,30 +103,8 @@
                                 <i class="fas fa-tools me-2"></i>Service Details
                             </h5>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label asp-for="ActualStartTime" class="form-label"></label>
-                                        <input asp-for="ActualStartTime" type="datetime-local" class="form-control" />
-                                        <span asp-validation-for="ActualStartTime" class="text-danger"></span>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label asp-for="ActualEndTime" class="form-label"></label>
-                                        <input asp-for="ActualEndTime" type="datetime-local" class="form-control" />
-                                        <span asp-validation-for="ActualEndTime" class="text-danger"></span>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label asp-for="ServiceCost" class="form-label"></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">R</span>
-                                            <input asp-for="ServiceCost" class="form-control" />
-                                        </div>
-                                        <span asp-validation-for="ServiceCost" class="text-danger"></span>
-                                    </div>
-                                </div>
+                           <div class="card-body">
+                            @*<div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label asp-for="ConditionRating" class="form-label"></label>
@@ -157,7 +128,7 @@
                                         <span asp-validation-for="TemperatureReading" class="text-danger"></span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> *@
 
                             <!-- Additional Details -->
                             <div class="row">
@@ -167,17 +138,6 @@
                                         <textarea asp-for="TechnicianNotes" class="form-control" rows="3" 
                                                   placeholder="Technician observations and notes"></textarea>
                                         <span asp-validation-for="TechnicianNotes" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label asp-for="PartsReplaced" class="form-label"></label>
-                                        <textarea asp-for="PartsReplaced" class="form-control" rows="2" 
-                                                  placeholder="List of parts replaced (one per line)"></textarea>
-                                        <span asp-validation-for="PartsReplaced" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>

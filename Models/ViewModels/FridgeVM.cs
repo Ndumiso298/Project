@@ -9,6 +9,7 @@ namespace Project.Models.ViewModels
     {
         public int Id { get; set; }
 
+        // ===== IDENTIFICATION & BASIC INFO =====
         [Required(ErrorMessage = "Serial number is required.")]
         [StringLength(100, ErrorMessage = "Serial number cannot exceed 100 characters.")]
         [Display(Name = "Serial Number")]
@@ -20,10 +21,14 @@ namespace Project.Models.ViewModels
         public int FridgeModelId { get; set; }
         public IEnumerable<SelectListItem>? FridgeModelList { get; set; }
 
-        [Required(ErrorMessage = "Current location is required.")]
+        // ===== LOCATION & STATUS =====
         [Display(Name = "Current Location")]
-        public int LocationId { get; set; }
+        public int? LocationId { get; set; }
         public IEnumerable<SelectListItem>? LocationList { get; set; }
+
+        [Display(Name = "Current Customer")]
+        public int? CustomerId { get; set; }
+        public IEnumerable<SelectListItem>? CustomerList { get; set; }
 
         [Required(ErrorMessage = "Condition is required.")]
         [Display(Name = "Condition")]
@@ -31,70 +36,83 @@ namespace Project.Models.ViewModels
         public IEnumerable<SelectListItem>? ConditionList { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
-        [Display(Name = "Availability Status")]
+        [Display(Name = "Status")]
         public FridgeStatus Status { get; set; }
         public IEnumerable<SelectListItem>? StatusList { get; set; }
 
+        // ===== PURCHASE & WARRANTY INFORMATION =====
         [Display(Name = "Purchase Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PurchaseDate { get; set; }
 
-        [Display(Name = "Purchase Price (R)")]
-        [Range(0, 50000, ErrorMessage = "Purchase price must be between R0 and R50,000.")]
-        [DataType(DataType.Currency)]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? PurchasePrice { get; set; }
-
         [Display(Name = "Supplier")]
         [StringLength(100, ErrorMessage = "Supplier name cannot exceed 100 characters.")]
         public string? Supplier { get; set; }
-        public IEnumerable<SelectListItem>? SupplierList { get; set; }
 
-        [Display(Name = "Warranty Expiry Date")]
+        [Display(Name = "Purchase Price")]
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "decimal(18,2)")]
+        [Range(0, 100000, ErrorMessage = "Purchase price must be between 0 and 100,000.")]
+        public decimal? PurchasePrice { get; set; }
+
+        [Display(Name = "Warranty Expiry")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? WarrantyExpiryDate { get; set; }
 
+        // ===== MAINTENANCE INFORMATION =====
+        [Display(Name = "Last Service Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [Display(Name = "Last Service Date")]
         public DateTime? LastServiceDate { get; set; }
 
+        [Display(Name = "Next Service Due")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [Display(Name = "Next Service Due")]
         public DateTime? NextServiceDue { get; set; }
 
         [Display(Name = "Total Service Count")]
+        [Range(0, 1000, ErrorMessage = "Service count must be between 0 and 1000.")]
         public int TotalServiceCount { get; set; } = 0;
 
-        // Audit
-        [Display(Name = "Active")]
-        public bool IsActive { get; set; } = true;
+        [Display(Name = "Last Fault Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? LastFaultDate { get; set; }
 
-        // Navigation Properties for Display
+        // ===== NAVIGATION PROPERTIES FOR DISPLAY =====
         [Display(Name = "Fridge Model")]
         public FridgeModelVM? FridgeModelDetails { get; set; }
 
         [Display(Name = "Location")]
         public LocationVM? LocationDetails { get; set; }
 
-        // Computed Properties (Read-only for display)
+        [Display(Name = "Customer")]
+        public UserManagementVM? CustomerDetails { get; set; }
+
+        // ===== COMPUTED PROPERTIES (READ-ONLY FOR DISPLAY) =====
         [Display(Name = "Display Name")]
-        public string DisplayName { get; set; } = string.Empty;
+        public string DisplayName => $"{FridgeModelDetails?.Manufacturer} {FridgeModelDetails?.ModelName} - {SerialNumber}";
+
+        [Display(Name = "Is Active")]
+        public bool IsActive => Status != FridgeStatus.Scrapped && Status != FridgeStatus.LostStolen;
 
         [Display(Name = "Requires Maintenance")]
-        public bool RequiresMaintenance { get; set; }
+        public bool RequiresMaintenance => NextServiceDue.HasValue && NextServiceDue <= DateTime.UtcNow;
 
         [Display(Name = "Under Warranty")]
-        public bool UnderWarranty { get; set; }
+        public bool UnderWarranty => WarrantyExpiryDate.HasValue && WarrantyExpiryDate > DateTime.UtcNow;
 
         [Display(Name = "Age (years)")]
-        public double? AgeInYears { get; set; }
+        public double? AgeInYears => PurchaseDate.HasValue
+            ? (DateTime.UtcNow - PurchaseDate.Value).TotalDays / 365.25
+            : null;
 
         [Display(Name = "Days Until Service Due")]
-        public int? DaysUntilServiceDue { get; set; }
+        public int? DaysUntilServiceDue => NextServiceDue.HasValue
+            ? (int)(NextServiceDue.Value - DateTime.UtcNow).TotalDays
+            : null;
 
         [Display(Name = "Allocation History Count")]
         public int AllocationHistoryCount { get; set; }
@@ -105,25 +123,76 @@ namespace Project.Models.ViewModels
         [Display(Name = "Fault Report Count")]
         public int FaultReportCount { get; set; }
 
-        // Methods
-        public void CalculateComputedProperties()
+        [Display(Name = "Open Faults")]
+        public int OpenFaultCount { get; set; }
+
+        [Display(Name = "Status Summary")]
+        public string StatusSummary
         {
-            DisplayName = $"{FridgeModelDetails?.Manufacturer} {FridgeModelDetails?.ModelName} - {SerialNumber}";
-
-            if (LastServiceDate.HasValue && FridgeModelDetails != null)
+            get
             {
-                RequiresMaintenance = LastServiceDate.Value < DateTime.UtcNow.AddMonths(-FridgeModelDetails.ServiceIntervalMonths);
-
-                var nextServiceDue = LastServiceDate.Value.AddMonths(FridgeModelDetails.ServiceIntervalMonths);
-                DaysUntilServiceDue = (int)(nextServiceDue - DateTime.UtcNow).TotalDays;
+                var summary = Status.ToString();
+                if (CustomerDetails != null) summary += $" - Allocated to {CustomerDetails.BusinessName}";
+                if (RequiresMaintenance) summary += " - Maintenance Due";
+                if (OpenFaultCount > 0) summary += $" - {OpenFaultCount} Open Fault(s)";
+                return summary;
             }
+        }
 
-                UnderWarranty = WarrantyExpiryDate.HasValue && WarrantyExpiryDate > DateTime.UtcNow;
+        // ===== BUSINESS LOGIC PROPERTIES =====
+        [Display(Name = "Can Be Allocated")]
+        public bool CanBeAllocated => Status == FridgeStatus.Available &&
+                                     Condition == FridgeCondition.Excellent &&
+                                     !RequiresMaintenance;
 
-            if (PurchaseDate.HasValue)
+        [Display(Name = "Can Be Serviced")]
+        public bool CanBeServiced => IsActive &&
+                                    (Status == FridgeStatus.Available || Status == FridgeStatus.UnderMaintenance);
+
+        [Display(Name = "Can Be Scrapped")]
+        public bool CanBeScrapped => IsActive &&
+                                    (Condition == FridgeCondition.Poor || Status == FridgeStatus.Faulty);
+
+        // ===== METHODS =====
+        public void UpdateServiceDueDate()
+        {
+            if (FridgeModelDetails != null && LastServiceDate.HasValue)
             {
-                AgeInYears = (DateTime.UtcNow - PurchaseDate.Value).TotalDays / 365.25;
+                NextServiceDue = LastServiceDate.Value.AddMonths(FridgeModelDetails.ServiceIntervalMonths);
             }
+        }
+
+        public void PopulateComputedProperties()
+        {
+            // These will be set by the controller based on related data
+            // This method is for initialization if needed
+        }
+
+        public static FridgeVM FromEntity(Fridge entity)
+        {
+            if (entity == null) return null;
+
+            return new FridgeVM
+            {
+                Id = entity.Id,
+                SerialNumber = entity.SerialNumber,
+                FridgeModelId = entity.FridgeModelId,
+                LocationId = entity.LocationId,
+                CustomerId = entity.CustomerId,
+                Condition = entity.Condition,
+                Status = entity.Status,
+                PurchaseDate = entity.PurchaseDate,
+                Supplier = entity.Supplier,
+                PurchasePrice = entity.PurchasePrice,
+                WarrantyExpiryDate = entity.WarrantyExpiryDate,
+                LastServiceDate = entity.LastServiceDate,
+                NextServiceDue = entity.NextServiceDue,
+                TotalServiceCount = entity.TotalServiceCount,
+                LastFaultDate = entity.LastFaultDate,
+                // Populate related details if available
+                FridgeModelDetails = entity.FridgeModel != null ? FridgeModelVM.FromEntity(entity.FridgeModel) : null,
+                LocationDetails = entity.CurrentLocation != null ? LocationVM.FromEntity(entity.CurrentLocation) : null
+            };
         }
     }
 }

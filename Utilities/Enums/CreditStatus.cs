@@ -4,6 +4,9 @@ namespace Project.Utilities.Enums
 {
     public enum CreditStatus
     {
+        [Display(Name = "Pending Assessment")]
+        Pending,
+
         [Display(Name = "Good Standing")]
         Good,
 

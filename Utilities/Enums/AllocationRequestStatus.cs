@@ -13,14 +13,14 @@ namespace Project.Utilities.Enums
         [Display(Name = "Under Review")]
         UnderReview,
 
+        [Display(Name = "Additional Info Required")]
+        AdditionalInfoRequired,
+
         [Display(Name = "Approved")]
         Approved,
 
-        [Display(Name = "Waiting For Payment")]
-        WaitingForPayment,
-
-        [Display(Name = "Paid")]
-        Paid,
+        [Display(Name = "In Progress")]
+        InProgress,
 
         [Display(Name = "Completed")]
         Completed,

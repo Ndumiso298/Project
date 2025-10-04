@@ -1,0 +1,251 @@
+﻿@model FaultRecord
+@{
+    ViewData["Title"] = "Fault Report - " + Model.FaultCode;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .card {
+                border: 1px solid #000 !important;
+            }
+
+            .badge {
+                border: 1px solid #000 !important;
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            border-bottom: 2px solid #000;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .signature-area {
+            margin-top: 100px;
+            border-top: 1px solid #000;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row header pb-3">
+            <div class="col-6">
+                <h1 class="h3 mb-1">Fridge Management System</h1>
+                <h2 class="h5 text-muted">Fault Report</h2>
+            </div>
+            <div class="col-6 text-end">
+                <h3 class="h4 mb-1">@Model.FaultCode</h3>
+                <p class="mb-0">Generated: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+        </div>
+
+        <!-- Print Button -->
+        <div class="row no-print mb-3">
+            <div class="col-12">
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-1"></i>Print Report
+                </button>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back
+                </a>
+            </div>
+        </div>
+
+        <!-- Fault Information -->
+        <div class="row section">
+            <div class="col-12">
+                <h4 class="border-bottom pb-2">
+                    <i class="fas fa-info-circle me-2"></i>Fault Information
+                </h4>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Fault Code:</strong> @Model.FaultCode
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Reported Date:</strong> @Model.ReportedDate.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Title:</strong> @Model.Title
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Description:</strong><br>
+                        <div class="border p-3 mt-1">@Model.Description</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Status:</strong>
+                        <span class="badge @GetStatusBadgeClass(Model.Status)">@Model.Status</span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Priority:</strong>
+                        <span class="badge @GetPriorityBadgeClass(Model.Priority)">@Model.Priority</span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Category:</strong> @Model.Category
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Information -->
+        <div class="row section">
+            <div class="col-12">
+                <h4 class="border-bottom pb-2">
+                    <i class="fas fa-link me-2"></i>Related Information
+                </h4>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong>Fridge:</strong><br>
+                            @Model.Fridge?.SerialNumber - @Model.Fridge?.FridgeModel?.ModelName
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Customer:</strong><br>
+                            @Model.ReportedBy?.FullName<br>
+                            @Model.ReportedBy?.Email
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong>Assigned Technician:</strong><br>
+                            @(Model.AssignedTechnician?.FullName ?? "Not Assigned")
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Location:</strong><br>
+                            @Model.FaultLocation?.Name
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resolution Details -->
+        @if (Model.Status == FaultStatus.Resolved || Model.Status == FaultStatus.Closed)
+        {
+            <div class="row section">
+                <div class="col-12">
+                    <h4 class="border-bottom pb-2">
+                        <i class="fas fa-check-circle me-2"></i>Resolution Details
+                    </h4>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Resolved Date:</strong> @Model.ResolvedDate?.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Resolution Time:</strong>
+                            @if (Model.ResolvedDate.HasValue)
+                            {
+                                var resolutionTime = Model.ResolvedDate.Value - Model.ReportedDate;
+                                <span>@resolutionTime.Days days, @resolutionTime.Hours hours</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ResolutionNotes))
+                    {
+                        <div class="mb-3">
+                            <strong>Resolution Notes:</strong><br>
+                            <div class="border p-3 mt-1">@Model.ResolutionNotes</div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.PartsReplaced))
+                    {
+                        <div class="mb-3">
+                            <strong>Parts Replaced:</strong><br>
+                            <div class="border p-3 mt-1">@Model.PartsReplaced</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Signatures -->
+        <div class="row signature-area">
+            <div class="col-md-6">
+                <strong>Reported By:</strong><br><br>
+                ________________________________<br>
+                Name & Signature
+            </div>
+            <div class="col-md-6">
+                <strong>Technician:</strong><br><br>
+                ________________________________<br>
+                Name & Signature
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-print when page loads
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>
+
+@functions {
+    public string GetStatusBadgeClass(FaultStatus status)
+    {
+        return status switch
+        {
+            FaultStatus.Reported => "bg-secondary",
+            FaultStatus.Assigned => "bg-info",
+            FaultStatus.InProgress => "bg-warning",
+            FaultStatus.PartsRequired => "bg-primary",
+            FaultStatus.Resolved => "bg-success",
+            FaultStatus.Reopened => "bg-danger",
+            FaultStatus.Closed => "bg-dark",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPriorityBadgeClass(FaultPriority priority)
+    {
+        return priority switch
+        {
+            FaultPriority.Critical => "bg-danger",
+            FaultPriority.High => "bg-warning",
+            FaultPriority.Medium => "bg-info",
+            FaultPriority.Low => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}

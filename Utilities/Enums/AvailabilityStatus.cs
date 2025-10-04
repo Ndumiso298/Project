@@ -7,20 +7,11 @@ namespace Project.Utilities.Enums
         [Display(Name = "Available")]
         Available,
 
-        [Display(Name = "On Duty")]
-        OnDuty,
-
-        [Display(Name = "On Break")]
-        OnBreak,
+        [Display(Name = "Busy")]
+        Busy,
 
         [Display(Name = "On Leave")]
         OnLeave,
-
-        [Display(Name = "Sick Leave")]
-        SickLeave,
-
-        [Display(Name = "Training")]
-        Training,
 
         [Display(Name = "Unavailable")]
         Unavailable

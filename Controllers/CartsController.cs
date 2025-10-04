@@ -312,7 +312,7 @@ namespace Project.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _db.Customers
-                .FirstOrDefaultAsync(c => c.UserId == userId && c.IsActive);
+                .FirstOrDefaultAsync(c => c.UserId == userId && !c.UserAccount.IsDeleted);
         }
 
         private async Task<AllocationCartVM> GetOrCreateCartAsync(int customerId)
@@ -345,17 +345,17 @@ namespace Project.Controllers
         private async Task PopulateCartDropdowns(AllocationCartVM vm)
         {
             vm.CustomerList = await _db.Customers
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.TradingName)
+                .Where(c => !c.UserAccount.IsDeleted)
+                .OrderBy(c => c.BusinessName)
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
-                    Text = $"{c.TradingName} ({c.BusinessType})"
+                    Text = $"{c.BusinessName} ({c.BusinessType})"
                 })
                 .ToListAsync();
 
             vm.LocationList = await _db.Locations
-                .Where(l => l.IsActive)
+                .Where(l => l.IsDeleted)
                 .OrderBy(l => l.City)
                 .ThenBy(l => l.Suburb)
                 .Select(l => new SelectListItem
@@ -380,9 +380,7 @@ namespace Project.Controllers
 
         private async Task<int> CreateAllocationRequestFromCartAsync(AllocationRequestHeaderVM vm)
         {
-            var request = vm.ToEntity(
-                User.FindFirstValue(ClaimTypes.NameIdentifier),
-                User.Identity?.Name);
+            var request = vm.ToEntity();
             request.CreatedAt = DateTime.UtcNow;
             request.CreatedBy = User.Identity?.Name;
             request.Status = AllocationRequestStatus.Draft;
@@ -405,7 +403,7 @@ namespace Project.Controllers
         #endregion
     }
 
-    //[Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupportRole)]
+    //[Authorize(Roles = Roles.AdminRole + "," + Roles.CustomerSupportRole)]
     //public class CartsController : Controller
     //{
     //    private readonly ApplicationDbContext _db;

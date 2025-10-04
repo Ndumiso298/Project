@@ -1,345 +1,311 @@
-﻿<!-- Views/AllocationRequests/Details.cshtml -->
-@model AllocationRequestHeaderVM
-@inject ApplicationDbContext _db
-@using Microsoft.AspNetCore.Html
-@using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
-@using Project.Data
-@using Microsoft.EntityFrameworkCore
-
+﻿@model AllocationRequestHeaderVM
 @{
-    ViewData["Title"] = $"Allocation Request #{Model.Id}";
-    var claimsIdentity = (ClaimsIdentity)User.Identity;
-    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-    // Compute CanBeCancelled based on status and business rules
-    var canBeCancelled = Model.Status == AllocationRequestStatus.Draft ||
-                        Model.Status == AllocationRequestStatus.Submitted;
-
-    // Load allocations separately since it's not in the VM
-    var allocations = new List<FridgeAllocation>();
-    if (Model.Status == AllocationRequestStatus.Approved)
-    {
-        allocations = await _db.FridgeAllocations
-            .Include(a => a.Fridge)
-                .ThenInclude(f => f.FridgeModel)
-            .Where(a => a.AllocationRequestHeaderId == Model.Id)
-            .ToListAsync();
-    }
+    ViewData["Title"] = $"Request Details - {Model.RequestNumber}";
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">
-                        <i class="fas fa-file-alt me-2"></i>@ViewData["Title"]
-                    </h3>
-                    <div>
-                        <a asp-action="Index" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-left me-1"></i>Back to List
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <!-- Request Actions -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="btn-group" role="group">
-                                @if (Model.CanBeEdited)
-                                {
-                                    <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
-                                        <i class="fas fa-edit me-1"></i>Edit Request
-                                    </a>
-                                    <form method="post" asp-action="Submit" asp-route-id="@Model.Id" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-success"
-                                                onclick="return confirm('Are you sure you want to submit this request?')">
-                                            <i class="fas fa-paper-plane me-1"></i>Submit Request
-                                        </button>
-                                    </form>
-                                }
-
-                                @if (canBeCancelled && (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole) ||
-                                (User.IsInRole(SD.CustomerRole) && Model.Status != AllocationRequestStatus.Approved)))
-                                {
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                        <i class="fas fa-times-circle me-1"></i>Cancel Request
-                                    </button>
-                                }
-
-                                @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupportRole))
-                                {
-                                    if (Model.Status == AllocationRequestStatus.Submitted)
-                                    {
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">
-                                            <i class="fas fa-check-circle me-1"></i>Approve
-                                        </button>
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
-                                            <i class="fas fa-ban me-1"></i>Reject
-                                        </button>
-                                    }
-                                }
-
-                                @if (User.IsInRole(SD.AdminRole) && Model.Status != AllocationRequestStatus.Cancelled)
-                                {
-                                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
-                                        <i class="fas fa-trash me-1"></i>Delete
-                                    </a>
-                                }
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Request Summary -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="card-title mb-0">Request Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td><strong>Request Date:</strong></td>
-                                            <td>@Model.RequestDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Status:</strong></td>
-                                            <td>@GetStatusBadge(Model.Status)</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Type:</strong></td>
-                                            <td><span class="badge bg-info">@Model.RequestType</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Priority:</strong></td>
-                                            <td>@GetPriorityBadge(Model.Priority)</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Contact Person:</strong></td>
-                                            <td>@Model.ContactPerson</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Contact Phone:</strong></td>
-                                            <td>@Model.PhoneNumber</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Contact Email:</strong></td>
-                                            <td>@Model.Email</td>
-                                        </tr>
-                                        @if (!string.IsNullOrEmpty(Model.SpecialNotes))
-                                        {
-                                            <tr>
-                                                <td><strong>Special Notes:</strong></td>
-                                                <td>@Model.SpecialNotes</td>
-                                            </tr>
-                                        }
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="card-title mb-0">Delivery Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td><strong>Customer:</strong></td>
-                                            <td>@Model.CustomerName</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Business Type:</strong></td>
-                                            <td>@Model.CustomerBusinessType</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Delivery Location:</strong></td>
-                                            <td>@Model.LocationAddress</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Preferred Date:</strong></td>
-                                            <td>@(Model.PreferredDeliveryDate?.ToString("dd/MM/yyyy") ?? "Not specified")</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Instructions:</strong></td>
-                                            <td>@(Model.DeliveryInstructions ?? "No special instructions")</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Request Details -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Requested Items</h5>
-                            <div>
-                                <span class="badge bg-primary me-2">@Model.TotalItems items</span>
-                                @if (Model.HasStockIssues)
-                                {
-                                    <span class="badge bg-warning">Stock Issues</span>
-                                }
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Fridge Model</th>
-                                            <th>Manufacturer</th>
-                                            <th>Capacity</th>
-                                            <th>Monthly Rental</th>
-                                            <th>Quantity</th>
-                                            <th>Available Stock</th>
-                                            <th>Monthly Subtotal</th>
-                                            <th>Contract Value (24 months)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var detail in Model.RequestDetails)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    <strong>@detail.FridgeModel?.DisplayName</strong>
-                                                    <br /><small class="text-muted">@detail.FridgeModel?.ModelCode</small>
-                                                </td>
-                                                <td>@detail.FridgeModel?.Manufacturer</td>
-                                                <td>@detail.FridgeModel?.CapacityLiters L</td>
-                                                <td>R @detail.FridgeModel?.MonthlyRentalPrice.ToString("N2")</td>
-                                                <td>
-                                                    <span class="badge bg-secondary">@detail.Quantity</span>
-                                                </td>
-                                                <td>
-                                                    @if (detail.HasSufficientStock)
-                                                    {
-                                                        <span class="badge bg-success">@detail.AvailableStock</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-warning">@detail.AvailableStock</span>
-                                                    }
-                                                </td>
-                                                <td>R @detail.MonthlyTotal.ToString("N2")</td>
-                                                <td>R @detail.LineTotal.ToString("N2")</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                    <tfoot class="table-dark">
-                                        <tr>
-                                            <td colspan="6"><strong>Totals</strong></td>
-                                            <td><strong>R @Model.TotalMonthlyRental.ToString("N2")</strong></td>
-                                            <td><strong>R @Model.TotalContractValue.ToString("N2")</strong></td>
-                                        </tr>
-                                        @if (Model.DiscountPercentage > 0)
-                                        {
-                                            <tr>
-                                                <td colspan="6"><strong>Discount (@Model.DiscountPercentage%)</strong></td>
-                                                <td><strong>-R @((Model.TotalMonthlyRental * Model.DiscountPercentage / 100).ToString("N2"))</strong></td>
-                                                <td><strong>-R @Model.DiscountAmount.ToString("N2")</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6"><strong>Final Amount</strong></td>
-                                                <td><strong>R @((Model.TotalMonthlyRental * (1 - Model.DiscountPercentage / 100)).ToString("N2"))</strong></td>
-                                                <td><strong>R @Model.FinalAmount.ToString("N2")</strong></td>
-                                            </tr>
-                                        }
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Allocations (if approved) -->
-                    @if (Model.IsApproved && allocations.Any())
-                    {
-                        <div class="card">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-check-circle me-2"></i>Allocated Fridges
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Fridge Serial #</th>
-                                                <th>Model</th>
-                                                <th>Allocation Date</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var allocation in allocations)
-                                            {
-                                                <tr>
-                                                    <td>@allocation.Fridge?.SerialNumber</td>
-                                                    <td>@allocation.Fridge?.FridgeModel?.DisplayName</td>
-                                                    <td>@allocation.AllocationDate.ToString("dd/MM/yyyy")</td>
-                                                    <td>@GetAllocationStatusBadge(allocation.Status)</td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    else if (Model.IsApproved)
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            This request has been approved but no fridges have been allocated yet.
-                        </div>
-                    }
-
-                    <!-- Stock Issues Warning -->
-                    @if (Model.HasStockIssues && Model.RequiresApproval)
-                    {
-                        <div class="alert alert-warning">
-                            <h5 class="alert-heading">
-                                <i class="fas fa-exclamation-triangle me-2"></i>Stock Availability Issues
-                            </h5>
-                            <p class="mb-0">
-                                Some requested items have insufficient stock. This request cannot be approved until stock issues are resolved.
-                            </p>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        <i class="fas fa-clipboard-list me-2"></i>Request Details
+        <small class="text-muted">@Model.RequestNumber</small>
+    </h1>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to List
+        </a>
+        @if (Model.CanBeEdited)
+        {
+            <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i>Edit
+            </a>
+        }
     </div>
 </div>
 
-<!-- Cancel Modal -->
-<div class="modal fade" id="cancelModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-warning">
-                <h5 class="modal-title">Cancel Allocation Request</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="row">
+    <!-- Main Information -->
+    <div class="col-lg-8">
+        <!-- Request Summary Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Request Summary</h5>
+                <div>
+                    <span class="badge @Model.StatusBadgeClass me-1">@Model.Status</span>
+                    <span class="badge @Model.PriorityBadgeClass">@Model.Priority</span>
+                </div>
             </div>
-            <form method="post" asp-action="Cancel" asp-route-id="@Model.Id">
-                @Html.AntiForgeryToken()
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="cancellationReason" class="form-label required">Cancellation Reason *</label>
-                        <textarea class="form-control" id="cancellationReason" name="cancellationReason"
-                                  rows="3" required placeholder="Please provide a reason for cancellation..."></textarea>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-40">Request Number:</th>
+                                <td class="fw-bold">@Model.RequestNumber</td>
+                            </tr>
+                            <tr>
+                                <th>Request Date:</th>
+                                <td>@Model.RequestDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                            <tr>
+                                <th>Request Type:</th>
+                                <td><span class="badge @Model.RequestTypeBadgeClass">@Model.RequestType</span></td>
+                            </tr>
+                            <tr>
+                                <th>Priority:</th>
+                                <td><span class="badge @Model.PriorityBadgeClass">@Model.Priority</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-40">Total Items:</th>
+                                <td class="fw-bold">@Model.TotalQuantity</td>
+                            </tr>
+                            <tr>
+                                <th>Monthly Rental:</th>
+                                <td class="fw-bold text-success">@Model.TotalMonthlyRental.ToString("C")</td>
+                            </tr>
+                            <tr>
+                                <th>Total Value:</th>
+                                <td class="fw-bold text-success">@Model.TotalContractValue.ToString("C")</td>
+                            </tr>
+                            @if (Model.DiscountPercentage > 0)
+                            {
+                                <tr>
+                                    <th>Discount (@Model.DiscountPercentage%):</th>
+                                    <td class="fw-bold text-danger">-@Model.DiscountAmount.ToString("C")</td>
+                                </tr>
+                                <tr>
+                                    <th>Final Amount:</th>
+                                    <td class="fw-bold text-success">@Model.FinalAmount.ToString("C")</td>
+                                </tr>
+                            }
+                        </table>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-warning">Confirm Cancellation</button>
+
+                @if (Model.IsReplacementRequest)
+                {
+                    <div class="alert alert-warning mt-3">
+                        <h6><i class="fas fa-exchange-alt me-2"></i>Replacement Request</h6>
+                        <p class="mb-1"><strong>Reason:</strong> @Model.ReplacementReason</p>
+                        @if (Model.IsUrgentReplacement)
+                        {
+                            <span class="badge bg-danger">Urgent Replacement</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>@Model.CustomerBusinessName</strong><br>
+                        <span class="text-muted">@Model.CustomerBusinessType</span>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            Contact: @Model.ContactPerson<br>
+                            Phone: @Model.ContactPhoneNumber<br>
+                            Email: @Model.ContactEmail
+                        </small>
+                    </div>
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <!-- Request Items -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Request Items</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.RequestDetails.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fridge Model</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-center">Duration</th>
+                                    <th class="text-end">Unit Price</th>
+                                    <th class="text-end">Monthly Total</th>
+                                    <th class="text-end">Line Total</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.RequestDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.ModelName</strong><br>
+                                            <small class="text-muted">@item.Manufacturer - @item.Capacity</small>
+                                        </td>
+                                        <td class="text-center fw-bold">@item.Quantity</td>
+                                        <td class="text-center">@item.RentalDurationMonths months</td>
+                                        <td class="text-end">@item.MonthlyRentalPrice.ToString("C")</td>
+                                        <td class="text-end fw-bold text-success">@item.MonthlyTotal.ToString("C")</td>
+                                        <td class="text-end fw-bold text-success">@item.LineTotal.ToString("C")</td>
+                                        <td>
+                                            <span class="badge @(item.HasSufficientStock ? "bg-success" : "bg-danger")">
+                                                @item.StockStatus
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="4">Totals</th>
+                                    <th class="text-end fw-bold text-success">@Model.TotalMonthlyRental.ToString("C")</th>
+                                    <th class="text-end fw-bold text-success">@Model.TotalContractValue.ToString("C")</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-3 text-muted">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>No items added to this request</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar - Actions and Status -->
+    <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.CanBeEdited)
+                    {
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Edit Request
+                        </a>
+                    }
+
+                    @if (Model.RequiresApproval && (User.IsInRole("Admin") || User.IsInRole("CustomerSupport")))
+                    {
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal">
+                            <i class="fas fa-check me-1"></i>Approve Request
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                            <i class="fas fa-times me-1"></i>Reject Request
+                        </button>
+                    }
+
+                    @if (Model.Status == AllocationRequestStatus.Draft || Model.Status == AllocationRequestStatus.Submitted)
+                    {
+                        <form asp-action="Submit" method="post" class="d-grid">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-info btn-sm"
+                                    onclick="return confirm('Are you sure you want to submit this request?')">
+                                <i class="fas fa-paper-plane me-1"></i>Submit for Review
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.CanBeEdited)
+                    {
+                        <form asp-action="Cancel" method="post" class="d-grid">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <input type="hidden" name="cancellationReason" value="Cancelled by user" />
+                            <button type="submit" class="btn btn-warning btn-sm"
+                                    onclick="return confirm('Are you sure you want to cancel this request?')">
+                                <i class="fas fa-ban me-1"></i>Cancel Request
+                            </button>
+                        </form>
+                    }
+
+                    <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-print me-1"></i>Print Request
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-truck me-2"></i>Delivery Information</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <strong>Location:</strong><br>
+                    @Model.LocationAddress
+                </p>
+                @if (!string.IsNullOrEmpty(Model.DeliveryInstructions))
+                {
+                    <p class="mb-2">
+                        <strong>Instructions:</strong><br>
+                        @Model.DeliveryInstructions
+                    </p>
+                }
+                @if (Model.PreferredDeliveryDate.HasValue)
+                {
+                    <p class="mb-0">
+                        <strong>Preferred Date:</strong><br>
+                        @Model.PreferredDeliveryDate.Value.ToString("dd/MM/yyyy")
+                    </p>
+                }
+            </div>
+        </div>
+
+        <!-- Status History -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Status History</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            <p class="mb-1">Request Created</p>
+                            <small>by @Model.CreatedBy</small>
+                        </div>
+                    </div>
+                    @if (Model.ApprovalDate.HasValue)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <small class="text-muted">@Model.ApprovalDate.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                <p class="mb-1">Request Approved</p>
+                                <small>by @Model.ApprovedBy</small>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <small class="text-muted">@Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                <p class="mb-1">Last Updated</p>
+                                <small>by @Model.UpdatedBy</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -349,35 +315,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">Approve Allocation Request</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title"><i class="fas fa-check me-2"></i>Approve Request</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" asp-action="Approve" asp-route-id="@Model.Id">
-                @Html.AntiForgeryToken()
+            <form asp-action="Approve" method="post">
                 <div class="modal-body">
-                    @if (Model.HasStockIssues)
-                    {
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Stock Issues Detected:</strong> This request has insufficient stock for some items.
-                            Approving may result in partial allocation or require manual intervention.
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Approving this request will allocate the fridges to the customer and update inventory.
-                        </div>
-                    }
+                    <input type="hidden" name="id" value="@Model.Id" />
                     <div class="mb-3">
                         <label for="approvalNotes" class="form-label">Approval Notes (Optional)</label>
-                        <textarea class="form-control" id="approvalNotes" name="approvalNotes"
-                                  rows="3" placeholder="Add any notes about this approval..."></textarea>
+                        <textarea name="approvalNotes" class="form-control" rows="3"
+                                  placeholder="Add any notes about this approval..."></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Approving this request will create fridge allocations and update inventory.
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Approve Request</button>
                 </div>
             </form>
@@ -390,20 +345,20 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Reject Allocation Request</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title"><i class="fas fa-times me-2"></i>Reject Request</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="post" asp-action="Reject" asp-route-id="@Model.Id">
-                @Html.AntiForgeryToken()
+            <form asp-action="Reject" method="post">
                 <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.Id" />
                     <div class="mb-3">
-                        <label for="rejectionReason" class="form-label required">Rejection Reason *</label>
-                        <textarea class="form-control" id="rejectionReason" name="rejectionReason"
-                                  rows="3" required placeholder="Please provide a reason for rejection..."></textarea>
+                        <label for="rejectionReason" class="form-label required">Rejection Reason</label>
+                        <textarea name="rejectionReason" class="form-control" rows="3" required
+                                  placeholder="Please provide a reason for rejecting this request..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger">Reject Request</button>
                 </div>
             </form>
@@ -411,57 +366,31 @@
     </div>
 </div>
 
-@functions {
-    private IHtmlContent GetStatusBadge(AllocationRequestStatus status)
-    {
-        var badgeClass = status switch
-        {
-            AllocationRequestStatus.Draft => "bg-secondary",
-            AllocationRequestStatus.Submitted => "bg-info",
-            AllocationRequestStatus.Approved => "bg-success",
-            AllocationRequestStatus.Rejected => "bg-danger",
-            AllocationRequestStatus.Cancelled => "bg-warning",
-            AllocationRequestStatus.Completed => "bg-primary",
-            _ => "bg-secondary"
-        };
-
-        return Html.Raw($"<span class='badge {badgeClass}'>{status}</span>");
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 20px;
     }
 
-    private IHtmlContent GetPriorityBadge(CustomerRequestPriority priority)
-    {
-        var badgeClass = priority switch
-        {
-            CustomerRequestPriority.Low => "bg-success",
-            CustomerRequestPriority.Medium => "bg-warning",
-            CustomerRequestPriority.High => "bg-danger",
-            CustomerRequestPriority.Critical => "bg-danger",
-            _ => "bg-secondary"
-        };
-
-        var icon = priority switch
-        {
-            CustomerRequestPriority.Low => "fa-arrow-down",
-            CustomerRequestPriority.Medium => "fa-minus",
-            CustomerRequestPriority.High => "fa-arrow-up",
-            CustomerRequestPriority.Critical => "fa-triangle-exclamation",
-            _ => "fa-minus"
-        };
-
-        return Html.Raw($"<span class='badge {badgeClass}'><i class='fas {icon} me-1'></i>{priority}</span>");
+    .timeline-item {
+        position: relative;
+        margin-bottom: 15px;
     }
 
-    private IHtmlContent GetAllocationStatusBadge(AllocationStatus status)
-    {
-        var badgeClass = status switch
-        {
-            AllocationStatus.Active => "bg-success",
-            AllocationStatus.Completed => "bg-info",
-            AllocationStatus.Cancelled => "bg-warning",
-            AllocationStatus.Expired => "bg-secondary",
-            _ => "bg-secondary"
-        };
-
-        return Html.Raw($"<span class='badge {badgeClass}'>{status}</span>");
+    .timeline-marker {
+        position: absolute;
+        left: -20px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
     }
-}
+
+    .timeline-content {
+        padding-bottom: 10px;
+    }
+
+    .w-40 {
+        width: 40% !important;
+    }
+</style>

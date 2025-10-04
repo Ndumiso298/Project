@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Project.Controllers
 {
-    [Authorize(Roles = SD.AdminRole + "," + SD.StockControllerRole)]
+    [Authorize(Roles = SD.AdminRole)]
     public class LocationsController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -26,7 +26,7 @@ namespace Project.Controllers
         }
 
         // GET: Locations
-        public async Task<IActionResult> Index(string searchString, string provinceFilter, string cityFilter, string typeFilter, string statusFilter, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchString, string provinceFilter, string cityFilter, string suburbFilter, string typeFilter, string statusFilter, int page = 1, int pageSize = 10)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace Project.Controllers
                     .Include(l => l.Employees)
                     .Include(l => l.Customers)
                     .Include(l => l.Fridges)
-                    .Where(l => l.IsActive)
+                    .Where(l => !l.IsDeleted)
                     .AsQueryable();
 
                 // Apply filters
@@ -57,6 +57,11 @@ namespace Project.Controllers
                     locationsQuery = locationsQuery.Where(l => l.City == cityFilter);
                 }
 
+                if (!string.IsNullOrEmpty(suburbFilter) && suburbFilter != "All")
+                {
+                    locationsQuery = locationsQuery.Where(l => l.Suburb == suburbFilter);
+                }
+
                 // Pagination
                 var totalLocations = await locationsQuery.CountAsync();
                 var locations = await locationsQuery
@@ -71,24 +76,23 @@ namespace Project.Controllers
                 var locationVMs = locations.Select(l => new LocationVM
                 {
                     Id = l.Id,
-                    AddressLine1 = l.AddressLine1,
-                    AddressLine2 = l.AddressLine2,
+                    StreetAddress = l.StreetAddress,
                     Suburb = l.Suburb,
                     City = l.City,
                     Province = l.Province,
                     PostalCode = l.PostalCode,
                     Country = l.Country,
-                    IsActive = l.IsActive,
+                    IsDeleted = l.IsDeleted,
                     CreatedAt = l.CreatedAt,
                     CreatedBy = l.CreatedBy,
-                    ModifiedAt = l.ModifiedAt,
-                    ModifiedBy = l.ModifiedBy,
+                    UpdatedAt = l.CreatedAt,
+                    UpdatedBy = l.UpdatedBy,
                     TotalFridges = l.Fridges.Count(f => f.IsActive),
                     AvailableFridges = l.Fridges.Count(f => f.IsActive && f.Status == FridgeStatus.Available),
                     TotalCustomers = l.Customers.Count(c => c.IsActive),
                     TotalEmployees = l.Employees.Count(e => e.IsActive),
                     PendingMaintenance = l.MaintenanceVisits.Count(m => m.ScheduledDate >= DateTime.Now && m.Status == ServicingStatus.Scheduled),
-                    OpenFaults = l.FaultReports.Count(f => f.Status == FaultStatus.Acknowledged || f.Status == FaultStatus.InProgress)
+                    OpenFaults = l.FaultReports.Count(f => f.Status == FaultStatus.Assigned || f.Status == FaultStatus.InProgress)
                 }).ToList();
 
                 ViewBag.SearchString = searchString;
@@ -121,11 +125,11 @@ namespace Project.Controllers
                     .Include(l => l.Customers).ThenInclude(c => c.UserAccount)
                     .Include(l => l.Fridges).ThenInclude(f => f.FridgeModel)
                     .Include(l => l.FridgeAllocations).ThenInclude(a => a.Fridge)
-                    .Include(l => l.MaintenanceVisits).ThenInclude(m => m.Technician)
+                    .Include(l => l.MaintenanceVisits).ThenInclude(m => m.AssignedTechnician)
                     .Include(l => l.FaultReports).ThenInclude(f => f.AssignedTechnician)
                     .FirstOrDefaultAsync(l => l.Id == id);
 
-                if (location == null || !location.IsActive)
+                if (location == null || !location.IsDeleted)
                 {
                     TempData["error"] = "Location not found or has been deactivated.";
                     return RedirectToAction(nameof(Index));
@@ -138,9 +142,9 @@ namespace Project.Controllers
                     CustomerCount = location.Customers.Count(c => c.IsActive),
                     FridgeCount = location.Fridges.Count(f => f.IsActive),
                     AvailableFridges = location.Fridges.Count(f => f.IsActive && f.Status == FridgeStatus.Available),
-                    ActiveAllocations = location.FridgeAllocations.Count(a => a.Status == AllocationStatus.Active),
+                    ActiveAllocations = location.FridgeAllocations.Count(a => a.AllocationStatus == AllocationStatus.Active),
                     PendingMaintenance = location.MaintenanceVisits.Count(m => m.Status == ServicingStatus.Scheduled),
-                    OpenFaults = location.FaultReports.Count(f => f.Status == FaultStatus.Acknowledged || f.Status == FaultStatus.InProgress)
+                    OpenFaults = location.FaultReports.Count(f => f.Status == FaultStatus.Assigned || f.Status == FaultStatus.InProgress)
                 };
 
                 ViewBag.Stats = stats;
@@ -173,7 +177,7 @@ namespace Project.Controllers
 
                 // Edit existing location
                 var location = await _db.Locations.FindAsync(id);
-                if (location == null || !location.IsActive)
+                if (location == null || location.IsDeleted)
                 {
                     TempData["error"] = "Location not found or has been deactivated.";
                     return RedirectToAction(nameof(Index));
@@ -181,18 +185,17 @@ namespace Project.Controllers
 
                 // Map entity to ViewModel
                 vm.Id = location.Id;
-                vm.AddressLine1 = location.AddressLine1;
-                vm.AddressLine2 = location.AddressLine2;
+                vm.StreetAddress = location.StreetAddress;
                 vm.Suburb = location.Suburb;
                 vm.City = location.City;
                 vm.Province = location.Province;
                 vm.PostalCode = location.PostalCode;
                 vm.Country = location.Country;
-                vm.IsActive = location.IsActive;
+                vm.IsDeleted = location.IsDeleted;
                 vm.CreatedAt = location.CreatedAt;
                 vm.CreatedBy = location.CreatedBy;
-                vm.ModifiedAt = location.ModifiedAt;
-                vm.ModifiedBy = location.ModifiedBy;
+                vm.UpdatedAt = location.UpdatedAt;
+                vm.UpdatedBy = location.UpdatedBy;
 
                 // Add statistics for context
                 await PopulateLocationStatistics(vm, location.Id);
@@ -265,7 +268,7 @@ namespace Project.Controllers
                     .Include(l => l.FridgeAllocations)
                     .FirstOrDefaultAsync(l => l.Id == id);
 
-                if (location == null || !location.IsActive)
+                if (location == null || !location.IsDeleted)
                 {
                     TempData["error"] = "Location not found or already deleted.";
                     return RedirectToAction(nameof(Index));
@@ -280,8 +283,7 @@ namespace Project.Controllers
                 var vm = new LocationVM
                 {
                     Id = location.Id,
-                    AddressLine1 = location.AddressLine1,
-                    AddressLine2 = location.AddressLine2,
+                    StreetAddress = location.StreetAddress,
                     Suburb = location.Suburb,
                     City = location.City,
                     Province = location.Province,
@@ -331,9 +333,9 @@ namespace Project.Controllers
                 }
 
                 // Soft delete (as per project checklist)
-                location.IsActive = false;
-                location.ModifiedAt = DateTime.UtcNow;
-                location.ModifiedBy = User?.Identity?.Name ?? "System";
+                location.IsDeleted = false;
+                location.UpdatedAt = DateTime.UtcNow;
+                location.UpdatedBy = User?.Identity?.Name ?? "System";
 
                 await _db.SaveChangesAsync();
                 TempData["success"] = "Location deactivated successfully.";
@@ -355,7 +357,7 @@ namespace Project.Controllers
             {
                 var exists = await _db.Locations
                     .AnyAsync(l => l.Id != id &&
-                                  l.IsActive &&
+                                  l.IsDeleted &&
                                   l.Suburb == suburb.Trim() &&
                                   l.City == city.Trim() &&
                                   l.Province == province.Trim());
@@ -376,7 +378,7 @@ namespace Project.Controllers
             try
             {
                 var locations = await _db.Locations
-                    .Where(l => l.Province == province && l.IsActive)
+                    .Where(l => l.Province == province && l.IsDeleted)
                     .OrderBy(l => l.City)
                     .ThenBy(l => l.Suburb)
                     .Select(l => new { l.Id, DisplayName = $"{l.Suburb}, {l.City}" })
@@ -398,7 +400,7 @@ namespace Project.Controllers
             try
             {
                 var provinces = await _db.Locations
-                    .Where(l => l.IsActive)
+                    .Where(l => l.IsDeleted)
                     .Select(l => l.Province)
                     .Distinct()
                     .OrderBy(p => p)
@@ -420,7 +422,7 @@ namespace Project.Controllers
             try
             {
                 var cities = await _db.Locations
-                    .Where(l => l.Province == province && l.IsActive)
+                    .Where(l => l.Province == province && l.IsDeleted)
                     .Select(l => l.City)
                     .Distinct()
                     .OrderBy(c => c)
@@ -442,7 +444,7 @@ namespace Project.Controllers
             try
             {
                 var suburbs = await _db.Locations
-                    .Where(l => l.Province == province && l.City == city && l.IsActive)
+                    .Where(l => l.Province == province && l.City == city && l.IsDeleted)
                     .Select(l => l.Suburb)
                     .Distinct()
                     .OrderBy(s => s)
@@ -469,8 +471,8 @@ namespace Project.Controllers
                     return Json(new { success = false, message = "Location not found." });
                 }
 
-                location.ModifiedAt = DateTime.UtcNow;
-                location.ModifiedBy = User?.Identity?.Name ?? "System";
+                location.UpdatedAt = DateTime.UtcNow;
+                location.UpdatedBy = User?.Identity?.Name ?? "System";
 
                 await _db.SaveChangesAsync();
 
@@ -492,14 +494,13 @@ namespace Project.Controllers
         {
             var location = new Location
             {
-                AddressLine1 = vm.AddressLine1.Trim(),
-                AddressLine2 = vm.AddressLine2?.Trim(),
+                StreetAddress = vm.StreetAddress.Trim(),
                 Suburb = vm.Suburb.Trim(),
                 City = vm.City.Trim(),
                 Province = vm.Province.Trim(),
                 PostalCode = vm.PostalCode.Trim(),
                 Country = vm.Country.Trim(),
-                IsActive = vm.IsActive,
+                IsDeleted = vm.IsDeleted,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = User?.Identity?.Name ?? "System"
             };
@@ -513,16 +514,15 @@ namespace Project.Controllers
             var location = await _db.Locations.FindAsync(vm.Id);
             if (location == null) throw new Exception("Location not found");
 
-            location.AddressLine1 = vm.AddressLine1.Trim();
-            location.AddressLine2 = vm.AddressLine2?.Trim();
+            location.StreetAddress = vm.StreetAddress.Trim();
             location.Suburb = vm.Suburb.Trim();
             location.City = vm.City.Trim();
             location.Province = vm.Province.Trim();
             location.PostalCode = vm.PostalCode.Trim();
             location.Country = vm.Country.Trim();
-            location.IsActive = vm.IsActive;
-            location.ModifiedAt = DateTime.UtcNow;
-            location.ModifiedBy = User?.Identity?.Name ?? "System";
+            location.IsDeleted = vm.IsDeleted;
+            location.UpdatedAt = DateTime.UtcNow;
+            location.UpdatedBy = User?.Identity?.Name ?? "System";
 
             _db.Locations.Update(location);
             await _db.SaveChangesAsync();
@@ -533,7 +533,7 @@ namespace Project.Controllers
 
             // Province dropdown for filter
             var provinces = await _db.Locations
-                .Where(l => l.IsActive)
+                .Where(l => l.IsDeleted)
                 .Select(l => l.Province)
                 .Distinct()
                 .OrderBy(p => p)
@@ -546,7 +546,7 @@ namespace Project.Controllers
         {
             // Province filter
             var provinces = await _db.Locations
-                .Where(l => l.IsActive)
+                .Where(l => l.IsDeleted)
                 .Select(l => l.Province)
                 .Distinct()
                 .OrderBy(p => p)
@@ -554,7 +554,7 @@ namespace Project.Controllers
 
             // City filter
             var cities = await _db.Locations
-                .Where(l => l.IsActive)
+                .Where(l => l.IsDeleted)
                 .Select(l => l.City)
                 .Distinct()
                 .OrderBy(c => c)
@@ -575,7 +575,7 @@ namespace Project.Controllers
                     TotalCustomers = l.Customers.Count(c => c.IsActive),
                     TotalEmployees = l.Employees.Count(e => e.IsActive),
                     PendingMaintenance = l.MaintenanceVisits.Count(m => m.Status == ServicingStatus.Scheduled),
-                    OpenFaults = l.FaultReports.Count(f => f.Status == FaultStatus.Acknowledged || f.Status == FaultStatus.InProgress)
+                    OpenFaults = l.FaultReports.Count(f => f.Status == FaultStatus.Assigned || f.Status == FaultStatus.InProgress)
                 })
                 .FirstOrDefaultAsync();
 
@@ -593,10 +593,10 @@ namespace Project.Controllers
         private async Task<(bool CanDelete, string Message)> CheckLocationDependencies(int locationId)
         {
             var activeEmployees = await _db.Employees
-                .AnyAsync(e => e.IsActive && e.UserAccount != null && e.UserAccount.LocationId == locationId);
-            var activeCustomers = await _db.Customers.AnyAsync(c => c.LocationId == locationId && c.IsActive);
+                .AnyAsync(e => e.IsActive && e.UserAccount != null && e.WorkLocationId == locationId);
+            var activeCustomers = await _db.Customers.AnyAsync(c => c.TradingLocationId == locationId && c.IsActive);
             var activeFridges = await _db.Fridges.AnyAsync(f => f.LocationId == locationId && f.IsActive);
-            var activeAllocations = await _db.FridgeAllocations.AnyAsync(a => a.Customer.LocationId == locationId && a.Status == AllocationStatus.Active);
+            var activeAllocations = await _db.FridgeAllocations.AnyAsync(a => a.Customer.TradingLocationId == locationId && a.AllocationStatus == AllocationStatus.Active);
 
             if (activeEmployees || activeCustomers || activeFridges || activeAllocations)
             {
@@ -621,14 +621,14 @@ namespace Project.Controllers
                     .Where(a => a.DeliveryLocationId == locationId)
                     .OrderByDescending(a => a.AllocationDate)
                     .Take(5)
-                    .Select(a => new { a.Id, a.Fridge.SerialNumber, a.Customer.TradingName, a.AllocationDate })
+                    .Select(a => new { a.Id, a.Fridge.SerialNumber, a.Customer.BusinessName, a.AllocationDate })
                     .ToListAsync(),
 
                 RecentMaintenance = await _db.MaintenanceVisits
                      .Where(m => m.Allocation != null && m.Allocation.DeliveryLocationId == locationId)
                      .OrderByDescending(m => m.ScheduledDate)
                     .Take(5)
-                    .Select(m => new { m.Id, m.ScheduledDate, m.Technician.UserAccount.FirstName, m.Status })
+                    .Select(m => new { m.Id, m.ScheduledDate, m.AssignedTechnician.UserAccount.FirstName, m.Status })
                     .ToListAsync(),
 
                 RecentFaults = await _db.FaultRecords
@@ -641,7 +641,6 @@ namespace Project.Controllers
 
             return recentActivities;
         }
-
         #endregion
     }
 }

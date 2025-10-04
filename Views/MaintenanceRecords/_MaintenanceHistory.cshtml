@@ -31,23 +31,7 @@
                                 <td>
                                     @(record.ServiceDate?.ToString("dd/MM/yyyy") ?? "-")
                                 </td>
-                                <td>
-                                    <span class="badge bg-@GetServiceTypeBadge(record.ServiceType)">
-                                        @record.ServiceType
-                                    </span>
-                                </td>
                                 <td>@record.Technician?.UserAccount?.FirstName</td>
-                                <td>
-                                    @(record.Cost.HasValue
-                                        ? $"R {record.Cost.Value.ToString("N2")}"
-                                        : "<span class='text-muted'>-</span>")
-                                </td>
-                                <td>
-                                    @if (record.IsWarrantyClaim)
-                                    {
-                                        <i class="fas fa-check text-success" title="Warranty Claim"></i>
-                                    }
-                                </td>
                                 <td>
                                     <a asp-controller="MaintenanceRecords" asp-action="Details" asp-route-id="@record.Id"
                                        class="btn btn-sm btn-outline-primary">
@@ -90,17 +74,3 @@
         }
     </div>
 </div>
-
-@functions {
-    public string GetServiceTypeBadge(ServicingType serviceType)
-    {
-        return serviceType switch
-        {
-            ServicingType.Installation => "primary",
-            ServicingType.PreventiveMaintenance => "warning",
-            ServicingType.CorrectiveMaintenance => "danger",
-            ServicingType.Inspection => "success",
-            _ => "secondary"
-        };
-    }
-}

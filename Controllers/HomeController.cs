@@ -28,16 +28,16 @@ namespace Project.Controllers
 
         //public async Task<IActionResult> Dashboard()
         //{
-        //    if (User.IsInRole(SD.AdminRole))
+        //    if (User.IsInRole(Roles.AdminRole))
         //    {
-        //        ViewBag.TotalFridges = await _db.Fridges.CountAsync(f => f.IsActive);
-        //        ViewBag.ActiveCustomers = await _db.Customers.CountAsync(c => c.IsActive);
+        //        ViewBag.TotalFridges = await _db.Fridges.CountAsync(f => f.IsScrapped);
+        //        ViewBag.ActiveCustomers = await _db.Customers.CountAsync(c => c.IsScrapped);
         //        ViewBag.PendingRequests = await _db.AllocationRequestHeaders.CountAsync(r => r.Status == "Pending");
-        //        ViewBag.OpenFaults = await _db.FaultRecords.CountAsync(f => !f.IsDeleted);
+        //        ViewBag.OpenFaults = await _db.FaultRecords.CountAsync(f => !f.IsScrapped);
 
         //        return View("AdminDashboard");
         //    }
-        //    else if (User.IsInRole(SD.CustomerRole))
+        //    else if (User.IsInRole(Roles.CustomerRole))
         //    {
         //        return View("CustomerDashboard");
         //    }

@@ -214,9 +214,9 @@ namespace Project.Controllers
                         allocation.ActualReturnDate = vm.ActualReturnDate;
                         allocation.MonthlyRentalPrice = vm.MonthlyRentalPrice;
                         allocation.Notes = vm.Notes;
-                        allocation.Status = vm.Status;
-                        allocation.ModifiedAt = DateTime.UtcNow;
-                        allocation.ModifiedBy = User.Identity.Name;
+                        allocation.AllocationStatus = vm.Status;
+                        allocation.UpdatedAt = DateTime.UtcNow;
+                        allocation.UpdatedBy = User.Identity.Name;
 
                         _db.FridgeAllocations.Update(allocation);
                         await _db.SaveChangesAsync();
@@ -271,7 +271,7 @@ namespace Project.Controllers
                 AllocationId = allocation.Id,
                 FridgeSerialNumber = allocation.Fridge?.SerialNumber ?? "Unknown",
                 FridgeModel = allocation.Fridge?.FridgeModel?.DisplayName ?? "Unknown Model",
-                CustomerName = allocation.Customer?.TradingName ?? "Unknown Customer",
+                CustomerName = allocation.Customer?.BusinessName ?? "Unknown Customer",
                 CustomerBusinessType = allocation.Customer?.BusinessType ?? BusinessType.SpazaShop,
                 AllocationDate = allocation.AllocationDate,
                 MonthlyRental = allocation.MonthlyRentalPrice,
@@ -325,8 +325,8 @@ namespace Project.Controllers
 
                     // Apply deallocation to the allocation entity
                     vm.ApplyToAllocation(allocation);
-                    allocation.ModifiedAt = DateTime.UtcNow;
-                    allocation.ModifiedBy = User.Identity.Name;
+                    allocation.UpdatedAt = DateTime.UtcNow;
+                    allocation.UpdatedBy = User.Identity.Name;
 
                     _db.FridgeAllocations.Update(allocation);
                     await _db.SaveChangesAsync();
@@ -406,16 +406,16 @@ namespace Project.Controllers
                 return NotFound();
             }
 
-            if (allocation.Status != AllocationStatus.Pending)
+            if (allocation.AllocationStatus != AllocationStatus.Pending)
             {
                 TempData["error"] = "Only pending allocations can be deleted.";
                 return RedirectToAction(nameof(Details), new { id = allocation.Id });
             }
 
             // Soft delete
-            allocation.IsActive = false;
-            allocation.ModifiedAt = DateTime.UtcNow;
-            allocation.ModifiedBy = User.Identity.Name;
+            allocation.IsDeleted = true;
+            allocation.UpdatedAt = DateTime.UtcNow;
+            allocation.UpdatedBy = User.Identity.Name;
 
             // Update fridge status back to available
             await UpdateFridgeStatus(allocation.FridgeId, FridgeStatus.Available);
@@ -443,28 +443,28 @@ namespace Project.Controllers
                 .ToListAsync();
 
             vm.CustomerList = await _db.Customers
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.TradingName)
+                .Where(c => !c.UserAccount.IsDeleted)
+                .OrderBy(c => c.BusinessName)
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
-                    Text = $"{c.TradingName} ({c.BusinessType})"
+                    Text = $"{c.BusinessName} ({c.BusinessType})"
                 })
                 .ToListAsync();
 
             vm.LocationList = await _db.Locations
-                .Where(l => l.IsActive)
+                .Where(l => l.IsDeleted)
                 .OrderBy(l => l.City)
                 .Select(l => new SelectListItem
                 {
                     Value = l.Id.ToString(),
-                    Text = $"{l.AddressLine1} - {l.Suburb}, {l.City}"
+                    Text = $"{l.StreetAddress} - {l.Suburb}, {l.City}"
                 })
                 .ToListAsync();
 
             vm.EmployeeList = await _db.Employees
                 .Include(e => e.UserAccount)
-                .Where(e => e.IsActive)
+                .Where(e => !e.UserAccount.IsDeleted)
                 .OrderBy(e => e.UserAccount.LastName)
                 .Select(e => new SelectListItem
                 {
@@ -487,7 +487,7 @@ namespace Project.Controllers
                 .Select(r => new SelectListItem
                 {
                     Value = r.Id.ToString(),
-                    Text = $"Request #{r.Id:00000} - {r.Customer.TradingName} ({r.RequestDate:dd/MM/yyyy})"
+                    Text = $"Request #{r.Id:00000} - {r.Customer.BusinessName} ({r.RequestDate:dd/MM/yyyy})"
                 })
                 .ToListAsync();
         }
@@ -507,7 +507,7 @@ namespace Project.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var employee = await _db.Employees
-                .FirstOrDefaultAsync(e => e.UserId == userId && e.IsActive);
+                .FirstOrDefaultAsync(e => e.UserId == userId && !e.UserAccount.IsDeleted);
             return employee?.Id ?? 0;
         }
 
@@ -515,7 +515,7 @@ namespace Project.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await _db.Customers
-                .FirstOrDefaultAsync(c => c.UserId == userId && c.IsActive);
+                .FirstOrDefaultAsync(c => c.UserId == userId && !c.UserAccount.IsDeleted);
         }
 
         private async Task UpdateFridgeStatus(int fridgeId, FridgeStatus status)
@@ -524,7 +524,7 @@ namespace Project.Controllers
             if (fridge != null)
             {
                 fridge.Status = status;
-                fridge.ModifiedAt = DateTime.UtcNow;
+                fridge.UpdatedAt = DateTime.UtcNow;
                 _db.Fridges.Update(fridge);
                 await _db.SaveChangesAsync();
             }
@@ -538,7 +538,7 @@ namespace Project.Controllers
                 CustomerId = allocation.CustomerId,
                 ScheduledDate = DateTime.UtcNow.AddDays(7), // Schedule for next week
                 Status = ServicingStatus.Scheduled,
-                IssueDescription = $"Maintenance required after deallocation: {vm.MaintenanceRequired}",
+                MaintenanceDetails = $"Maintenance required after deallocation: {vm.MaintenanceRequired}",
                 CreatedBy = User.Identity.Name,
                 CreatedAt = DateTime.UtcNow
             };
@@ -615,7 +615,7 @@ namespace Project.Controllers
     //        AllocationVM.RequestHeader.LastName = customer.UserAccount?.LastName ?? "";
 
     //        // Use Customer'CustomersController address properties (not UserAccount'CustomersController)
-    //        AllocationVM.RequestHeader.AddressLine1 = customer.AddressLine1;
+    //        AllocationVM.RequestHeader.StreetAddress = customer.StreetAddress;
     //        AllocationVM.RequestHeader.AddressLine2 = customer.AddressLine2;
     //        AllocationVM.RequestHeader.City = customer.City;
     //        AllocationVM.RequestHeader.Province = customer.Province;

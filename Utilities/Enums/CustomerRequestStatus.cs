@@ -5,39 +5,30 @@ namespace Project.Utilities.Enums
     public enum CustomerRequestStatus
     {
         [Display(Name = "Draft")]
-        Draft, // Customer is still composing the request
+        Draft,
 
         [Display(Name = "Submitted")]
-        Submitted, // Customer has submitted the request for review
+        Submitted,
 
         [Display(Name = "Under Review")]
-        UnderReview, // Customer liaison is reviewing the request
+        UnderReview,
 
         [Display(Name = "Additional Info Required")]
-        AdditionalInfoRequired, // More details needed from customer
+        AdditionalInfoRequired,
 
         [Display(Name = "Approved")]
-        Approved, // Request has been approved, replacement being processed
-
-        [Display(Name = "Replacement Scheduled")]
-        ReplacementScheduled, // AssignedTechnician visit scheduled
+        Approved,
 
         [Display(Name = "In Progress")]
-        InProgress, // Replacement process has begun
+        InProgress,
 
         [Display(Name = "Completed")]
-        Completed, // Replacement successfully fulfilled
-
-        [Display(Name = "Partially Completed")]
-        PartiallyCompleted, // Some but not all items replaced
+        Completed,
 
         [Display(Name = "Rejected")]
-        Rejected, // Request was denied
+        Rejected,
 
         [Display(Name = "Cancelled")]
-        Cancelled, // Customer cancelled the request
-
-        [Display(Name = "On Hold")]
-        OnHold // Request paused temporarily
+        Cancelled
     }
 }

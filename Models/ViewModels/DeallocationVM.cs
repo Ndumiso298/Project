@@ -40,14 +40,14 @@ namespace Project.Models.ViewModels
 
         // Deallocation Information
         [Required(ErrorMessage = "Deallocation date is required.")]
-        [Display(Name = "Deallocation Date *")]
+        [Display(Name = "Deallocation Date")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         [DateGreaterThan("AllocationDate", ErrorMessage = "Deallocation date must be after allocation date.")]
         public DateTime DeallocationDate { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Deallocation reason is required.")]
-        [Display(Name = "Deallocation Reason *")]
+        [Display(Name = "Deallocation Reason")]
         public DeallocationReason DeallocationReason { get; set; }
 
         [Display(Name = "Other Reason Description")]
@@ -55,7 +55,7 @@ namespace Project.Models.ViewModels
         public string? OtherReasonDescription { get; set; }
 
         [Required(ErrorMessage = "Fridge condition is required.")]
-        [Display(Name = "Fridge Condition on Return *")]
+        [Display(Name = "Fridge Condition on Return")]
         public FridgeCondition ReturnCondition { get; set; }
 
         [Display(Name = "Condition Notes")]
@@ -138,7 +138,7 @@ namespace Project.Models.ViewModels
         public bool RequiresDamageAssessment => ReturnCondition == FridgeCondition.Poor;
 
         [Display(Name = "Can Be Reallocated")]
-        public bool CanBeReallocated => ReturnCondition == FridgeCondition.New ||  ReturnCondition == FridgeCondition.Refurbished;
+        public bool CanBeReallocated => ReturnCondition == FridgeCondition.Excellent ||  ReturnCondition == FridgeCondition.Good;
 
         [Display(Name = "Should Be Scrapped")]
         public bool ShouldBeScrapped => ReturnCondition == FridgeCondition.Poor;
@@ -185,9 +185,8 @@ namespace Project.Models.ViewModels
         // Mapping method to update allocation entity
         public void ApplyToAllocation(FridgeAllocation allocation)
         {
-            allocation.Status = AllocationStatus.Completed;
+            allocation.AllocationStatus = AllocationStatus.Completed;
             allocation.ActualReturnDate = DeallocationDate;
-            allocation.IsActive = false;
 
             // Add deallocation notes
             var deallocationNote = $"\n[Deallocation - {DateTime.Now:dd/MM/yyyy HH:mm}] " +

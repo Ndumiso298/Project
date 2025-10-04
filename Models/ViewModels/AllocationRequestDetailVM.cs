@@ -9,35 +9,46 @@ namespace Project.Models.ViewModels
         public int Id { get; set; }
         public Guid TempId { get; set; } = Guid.NewGuid();
 
-        // Parent Reference (for validation)
+        // Parent Reference
+        [Display(Name = "Request Header ID")]
         public int AllocationRequestHeaderId { get; set; }
 
         // Fridge Selection
         [Required(ErrorMessage = "Fridge model is required.")]
-        [Display(Name = "Fridge Model *")]
+        [Display(Name = "Fridge Model")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid fridge model.")]
         public int FridgeModelId { get; set; }
 
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, 50, ErrorMessage = "Quantity must be between 1 and 50.")]
-        [Display(Name = "Quantity *")]
-        public int Quantity { get; set; }
+        [Display(Name = "Quantity")]
+        public int Quantity { get; set; } = 1;
 
         [Required(ErrorMessage = "Rental duration is required.")]
         [Range(1, 60, ErrorMessage = "Rental duration must be between 1 and 60 months.")]
-        [Display(Name = "Rental Duration (Months) *")]
+        [Display(Name = "Rental Duration (Months)")]
         public int RentalDurationMonths { get; set; } = 12;
+
+        // ===== REPLACEMENT-SPECIFIC =====
+        [Display(Name = "Is Replacement Unit")]
+        public bool IsReplacementUnit { get; set; }
 
         [StringLength(500, ErrorMessage = "Special requirements cannot exceed 500 characters.")]
         [Display(Name = "Special Requirements")]
         public string? SpecialRequirements { get; set; }
 
-        // Display Properties
+        // ===== DISPLAY PROPERTIES =====
         [Display(Name = "Fridge Model")]
         public FridgeModelVM? FridgeModel { get; set; }
 
         [Display(Name = "Model Name")]
         public string ModelName => FridgeModel?.DisplayName ?? "Unknown Model";
+
+        [Display(Name = "Manufacturer")]
+        public string Manufacturer => FridgeModel?.Manufacturer ?? "Unknown";
+
+        [Display(Name = "Capacity")]
+        public string Capacity => FridgeModel != null ? $"{FridgeModel.CapacityLiters}L" : "N/A";
 
         [Display(Name = "Monthly Rental Price")]
         [DataType(DataType.Currency)]
@@ -46,7 +57,7 @@ namespace Project.Models.ViewModels
         [Display(Name = "Available Stock")]
         public int AvailableStock { get; set; }
 
-        // Computed Properties
+        // ===== COMPUTED PROPERTIES =====
         [Display(Name = "Monthly Total")]
         [DataType(DataType.Currency)]
         public decimal MonthlyTotal => Quantity * MonthlyRentalPrice;
@@ -54,10 +65,6 @@ namespace Project.Models.ViewModels
         [Display(Name = "Line Total")]
         [DataType(DataType.Currency)]
         public decimal LineTotal => MonthlyTotal * RentalDurationMonths;
-
-        [Display(Name = "Total Rental Period Cost")]
-        [DataType(DataType.Currency)]
-        public decimal TotalRentalPeriodCost => LineTotal;
 
         [Display(Name = "Has Sufficient Stock")]
         public bool HasSufficientStock => Quantity <= AvailableStock;
@@ -74,12 +81,15 @@ namespace Project.Models.ViewModels
         public bool IsValid => FridgeModelId > 0 &&
                               Quantity > 0 &&
                               RentalDurationMonths > 0 &&
-                              HasSufficientStock;
+                              MonthlyRentalPrice > 0;
 
         [Display(Name = "Can Edit")]
         public bool CanEdit { get; set; } = true;
 
-        // Enhanced Validation Methods
+        [Display(Name = "Is Replacement")]
+        public bool IsReplacement => IsReplacementUnit;
+
+        // ===== VALIDATION METHODS =====
         public IEnumerable<string> GetValidationErrors()
         {
             var errors = new List<string>();
@@ -102,14 +112,13 @@ namespace Project.Models.ViewModels
             if (!HasSufficientStock)
                 errors.Add($"{ModelName}: Only {AvailableStock} units available (requested {Quantity})");
 
-            // Business rule: Minimum quantity based on business type could be added here
-            if (Quantity < 1) // Could be configurable per business type
-                errors.Add($"Minimum quantity for {ModelName} is 1 unit");
+            if (MonthlyRentalPrice <= 0)
+                errors.Add($"Invalid pricing for {ModelName}");
 
             return errors;
         }
 
-        // Mapping Methods
+        // ===== MAPPING METHODS =====
         public AllocationRequestDetail ToEntity()
         {
             return new AllocationRequestDetail
@@ -119,14 +128,14 @@ namespace Project.Models.ViewModels
                 FridgeModelId = FridgeModelId,
                 Quantity = Quantity,
                 RentalDurationMonths = RentalDurationMonths,
-                SpecialRequirements = SpecialRequirements?.Trim(), // Sanitize input
+                SpecialRequirements = SpecialRequirements?.Trim(),
+                UnitPrice = MonthlyRentalPrice // Use the displayed price
             };
         }
 
         public static AllocationRequestDetailVM FromEntity(AllocationRequestDetail entity, int availableStock = 0)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            if (entity == null) return new AllocationRequestDetailVM();
 
             return new AllocationRequestDetailVM
             {
@@ -140,7 +149,7 @@ namespace Project.Models.ViewModels
             };
         }
 
-        // Helper method for UI
+        // ===== HELPER METHODS =====
         public Dictionary<string, string> GetValidationAttributes()
         {
             return new Dictionary<string, string>
@@ -150,9 +159,16 @@ namespace Project.Models.ViewModels
             { "data-is-valid", IsValid.ToString().ToLower() },
             { "data-temp-id", TempId.ToString() },
             { "data-model-name", ModelName },
-            { "data-min-quantity", "1" }, // Configurable business rule
-            { "data-max-quantity", "50" } // Configurable business rule
+            { "data-min-quantity", "1" },
+            { "data-max-quantity", "50" },
+            { "data-is-replacement", IsReplacementUnit.ToString().ToLower() }
         };
+        }
+
+        public void MarkAsReplacement()
+        {
+            IsReplacementUnit = true;
+            Quantity = 1; // Replacements are typically 1:1
         }
     }
 }

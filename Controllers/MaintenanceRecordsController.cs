@@ -35,7 +35,7 @@ namespace Project.Controllers
                     .Include(r => r.Fridge)
                     .Include(r => r.Technician)
                     .Include(r => r.MaintenanceVisit)
-                    .Where(r => r.IsActive);
+                    .Where(r => !r.IsDeleted);
 
                 // Apply filters
                 if (fridgeId.HasValue)
@@ -80,7 +80,7 @@ namespace Project.Controllers
                     .Include(r => r.Fridge)
                     .Include(r => r.Technician)
                     .Include(r => r.MaintenanceVisit)
-                    .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
+                    .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
 
                 if (record == null)
                 {
@@ -116,14 +116,14 @@ namespace Project.Controllers
                     {
                         var visit = await _db.MaintenanceVisits
                             .Include(v => v.Fridge)
-                            .Include(v => v.Technician)
-                            .FirstOrDefaultAsync(v => v.Id == visitId && v.IsActive);
+                            .Include(v => v.AssignedTechnician)
+                            .FirstOrDefaultAsync(v => v.Id == visitId && !v.IsDeleted);
 
                         if (visit != null)
                         {
                             vm.MaintenanceVisitId = visitId;
                             vm.FridgeId = visit.FridgeId;
-                            vm.TechnicianId = visit.TechnicianId;
+                            vm.TechnicianId = visit.AssignedTechnicianId;
                             vm.ServiceDate = visit.ScheduledDate;
                         }
                     }
@@ -133,7 +133,7 @@ namespace Project.Controllers
 
                 // Edit existing record
                 var record = await _db.MaintenanceRecords
-                    .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
+                    .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
 
                 if (record == null)
                 {
@@ -165,15 +165,6 @@ namespace Project.Controllers
                     await PopulateDropdowns(vm);
                     return View(vm);
                 }
-
-                // Validate business rules
-                if (vm.StartTime.HasValue && vm.EndTime.HasValue && vm.StartTime >= vm.EndTime)
-                {
-                    ModelState.AddModelError(nameof(vm.EndTime), "End time must be after start time");
-                    await PopulateDropdowns(vm);
-                    return View(vm);
-                }
-
                 if (vm.Id == 0)
                 {
                     // Create new record
@@ -190,7 +181,7 @@ namespace Project.Controllers
                 {
                     // Update existing record
                     var record = await _db.MaintenanceRecords
-                        .FirstOrDefaultAsync(r => r.Id == vm.Id && r.IsActive);
+                        .FirstOrDefaultAsync(r => r.Id == vm.Id && !r.IsDeleted);
 
                     if (record == null)
                     {
@@ -199,7 +190,7 @@ namespace Project.Controllers
                     }
 
                     MapViewModelToEntity(vm, record);
-                    record.ModifiedDate = DateTime.Now;
+                    record.UpdatedAt = DateTime.Now;
 
                     _db.MaintenanceRecords.Update(record);
                     await _db.SaveChangesAsync();
@@ -230,7 +221,7 @@ namespace Project.Controllers
             try
             {
                 var record = await _db.MaintenanceRecords
-                    .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
+                    .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
 
                 if (record == null)
                 {
@@ -239,8 +230,8 @@ namespace Project.Controllers
                 }
 
                 // Soft delete
-                record.IsActive = false;
-                record.ModifiedDate = DateTime.Now;
+                record.IsDeleted = true;
+                record.UpdatedAt = DateTime.Now;
 
                 await _db.SaveChangesAsync();
                 TempData["success"] = "Maintenance record deleted successfully";
@@ -282,7 +273,7 @@ namespace Project.Controllers
                     .ToListAsync();
 
                 vm.VisitList = await _db.MaintenanceVisits
-                    .Where(v => v.IsActive && (v.Status == ServicingStatus.Scheduled || v.Status == ServicingStatus.InProgress))
+                    .Where(v => !v.IsDeleted && (v.Status == ServicingStatus.Scheduled || v.Status == ServicingStatus.InProgress))
                     .OrderByDescending(v => v.ScheduledDate)
                     .Select(v => new SelectListItem
                     {
@@ -290,14 +281,6 @@ namespace Project.Controllers
                         Text = $"Visit #{v.Id} - {v.ScheduledDate:dd/MM/yyyy HH:mm} - {v.Customer.UserAccount.FirstName}"
                     })
                     .ToListAsync();
-
-                vm.ServiceTypeList = Enum.GetValues<ServicingType>()
-                    .Select(st => new SelectListItem
-                    {
-                        Value = st.ToString(),
-                        Text = st.ToString()
-                    })
-                    .ToList();
             }
             catch (Exception ex)
             {
@@ -306,7 +289,6 @@ namespace Project.Controllers
                 vm.FridgeList ??= new List<SelectListItem>();
                 vm.TechnicianList ??= new List<SelectListItem>();
                 vm.VisitList ??= new List<SelectListItem>();
-                vm.ServiceTypeList ??= new List<SelectListItem>();
             }
         }
 
@@ -330,15 +312,7 @@ namespace Project.Controllers
             vm.TechnicianId = entity.TechnicianId;
             vm.MaintenanceVisitId = entity.MaintenanceVisitId;
             vm.ServiceDate = entity.ServiceDate;
-            vm.ServiceType = entity.ServiceType;
-            vm.Description = entity.Description;
             vm.ServiceNotes = entity.ServiceNotes;
-            vm.Cost = entity.Cost;
-            vm.PartsUsed = entity.PartsUsed;
-            vm.StartTime = entity.StartTime;
-            vm.EndTime = entity.EndTime;
-            vm.IsWarrantyClaim = entity.IsWarrantyClaim;
-            vm.WarrantyReference = entity.WarrantyReference;
         }
 
         private MaintenanceRecord MapViewModelToEntity(MaintenanceRecordVM vm, MaintenanceRecord? entity = null)
@@ -349,22 +323,14 @@ namespace Project.Controllers
             entity.TechnicianId = vm.TechnicianId;
             entity.MaintenanceVisitId = vm.MaintenanceVisitId;
             entity.ServiceDate = vm.ServiceDate;
-            entity.ServiceType = vm.ServiceType;
-            entity.Description = vm.Description;
             entity.ServiceNotes = vm.ServiceNotes;
-            entity.Cost = vm.Cost;
-            entity.PartsUsed = vm.PartsUsed;
-            entity.StartTime = vm.StartTime;
-            entity.EndTime = vm.EndTime;
-            entity.IsWarrantyClaim = vm.IsWarrantyClaim;
-            entity.WarrantyReference = vm.WarrantyReference;
-            entity.IsActive = true;
+            entity.IsDeleted = false;
 
             if (entity.Id == 0)
             {
-                entity.CreatedDate = DateTime.Now;
+                entity.CreatedAt = DateTime.Now;
             }
-            entity.ModifiedDate = DateTime.Now;
+            entity.UpdatedAt = DateTime.Now;
 
             return entity;
         }
@@ -377,7 +343,7 @@ namespace Project.Controllers
                 if (fridge != null)
                 {
                     fridge.LastServiceDate = serviceDate;
-                    fridge.ModifiedAt = DateTime.Now;
+                    fridge.UpdatedAt = DateTime.Now;
                     _db.Fridges.Update(fridge);
                     await _db.SaveChangesAsync();
                 }

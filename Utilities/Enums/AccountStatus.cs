@@ -8,11 +8,11 @@ namespace Project.Utilities.Enums
         [Display(Name = "Pending Approval")]
         PendingApproval,
 
-        [Display(Name = "Active")]
-        Active,
+        [Display(Name = "Approved")]
+        Approved,
 
-        [Display(Name = "Suspended")]
-        Suspended,
+        [Display(Name = "Rejected")]
+        Rejected,
 
         [Display(Name = "Deactivated")]
         Deactivated,

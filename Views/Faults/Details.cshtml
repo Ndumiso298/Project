@@ -1,356 +1,265 @@
-﻿<!-- Views/Faults/Details.cshtml -->
-@model FaultRecord
-@inject ApplicationDbContext _db
-@using Microsoft.AspNetCore.Html
-@using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
-@using Project.Data
-
+﻿@model FaultRecord
 @{
-    ViewData["Title"] = $"Fault Details #{Model.Id}";
-    var claimsIdentity = (ClaimsIdentity)User.Identity;
-    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    var isCustomer = User.IsInRole(SD.CustomerRole);
+    ViewData["Title"] = "Fault Details";
 }
 
 <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-ticket-alt text-primary me-2"></i>Fault Details
+        </h1>
+        <div class="btn-group">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to List
+            </a>
+            <a asp-action="Print" asp-route-id="@Model.Id" class="btn btn-outline-info">
+                <i class="fas fa-print me-1"></i>Print
+            </a>
+            @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.FaultTechnicianRole))
+            {
+                <a asp-action="Process" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="fas fa-cogs me-1"></i>Process Fault
+                </a>
+            }
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Title"]
-                    </h3>
-                    <div>
-                        <a asp-action="Index" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-left me-1"></i>Back to List
-                        </a>
-                    </div>
+        <!-- Main Information -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Fault Information
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <!-- Action Buttons -->
-                    <div class="row mb-4">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Fault Code</label>
+                            <p class="form-control-plaintext">@Model.FaultCode</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Title</label>
+                            <p class="form-control-plaintext">@Model.Title</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-12">
-                            <div class="btn-group" role="group">
-                                @if (Model.Status == FaultStatus.Reported &&
-                                (User.IsInRole(SD.AdminRole) || isCustomer))
-                                {
-                                    <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
-                                        <i class="fas fa-edit me-1"></i>Edit Fault
-                                    </a>
-                                }
-                                @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.FaultTechnicianRole))
-                                {
-                                    <a asp-action="Process" asp-route-id="@Model.Id" class="btn btn-info">
-                                        <i class="fas fa-cogs me-1"></i>Process Fault
-                                    </a>
-                                }
-                                <a asp-action="Print" asp-route-id="@Model.Id" class="btn btn-secondary" target="_blank">
-                                    <i class="fas fa-print me-1"></i>Print Report
-                                </a>
-                                @if (User.IsInRole(SD.AdminRole))
-                                {
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                        <i class="fas fa-trash me-1"></i>Delete
-                                    </button>
-                                }
+                            <label class="form-label fw-bold">Description</label>
+                            <div class="border rounded p-3 bg-light">
+                                @Model.Description
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <!-- Fault Information -->
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="card-title mb-0">Fault Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td><strong>Fault #:</strong></td>
-                                            <td>#@Model.Id</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Status:</strong></td>
-                                            <td>@GetStatusBadge(Model.Status)</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Priority:</strong></td>
-                                            <td>@GetPriorityBadge(Model.Priority)</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Reported Date:</strong></td>
-                                            <td>@Model.ReportedDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                        </tr>
-                                        @if (Model.ResolvedDate.HasValue)
-                                        {
-                                            <tr>
-                                                <td><strong>Resolved Date:</strong></td>
-                                                <td>@Model.ResolvedDate.Value.ToString("dd/MM/yyyy HH:mm")</td>
-                                            </tr>
-                                        }
-                                        <tr>
-                                            <td><strong>Description:</strong></td>
-                                            <td>@Model.Description</td>
-                                        </tr>
-                                    </table>
-                                </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Status</label>
+                            <div>
+                                <span class="badge @GetStatusBadgeClass(Model.Status) fs-6">
+                                    @Model.Status
+                                </span>
                             </div>
                         </div>
-
-                        <!-- Equipment Information -->
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="card-title mb-0">Equipment Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td><strong>Fridge:</strong></td>
-                                            <td>
-                                                @if (Model.Fridge != null)
-                                                {
-                                                    <div>
-                                                        <strong>@Model.Fridge.SerialNumber</strong>
-                                                        <br />
-                                                        <small class="text-muted">
-                                                            @Model.Fridge.FridgeModel?.Manufacturer @Model.Fridge.FridgeModel?.ModelName
-                                                        </small>
-                                                        <br />
-                                                        <small class="text-muted">@Model.Fridge.FridgeModel?.CapacityLiters L</small>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Not specified</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Location:</strong></td>
-                                            <td>
-                                                @if (Model.RelatedAllocation?.DeliveryLocation != null)
-                                                {
-                                                    @Model.RelatedAllocation.DeliveryLocation.ToString()
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Not specified</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Priority</label>
+                            <div>
+                                <span class="badge @GetPriorityBadgeClass(Model.Priority) fs-6">
+                                    @Model.Priority
+                                </span>
                             </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Category</label>
+                            <p class="form-control-plaintext">@Model.Category</p>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="row">
-                        <!-- Customer Information -->
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="card-title mb-0">Customer Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td><strong>Reported By:</strong></td>
-                                            <td>
-                                                @if (Model.ReportedBy != null)
-                                                {
-                                                    <div>
-                                                        <strong>@Model.ReportedBy.FirstName @Model.ReportedBy.LastName</strong>
-                                                        <br />
-                                                        <small class="text-muted">@Model.ReportedBy.Email</small>
-                                                        <br />
-                                                        <small class="text-muted">@Model.ReportedBy.PhoneNumber</small>
-                                                    </div>
-                                                }
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+            <!-- Resolution Details -->
+            @if (Model.Status == FaultStatus.Resolved || Model.Status == FaultStatus.Closed)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-check-circle me-2"></i>Resolution Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Resolved Date</label>
+                                <p class="form-control-plaintext">
+                                    @Model.ResolvedDate?.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Resolution Time</label>
+                                <p class="form-control-plaintext">
+                                    @if (Model.ResolvedDate.HasValue)
+                                    {
+                                        var resolutionTime = Model.ResolvedDate.Value - Model.ReportedDate;
+                                        <span>@resolutionTime.Days days, @resolutionTime.Hours hours</span>
+                                    }
+                                </p>
                             </div>
                         </div>
 
-                        <!-- Technician Information -->
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="card-title mb-0">Technician Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <td><strong>Assigned To:</strong></td>
-                                            <td>
-                                                @if (Model.AssignedTechnician != null)
-                                                {
-                                                    <div>
-                                                        <strong>@Model.AssignedTechnician.UserAccount?.FirstName @Model.AssignedTechnician.UserAccount?.LastName</strong>
-                                                        <br />
-                                                        <small class="text-muted">@Model.AssignedTechnician.EmployeeType</small>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Unassigned</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    </table>
+                        @if (!string.IsNullOrEmpty(Model.ResolutionNotes))
+                        {
+                            <div class="mt-3">
+                                <label class="form-label fw-bold">Resolution Notes</label>
+                                <div class="border rounded p-3 bg-light">
+                                    @Model.ResolutionNotes
                                 </div>
                             </div>
-                        </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar Information -->
+        <div class="col-lg-4">
+            <!-- Related Entities -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-link me-2"></i>Related Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Fridge</label>
+                        <p class="form-control-plaintext">
+                            <i class="fas fa-refrigerator me-2"></i>
+                            @Model.Fridge?.SerialNumber - @Model.Fridge?.FridgeModel?.ModelName
+                        </p>
                     </div>
 
-                    <!-- Resolution Details -->
-                    @if (!string.IsNullOrEmpty(Model.TechnicianNotes) || !string.IsNullOrEmpty(Model.PartsReplaced) || Model.TotalCost > 0)
-                    {
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h5 class="card-title mb-0">Resolution Details</h5>
-                            </div>
-                            <div class="card-body">
-                                @if (!string.IsNullOrEmpty(Model.TechnicianNotes))
-                                {
-                                    <div class="mb-3">
-                                        <strong>Technician Notes:</strong>
-                                        <p class="mb-0">@Model.TechnicianNotes</p>
-                                    </div>
-                                }
-                                @if (!string.IsNullOrEmpty(Model.PartsReplaced))
-                                {
-                                    <div class="mb-3">
-                                        <strong>Parts Replaced:</strong>
-                                        <p class="mb-0">@Model.PartsReplaced</p>
-                                    </div>
-                                }
-                                @if (Model.TotalCost > 0)
-                                {
-                                    <div>
-                                        <strong>Repair Cost:</strong>
-                                        <span class="fw-bold">R @Model.TotalCost.ToString("N2")</span>
-                                    </div>
-                                }
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Customer</label>
+                        <p class="form-control-plaintext">
+                            <i class="fas fa-user me-2"></i>
+                            @Model.ReportedBy?.FullName
+                        </p>
+                        <small class="text-muted">@Model.ReportedBy?.Email</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Assigned Technician</label>
+                        <p class="form-control-plaintext">
+                            <i class="fas fa-tools me-2"></i>
+                            @(Model.AssignedTechnician?.FullName ?? "Not Assigned")
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Timeline
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Fault Reported</h6>
+                                <small class="text-muted">@Model.ReportedDate.ToString("dd/MM/yyyy HH:mm")</small>
                             </div>
                         </div>
-                    }
 
-                    <!-- Maintenance Visits -->
-                    @if (Model.MaintenanceVisits?.Any() == true)
-                    {
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h5 class="card-title mb-0">Related Maintenance Visits</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Visit #</th>
-                                                <th>Scheduled Date</th>
-                                                <th>Status</th>
-                                                <th>Technician</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var visit in Model.MaintenanceVisits)
-                                            {
-                                                <tr>
-                                                    <td>#@visit.Id</td>
-                                                    <td>@visit.ScheduledDate.ToString("dd/MM/yyyy")</td>
-                                                    <td>@GetServiceStatusBadge(visit.Status)</td>
-                                                    <td>
-                                                        @if (visit.Technician != null)
-                                                        {
-                                                            @visit.Technician.UserAccount?.FirstName @visit.Technician.UserAccount?.LastName
-                                                        }
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
+                        @if (Model.AssignedTechnicianId.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-warning"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">Assigned to Technician</h6>
+                                    <small class="text-muted">@Model.AssignedTechnician?.FullName</small>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+
+                        @if (Model.ResolvedDate.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">Fault Resolved</h6>
+                                    <small class="text-muted">@Model.ResolvedDate.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Delete Modal -->
-@if (User.IsInRole(SD.AdminRole))
-{
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Delete Fault Record</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="post" asp-action="Delete" asp-route-id="@Model.Id">
-                    @Html.AntiForgeryToken()
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete fault record <strong>#@Model.Id</strong>?</p>
-                        <p class="text-muted">This action will close the fault record and it will no longer appear in active lists.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Delete Fault</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-}
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        top: 5px;
+    }
+
+    .timeline-content {
+        padding-bottom: 10px;
+        border-left: 2px solid #dee2e6;
+        padding-left: 15px;
+    }
+
+    .timeline-item:last-child .timeline-content {
+        border-left: 2px solid transparent;
+    }
+</style>
 
 @functions {
-    private IHtmlContent GetStatusBadge(FaultStatus status)
+    public string GetStatusBadgeClass(FaultStatus status)
     {
-        var badgeClass = status switch
+        return status switch
         {
             FaultStatus.Reported => "bg-secondary",
-            FaultStatus.InProgress => "bg-info",
+            FaultStatus.Assigned => "bg-info",
+            FaultStatus.InProgress => "bg-warning",
+            FaultStatus.PartsRequired => "bg-primary",
             FaultStatus.Resolved => "bg-success",
+            FaultStatus.Reopened => "bg-danger",
             FaultStatus.Closed => "bg-dark",
             _ => "bg-secondary"
         };
-
-        return Html.Raw($"<span class='badge {badgeClass}'>{status}</span>");
     }
 
-    private IHtmlContent GetPriorityBadge(FaultPriority priority)
+    public string GetPriorityBadgeClass(FaultPriority priority)
     {
-        var badgeClass = priority switch
+        return priority switch
         {
-            FaultPriority.Low => "bg-success",
-            FaultPriority.Medium => "bg-warning",
-            FaultPriority.High => "bg-danger",
             FaultPriority.Critical => "bg-danger",
+            FaultPriority.High => "bg-warning",
+            FaultPriority.Medium => "bg-info",
+            FaultPriority.Low => "bg-success",
             _ => "bg-secondary"
         };
-
-        return Html.Raw($"<span class='badge {badgeClass}'>{priority}</span>");
-    }
-
-    private IHtmlContent GetServiceStatusBadge(ServicingStatus status)
-    {
-        var badgeClass = status switch
-        {
-            ServicingStatus.Scheduled => "bg-info",
-            ServicingStatus.InProgress => "bg-warning",
-            ServicingStatus.Completed => "bg-success",
-            ServicingStatus.Cancelled => "bg-danger",
-            _ => "bg-secondary"
-        };
-
-        return Html.Raw($"<span class='badge {badgeClass}'>{status}</span>");
     }
 }

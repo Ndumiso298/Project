@@ -4,16 +4,16 @@ namespace Project.Utilities.Enums
 {
     public enum FridgeCondition
     {
-        [Display(Name = "New (Unused)")]
-        New,
+        [Display(Name = "Excellent")]
+        Excellent,         // Like new, fully functional
 
-        [Display(Name = "Pre-Owned")]
-        PreOwned,
+        [Display(Name = "Good")]
+        Good,              // Minor wear, fully functional
 
-        [Display(Name = "Refurbished")]
-        Refurbished,
+        [Display(Name = "Fair")]
+        Fair,              // Visible wear, needs monitoring
 
-        [Display(Name = "Poor (Needs Replacement)")]
-        Poor // A state that triggers attention but is not a functional status
+        [Display(Name = "Poor")]
+        Poor               // Needs repair or replacement
     }
 }
