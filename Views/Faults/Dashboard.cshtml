@@ -1,0 +1,207 @@
+﻿@model FaultDashboardVM
+@{
+    ViewData["Title"] = "Fault Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-tachometer-alt text-primary me-2"></i>Fault Dashboard
+        </h1>
+        <div class="btn-group">
+            <a asp-action="Index" class="btn btn-outline-primary">
+                <i class="fas fa-list me-1"></i>View All Faults
+            </a>
+            <a asp-action="Upsert" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>New Fault
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Faults
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Open Faults
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OpenFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                High Priority
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.HighPriorityFaults</div>
+                            <div class="text-xs text-muted">@Model.HighPriorityPercentage.ToString("F1")% of total</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Resolution Rate
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ResolutionRate.ToString("F1")%</div>
+                            <div class="text-xs text-muted">@Model.ResolvedFaults resolved</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Faults -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Faults
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentFaults.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Fault Code</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Reported</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var fault in Model.RecentFaults)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@fault.Id" class="text-decoration-none">
+                                                    <strong>@fault.FaultCode</strong>
+                                                </a>
+                                            </td>
+                                            <td class="text-truncate" style="max-width: 200px;">@fault.FaultDescription</td>
+                                            <td>
+                                                <span class="badge @fault.StatusBadgeClass">@fault.Status</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @fault.SeverityBadgeClass">@fault.Priority</span>
+                                            </td>
+                                            <td>@fault.ReportedDate.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <p class="text-muted">No recent faults found.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Performance Metrics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Average Resolution Time</label>
+                        <p class="h5 text-primary">@Model.AverageResolutionTimeHours.ToString("F1") hours</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Average Response Time</label>
+                        <p class="h5 text-info">@Model.AverageResponseTimeHours.ToString("F1") hours</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Week-over-Week Trend</label>
+                        <div class="d-flex align-items-center">
+                            <span class="badge @Model.TrendBadgeClass me-2">
+                                @Model.WeekOverWeekChange
+                            </span>
+                            <span class="text-muted">@Model.WeekOverWeekTrend</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Upsert" class="btn btn-success">
+                            <i class="fas fa-plus me-1"></i>Report New Fault
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-1"></i>View All Faults
+                        </a>
+                        <a href="#" class="btn btn-outline-info">
+                            <i class="fas fa-download me-1"></i>Export Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

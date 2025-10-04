@@ -4,19 +4,16 @@ namespace Project.Utilities.Enums
 {
     public enum CustomerRequestType
     {
-        [Display(Name = "Full Replacement")]
-        FullReplacement,
+        [Display(Name = "New Allocation")]
+        NewAllocation,   // Customer requests a new fridge (initial or additional)
 
-        [Display(Name = "Partial Replacement")]
-        PartialReplacement,
+        [Display(Name = "Replacement")]
+        Replacement,  // Customer requests a replacement for a faulty fridge
 
-        [Display(Name = "Temporary Replacement")]
-        TemporaryReplacement,
+        [Display(Name = "Additional Units")]
+        AdditionalUnits,  // Customer requests more fridges of same type
 
-        [Display(Name = "Upgrade")]
-        Upgrade,
-
-        [Display(Name = "Emergency Replacement")]
-        EmergencyReplacement
-    }
+        [Display(Name = "Temporary Loan")]
+        Temporary     // Customer requests a temporary fridge while theirs is serviced
+    } 
 }

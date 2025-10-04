@@ -1,19 +1,32 @@
-﻿@model MaintenanceVisit
-
-<h2>Delete Visit</h2>
-
-<p>
-    Are you sure you want to delete this visit scheduled on
-    <strong>@Model.ScheduledDate.ToString("yyyy-MM-dd")</strong>
-    for customer <strong>@Model.Customer?.TradingName</strong>?
-</p>
-
-
-@using (Html.BeginForm("DeleteConfirmed", "MaintenanceVisit", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.Id)
-
-    <button type="submit" class="btn btn-danger">Delete</button>
-    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-secondary ms-2" })
+﻿@model Project.Models.MaintenanceVisit
+@{
+    ViewData["Title"] = "Delete Maintenance Visit";
 }
+
+<h2 class="mb-3">Delete Maintenance Visit</h2>
+
+<div class="alert alert-warning">
+    <strong>Are you sure?</strong> This will mark the visit as inactive (soft delete).
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Scheduled Date</dt>
+    <dd class="col-sm-9">@Model.ScheduledDate.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">Fridge</dt>
+    <dd class="col-sm-9">@Model.Fridge?.SerialNumber</dd>
+
+    <dt class="col-sm-3">Customer</dt>
+    <dd class="col-sm-9">@Model.Customer?.BusinessName</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Confirm Delete
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Cancel
+    </a>
+</form>

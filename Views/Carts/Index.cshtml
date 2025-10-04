@@ -1,0 +1,451 @@
+﻿@model AllocationCartVM
+@{
+    ViewData["Title"] = "My Cart";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-shopping-cart me-2"></i>@ViewData["Title"]</h1>
+    <a asp-controller="AllocationRequests" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Requests
+    </a>
+</div>
+
+<div class="row">
+    <!-- Cart Items -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Cart Items</h5>
+            </div>
+            <div class="card-body">
+                @if (!Model.Items.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h5>Your cart is empty</h5>
+                        <p class="text-muted">Add fridge models to create an allocation request</p>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                            <i class="fas fa-plus me-1"></i>Add First Item
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fridge Model</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-center">Duration</th>
+                                    <th class="text-end">Unit Price</th>
+                                    <th class="text-end">Monthly Total</th>
+                                    <th class="text-end">Line Total</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.ModelName</strong><br>
+                                            <small class="text-muted">@item.Manufacturer - @item.Capacity</small>
+                                            @if (item.IsReplacementUnit)
+                                            {
+                                                <span class="badge bg-info ms-1">Replacement</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="input-group input-group-sm" style="width: 120px;">
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                        onclick="updateQuantity('@item.TempId', @item.Quantity - 1)">
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <input type="number" class="form-control text-center"
+                                                       value="@item.Quantity" min="1" max="20"
+                                                       onchange="updateQuantity('@item.TempId', this.value)">
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                        onclick="updateQuantity('@item.TempId', @item.Quantity + 1)">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <select class="form-select form-select-sm"
+                                                    onchange="updateDuration('@item.TempId', this.value)"
+                                                    style="width: 100px;">
+                                                @for (int i = 1; i <= 60; i++)
+                                                {
+                                                    <option value="@i" selected="@(i == item.RentalDurationMonths)">
+                                                        @i months
+                                                    </option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td class="text-end">@item.MonthlyRentalPrice.ToString("C")</td>
+                                        <td class="text-end fw-bold text-success">@item.MonthlyTotal.ToString("C")</td>
+                                        <td class="text-end fw-bold text-success">@item.LineTotal.ToString("C")</td>
+                                        <td>
+                                            <span class="badge @(item.HasSufficientStock ? "bg-success" : "bg-danger")">
+                                                @item.StockStatus
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                    onclick="removeItem('@item.TempId')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Add More Items Button -->
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                            <i class="fas fa-plus me-1"></i>Add More Items
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Summary & Checkout -->
+    <div class="col-lg-4">
+        <!-- Cart Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Cart Summary</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th>Items:</th>
+                        <td class="text-end">@Model.TotalModels models</td>
+                    </tr>
+                    <tr>
+                        <th>Total Fridges:</th>
+                        <td class="text-end fw-bold">@Model.TotalFridges</td>
+                    </tr>
+                    <tr>
+                        <th>Monthly Rental:</th>
+                        <td class="text-end fw-bold text-success">@Model.TotalMonthlyRental.ToString("C")</td>
+                    </tr>
+                    <tr>
+                        <th>Contract Value:</th>
+                        <td class="text-end fw-bold text-success">@Model.TotalContractValue.ToString("C")</td>
+                    </tr>
+                    @if (Model.DiscountPercentage > 0)
+                    {
+                        <tr>
+                            <th>Discount (@Model.DiscountPercentage%):</th>
+                            <td class="text-end fw-bold text-danger">-@Model.DiscountAmount.ToString("C")</td>
+                        </tr>
+                    }
+                    <tr class="table-light">
+                        <th>Final Amount:</th>
+                        <td class="text-end fw-bold fs-5 text-success">@Model.FinalAmount.ToString("C")</td>
+                    </tr>
+                </table>
+
+                <!-- Stock Status -->
+                @if (Model.HasStockIssues)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Stock Issues:</strong> Some items have insufficient stock
+                    </div>
+                }
+                else if (Model.AllItemsAvailable)
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        All items are available in stock
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-truck me-2"></i>Request Information</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="SubmitRequest" method="post" id="checkoutForm">
+                    <!-- Customer Information -->
+                    <div class="mb-3">
+                        <label class="form-label required">Customer</label>
+                        <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-select" required>
+                            <option value="">-- Select Customer --</option>
+                        </select>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="mb-3">
+                        <label asp-for="ContactPerson" class="form-label required"></label>
+                        <input asp-for="ContactPerson" class="form-control" required />
+                        <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ContactPhoneNumber" class="form-label required"></label>
+                        <input asp-for="ContactPhoneNumber" class="form-control" required />
+                        <span asp-validation-for="ContactPhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <!-- Delivery Information -->
+                    <div class="mb-3">
+                        <label asp-for="DeliveryLocationId" class="form-label required"></label>
+                        <select asp-for="DeliveryLocationId" asp-items="Model.LocationList" class="form-select" required>
+                            <option value="">-- Select Location --</option>
+                        </select>
+                        <span asp-validation-for="DeliveryLocationId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DeliveryInstructions" class="form-label"></label>
+                        <textarea asp-for="DeliveryInstructions" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <!-- Request Type & Priority -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="RequestType" class="form-label required"></label>
+                            <select asp-for="RequestType" asp-items="Model.RequestTypeList" class="form-select" required>
+                                <option value="">-- Select Type --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Priority" class="form-label required"></label>
+                            <select asp-for="Priority" asp-items="Model.PriorityList" class="form-select" required>
+                                <option value="">-- Select Priority --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Replacement Information (conditional) -->
+                    <div id="replacementSection" class="mb-3" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-exchange-alt me-2"></i>Replacement Information</h6>
+                            <div class="mb-2">
+                                <label asp-for="ReplacingAllocationId" class="form-label required"></label>
+                                <select asp-for="ReplacingAllocationId" asp-items="Model.ReplacementAllocationList" class="form-select">
+                                    <option value="">-- Select Allocation to Replace --</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label asp-for="ReplacementReason" class="form-label required"></label>
+                                <textarea asp-for="ReplacementReason" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="IsUrgentReplacement" class="form-check-input" />
+                                <label asp-for="IsUrgentReplacement" class="form-check-label">Urgent Replacement</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg"
+                        @(!Model.CanSubmit ? "disabled" : "")>
+                            <i class="fas fa-paper-plane me-2"></i>
+                            Submit Allocation Request
+                        </button>
+                    </div>
+
+                    @if (!Model.CanSubmit)
+                    {
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Please complete all required fields and ensure all items have sufficient stock.
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add Item to Cart</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addItemForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="FridgeModelId" class="form-label required">Fridge Model</label>
+                            <select id="FridgeModelId" name="FridgeModelId" class="form-select" required>
+                                <option value="">-- Select Fridge Model --</option>
+                                @foreach (var item in ViewBag.FridgeModelList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="Quantity" class="form-label required">Quantity</label>
+                            <input type="number" id="Quantity" name="Quantity" class="form-control"
+                                   value="1" min="1" max="20" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="RentalDurationMonths" class="form-label required">Duration</label>
+                            <select id="RentalDurationMonths" name="RentalDurationMonths" class="form-select" required>
+                                <option value="12">12 months</option>
+                                <option value="24" selected>24 months</option>
+                                <option value="36">36 months</option>
+                                <option value="48">48 months</option>
+                                <option value="60">60 months</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="SpecialRequirements" class="form-label">Special Requirements</label>
+                        <textarea id="SpecialRequirements" name="SpecialRequirements" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" id="IsReplacementUnit" name="IsReplacementUnit" class="form-check-input">
+                        <label for="IsReplacementUnit" class="form-check-label">This is a replacement unit</label>
+                    </div>
+                    <!-- Item Preview -->
+                    <div id="itemPreview" class="alert alert-info" style="display: none;">
+                        <h6>Item Preview</h6>
+                        <div id="previewContent"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Update replacement section visibility
+        $('#RequestType').change(function() {
+            if ($(this).val() === 'Replacement') {
+                $('#replacementSection').show();
+            } else {
+                $('#replacementSection').hide();
+            }
+        });
+
+        // Update item quantity
+        function updateQuantity(tempId, newQuantity) {
+            if (newQuantity < 1 || newQuantity > 20) return;
+
+            $.post('@Url.Action("UpdateItem", "Carts")', {
+                tempId: tempId,
+                quantity: newQuantity,
+                rentalDuration: 0 // Keep current duration
+            }, function(data) {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        // Update rental duration
+        function updateDuration(tempId, newDuration) {
+            $.post('@Url.Action("UpdateItem", "Carts")', {
+                tempId: tempId,
+                quantity: 0, // Keep current quantity
+                rentalDuration: newDuration
+            }, function(data) {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        // Remove item from cart
+        function removeItem(tempId) {
+            if (confirm('Are you sure you want to remove this item from your cart?')) {
+                $.post('@Url.Action("RemoveItem", "Carts")', { tempId: tempId }, function() {
+                    location.reload();
+                });
+            }
+        }
+
+        // Add item form submission
+        $('#addItemForm').submit(function(e) {
+            e.preventDefault();
+
+            var formData = {
+                FridgeModelId: $('#FridgeModelId').val(),
+                Quantity: $('#Quantity').val(),
+                RentalDurationMonths: $('#RentalDurationMonths').val(),
+                SpecialRequirements: $('#SpecialRequirements').val(),
+                IsReplacementUnit: $('#IsReplacementUnit').is(':checked')
+            };
+
+            $.post('@Url.Action("AddItem", "Carts")', formData, function(response) {
+                if (response.success) {
+                    $('#addItemModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert(response.message || 'Error adding item to cart');
+                }
+            }).fail(function() {
+                alert('Error adding item to cart');
+            });
+        });
+
+        // Preview item when model is selected
+        $('#FridgeModelId').change(function() {
+            var modelId = $(this).val();
+            if (modelId) {
+                // In real implementation, fetch model details via AJAX
+                $('#itemPreview').show();
+                $('#previewContent').html('Loading...');
+
+                // Simulate loading model details
+                setTimeout(function() {
+                    $('#previewContent').html(`
+                        <strong>Model:</strong> Sample Fridge Model<br>
+                        <strong>Monthly Rental:</strong> R 250.00<br>
+                        <strong>Available Stock:</strong> 15 units
+                    `);
+                }, 500);
+            } else {
+                $('#itemPreview').hide();
+            }
+        });
+
+        // Initialize
+        $(document).ready(function() {
+            // Trigger request type change to show/hide replacement section
+            $('#RequestType').trigger('change');
+
+            // Update cart badge
+            updateCartBadge();
+        });
+
+        function updateCartBadge() {
+            $.get('@Url.Action("GetSummary", "Carts")', function(data) {
+                if (data.success) {
+                    $('#cartBadge').text(data.summary.itemCount || 0);
+                }
+            });
+        }
+    </script>
+}

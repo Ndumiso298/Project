@@ -1,0 +1,233 @@
+﻿@model MaintenanceVisitVM
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Schedule Maintenance Visit" : "Edit Maintenance Visit";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="fas fa-calendar-plus me-2"></i>@ViewData["Title"]
+            </h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <form asp-action="Upsert" method="post" id="visitForm">
+        <div class="card">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <!-- Basic Information -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="CustomerId" class="form-label"></label> *
+                            <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-select">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FridgeId" class="form-label"></label> *
+                            <select asp-for="FridgeId" asp-items="Model.FridgeList" class="form-select">
+                                <option value="">-- Select Fridge --</option>
+                            </select>
+                            <span asp-validation-for="FridgeId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TradingLocationId" class="form-label"></label> *
+                            <select asp-for="TradingLocationId" asp-items="Model.LocationList" class="form-select">
+                                <option value="">-- Select Location --</option>
+                            </select>
+                            <span asp-validation-for="TradingLocationId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="AssignedTechnicianId" class="form-label"></label>
+                            <select asp-for="AssignedTechnicianId" asp-items="Model.TechnicianList" class="form-select">
+                                <option value="">-- Select Technician --</option>
+                            </select>
+                            <span asp-validation-for="AssignedTechnicianId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ScheduledDate" class="form-label"></label> *
+                            <input asp-for="ScheduledDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Status" class="form-label"></label> *
+                                    <select asp-for="Status" asp-items="Model.StatusList" class="form-select"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pre-populated Information Display -->
+                <div id="prepopulatedInfo" class="alert alert-info @(string.IsNullOrEmpty(Model.CustomerInfo) ? "d-none" : "")">
+                    <h6><i class="fas fa-info-circle me-2"></i>Pre-populated Information</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Customer:</strong> <span id="customerInfo">@Model.CustomerInfo</span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Fridge:</strong> <span id="fridgeInfo">@Model.FridgeInfo</span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Location:</strong> <span id="locationInfo">@Model.LocationInfo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Details (for completed/in progress visits) -->
+                @if (Model.Id != 0)
+                {
+                    <div class="card bg-light mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-tools me-2"></i>Service Details
+                            </h5>
+                        </div>
+                           <div class="card-body">
+                            @*<div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="ConditionRating" class="form-label"></label>
+                                        <select asp-for="ConditionRating" class="form-select">
+                                            <option value="">-- Select Rating --</option>
+                                            <option value="1">1 Star (Poor)</option>
+                                            <option value="2">2 Stars (Fair)</option>
+                                            <option value="3">3 Stars (Good)</option>
+                                            <option value="4">4 Stars (Very Good)</option>
+                                            <option value="5">5 Stars (Excellent)</option>
+                                        </select>
+                                        <span asp-validation-for="ConditionRating" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="TemperatureReading" class="form-label"></label>
+                                        <div class="input-group">
+                                            <input asp-for="TemperatureReading" class="form-control" />
+                                            <span class="input-group-text">°C</span>
+                                        </div>
+                                        <span asp-validation-for="TemperatureReading" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div> *@
+
+                            <!-- Additional Details -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label asp-for="TechnicianNotes" class="form-label"></label>
+                                        <textarea asp-for="TechnicianNotes" class="form-control" rows="3" 
+                                                  placeholder="Technician observations and notes"></textarea>
+                                        <span asp-validation-for="TechnicianNotes" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-6">
+                        @if (Model.Id != 0)
+                        {
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        }
+                    </div>
+                    <div class="col-6 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            @(Model.Id == 0 ? "Schedule Visit" : "Update Visit")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Auto-populate current datetime if creating new record
+        @if (Model.Id == 0)
+        {
+            @:var now = new Date();
+            @:// Round to nearest 15 minutes
+            @:var roundedMinutes = Math.round(now.getMinutes() / 15) * 15;
+            @:now.setMinutes(roundedMinutes);
+
+            @:// Format for datetime-local input
+            @:var year = now.getFullYear();
+            @:var month = (now.getMonth() + 1).toString().padStart(2, '0');
+            @:var day = now.getDate().toString().padStart(2, '0');
+            @:var hours = now.getHours().toString().padStart(2, '0');
+            @:var minutes = now.getMinutes().toString().padStart(2, '0');
+
+            @:var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            @:$('#ScheduledDate').val(formattedDateTime);
+        }
+
+            // Date validation - cannot schedule in the past for new visits
+        @if (Model.Id == 0)
+        {
+            @:$('#ScheduledDate').change(function () {
+            @:    var selectedDate = new Date($(this).val());
+            @:    var now = new Date();
+
+            @:    if (selectedDate < now) {
+            @:        $(this).addClass('is-invalid');
+            @:        $('<div class="invalid-feedback">Scheduled date cannot be in the past for new visits</div>').insertAfter($(this));
+            @:    } else {
+            @:        $(this).removeClass('is-invalid');
+            @:        $('.invalid-feedback').remove();
+            @:    }
+            @:});
+        }
+
+            // Show/hide prepopulated info based on allocation
+            function updatePrepopulatedInfo() {
+                var hasInfo = $('#customerInfo').text().trim() !== '' ||
+                              $('#fridgeInfo').text().trim() !== '' ||
+                              $('#locationInfo').text().trim() !== '';
+
+                if (hasInfo) {
+                    $('#prepopulatedInfo').removeClass('d-none');
+                } else {
+                    $('#prepopulatedInfo').addClass('d-none');
+                }
+            }
+
+            updatePrepopulatedInfo();
+        });
+    </script>
+}

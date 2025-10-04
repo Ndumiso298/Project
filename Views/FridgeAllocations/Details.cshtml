@@ -1,94 +1,263 @@
-﻿@model FridgeAllocation
+﻿@model FridgeAllocationVM
 @{
-    ViewData["Title"] = "Allocation Details";
+    ViewData["Title"] = $"Allocation Details - #{Model.Id:00000}";
 }
 
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        <i class="fas fa-truck-loading me-2"></i>Allocation Details
+        <small class="text-muted">#@Model.Id.ToString("00000")</small>
+    </h1>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to List
+        </a>
+        @if (Model.CanEdit)
+        {
+            <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i>Edit
+            </a>
+        }
+    </div>
+</div>
+
 <div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">@ViewData["Title"]</h4>
-                <div>
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to List
-                    </a>
-                    @if (!User.IsInRole("Customer"))
-                    {
-                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                    }
-                </div>
+    <!-- Main Information -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Allocation Information</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h5>Fridge Information</h5>
-                        <dl class="row">
-                            <dt class="col-sm-4">Serial Number:</dt>
-                            <dd class="col-sm-8">@Model.Fridge?.SerialNumber</dd>
-
-                            <dt class="col-sm-4">Model:</dt>
-                            <dd class="col-sm-8">@Model.Fridge?.Model</dd>
-
-                            <dt class="col-sm-4">Capacity:</dt>
-                            <dd class="col-sm-8">@Model.Fridge?.CapacityLiters L</dd>
-                        </dl>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-25">Status:</th>
+                                <td><span class="badge @Model.StatusBadgeClass">@Model.Status</span></td>
+                            </tr>
+                            <tr>
+                                <th>Allocation Date:</th>
+                                <td>@Model.AllocationDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                            <tr>
+                                <th>Expected Return:</th>
+                                <td>@(Model.ExpectedReturnDate?.ToString("dd/MM/yyyy") ?? "Not set")</td>
+                            </tr>
+                            <tr>
+                                <th>Monthly Rental:</th>
+                                <td class="fw-bold text-success">@Model.MonthlyRentalPrice.ToString("C")</td>
+                            </tr>
+                        </table>
                     </div>
                     <div class="col-md-6">
-                        <h5>Customer Information</h5>
-                        <dl class="row">
-                            <dt class="col-sm-4">Trading Name:</dt>
-                            <dd class="col-sm-8">@Model.Customer?.TradingName</dd>
-
-                            <dt class="col-sm-4">Contact:</dt>
-                            <dd class="col-sm-8">@Model.Customer?.BusinessPhoneNumber</dd>
-
-                            <dt class="col-sm-4">Address:</dt>
-                            <dd class="col-sm-8">@Model.Customer?.AddressLine1, @Model.Customer?.City</dd>
-                        </dl>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th class="w-25">Total Revenue:</th>
+                                <td class="fw-bold text-success">@Model.TotalRevenue.ToString("C")</td>
+                            </tr>
+                            <tr>
+                                <th>Duration:</th>
+                                <td>@Model.Duration</td>
+                            </tr>
+                            <tr>
+                                <th>Days Remaining:</th>
+                                <td>
+                                    @if (Model.DaysRemaining.HasValue)
+                                    {
+                                        <span class="badge @(Model.DaysRemaining <= 30 ? "bg-warning" : "bg-success")">
+                                            @Model.DaysRemaining days
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Is Replacement:</th>
+                                <td>
+                                    @if (Model.IsReplacement)
+                                    {
+                                        <span class="badge bg-info">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">No</span>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="row mt-4">
+        <!-- Customer Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
                     <div class="col-md-6">
-                        <h5>Allocation Details</h5>
-                        <dl class="row">
-                            <dt class="col-sm-4">Allocation Date:</dt>
-                            <dd class="col-sm-8">@Model.AllocationDate.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                            <dt class="col-sm-4">Location:</dt>
-                            <dd class="col-sm-8">@Model.AllocationLocation?.Name</dd>
-
-                            <dt class="col-sm-4">Allocated By:</dt>
-                            <dd class="col-sm-8">@Model.AllocatedBy?.UserAccount.FirstName @Model.AllocatedBy?.UserAccount.LastName</dd>
-                        </dl>
+                        <strong>@Model.CustomerDetails?.BusinessName</strong><br>
+                        <span class="text-muted">@Model.CustomerDetails?.BusinessType</span>
                     </div>
                     <div class="col-md-6">
-                        <h5>Deallocation Details</h5>
-                        <dl class="row">
-                            <dt class="col-sm-4">Status:</dt>
-                            <dd class="col-sm-8">
-                                <span class="badge @(Model.ActualReturnDate == null ? "bg-success" : "bg-secondary")">
-                                    @(Model.ActualReturnDate == null ? "Active" : "Deallocated")
-                                </span>
-                            </dd>
-
-                            @if (Model.ActualReturnDate.HasValue)
-                            {
-                                <dt class="col-sm-4">Deallocation Date:</dt>
-                                <dd class="col-sm-8">@Model.ActualReturnDate.Value.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                                <dt class="col-sm-4">Reason:</dt>
-                                <dd class="col-sm-8">@Model.Notes</dd>
-
-                                <dt class="col-sm-4">Processed By:</dt>
-                                <dd class="col-sm-8">@Model.ProcessedBy?.UserAccount.FirstName @Model.ProcessedBy?.UserAccount.LastName</dd>
-                            }
-                        </dl>
+                        <small class="text-muted">
+                            Contact: @Model.CustomerDetails?.FullName<br>
+                            Phone: @Model.CustomerDetails?.BusinessPhoneNumber<br>
+                            Email: @Model.CustomerDetails?.BusinessEmail
+                        </small>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fridge Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-refrigerator me-2"></i>Fridge Information</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.FridgeDetails != null)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>@Model.FridgeDetails.DisplayName</strong><br>
+                            <span class="text-muted">Serial: @Model.FridgeDetails.SerialNumber</span>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                Capacity: @Model.FridgeDetails.FridgeModelDetails.CapacityLiters liters<br>
+                                Status: <span class="badge bg-info">@Model.FridgeDetails.Status</span><br>
+                                Condition: <span class="badge bg-success">@Model.FridgeDetails.Condition</span>
+                            </small>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar - Actions and Notes -->
+    <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.CanDeallocate)
+                    {
+                        <a asp-action="Deallocate" asp-route-id="@Model.Id" 
+                           class="btn btn-warning btn-sm">
+                            <i class="fas fa-undo me-1"></i>Deallocate Fridge
+                        </a>
+                    }
+                    @if (Model.CanReplace)
+                    {
+                        <a href="#" class="btn btn-info btn-sm">
+                            <i class="fas fa-exchange-alt me-1"></i>Replace Fridge
+                        </a>
+                    }
+                    <a href="#" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-wrench me-1"></i>Schedule Maintenance
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-print me-1"></i>Print Details
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Status History</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <small class="text-muted">@Model.AllocationDate.ToString("dd/MM/yyyy HH:mm")</small>
+                            <p class="mb-1">Allocation Created</p>
+                        </div>
+                    </div>
+                    @if (Model.ActualReturnDate.HasValue)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <small class="text-muted">@Model.ActualReturnDate.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                <p class="mb-1">Fridge Returned</p>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Maintenance Visits Section -->
+@if (Model.MaintenanceVisits?.Any() == true)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Maintenance History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Technician</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var visit in Model.MaintenanceVisits.OrderByDescending(v => v.ScheduledDate))
+                        {
+                            <tr>
+                                <td>@visit.ScheduledDate.ToString("dd/MM/yyyy")</td>
+                                <td><span class="badge bg-info">@visit.Status</span></td>
+                                <td>@visit.TechnicianInfo</td>
+                                <td>@visit.TechnicianNotes</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 20px;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 15px;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -20px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    .timeline-content {
+        padding-bottom: 10px;
+    }
+</style>

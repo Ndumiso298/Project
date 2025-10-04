@@ -5,24 +5,21 @@ namespace Project.Utilities.Enums
     public enum AllocationStatus
     {
         [Display(Name = "Pending")]
-        Pending,           // Allocation created but not yet active
+        Pending,           // Request submitted, awaiting approval
 
         [Display(Name = "Active")]
         Active,            // Fridge is currently allocated to customer
 
         [Display(Name = "Suspended")]
-        Suspended,         // Temporary suspension of allocation
+        Suspended,         // Temporary suspension (non-payment, maintenance)
 
         [Display(Name = "Completed")]
-        Completed,         // Allocation period ended successfully
+        Completed,         // Allocation ended successfully
 
         [Display(Name = "Cancelled")]
-        Cancelled,         // Allocation was cancelled before activation
+        Cancelled,          // Allocation was cancelled
 
-        [Display(Name = "Terminated")]
-        Terminated,        // Allocation ended prematurely
-
-        [Display(Name = "Expired")]
-        Expired
+        [Display(Name = "Faulty")]
+        Faulty
     }
 }

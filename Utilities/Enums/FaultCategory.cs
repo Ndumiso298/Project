@@ -5,30 +5,30 @@ namespace Project.Utilities.Enums
     public enum FaultCategory
     {
         [Display(Name = "Cooling Issue")]
-        Cooling,
+        Cooling,            // Problems with refrigeration or temperature control
 
         [Display(Name = "Electrical")]
-        Electrical,
+        Electrical,         // Electrical faults like wiring, fuses, or power issues
 
         [Display(Name = "Mechanical")]
-        Mechanical,
+        Mechanical,         // Mechanical failures such as motors, fans, compressors
 
         [Display(Name = "Noise")]
-        Noise,
+        Noise,              // Excessive or abnormal noise issues
 
         [Display(Name = "Door/Seal")]
-        DoorSeal,
+        DoorSeal,           // Faults with door alignment, gaskets, or seals
 
         [Display(Name = "Display/Controls")]
-        DisplayControls,
+        DisplayControls,    // Problems with panels, buttons, or digital controls
 
         [Display(Name = "Water Dispenser")]
-        WaterDispenser,
+        WaterDispenser,     // Issues with water dispensing mechanism
 
         [Display(Name = "Ice Maker")]
-        IceMaker,
+        IceMaker,           // Ice production issues
 
         [Display(Name = "Other")]
-        Other
+        Other               // Any other fault not categorized above
     }
 }

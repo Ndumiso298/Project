@@ -5,12 +5,18 @@ namespace Project.Utilities.Enums
     public enum PurchaseRequestUrgency
     {
         [Display(Name = "Low")]
-        Low,
-        [Display(Name = "Normal")]
-        Normal,
+        Low,              // Nice to have, no rush
+
+        [Display(Name = "Medium")]
+        Medium,           // Normal business need
+
         [Display(Name = "High")]
-        High,
+        High,             // Needed soon, priority
+
+        [Display(Name = "Urgent")]
+        Urgent,           // Needed within 1-2 days
+
         [Display(Name = "Critical")]
-        Critical
+        Critical          // Emergency, immediate attention
     }
 }

@@ -1,68 +1,144 @@
-﻿﻿@{
-    ViewData["Title"] = "Our OurServices";
+﻿@{
+    ViewData["Title"] = "Our Services - SmartChill Solutions";
 }
 
-<div class="container my-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <h1 class="display-4 text-center text-primary mb-4">Our Services</h1>
-            <p class="lead text-center mb-5">Comprehensive fridge management solutions tailored for South African businesses</p>
-
-            <div class="card shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-primary">Fridge Inventory Management</h3>
-                    <p>Our advanced inventory management system helps you track all your fridges in real-time. Know exactly where each unit is located, its condition, and allocation status.</p>
-                    <ul>
-                        <li>Real-time tracking of fridge inventory levels</li>
-                        <li>Automated stock alerts and reporting</li>
-                        <li>Allocation management for customers</li>
-                        <li>Scrapping process for end-of-life units</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-primary">Fault Reporting System</h3>
-                    <p>Streamline communication between customers and technicians for efficient fault resolution.</p>
-                    <ul>
-                        <li>Customer-friendly fault reporting portal</li>
-                        <li>Automated technician assignment</li>
-                        <li>Real-time status updates</li>
-                        <li>Repair history tracking</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-primary">Maintenance Scheduling</h3>
-                    <p>Proactive maintenance planning to ensure your fridges are always in optimal condition.</p>
-                    <ul>
-                        <li>Automated maintenance reminders</li>
-                        <li>Service history tracking</li>
-                        <li>Technician scheduling system</li>
-                        <li>Preventative maintenance plans</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-primary">Procurement Management</h3>
-                    <p>Streamlined procurement operations between purchasing managers and suppliers.</p>
-                    <ul>
-                        <li>Automated purchase request system</li>
-                        <li>Supplier management portal</li>
-                        <li>Quotation request processing</li>
-                        <li>Purchase order generation</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="text-center mt-5">
-                <a href="#contact" class="btn btn-primary btn-lg">Get Started with Our Services</a>
+<!-- Page Header -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold">Our Comprehensive Services</h1>
+                <p class="lead">End-to-end fridge management solutions tailored for the beverage industry</p>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Fridge Management -->
+            <div class="col-lg-6">
+                <div class="card service-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-primary rounded-circle p-3 me-3">
+                                <i class="fas fa-refrigerator fa-2x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">Fridge Inventory Management</h4>
+                        </div>
+                        <p class="text-muted mb-4">Complete tracking and management of your fridge inventory with real-time status updates and allocation history.</p>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Real-time inventory tracking</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Automated allocation to customers</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Condition and status monitoring</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Purchase and warranty tracking</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance -->
+            <div class="col-lg-6">
+                <div class="card service-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-success rounded-circle p-3 me-3">
+                                <i class="fas fa-tools fa-2x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">Preventive Maintenance</h4>
+                        </div>
+                        <p class="text-muted mb-4">Scheduled maintenance programs to ensure optimal fridge performance and prevent unexpected breakdowns.</p>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Automated service scheduling</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Maintenance history tracking</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Service interval management</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Technician dispatch automation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fault Management -->
+            <div class="col-lg-6">
+                <div class="card service-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-warning rounded-circle p-3 me-3">
+                                <i class="fas fa-exclamation-triangle fa-2x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">Fault Reporting & Resolution</h4>
+                        </div>
+                        <p class="text-muted mb-4">Streamlined fault reporting system with automatic technician assignment and real-time status updates.</p>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Customer self-service portal</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Automatic technician dispatch</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Real-time fault status tracking</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Resolution time analytics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchasing -->
+            <div class="col-lg-6">
+                <div class="card service-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-info rounded-circle p-3 me-3">
+                                <i class="fas fa-shopping-cart fa-2x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold mb-0">Procurement Management</h4>
+                        </div>
+                        <p class="text-muted mb-4">Complete procurement workflow from purchase requests to supplier management and delivery tracking.</p>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Automated purchase requests</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Supplier relationship management</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Quotation and order processing</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Delivery and inventory integration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Process Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">How It Works</h2>
+                <p class="text-muted">Simple, efficient process for managing your fridge ecosystem</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <span class="h4 mb-0">1</span>
+                </div>
+                <h5>Setup & Onboarding</h5>
+                <p class="text-muted">We integrate with your existing systems and set up your fridge inventory in our platform.</p>
+            </div>
+
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <span class="h4 mb-0">2</span>
+                </div>
+                <h5>Daily Operations</h5>
+                <p class="text-muted">Manage allocations, track maintenance, and handle fault reports through our intuitive interface.</p>
+            </div>
+
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <span class="h4 mb-0">3</span>
+                </div>
+                <h5>Optimization & Reporting</h5>
+                <p class="text-muted">Access detailed analytics and reports to optimize your fridge management strategy.</p>
+            </div>
+        </div>
+    </div>
+</section>

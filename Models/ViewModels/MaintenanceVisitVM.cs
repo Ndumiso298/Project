@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Utilities.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,59 +9,90 @@ namespace Project.Models.ViewModels
     {
         public int Id { get; set; }
 
-        [Display(Name = "Allocation")]
+        // === SCHEDULING INFORMATION ===
+        [Required(ErrorMessage = "Scheduled date is required.")]
+        [Display(Name = "Scheduled Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime ScheduledDate { get; set; } = DateTime.Now.AddDays(1);
+
+        [Required(ErrorMessage = "Visit status is required.")]
+        [Display(Name = "Visit Status")]
+        public ServicingStatus Status { get; set; } = ServicingStatus.Scheduled;
+
+        // === CUSTOMER & LOCATION ===
+        [Required(ErrorMessage = "Customer is required.")]
+        [Display(Name = "Customer/Spaza Shop")]
+        public int CustomerId { get; set; }
+
+        [Display(Name = "Trading Location")]
+        public int? TradingLocationId { get; set; }
+
+        // === FRIDGE INFORMATION ===
+        [Required(ErrorMessage = "Fridge is required.")]
+        [Display(Name = "Fridge to Service")]
+        public int FridgeId { get; set; }
+
+        [Display(Name = "Fridge Allocation")]
         public int? AllocationId { get; set; }
 
-        [Required]
-        [Display(Name = "Fridge")]
-        public int FridgeId { get; set; }
-        public IEnumerable<SelectListItem>? FridgeList { get; set; }
+        // === TECHNICIAN ASSIGNMENT ===
+        [Required(ErrorMessage = "Maintenance technician is required.")]
+        [Display(Name = "Assigned Technician")]
+        public int AssignedTechnicianId { get; set; }
 
-        [Required]
-        [Display(Name = "Customer")]
-        public int CustomerId { get; set; }
-        public IEnumerable<SelectListItem>? CustomerList { get; set; }
+        // === VISIT DETAILS ===
+        [Display(Name = "Visit Completed Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? CompletedDate { get; set; }
 
-        [Required]
-        [Display(Name = "Technician")]
-        public int TechnicianId { get; set; }
-        public IEnumerable<SelectListItem>? TechnicianList { get; set; }
+        [Display(Name = "Estimated Duration (hours)")]
+        [Range(0.5, 8.0, ErrorMessage = "Duration must be between 0.5 and 8 hours.")]
+        public decimal? EstimatedDuration { get; set; }
 
-        [Required]
-        [Display(Name = "Scheduled Date")]
-        public DateTime ScheduledDate { get; set; }
+        [Display(Name = "Actual Duration (hours)")]
+        [Range(0.5, 8.0, ErrorMessage = "Duration must be between 0.5 and 8 hours.")]
+        public decimal? ActualDuration { get; set; }
 
-        [Display(Name = "Actual Date")]
-        public DateTime? ActualDate { get; set; }
-
-        [Display(Name = "Location")]
-        public int? LocationId { get; set; }   // relational FK
-
-        [Display(Name = "Location")]
-        public string? LocationDisplay { get; set; }  // read-only for showing address/name
-        public IEnumerable<SelectListItem>? LocationList { get; set; }
-
-        [Required]
-        [Display(Name = "Status")]
-        public ServicingStatus Status { get; set; }
-        public IEnumerable<SelectListItem>? StatusList { get; set; }
-
-        [Required]
-        [Display(Name = "Visit Type")]
-        public ServicingType VisitType { get; set; }
-        public IEnumerable<SelectListItem>? VisitTypeList { get; set; }
-
-        [Display(Name = "Notes")]
-        public string? Notes { get; set; }
-
+        // === TECHNICIAN NOTES ===
+        [StringLength(1000, ErrorMessage = "Technician notes cannot exceed 1000 characters.")]
         [Display(Name = "Technician Notes")]
         public string? TechnicianNotes { get; set; }
 
-        [Display(Name = "Parts Used")]
-        public string? PartsUsed { get; set; }
+        [Display(Name = "Fault Reported During Visit")]
+        public bool FaultReported { get; set; }
 
-        [Display(Name = "Service ServiceCost")]
-        [Range(0, 10000)]
-        public decimal? ServiceCost { get; set; }
+        [Display(Name = "Fault Report ID")]
+        public int? RelatedFaultId { get; set; }
+
+        // === DROPDOWN LISTS ===
+        [ValidateNever]
+        public IEnumerable<SelectListItem> CustomerList { get; set; } = new List<SelectListItem>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> FridgeList { get; set; } = new List<SelectListItem>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> TechnicianList { get; set; } = new List<SelectListItem>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> LocationList { get; set; } = new List<SelectListItem>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> StatusList { get; set; } = new List<SelectListItem>();
+
+        // === COMPUTED/DISPLAY PROPERTIES ===
+        [Display(Name = "Customer Information")]
+        public string? CustomerInfo { get; set; }
+
+        [Display(Name = "Fridge Information")]
+        public string? FridgeInfo { get; set; }
+
+        [Display(Name = "Location Address")]
+        public string? LocationInfo { get; set; }
+
+        [Display(Name = "Technician Name")]
+        public string? TechnicianInfo { get; set; }
     }
 }

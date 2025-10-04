@@ -1,374 +1,531 @@
-﻿@model AllocationRequestVM
+﻿<!-- Views/AllocationRequests/Upsert.cshtml -->
+@model AllocationRequestHeaderVM
+@inject ApplicationDbContext _db
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using Project.Data
 
 @{
     ViewData["Title"] = Model.Id == 0 ? "Create Allocation Request" : "Edit Allocation Request";
-    var isCustomer = User.IsInRole("Customer");
-    var isEdit = Model.Id != 0;
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var isCustomer = User.IsInRole(SD.CustomerRole);
 }
 
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-6">
-            <h2 class="text-primary">@ViewData["Title"]</h2>
-        </div>
-        <div class="col-6 text-end">
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Back to List
-            </a>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="card-title mb-0">
+                                <i class="fas @(Model.Id == 0 ? "fa-plus-circle" : "fa-edit") me-2"></i>@ViewData["Title"]
+                            </h3>
+                        </div>
+                        <div class="col-auto">
+                            <a asp-action="Index" class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <form asp-action="Upsert" method="post" id="allocationForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="card-body">
+                        <!-- Customer Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">Customer Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            @if (!isCustomer)
+                                            {
+                                                <div class="col-md-6">
+                                                    <label asp-for="CustomerId" class="form-label required">Customer</label>
+                                                    <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-select"
+                                                            onchange="loadCustomerData(this.value)">
+                                                        <option value="">-- Select Customer --</option>
+                                                    </select>
+                                                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" asp-for="CustomerId" />
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Customer</label>
+                                                    <input type="text" class="form-control" value="@Model.CustomerName" readonly />
+                                                </div>
+                                            }
+
+                                            <div class="col-md-6">
+                                                <label asp-for="ContactPerson" class="form-label required">Contact Person</label>
+                                                <input asp-for="ContactPerson" class="form-control" />
+                                                <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label asp-for="ContactPhoneNumber" class="form-label required">Contact Phone</label>
+                                                <input asp-for="ContactPhoneNumber" class="form-control" />
+                                                <span asp-validation-for="ContactPhoneNumber" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label asp-for="ContactEmail" class="form-label required">Contact Email</label>
+                                                <input asp-for="ContactEmail" type="email" class="form-control" />
+                                                <span asp-validation-for="ContactEmail" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Request Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">Request Details</h5>
+                                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                                            <i class="fas fa-plus me-1"></i>Add Item
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="requestDetailsContainer">
+                                            @if (Model.RequestDetails.Any())
+                                            {
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Fridge Model</th>
+                                                                <th>Monthly Rental</th>
+                                                                <th>Capacity</th>
+                                                                <th>Quantity</th>
+                                                                <th>Available Stock</th>
+                                                                <th>Monthly Subtotal</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="requestDetailsBody">
+                                                            @for (int i = 0; i < Model.RequestDetails.Count; i++)
+                                                            {
+                                                                <tr data-fridge-model-id="@Model.RequestDetails[i].FridgeModelId">
+                                                                    <td>
+                                                                        <input type="hidden" name="RequestDetails[@i].FridgeModelId" value="@Model.RequestDetails[i].FridgeModelId" />
+                                                                        <input type="hidden" name="RequestDetails[@i].FridgeModel.Manufacturer" value="@Model.RequestDetails[i].FridgeModel?.Manufacturer" />
+                                                                        <input type="hidden" name="RequestDetails[@i].FridgeModel.ModelName" value="@Model.RequestDetails[i].FridgeModel?.ModelName" />
+                                                                        <input type="hidden" name="RequestDetails[@i].FridgeModel.ModelCode" value="@Model.RequestDetails[i].FridgeModel?.ModelCode" />
+                                                                        <input type="hidden" name="RequestDetails[@i].FridgeModel.MonthlyRentalPrice" value="@Model.RequestDetails[i].FridgeModel?.MonthlyRentalPrice" />
+                                                                        <input type="hidden" name="RequestDetails[@i].FridgeModel.CapacityLiters" value="@Model.RequestDetails[i].FridgeModel?.CapacityLiters" />
+                                                                        <strong>@Model.RequestDetails[i].FridgeModel?.DisplayName</strong>
+                                                                        <br /><small class="text-muted">@Model.RequestDetails[i].FridgeModel?.ModelCode</small>
+                                                                    </td>
+                                                                    <td>R @Model.RequestDetails[i].FridgeModel?.MonthlyRentalPrice.ToString("N2")</td>
+                                                                    <td>@Model.RequestDetails[i].FridgeModel?.CapacityLiters L</td>
+                                                                    <td>
+                                                                        <input type="number" name="RequestDetails[@i].Quantity"
+                                                                               value="@Model.RequestDetails[i].Quantity" min="1"
+                                                                               class="form-control form-control-sm quantity-input"
+                                                                               onchange="updateCalculations()" style="width: 80px;" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <span class="badge @(Model.RequestDetails[i].AvailableStock >= Model.RequestDetails[i].Quantity ? "bg-success" : "bg-warning")">
+                                                                            @Model.RequestDetails[i].AvailableStock
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="subtotal">R @((Model.RequestDetails[i].FridgeModel?.MonthlyRentalPrice * Model.RequestDetails[i].Quantity)?.ToString("N2"))</td>
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeRequestDetail(@Model.RequestDetails[i].FridgeModelId)">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                        <tfoot class="table-dark">
+                                                            <tr>
+                                                                <td colspan="5" class="text-end"><strong>Total Monthly Rental:</strong></td>
+                                                                <td colspan="2"><strong id="totalMonthlyRental">R @Model.TotalMonthlyRental.ToString("N2")</strong></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5" class="text-end"><strong>Total Contract Value (24 months):</strong></td>
+                                                                <td colspan="2"><strong id="totalContractValue">R @Model.TotalContractValue.ToString("N2")</strong></td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="alert alert-info text-center">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    No items added to this request. Click "Add Item" to start adding fridges.
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">Delivery Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label asp-for="DeliveryLocationId" class="form-label required">Delivery Location</label>
+                                                <select asp-for="DeliveryLocationId" asp-items="Model.LocationList" class="form-select">
+                                                    <option value="">-- Select Location --</option>
+                                                </select>
+                                                <span asp-validation-for="DeliveryLocationId" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label asp-for="PreferredDeliveryDate" class="form-label">Preferred Delivery Date</label>
+                                                <input asp-for="PreferredDeliveryDate" type="date" class="form-control" />
+                                                <span asp-validation-for="PreferredDeliveryDate" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label asp-for="DeliveryInstructions" class="form-label">Delivery Instructions</label>
+                                                <textarea asp-for="DeliveryInstructions" class="form-control" rows="3"
+                                                          placeholder="Any special delivery instructions..."></textarea>
+                                                <span asp-validation-for="DeliveryInstructions" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Request Settings -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">Request Settings</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="RequestType" class="form-label required">Request Type</label>
+                                                <select asp-for="RequestType" asp-items="Model.RequestTypeList" class="form-select"></select>
+                                                <span asp-validation-for="RequestType" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label asp-for="Priority" class="form-label required">Priority</label>
+                                                <select asp-for="Priority" asp-items="Model.PriorityList" class="form-select"></select>
+                                                <span asp-validation-for="Priority" class="text-danger"></span>
+                                            </div>
+
+                                            @if (!isCustomer)
+                                            {
+                                                <div class="col-md-4">
+                                                    <label asp-for="DiscountPercentage" class="form-label">Discount Percentage</label>
+                                                    <input asp-for="DiscountPercentage" type="number" class="form-control" min="0" max="100" step="0.01" />
+                                                    <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-light">
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>Save Request
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 
-    <form asp-action="Upsert" method="post" id="allocationForm">
-        @Html.AntiForgeryToken()
-
-        <input type="hidden" asp-for="Id" />
-
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-info-circle"></i> Request Information
-                </h5>
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Add Fridge to Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="card-body">
+            <div class="modal-body">
                 <div class="row g-3">
-                    <!-- Customer Selection (only for admin/support) -->
-                    @if (!isCustomer)
-                    {
-                        <div class="col-md-6">
-                            <label asp-for="CustomerId" class="form-label"></label>
-                            <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-select">
-                                <option value="">-- Select Customer --</option>
-                            </select>
-                            <span asp-validation-for="CustomerId" class="text-danger"></span>
-                        </div>
-                    }
-                    else
-                    {
-                        <input type="hidden" asp-for="CustomerId" />
-                    }
-
                     <div class="col-md-6">
-                        <label asp-for="RequestDate" class="form-label"></label>
-                        <input asp-for="RequestDate" class="form-control" />
-                        <span asp-validation-for="RequestDate" class="text-danger"></span>
+                        <label for="fridgeModelSelect" class="form-label required">Fridge Model</label>
+                        <select id="fridgeModelSelect" class="form-select">
+                            <option value="">-- Select Fridge Model --</option>
+                            @foreach (var fridgeModel in await _db.FridgeModels.Where(fm => fm.IsActive).OrderBy(fm => fm.Manufacturer).ThenBy(fm => fm.ModelName).ToListAsync())
+                            {
+                                <option value="@fridgeModel.Id"
+                                        data-manufacturer="@fridgeModel.Manufacturer"
+                                        data-model-name="@fridgeModel.ModelName"
+                                        data-model-code="@fridgeModel.ModelCode"
+                                        data-rental-price="@fridgeModel.MonthlyRentalPrice"
+                                        data-capacity="@fridgeModel.CapacityLiters">
+                                    @fridgeModel.DisplayName - R @fridgeModel.MonthlyRentalPrice.ToString("N2")/month
+                                </option>
+                            }
+                        </select>
                     </div>
-
-                    <!-- Contact Information -->
-                    <div class="col-md-6">
-                        <label asp-for="FirstName" class="form-label"></label>
-                        <input asp-for="FirstName" class="form-control" />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    <div class="col-md-3">
+                        <label for="quantityInput" class="form-label required">Quantity</label>
+                        <input type="number" id="quantityInput" class="form-control" min="1" value="1" />
                     </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="LastName" class="form-label"></label>
-                        <input asp-for="LastName" class="form-control" />
-                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    <div class="col-md-3">
+                        <label class="form-label">Available Stock</label>
+                        <div id="availableStockDisplay" class="form-control-plaintext">-</div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="PhoneNumber" class="form-label"></label>
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-
-                    <!-- Address Information -->
-                    <div class="col-12">
-                        <label asp-for="AddressLine1" class="form-label"></label>
-                        <input asp-for="AddressLine1" class="form-control" />
-                        <span asp-validation-for="AddressLine1" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label asp-for="AddressLine2" class="form-label"></label>
-                        <input asp-for="AddressLine2" class="form-control" />
-                        <span asp-validation-for="AddressLine2" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="City" class="form-label"></label>
-                        <input asp-for="City" class="form-control" />
-                        <span asp-validation-for="City" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Province" class="form-label"></label>
-                        <input asp-for="Province" class="form-control" />
-                        <span asp-validation-for="Province" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="PostalCode" class="form-label"></label>
-                        <input asp-for="PostalCode" class="form-control" />
-                        <span asp-validation-for="PostalCode" class="text-danger"></span>
-                    </div>
-
-                    <!-- Carrier and Status -->
-                    <div class="col-md-6">
-                        <label asp-for="Carrier" class="form-label"></label>
-                        <input asp-for="Carrier" class="form-control" />
-                        <span asp-validation-for="Carrier" class="text-danger"></span>
-                    </div>
-
-                    @if (!isCustomer && isEdit)
-                    {
-                        <div class="col-md-6">
-                            <label asp-for="Status" class="form-label"></label>
-                            <select asp-for="Status" asp-items="Model.StatusList" class="form-select"></select>
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </div>
-                    }
-                    else
-                    {
-                        <input type="hidden" asp-for="Status" />
-                    }
                 </div>
-            </div>
-        </div>
-
-        <!-- Request Items -->
-        <div class="card mt-4">
-            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-list-check"></i> Requested Fridges
-                </h5>
-                <button type="button" class="btn btn-light btn-sm" id="addItemBtn">
-                    <i class="bi bi-plus-circle"></i> Add Fridge
-                </button>
-            </div>
-            <div class="card-body">
-                <div id="requestItemsContainer">
-                    <!-- Items will be added here dynamically -->
-                    @if (Model.RequestDetails.Any())
-                    {
-                        foreach (var item in Model.RequestDetails)
-                        {
-                            <div class="request-item row g-3 mb-3 border p-3 rounded" data-temp-id="@item.TempId">
-                                <div class="col-md-4">
-                                    <label class="form-label">Fridge</label>
-                                    <select name="RequestDetails[@item.TempId].FridgeId" class="form-select fridge-select" required>
-                                        <option value="">-- Select Fridge --</option>
-                                        @foreach (var fridge in Model.FridgeList)
-                                        {
-                                            <option value="@fridge.Value" selected="@(fridge.Value == item.FridgeId.ToString())">
-                                                @fridge.Text
-                                            </option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Quantity</label>
-                                    <input type="number" name="RequestDetails[@item.TempId].Quantity"
-                                           class="form-control quantity" value="@item.Quantity" min="1" required />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Unit Price</label>
-                                    <input type="number" name="RequestDetails[@item.TempId].Price"
-                                           class="form-control price" value="@item.Price" step="0.01" min="0.01" required />
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Total</label>
-                                    <input type="text" class="form-control total" value="@item.TotalPrice.ToString("C")" readonly />
-                                </div>
-                                <div class="col-md-1">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="button" class="btn btn-danger btn-block remove-item">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="text-center py-3 text-muted" id="noItemsMessage">
-                            <i class="bi bi-inbox display-4"></i>
-                            <p>No fridges added to this request yet.</p>
-                        </div>
-                    }
-                </div>
-
-                <!-- Summary -->
-                <div class="row mt-4">
-                    <div class="col-md-6 offset-md-6">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <strong>Subtotal:</strong>
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        <span id="subtotal">R0.00</span>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col-6">
-                                        <strong>Total Amount:</strong>
-                                    </div>
-                                    <div class="col-6 text-end">
-                                        <span id="grandTotal" class="h5 text-success">R0.00</span>
-                                    </div>
-                                </div>
-                            </div>
+                <div id="itemDetails" class="mt-3" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Selected Item Details</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Manufacturer:</strong></td>
+                                    <td id="detailManufacturer">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Model:</strong></td>
+                                    <td id="detailModel">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Capacity:</strong></td>
+                                    <td id="detailCapacity">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Monthly Rental:</strong></td>
+                                    <td id="detailRental">-</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="row mt-4">
-            <div class="col-12 text-end">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-check-circle"></i>
-                    @(isEdit ? "Update Request" : "Create Request")
-                </button>
-                <a asp-action="Index" class="btn btn-secondary btn-lg">Cancel</a>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="addItemToRequest()">Add to Request</button>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script>
-        let itemCounter = 0;
+        let requestDetails = @Html.Raw(Json.Serialize(Model.RequestDetails));
+        let detailIndex = @Model.RequestDetails.Count;
 
-        $(document).ready(function () {
-            // Initialize with existing items or empty
-            updateTotals();
+        function loadCustomerData(customerId) {
+            if (!customerId) return;
 
-            // Add new item
-            $('#addItemBtn').click(function () {
-                addRequestItem();
+            fetch(`/Customers/GetCustomerData/${customerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('ContactPerson').value = data.contactPerson || '';
+                        document.getElementById('PhoneNumber').value = data.phoneNumber || '';
+                        document.getElementById('Email').value = data.email || '';
+                        document.getElementById('DeliveryLocationId').value = data.locationId || '';
+                    }
+                })
+                .catch(error => console.error('Error loading customer data:', error));
+        }
+
+        function updateCalculations() {
+            let totalMonthly = 0;
+            let totalContract = 0;
+
+            document.querySelectorAll('#requestDetailsBody tr').forEach(row => {
+                const quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
+                const rentalPrice = parseFloat(row.querySelector('input[name$=".FridgeModel.MonthlyRentalPrice"]').value) || 0;
+                const subtotal = quantity * rentalPrice;
+
+                row.querySelector('.subtotal').textContent = 'R ' + subtotal.toFixed(2);
+                totalMonthly += subtotal;
             });
 
-            // Remove item
-            $(document).on('click', '.remove-item', function () {
-                $(this).closest('.request-item').remove();
-                updateTotals();
-                checkEmptyState();
-            });
+            totalContract = totalMonthly * 24;
 
-            // Update totals when quantities or prices change
-            $(document).on('input', '.quantity, .price', function () {
-                updateItemTotal($(this).closest('.request-item'));
-                updateTotals();
-            });
+            document.getElementById('totalMonthlyRental').textContent = 'R ' + totalMonthly.toFixed(2);
+            document.getElementById('totalContractValue').textContent = 'R ' + totalContract.toFixed(2);
+        }
 
-            // Load fridge prices when selected
-            $(document).on('change', '.fridge-select', function () {
-                const fridgeId = $(this).val();
-                const itemRow = $(this).closest('.request-item');
-
-                if (fridgeId) {
-                    // In a real app, you'd fetch the price from the server
-                    // For now, we'll use a placeholder
-                    itemRow.find('.price').val('250.00'); // Default rental price
-                    updateItemTotal(itemRow);
-                    updateTotals();
+        function removeRequestDetail(fridgeModelId) {
+            if (confirm('Are you sure you want to remove this item from the request?')) {
+                const row = document.querySelector(`tr[data-fridge-model-id="${fridgeModelId}"]`);
+                if (row) {
+                    row.remove();
+                    updateCalculations();
                 }
-            });
+            }
+        }
+
+        // Add Item Modal Functions
+        document.getElementById('fridgeModelSelect').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const fridgeModelId = this.value;
+
+            if (fridgeModelId) {
+                // Show item details
+                document.getElementById('itemDetails').style.display = 'block';
+                document.getElementById('detailManufacturer').textContent = selectedOption.getAttribute('data-manufacturer');
+                document.getElementById('detailModel').textContent = selectedOption.getAttribute('data-model-name');
+                document.getElementById('detailCapacity').textContent = selectedOption.getAttribute('data-capacity') + ' L';
+                document.getElementById('detailRental').textContent = 'R ' + parseFloat(selectedOption.getAttribute('data-rental-price')).toFixed(2);
+
+                // Load available stock
+                fetch(`/AllocationRequests/GetAvailableStock?fridgeModelId=${fridgeModelId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const stockDisplay = document.getElementById('availableStockDisplay');
+                        stockDisplay.textContent = data.availableStock;
+                        stockDisplay.className = data.availableStock > 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
+                    });
+            } else {
+                document.getElementById('itemDetails').style.display = 'none';
+            }
         });
 
-        function addRequestItem() {
-            itemCounter++;
-            const tempId = 'item_' + Date.now() + '_' + itemCounter;
+        function addItemToRequest() {
+            const fridgeModelSelect = document.getElementById('fridgeModelSelect');
+            const quantityInput = document.getElementById('quantityInput');
+            const selectedOption = fridgeModelSelect.options[fridgeModelSelect.selectedIndex];
 
-            const newItemHtml = `
-                <div class="request-item row g-3 mb-3 border p-3 rounded" data-temp-id="${tempId}">
-                    <div class="col-md-4">
-                        <label class="form-label">Fridge</label>
-                        <select name="RequestDetails[${tempId}].FridgeId" class="form-select fridge-select" required>
-                            <option value="">-- Select Fridge --</option>
-        @foreach (var fridge in Model.FridgeList)
-        {
-                                    <option value="@fridge.Value">@fridge.Text</option>
-        }
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Quantity</label>
-                        <input type="number" name="RequestDetails[${tempId}].Quantity"
-                               class="form-control quantity" value="1" min="1" required />
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Unit Price</label>
-                        <input type="number" name="RequestDetails[${tempId}].Price"
-                               class="form-control price" value="0.00" step="0.01" min="0.01" required />
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Total</label>
-                        <input type="text" class="form-control total" value="R0.00" readonly />
-                    </div>
-                    <div class="col-md-1">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-danger btn-block remove-item">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
+            if (!fridgeModelSelect.value) {
+                alert('Please select a fridge model');
+                return;
+            }
+
+            if (!quantityInput.value || quantityInput.value < 1) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            const fridgeModelId = parseInt(fridgeModelSelect.value);
+            const quantity = parseInt(quantityInput.value);
+
+            // Check if item already exists
+            const existingRow = document.querySelector(`tr[data-fridge-model-id="${fridgeModelId}"]`);
+            if (existingRow) {
+                alert('This fridge model is already in the request. Please update the quantity instead.');
+                return;
+            }
+
+            // Add to request details table
+            const tbody = document.getElementById('requestDetailsBody');
+            if (!tbody) {
+                // Create table if it doesn't exist
+                const container = document.getElementById('requestDetailsContainer');
+                container.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fridge Model</th>
+                                    <th>Monthly Rental</th>
+                                    <th>Capacity</th>
+                                    <th>Quantity</th>
+                                    <th>Available Stock</th>
+                                    <th>Monthly Subtotal</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestDetailsBody"></tbody>
+                            <tfoot class="table-dark">
+                                <tr>
+                                    <td colspan="5" class="text-end"><strong>Total Monthly Rental:</strong></td>
+                                    <td colspan="2"><strong id="totalMonthlyRental">R 0.00</strong></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="text-end"><strong>Total Contract Value (24 months):</strong></td>
+                                    <td colspan="2"><strong id="totalContractValue">R 0.00</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>`;
+                tbody = document.getElementById('requestDetailsBody');
+            }
+
+            const rentalPrice = parseFloat(selectedOption.getAttribute('data-rental-price'));
+            const subtotal = quantity * rentalPrice;
+            const availableStock = parseInt(document.getElementById('availableStockDisplay').textContent) || 0;
+
+            const newRow = document.createElement('tr');
+            newRow.setAttribute('data-fridge-model-id', fridgeModelId);
+            newRow.innerHTML = `
+                <td>
+                    <input type="hidden" name="RequestDetails[${detailIndex}].FridgeModelId" value="${fridgeModelId}" />
+                    <input type="hidden" name="RequestDetails[${detailIndex}].FridgeModel.Manufacturer" value="${selectedOption.getAttribute('data-manufacturer')}" />
+                    <input type="hidden" name="RequestDetails[${detailIndex}].FridgeModel.ModelName" value="${selectedOption.getAttribute('data-model-name')}" />
+                    <input type="hidden" name="RequestDetails[${detailIndex}].FridgeModel.ModelCode" value="${selectedOption.getAttribute('data-model-code')}" />
+                    <input type="hidden" name="RequestDetails[${detailIndex}].FridgeModel.MonthlyRentalPrice" value="${rentalPrice}" />
+                    <input type="hidden" name="RequestDetails[${detailIndex}].FridgeModel.CapacityLiters" value="${selectedOption.getAttribute('data-capacity')}" />
+                    <strong>${selectedOption.getAttribute('data-manufacturer')} ${selectedOption.getAttribute('data-model-name')}</strong>
+                    <br /><small class="text-muted">${selectedOption.getAttribute('data-model-code')}</small>
+                </td>
+                <td>R ${rentalPrice.toFixed(2)}</td>
+                <td>${selectedOption.getAttribute('data-capacity')} L</td>
+                <td>
+                    <input type="number" name="RequestDetails[${detailIndex}].Quantity"
+                           value="${quantity}" min="1"
+                           class="form-control form-control-sm quantity-input"
+                           onchange="updateCalculations()" style="width: 80px;" />
+                </td>
+                <td>
+                    <span class="badge ${availableStock >= quantity ? 'bg-success' : 'bg-warning'}">
+                        ${availableStock}
+                    </span>
+                </td>
+                <td class="subtotal">R ${subtotal.toFixed(2)}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRequestDetail(${fridgeModelId})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
             `;
 
-            $('#noItemsMessage').hide();
-            $('#requestItemsContainer').append(newItemHtml);
-            updateTotals();
+            tbody.appendChild(newRow);
+            detailIndex++;
+
+            updateCalculations();
+
+            // Reset modal
+            document.getElementById('fridgeModelSelect').value = '';
+            document.getElementById('quantityInput').value = '1';
+            document.getElementById('availableStockDisplay').textContent = '-';
+            document.getElementById('itemDetails').style.display = 'none';
+
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
         }
 
-        function updateItemTotal(itemRow) {
-            const quantity = parseFloat(itemRow.find('.quantity').val()) || 0;
-            const price = parseFloat(itemRow.find('.price').val()) || 0;
-            const total = quantity * price;
-
-            itemRow.find('.total').val('R' + total.toFixed(2));
-        }
-
-        function updateTotals() {
-            let subtotal = 0;
-
-            $('.request-item').each(function () {
-                const quantity = parseFloat($(this).find('.quantity').val()) || 0;
-                const price = parseFloat($(this).find('.price').val()) || 0;
-                subtotal += quantity * price;
-            });
-
-            $('#subtotal').text('R' + subtotal.toFixed(2));
-            $('#grandTotal').text('R' + subtotal.toFixed(2));
-        }
-
-        function checkEmptyState() {
-            if ($('.request-item').length === 0) {
-                $('#noItemsMessage').show();
-            }
-        }
-
-        // Form submission validation
-        $('#allocationForm').submit(function (e) {
-            if ($('.request-item').length === 0) {
-                e.preventDefault();
-                alert('Please add at least one fridge to the request.');
-                return false;
-            }
-
-            // Validate all items have fridges selected
-            let valid = true;
-            $('.fridge-select').each(function () {
-                if (!$(this).val()) {
-                    valid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-
-            if (!valid) {
-                e.preventDefault();
-                alert('Please select a fridge for all items.');
-                return false;
-            }
-
-            return true;
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalculations();
         });
     </script>
 }

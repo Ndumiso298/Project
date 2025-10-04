@@ -1,0 +1,87 @@
+﻿@model AllocationRequestDetailVM
+@{
+    var index = ViewData["Index"] as int? ?? 0;
+}
+
+<div class="item-row" data-item-index="@index">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label asp-for="FridgeModelId" class="form-label required">Fridge Model *</label>
+            <select asp-for="FridgeModelId"
+                    name="RequestDetails[@index].FridgeModelId"
+                    class="form-select fridge-model-select">
+                <option value="">-- Select Fridge Model --</option>
+                @if (ViewBag.FridgeModelList != null)
+                {
+                    foreach (var item in ViewBag.FridgeModelList)
+                    {
+                        <option value="@item.Value" selected="@(item.Value == Model.FridgeModelId.ToString())">
+                            @item.Text
+                        </option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="FridgeModelId" class="text-danger"></span>
+            <div class="mt-1">
+                <span class="available-stock badge bg-secondary">Stock info loading...</span>
+                <span class="stock-validation"></span>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <label asp-for="Quantity" class="form-label required">Quantity *</label>
+            <input asp-for="Quantity"
+                   name="RequestDetails[@index].Quantity"
+                   class="form-control"
+                   min="1"
+                   max="50"
+                   value="@(Model.Quantity > 0 ? Model.Quantity : 1)" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2">
+            <label asp-for="RentalDurationMonths" class="form-label required">Duration (Months) *</label>
+            <input asp-for="RentalDurationMonths"
+                   name="RequestDetails[@index].RentalDurationMonths"
+                   class="form-control"
+                   min="1"
+                   max="60"
+                   value="@(Model.RentalDurationMonths > 0 ? Model.RentalDurationMonths : 12)" />
+            <span asp-validation-for="RentalDurationMonths" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Monthly Total</label>
+            <div class="form-control-plaintext monthly-total">
+                R@((Model.Quantity * (Model.FridgeModel?.MonthlyRentalPrice ?? 0)).ToString("N2"))
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Line Total</label>
+            <div class="form-control-plaintext line-total fw-bold">
+                R@(Model.LineTotal.ToString("N2"))
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="SpecialRequirements" class="form-label">Special Requirements</label>
+            <textarea asp-for="SpecialRequirements"
+                      name="RequestDetails[@index].SpecialRequirements"
+                      class="form-control"
+                      rows="2"
+                      placeholder="Any special requirements...">@Model.SpecialRequirements</textarea>
+            <span asp-validation-for="SpecialRequirements" class="text-danger"></span>
+        </div>
+
+        <div class="col-12 text-end">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn">
+                <i class="bi bi-trash me-1"></i>Remove Item
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden fields for model data -->
+    <input type="hidden" name="RequestDetails[@index].Id" value="@Model.Id" />
+    <input type="hidden" name="RequestDetails[@index].TempId" value="@Model.TempId" />
+</div>

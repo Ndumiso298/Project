@@ -1,80 +1,108 @@
 ﻿@{
-    ViewData["Title"] = "Fridge Management System";
+    ViewData["Title"] = "Welcome to SmartChill Solutions";
 }
 
-<!-- Hero Section (Teljoy-style) -->
-<section class="hero-section bg-light py-5">
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Revolutionizing Fridge Management</h1>
+                <p class="lead mb-5">SmartChill Solutions provides comprehensive fridge management systems for beverage manufacturers, ensuring optimal performance and maximum efficiency.</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4 py-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Client Login
+                    </a>
+                    <a asp-action="OurServices" class="btn btn-outline-light btn-lg px-4 py-2">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold mb-3">Why Choose SmartChill?</h2>
+                <p class="text-muted">Comprehensive solutions designed specifically for beverage industry fridge management</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card service-card h-100 text-center p-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold">Real-time Monitoring</h5>
+                    <p class="text-muted">Track fridge performance, temperature, and maintenance schedules in real-time with our advanced monitoring system.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card service-card h-100 text-center p-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold">Proactive Maintenance</h5>
+                    <p class="text-muted">Schedule and manage maintenance visits automatically to prevent downtime and extend fridge lifespan.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card service-card h-100 text-center p-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-exclamation-triangle fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold">Instant Fault Reporting</h5>
+                    <p class="text-muted">Quick and efficient fault reporting system with automatic technician dispatch for rapid resolution.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <h2 class="fw-bold display-4">500+</h2>
+                <p class="mb-0">Fridges Managed</p>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <h2 class="fw-bold display-4">98%</h2>
+                <p class="mb-0">Uptime Rate</p>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <h2 class="fw-bold display-4">24/7</h2>
+                <p class="mb-0">Support Available</p>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <h2 class="fw-bold display-4">50+</h2>
+                <p class="mb-0">Happy Clients</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold text-primary">Smart Fridge Management</h1>
-                <p class="lead">Professional refrigeration solutions for businesses of all sizes</p>
-                <div class="d-flex gap-2 mt-4">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a href="@Url.Action("Dashboard", "Customer")" class="btn btn-primary btn-lg">Go to Dashboard</a>
-                    }
-                    else
-                    {
-                        <a href="@Url.Action("CustomerPortal", "Home")" class="btn btn-primary btn-lg">Customer Login</a>
-                        <a href="@Url.Action("Contact", "Home")" class="btn btn-outline-primary btn-lg">Contact Sales</a>
-                    }
-                </div>
+            <div class="col-lg-8">
+                <h3 class="fw-bold mb-3">Ready to Transform Your Fridge Management?</h3>
+                <p class="text-muted mb-4">Join leading beverage manufacturers who trust SmartChill Solutions for their fridge management needs.</p>
             </div>
-            <div class="col-lg-6">
-                <img src="~/images/fridge-hero.png" alt="Fridge Management" class="img-fluid" />
+            <div class="col-lg-4 text-lg-end">
+                <a asp-action="Contact" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-phone me-2"></i>Get Started Today
+                </a>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Features Section (Your functionality, Teljoy's presentation) -->
-<section class="features-section py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Why Choose Our Fridge Management System?</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3">
-                            <i class="fas fa-tools text-white fa-2x"></i>
-                        </div>
-                        <h5>Maintenance Tracking</h5>
-                        <p>Schedule and track all fridge maintenance in one place</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3">
-                            <i class="fas fa-exclamation-triangle text-white fa-2x"></i>
-                        </div>
-                        <h5>Fault Reporting</h5>
-                        <p>Quickly report and track fridge issues</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3">
-                            <i class="fas fa-chart-line text-white fa-2x"></i>
-                        </div>
-                        <h5>Inventory Management</h5>
-                        <p>Track your fridge inventory and allocations</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action -->
-<section class="cta-section bg-primary text-white py-5">
-    <div class="container text-center">
-        <h2>Ready to Get Started?</h2>
-        <p class="lead">Join hundreds of businesses using our fridge management system</p>
-        <a href="@Url.Action("Contact", "Home")" class="btn btn-light btn-lg">Contact Us Today</a>
     </div>
 </section>

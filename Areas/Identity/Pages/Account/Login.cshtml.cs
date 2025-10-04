@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Project.Models;
+using Project.Utilities;
 
 namespace Project.Areas.Identity.Pages.Account
 {
@@ -85,36 +86,38 @@ namespace Project.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                
+                
                 if (result.Succeeded)
                 {
 
                     _logger.LogInformation("User logged in.");
 
                     var user = await  _userManager.FindByEmailAsync(Input.Email);
-                    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    if (await _userManager.IsInRoleAsync(user, SD.AdminRole))
                     {
-                        return RedirectToAction("Dashboard", "Admin");
+                        return RedirectToAction("Index", "Home");
 
                     }
-                    else if (await _userManager.IsInRoleAsync(user, "Customer"))
+                    else if (await _userManager.IsInRoleAsync(user, SD.CustomerRole))
                     {
-                        return RedirectToAction("Dashboard", "Customer");
+                        return RedirectToAction("Index", "Home");
                     }
-                    else if (await _userManager.IsInRoleAsync(user, "AllocatedBy"))
+                    else if (await _userManager.IsInRoleAsync(user, SD.CustomerSupportRole))
                     {
-                        return RedirectToAction("Dashboard", "AllocatedBy");
+                        return RedirectToAction("Index", "Home");
                     }
-                    else if(await _userManager.IsInRoleAsync(user, "InventoryLiaison"))
+                    else if (await _userManager.IsInRoleAsync(user, SD.StockControllerRole))
                     {
-                        return RedirectToAction("Dashboard", "InventoryLiaison");
+                        return RedirectToAction("Index", "Home");
                     }
-                    else if(await _userManager.IsInRoleAsync(user, "FaultTechnician"))
+                    else if (await _userManager.IsInRoleAsync(user, SD.FaultTechnicianRole))
                     {
-                        return RedirectToAction("Dashboard", "FaultTechnician");
+                        return RedirectToAction("Index", "Home");
                     }
-                    else if (await _userManager.IsInRoleAsync(user, "MaintenanceTechnician"))
+                    else if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnicianRole))
                     {
-                        return RedirectToAction("Dashboard", "MaintenanceVisit");
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 if (result.RequiresTwoFactor)
@@ -129,7 +132,7 @@ namespace Project.Areas.Identity.Pages.Account
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
+                    //return Page();
                 }
             }
 

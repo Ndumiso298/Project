@@ -2,7 +2,7 @@
 
 namespace Project.Utilities.Enums
 {
-    public enum RequestPriority
+    public enum CustomerRequestPriority
     {
         [Display(Name = "Low")]
         Low,
