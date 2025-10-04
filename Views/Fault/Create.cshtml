@@ -1,0 +1,75 @@
+﻿@using Project.Utilities.Enums
+@model Project.Models.FaultRecord
+
+<form asp-action="Create">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="FridgeAllocationId" class="form-label"></label>
+        <input asp-for="FridgeAllocationId" class="form-control" />
+        <span asp-validation-for="FridgeAllocationId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FridgeId" class="form-label"></label>
+        <input asp-for="FridgeId" class="form-control" />
+        <span asp-validation-for="FridgeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FaultTechnicianId" class="form-label"></label>
+        <input asp-for="FaultTechnicianId" class="form-control" />
+        <span asp-validation-for="FaultTechnicianId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label"></label>
+        <select asp-for="Category" class="form-select"
+                asp-items="Html.GetEnumSelectList<FaultCategory>()">
+            <option value="">-- Select Category --</option>
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Priority" class="form-label"></label>
+        <select asp-for="Priority" class="form-select"
+                asp-items="Html.GetEnumSelectList<FaultPriority>()">
+            <option value="">-- Select Priority --</option>
+        </select>
+        <span asp-validation-for="Priority" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ReportedDate" class="form-label"></label>
+        <input asp-for="ReportedDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ReportedDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ScheduledDate" class="form-label"></label>
+        <input asp-for="ScheduledDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Diagnosis" class="form-label"></label>
+        <textarea asp-for="Diagnosis" class="form-control"></textarea>
+        <span asp-validation-for="Diagnosis" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FaultPhotoUrl" class="form-label"></label>
+        <input asp-for="FaultPhotoUrl" class="form-control" />
+        <span asp-validation-for="FaultPhotoUrl" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

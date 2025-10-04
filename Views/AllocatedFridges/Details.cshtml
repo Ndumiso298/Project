@@ -1,0 +1,64 @@
+﻿@model Project.Models.AllocationRequestHeader
+@{
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-light py-4 text-center">
+            <h2 class="fw-bold mb-1">Allocated Fridges Details</h2>
+            <p class="mb-0 opacity-75">Fridge allocation summary for this customer</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="row g-5">
+                <!-- Customer Info -->
+                <div class="col-12 col-lg-6">
+                    <h4 class="text-primary mb-3">
+                        <i class="bi bi-person-circle me-2"></i> Customer Details
+                    </h4>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item"><strong>Name:</strong> @Model.Customer.UserAccount?.FirstName</li>
+                        <li class="list-group-item"><strong>Surname:</strong> @Model.Customer.UserAccount?.LastName</li>
+                        <li class="list-group-item"><strong>Email:</strong> @Model.Customer.UserAccount?.Email</li>
+                        <li class="list-group-item"><strong>Request Date:</strong> @Model.RequestDate.ToString("yyyy-MM-dd")</li>
+                        <li class="list-group-item"><strong>Status:</strong> @Model.Status</li>
+                    </ul>
+                </div>
+
+                <!-- Allocated Fridges -->
+                <div class="col-12 col-lg-6">
+                    <h4 class="text-primary mb-3">
+                        <i class="bi bi-refrigerator me-2"></i> Allocated Fridges
+                    </h4>
+                    <ul class="list-group mb-3 shadow-sm rounded-3 overflow-hidden">
+                        @foreach (var item in Model.RequestedFridges)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-semibold mb-1">@item.Fridge.Manufacturer - @item.Fridge.Model</h6>
+                                    <h6 class="fw-semibold mb-1">@item.Fridge.SerialNumber</h6>
+                                    <h6 class="fw-semibold mb-1">@item.Fridge.Type</h6>
+
+                                    <small class="teQuantityted">Quantity: @item.Quantity</small><br />
+                                    <small class="text-muted">Price per month: @item.Price.ToString("c")</small>
+                                </div>
+                                <span class="fw-bQuantityext-primary">@((item.Quantity * item.Price).ToString("c"))</span>
+                            </li>
+                        }
+                        <li class="list-group-item d-flex justify-content-between bg-light">
+                            <small class="text-muted">Total</small>
+                            <strong class="text-primary fs-5">@Model.RequestTotal.ToString("c")</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white border-0 text-center">
+            <a asp-action="Index" class="btn btn-outline-primary rounded-pill px-5 py-2">
+                <i class="bi bi-arrow-left me-2"></i> Back to Allocated Requests
+            </a>
+        </div>
+    </div>
+</div>
