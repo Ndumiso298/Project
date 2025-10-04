@@ -16,141 +16,121 @@ namespace Project.Controllers
     [Authorize(Roles = SD.AdminRole + "," + SD.MaintenanceTechnicianRole)]
     public class MaintenanceRecordsController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly ILogger<MaintenanceRecordsController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public MaintenanceRecordsController(ApplicationDbContext db, ILogger<MaintenanceRecordsController> logger)
+        public MaintenanceRecordsController(ApplicationDbContext context)
         {
-            _db = db;
-            _logger = logger;
+            _context = context;
         }
 
         // GET: MaintenanceRecords
         public async Task<IActionResult> Index(int? fridgeId, DateTime? fromDate, DateTime? toDate)
         {
-            try
+            IQueryable<MaintenanceRecord> query = _context.MaintenanceRecords
+                .Include(r => r.Fridge)
+                .Include(r => r.Technician)
+                .Include(r => r.MaintenanceVisit)
+                .Where(r => r.IsActive); // Added IsActive filter
+
+            if (fridgeId.HasValue)
             {
-                // Build query with includes and active filter
-                var query = _db.MaintenanceRecords
-                    .Include(r => r.Fridge)
-                    .Include(r => r.Technician)
-                    .Include(r => r.MaintenanceVisit)
-                    .Where(r => !r.IsDeleted);
-
-                // Apply filters
-                if (fridgeId.HasValue)
-                {
-                    query = query.Where(r => r.FridgeId == fridgeId.Value);
-                }
-
-                if (fromDate.HasValue)
-                {
-                    query = query.Where(r => r.ServiceDate >= fromDate.Value.Date);
-                }
-
-                if (toDate.HasValue)
-                {
-                    query = query.Where(r => r.ServiceDate <= toDate.Value.Date.AddDays(1).AddTicks(-1));
-                }
-
-                var records = await query.OrderByDescending(r => r.ServiceDate).ToListAsync();
-
-                // Prepare view data for filters
-                ViewBag.FridgeList = await GetFridgeListAsync();
-                ViewBag.SelectedFridgeId = fridgeId;
-                ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
-                ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
-
-                return View(records);
+                query = query.Where(r => r.FridgeId == fridgeId.Value);
             }
-            catch (Exception ex)
+
+            if (fromDate.HasValue)
             {
-                _logger.LogError(ex, "Error loading maintenance records index");
-                TempData["error"] = "Error loading maintenance records";
-                return RedirectToAction(nameof(Index));
+                query = query.Where(r => r.ServiceDate >= fromDate.Value);
             }
+
+            if (toDate.HasValue)
+            {
+                query = query.Where(r => r.ServiceDate <= toDate.Value);
+            }
+
+            var records = await query.OrderByDescending(r => r.ServiceDate).ToListAsync();
+
+            ViewBag.FridgeList = await GetFridgeListAsync();
+            ViewBag.SelectedFridgeId = fridgeId;
+            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+
+            return View(records);
         }
 
         // GET: MaintenanceRecords/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            try
-            {
-                var record = await _db.MaintenanceRecords
-                    .Include(r => r.Fridge)
-                    .Include(r => r.Technician)
-                    .Include(r => r.MaintenanceVisit)
-                    .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+            var record = await _context.MaintenanceRecords
+                .Include(r => r.Fridge)
+                .Include(r => r.Technician)
+                .Include(r => r.MaintenanceVisit)
+                .FirstOrDefaultAsync(r => r.Id == id && r.IsActive); // Fixed condition
 
-                if (record == null)
-                {
-                    TempData["error"] = "Maintenance record not found";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                return View(record);
-            }
-            catch (Exception ex)
+            if (record == null)
             {
-                _logger.LogError(ex, "Error loading maintenance record details for ID {Id}", id);
-                TempData["error"] = "Error loading maintenance record details";
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
+
+            return View(record);
         }
 
         // GET: MaintenanceRecords/Upsert
         public async Task<IActionResult> Upsert(int? id, int? visitId)
         {
-            try
+            var vm = new MaintenanceRecordVM();
+            await PopulateDropdowns(vm);
+
+            if (id == null || id == 0)
             {
-                var vm = new MaintenanceRecordVM();
-                await PopulateDropdowns(vm);
+                // Create new record
+                vm.ServiceDate = DateTime.Now; // Changed from MaintenanceDate to ServiceDate
 
-                if (id == null || id == 0)
+                // Pre-populate from visit if provided
+                if (visitId.HasValue)
                 {
-                    // Create new record
-                    vm.ServiceDate = DateTime.Now;
+                    var visit = await _context.MaintenanceVisits
+                        .Include(v => v.Fridge)
+                        .Include(v => v.AssignedTechnician)
+                        .FirstOrDefaultAsync(v => v.Id == visitId);
 
-                    // Pre-populate from visit if provided
-                    if (visitId.HasValue)
+                    if (visit != null)
                     {
-                        var visit = await _db.MaintenanceVisits
-                            .Include(v => v.Fridge)
-                            .Include(v => v.AssignedTechnician)
-                            .FirstOrDefaultAsync(v => v.Id == visitId && !v.IsDeleted);
-
-                        if (visit != null)
-                        {
-                            vm.MaintenanceVisitId = visitId;
-                            vm.FridgeId = visit.FridgeId;
-                            vm.TechnicianId = visit.AssignedTechnicianId;
-                            vm.ServiceDate = visit.ScheduledDate;
-                        }
+                        vm.MaintenanceVisitId = visitId;
+                        vm.FridgeId = visit.Fridge.Id;
+                        vm.TechnicianId = visit.AssignedTechnician.Id; // Fixed property name
+                        vm.ServiceDate = visit.ScheduledDate; // Changed from MaintenanceDate
                     }
-
-                    return View(vm);
                 }
 
-                // Edit existing record
-                var record = await _db.MaintenanceRecords
-                    .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
-
-                if (record == null)
-                {
-                    TempData["error"] = "Maintenance record not found";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                // Map entity to view model
-                MapEntityToViewModel(record, vm);
                 return View(vm);
             }
-            catch (Exception ex)
+
+            // Edit existing record
+            var record = await _context.MaintenanceRecords
+                .Include(r => r.Fridge)
+                .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
+
+            if (record == null)
             {
-                _logger.LogError(ex, "Error loading maintenance record upsert form");
-                TempData["error"] = "Error loading form";
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
+
+            vm.Id = record.Id;
+            vm.FridgeId = record.FridgeId;
+            vm.TechnicianId = record.TechnicianId;
+            vm.MaintenanceVisitId = record.MaintenanceVisitId;
+            vm.ServiceDate = record.ServiceDate;
+            vm.ServiceType = record.ServiceType;
+            vm.Description = record.Description;
+            vm.ServiceNotes = record.ServiceNotes;
+            vm.ServiceCost = record.Cost;
+            vm.PartsUsed = record.PartsUsed;
+            vm.StartTime = record.StartTime;
+            vm.EndTime = record.EndTime;
+            vm.IsWarrantyClaim = record.IsWarrantyClaim;
+            vm.WarrantyReference = record.WarrantyReference;
+
+            return View(vm);
         }
 
         // POST: MaintenanceRecords/Upsert
@@ -158,204 +138,156 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(MaintenanceRecordVM vm)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    await PopulateDropdowns(vm);
-                    return View(vm);
-                }
-                if (vm.Id == 0)
-                {
-                    // Create new record
-                    var record = MapViewModelToEntity(vm);
-                    _db.MaintenanceRecords.Add(record);
-                    await _db.SaveChangesAsync();
-
-                    // Update fridge service information
-                    await UpdateFridgeServiceInfo(vm.FridgeId, vm.ServiceDate);
-
-                    TempData["success"] = "Maintenance record created successfully";
-                }
-                else
-                {
-                    // Update existing record
-                    var record = await _db.MaintenanceRecords
-                        .FirstOrDefaultAsync(r => r.Id == vm.Id && !r.IsDeleted);
-
-                    if (record == null)
+                    if (vm.Id == 0)
                     {
-                        TempData["error"] = "Maintenance record not found";
-                        return RedirectToAction(nameof(Index));
+                        // Create new record
+                        var record = new MaintenanceRecord
+                        {
+                            FridgeId = vm.FridgeId,
+                            TechnicianId = vm.TechnicianId,
+                            MaintenanceVisitId = vm.MaintenanceVisitId,
+                            ServiceDate = vm.ServiceDate, // Now property names match
+                            ServiceType = vm.ServiceType,
+                            Description = vm.Description, // Now property names match
+                            ServiceNotes = vm.ServiceNotes,
+                            Cost = vm.ServiceCost, // Now property names match
+                            PartsUsed = vm.PartsUsed, // Now property names match
+                            StartTime = vm.StartTime,
+                            EndTime = vm.EndTime,
+                            IsWarrantyClaim = vm.IsWarrantyClaim,
+                            WarrantyReference = vm.WarrantyReference,
+                            IsActive = true,
+                            CreatedDate = DateTime.Now,
+                            ModifiedDate = DateTime.Now
+                        };
+
+                        _context.MaintenanceRecords.Add(record);
+                        await _context.SaveChangesAsync();
+
+                        // Update fridge's last service date
+                        await UpdateFridgeServiceInfo(vm.FridgeId, vm.ServiceDate, vm.NextServiceDue);
+
+                        TempData["success"] = "Maintenance record created successfully";
+                    }
+                    else
+                    {
+                        // Update existing record
+                        var record = await _context.MaintenanceRecords.FindAsync(vm.Id);
+                        if (record == null)
+                        {
+                            return NotFound();
+                        }
+
+                        record.FridgeId = vm.FridgeId;
+                        record.TechnicianId = vm.TechnicianId;
+                        record.MaintenanceVisitId = vm.MaintenanceVisitId;
+                        record.ServiceDate = vm.ServiceDate; // Changed from MaintenanceDate
+                        record.Description = vm.Description; // Map to correct property
+                        record.ServiceNotes = vm.ServiceNotes;
+                        record.PartsUsed = vm.PartsUsed; // Map to correct property
+                        record.ModifiedDate = DateTime.Now;
+                        record.IsActive = true;
+
+                        _context.MaintenanceRecords.Update(record);
+                        await _context.SaveChangesAsync();
+
+                        // Update fridge's service info
+                        await UpdateFridgeServiceInfo(vm.FridgeId, vm.ServiceDate, vm.NextServiceDue);
+
+                        TempData["success"] = "Maintenance record updated successfully";
                     }
 
-                    MapViewModelToEntity(vm, record);
-                    record.UpdatedAt = DateTime.Now;
-
-                    _db.MaintenanceRecords.Update(record);
-                    await _db.SaveChangesAsync();
-
-                    // Update fridge service information
-                    await UpdateFridgeServiceInfo(vm.FridgeId, vm.ServiceDate);
-
-                    TempData["success"] = "Maintenance record updated successfully";
+                    return RedirectToAction(nameof(Index));
                 }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Error saving maintenance record: {ex.Message}");
+                }
+            }
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error saving maintenance record");
-                TempData["error"] = "Error saving maintenance record";
-                await PopulateDropdowns(vm);
-                return View(vm);
-            }
+            await PopulateDropdowns(vm);
+            return View(vm);
         }
 
         // POST: MaintenanceRecords/Delete/5 (Soft Delete)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.AdminRole)]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+            var record = await _context.MaintenanceRecords.FindAsync(id);
+            if (record == null)
             {
-                var record = await _db.MaintenanceRecords
-                    .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
-
-                if (record == null)
-                {
-                    TempData["error"] = "Maintenance record not found";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                // Soft delete
-                record.IsDeleted = true;
-                record.UpdatedAt = DateTime.Now;
-
-                await _db.SaveChangesAsync();
-                TempData["success"] = "Maintenance record deleted successfully";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting maintenance record with ID {Id}", id);
-                TempData["error"] = "Error deleting maintenance record";
+                return NotFound();
             }
 
+            // Soft delete
+            record.IsActive = false;
+            record.ModifiedDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            TempData["success"] = "Maintenance record deleted successfully";
             return RedirectToAction(nameof(Index));
         }
 
-        #region Private Methods
-
         private async Task PopulateDropdowns(MaintenanceRecordVM vm)
         {
-            try
-            {
-                vm.FridgeList = await _db.Fridges
-                    .Where(f => f.Status != FridgeStatus.Scrapped && f.IsActive)
-                    .OrderBy(f => f.SerialNumber)
-                    .Select(f => new SelectListItem
-                    {
-                        Value = f.Id.ToString(),
-                        Text = $"{f.SerialNumber} - {f.FridgeModel.ModelName ?? "Unknown Model"}"
-                    })
-                    .ToListAsync();
-
-                vm.TechnicianList = await _db.Employees
-                    .Where(e => e.IsActive && e.EmployeeType == EmployeeType.MaintenanceTechnician)
-                    .Include(e => e.UserAccount)
-                    .OrderBy(e => e.UserAccount.FirstName)
-                    .Select(e => new SelectListItem
-                    {
-                        Value = e.Id.ToString(),
-                        Text = $"{e.UserAccount.FirstName} {e.UserAccount.LastName}"
-                    })
-                    .ToListAsync();
-
-                vm.VisitList = await _db.MaintenanceVisits
-                    .Where(v => !v.IsDeleted && (v.Status == ServicingStatus.Scheduled || v.Status == ServicingStatus.InProgress))
-                    .OrderByDescending(v => v.ScheduledDate)
-                    .Select(v => new SelectListItem
-                    {
-                        Value = v.Id.ToString(),
-                        Text = $"Visit #{v.Id} - {v.ScheduledDate:dd/MM/yyyy HH:mm} - {v.Customer.UserAccount.FirstName}"
-                    })
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error populating dropdowns");
-                // Ensure lists are never null
-                vm.FridgeList ??= new List<SelectListItem>();
-                vm.TechnicianList ??= new List<SelectListItem>();
-                vm.VisitList ??= new List<SelectListItem>();
-            }
-        }
-
-        private async Task<List<SelectListItem>> GetFridgeListAsync()
-        {
-            return await _db.Fridges
+            vm.FridgeList = await _context.Fridges
                 .Where(f => f.Status != FridgeStatus.Scrapped && f.IsActive)
-                .OrderBy(f => f.SerialNumber)
                 .Select(f => new SelectListItem
                 {
                     Value = f.Id.ToString(),
-                    Text = $"{f.SerialNumber} - {f.FridgeModel.ModelName ?? "Unknown Model"}"
+                    Text = $"{f.SerialNumber} - {f.Model}"
+                })
+                .ToListAsync();
+
+            vm.TechnicianList = await _context.Employees
+                .Where(e => e.IsActive && e.EmployeeType == EmployeeType.MaintenanceTechnician)
+                .Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = $"{e.UserAccount.FirstName} {e.UserAccount.LastName}"
+                })
+                .ToListAsync();
+
+            vm.VisitList = await _context.MaintenanceVisits
+                .Where(v => v.Status == ServicingStatus.Scheduled || v.Status == ServicingStatus.Completed) // Fixed condition
+                .Select(v => new SelectListItem
+                {
+                    Value = v.Id.ToString(),
+                    Text = $"Visit #{v.Id} - {v.ScheduledDate:dd/MM/yyyy}"
                 })
                 .ToListAsync();
         }
 
-        private void MapEntityToViewModel(MaintenanceRecord entity, MaintenanceRecordVM vm)
+        private async Task<List<SelectListItem>> GetFridgeListAsync()
         {
-            vm.Id = entity.Id;
-            vm.FridgeId = entity.FridgeId;
-            vm.TechnicianId = entity.TechnicianId;
-            vm.MaintenanceVisitId = entity.MaintenanceVisitId;
-            vm.ServiceDate = entity.ServiceDate;
-            vm.ServiceNotes = entity.ServiceNotes;
-        }
-
-        private MaintenanceRecord MapViewModelToEntity(MaintenanceRecordVM vm, MaintenanceRecord? entity = null)
-        {
-            entity ??= new MaintenanceRecord();
-
-            entity.FridgeId = vm.FridgeId;
-            entity.TechnicianId = vm.TechnicianId;
-            entity.MaintenanceVisitId = vm.MaintenanceVisitId;
-            entity.ServiceDate = vm.ServiceDate;
-            entity.ServiceNotes = vm.ServiceNotes;
-            entity.IsDeleted = false;
-
-            if (entity.Id == 0)
-            {
-                entity.CreatedAt = DateTime.Now;
-            }
-            entity.UpdatedAt = DateTime.Now;
-
-            return entity;
-        }
-
-        private async Task UpdateFridgeServiceInfo(int fridgeId, DateTime? serviceDate)
-        {
-            try
-            {
-                var fridge = await _db.Fridges.FindAsync(fridgeId);
-                if (fridge != null)
+            return await _context.Fridges
+                .Where(f => f.Status != FridgeStatus.Scrapped && f.IsActive)
+                .Select(f => new SelectListItem
                 {
-                    fridge.LastServiceDate = serviceDate;
-                    fridge.UpdatedAt = DateTime.Now;
-                    _db.Fridges.Update(fridge);
-                    await _db.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to update fridge service info for fridge ID {FridgeId}", fridgeId);
-                // Don't throw - this is a secondary operation
-            }
+                    Value = f.Id.ToString(),
+                    Text = $"{f.SerialNumber} - {f.Model}"
+                })
+                .ToListAsync();
         }
 
-        #endregion
+        private async Task UpdateFridgeServiceInfo(int fridgeId, DateTime serviceDate, DateTime? nextServiceDue)
+        {
+            var fridge = await _context.Fridges.FindAsync(fridgeId);
+            if (fridge != null)
+            {
+                fridge.LastServiceDate = serviceDate;
+                fridge.NextServiceDue = nextServiceDue;
+                fridge.ModifiedDate = DateTime.Now;
+                _context.Fridges.Update(fridge);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
     //public class MaintenanceRecordController : Controller
     //{

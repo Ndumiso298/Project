@@ -3,8 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Data.SqlClient;
 using Project.Utilities.Enums;
-using Project.Models.ViewModels;
-using Project.Utilities;
 
 namespace Project.Models
 {
@@ -13,58 +11,35 @@ namespace Project.Models
         [Key]
         public int Id { get; set; }
 
-        // ===== IDENTITY & BASIC INFO =====
+        // Link to Identity user (employees must have accounts)
         [Required]
         public string UserId { get; set; } = string.Empty;
 
-        [ForeignKey(nameof(UserId))]
+        [ForeignKey("UserId")]
         [ValidateNever]
         public virtual ApplicationUser UserAccount { get; set; } = null!;
 
         [Required(ErrorMessage = "Employee Number is required.")]
-        [StringLength(20, ErrorMessage = "Employee Number cannot exceed 20 characters.")]
-        [Display(Name = "Employee Number")]
+        [StringLength(50, ErrorMessage = "Employee Number cannot exceed 50 characters.")]
+        [Display(Name = "Employee Number*")]
         public string EmployeeNumber { get; set; } = string.Empty;
 
-        // ===== EMPLOYEE DETAILS =====
-        [Required(ErrorMessage = "Employee Type is required.")]
-        [Display(Name = "Employee Type")]
-        public EmployeeType EmployeeType { get; set; }
-
-        [Required(ErrorMessage = "Availability Status is required.")]
         [Display(Name = "Availability Status")]
         public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Available;
 
-        [Display(Name = "Is Deleted")]
-        public bool IsDeleted { get; set; } = false;
+        [Required]
+        public EmployeeType EmployeeType { get; set; }
+        // Metadata
+        [Display(Name = "Created At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // ===== CONTACT INFORMATION =====
-        [Display(Name = "Work Phone")]
-        [Phone(ErrorMessage = "Please enter a valid phone number.")]
-        [StringLength(15, ErrorMessage = "Work phone cannot exceed 15 characters.")]
-        public string? WorkPhone { get; set; }
+        [Display(Name = "Updated At")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime? UpdatedAt { get; set; }
 
-        [Display(Name = "Work Email")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-        [StringLength(100, ErrorMessage = "Work email cannot exceed 100 characters.")]
-        public string? WorkEmail { get; set; }
-
-        // ===== LOCATION INFORMATION (Optional) =====
-        [Display(Name = "Work Address")]
-        public int? WorkLocationId { get; set; }
-
-        [ForeignKey(nameof(WorkLocationId))]
-        [ValidateNever]
-        public virtual Location? WorkLocation { get; set; }
-
-        // ===== COMPUTED PROPERTIES =====
-        [NotMapped]
-        [Display(Name = "Full Name")]
-        public string FullName => $"{UserAccount?.FirstName} {UserAccount?.LastName}".Trim();
-
-        [NotMapped]
-        [Display(Name = "Is Active")]
-        public bool IsActive => UserAccount?.IsAccountActive == true && AvailabilityStatus == AvailabilityStatus.Available;
+        [Display(Name = "Account Status")]
+        public bool IsActive { get; set; } = true;
 
         // Navigation properties
         [ValidateNever]
@@ -78,11 +53,10 @@ namespace Project.Models
         public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; } = new List<MaintenanceVisit>();
 
         [ValidateNever]
-        public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
+        public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; }
 
-        //[ValidateNever]
-        //[InverseProperty(nameof(FaultRecord.ReportedBy))]
-        //public virtual ICollection<FaultRecord> ReportedFaults { get; set; } = new();
+        [NotMapped]
+        public virtual ICollection<FaultRecord> FaultReports { get; set; } = new List<FaultRecord>();
 
         // FaultRecord tech navigations
         [InverseProperty(nameof(FaultRecord.AssignedTechnician))]

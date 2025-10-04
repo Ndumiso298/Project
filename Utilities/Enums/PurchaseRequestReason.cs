@@ -6,28 +6,14 @@ namespace Project.Utilities.Enums
     {
         [Display(Name = "Low Stock")]
         LowStock,
-
         [Display(Name = "New Customer Demand")]
-        NewCustomerDemand,
-
+        NewCustomer,
         [Display(Name = "Replace Faulty Units")]
-        ReplacementFaulty,
-
-        [Display(Name = "Replace Obsolete Units")]
-        ReplacementObsolete,
-
+        Replacement,
         [Display(Name = "Seasonal Demand Increase")]
         Seasonal,
-
-        [Display(Name = "Expansion (New Branch/Market)")]
-        Expansion,
-
         [Display(Name = "Upgrade Inventory")]
         Upgrade,
-
-        [Display(Name = "Emergency Request")]
-        Emergency,
-
         [Display(Name = "Other")]
         Other
     }

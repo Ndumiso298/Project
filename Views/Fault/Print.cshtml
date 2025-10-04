@@ -1,0 +1,76 @@
+﻿@model Project.Models.FaultRecord
+@{
+    Layout = null; // Optional: removes site layout for clean printing
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Print Fault Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .value {
+            margin-left: 10px;
+        }
+
+    
+
+        }
+    </style>
+</head>
+<body>
+    <h2>Fault Report Summary</h2>
+
+    <div class="section">
+        <div><span class="label">Fault ID:</span><span class="value">@Model.Id</span></div>
+        <div><span class="label">Status:</span><span class="value">@Model.Status</span></div>
+        <div><span class="label">Resolved Date:</span><span class="value">@Model.ResolvedDate?.ToShortDateString()</span></div>
+    </div>
+
+    <div class="section">
+        <h4>Technician Info</h4>
+        <div><span class="label">Assigned Technician:</span><span class="value">@Model.AssignedTechnician?.UserAccount.FirstName</span></div>
+        <div><span class="label">Assigned Technician:</span><span class="value">@Model.AssignedTechnician?.UserAccount.LastName</span></div>
+        <div><span class="label">Technician Notes:</span><span class="value">@Model.ResolutionNotes</span></div>
+    </div>
+
+    <div class="section">
+        <h4>Customer Info</h4>
+        <div><span class="label">Name:</span><span class="value">@Model.ReportedBy?.Customer.UserAccount.FirstName</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.AddressLine1</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.AddressLine2</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.City</span></div>
+        <div><span class="label">Address:</span><span class="value">@Model.ReportedBy?.Customer.Province</span></div>
+    </div>
+
+    <div class="section">
+        <h4>Fridge Info</h4>
+        <div><span class="label">Model:</span><span class="value">@Model.Fridge?.Model</span></div>
+        <div><span class="label">Serial Number:</span><span class="value">@Model.Fridge?.SerialNumber</span></div>
+    </div>
+
+    <div class="no-print">
+        <button onclick="window.print()">🖨️ Print</button>
+        <a href="@Url.Action("Index", "FaultRecord")">🔙 Back to List</a>
+    </div>
+</body>
+</html>

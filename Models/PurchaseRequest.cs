@@ -8,9 +8,11 @@ namespace Project.Models
     public class PurchaseRequest
     {
         [Key]
+        [Display(Name = "Request ID")]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Requested by employee is required.")]
+        [Display(Name = "Requested By")]
         public int RequestedById { get; set; }
 
         [ForeignKey(nameof(RequestedById))]
@@ -21,38 +23,47 @@ namespace Project.Models
         [Required(ErrorMessage = "Request date is required.")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Request Date")]
         public DateTime RequestDate { get; set; } = DateTime.UtcNow;
 
         [Required(ErrorMessage = "Status is required.")]
+        [Display(Name = "Status")]
         public PurchaseRequestStatus Status { get; set; } = PurchaseRequestStatus.Draft;
 
         [Required(ErrorMessage = "Reason is required.")]
+        [Display(Name = "Reason")]
         public PurchaseRequestReason Reason { get; set; } = PurchaseRequestReason.LowStock;
 
         // For "Other" reason, allow specification
         [StringLength(200, ErrorMessage = "Custom reason cannot exceed 200 characters.")]
+        [Display(Name = "Custom Reason")]
         public string? CustomReason { get; set; }
 
         [Required(ErrorMessage = "Urgency level is required.")]
-        public PurchaseRequestUrgency Urgency { get; set; } = PurchaseRequestUrgency.Medium;
+        [Display(Name = "Urgency Level")]
+        public PurchaseRequestUrgency Urgency { get; set; } = PurchaseRequestUrgency.Normal;
 
         [Required(ErrorMessage = "Required by date is essential.")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Required By Date")]
         public DateTime RequiredByDate { get; set; }
 
         // Budget information
+        [Display(Name = "Estimated Total ServiceCost (R)")]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0, 1000000, ErrorMessage = "Estimated cost must be a positive value.")]
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Estimated cost must be a valid monetary value.")]
         public decimal? EstimatedTotalCost { get; set; }
 
+        [Display(Name = "Approved Budget (R)")]
         [Column(TypeName = "decimal(18,2)")]
         [Range(0, 1000000, ErrorMessage = "Approved budget must be a positive value.")]
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Approved budget must be a valid monetary value.")]
         public decimal? ApprovedBudget { get; set; }
 
         // Approval information
+        [Display(Name = "Approved By")]
         public int? ApprovedById { get; set; }
 
         [ForeignKey(nameof(ApprovedById))]
@@ -62,10 +73,12 @@ namespace Project.Models
 
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Approval Date")]
         public DateTime? ApprovalDate { get; set; }
 
         [StringLength(500, ErrorMessage = "Approval notes cannot exceed 500 characters.")]
         [DataType(DataType.MultilineText)]
+        [Display(Name = "Approval Notes")]
         public string? ApprovalNotes { get; set; }
 
         // Request items
@@ -74,17 +87,13 @@ namespace Project.Models
         public virtual ICollection<PurchaseRequestItem> Items { get; set; } = new List<PurchaseRequestItem>();
 
         // Metadata
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Created At")]
+        [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string? CreatedBy { get; set; } = string.Empty;
-
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [Display(Name = "Updated At")]
+        [DataType(DataType.DateTime)]
         public DateTime? UpdatedAt { get; set; }
-
-        public bool IsDeleted { get; set; } = false;
-
-        public string? UpdatedBy { get; set; } = string.Empty;
 
         // Computed properties
         [NotMapped]

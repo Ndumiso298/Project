@@ -3,170 +3,99 @@
     ViewData["Title"] = Model.Id == 0 ? "Create Allocation" : "Edit Allocation";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>
-        <i class="fas fa-truck-loading me-2"></i>@ViewData["Title"]
-    </h1>
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i>Back to List
-    </a>
-</div>
-
-<div class="card">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Allocation Details</h5>
-    </div>
-    <div class="card-body">
-        <form asp-action="Upsert" method="post" id="allocationForm">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-            @if (Model.Id > 0)
-            {
-                <input type="hidden" asp-for="Id" />
-            }
-
-            <div class="row">
-                <!-- Fridge Selection -->
-                <div class="col-md-6 mb-3">
-                    <label asp-for="FridgeId" class="form-label required"></label>
-                    <select asp-for="FridgeId" asp-items="Model.FridgeList" class="form-select">
-                        <option value="">-- Select Fridge --</option>
-                    </select>
-                    <span asp-validation-for="FridgeId" class="text-danger"></span>
-                    <small class="form-text text-muted">Only available fridges are shown</small>
-                </div>
-
-                <!-- Customer Selection -->
-                <div class="col-md-6 mb-3">
-                    <label asp-for="CustomerId" class="form-label required"></label>
-                    <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-select">
-                        <option value="">-- Select Customer --</option>
-                    </select>
-                    <span asp-validation-for="CustomerId" class="text-danger"></span>
-                </div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">@ViewData["Title"]</h4>
             </div>
+            <div class="card-body">
+                <form asp-action="Upsert" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
 
-            <div class="row">
-                <!-- Delivery Location -->
-                <div class="col-md-6 mb-3">
-                    <label asp-for="DeliveryLocationId" class="form-label required"></label>
-                    <select asp-for="DeliveryLocationId" asp-items="Model.LocationList" class="form-select">
-                        <option value="">-- Select Location --</option>
-                    </select>
-                    <span asp-validation-for="DeliveryLocationId" class="text-danger"></span>
-                </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="FridgeId" class="form-label"></label>
+                                <select asp-for="FridgeId" asp-items="Model.FridgeList" class="form-select">
+                                    <option value="">-- Select Fridge --</option>
+                                </select>
+                                <span asp-validation-for="FridgeId" class="text-danger"></span>
+                            </div>
 
-                <!-- Allocated By -->
-                <div class="col-md-6 mb-3">
-                    <label asp-for="AllocatedByEmployeeId" class="form-label required"></label>
-                    <select asp-for="AllocatedByEmployeeId" asp-items="Model.EmployeeList" class="form-select">
-                        <option value="">-- Select Employee --</option>
-                    </select>
-                    <span asp-validation-for="AllocatedByEmployeeId" class="text-danger"></span>
-                </div>
-            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="CustomerId" class="form-label"></label>
+                                <select asp-for="CustomerId" asp-items="Model.CustomerList" class="form-select">
+                                    <option value="">-- Select Customer --</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
 
-            <div class="row">
-                <!-- Allocation Date -->
-                <div class="col-md-4 mb-3">
-                    <label asp-for="AllocationDate" class="form-label required"></label>
-                    <input asp-for="AllocationDate" class="form-control datepicker" />
-                    <span asp-validation-for="AllocationDate" class="text-danger"></span>
-                </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="AllocationLocationId" class="form-label"></label>
+                                <select asp-for="AllocationLocationId" asp-items="Model.LocationList" class="form-select">
+                                    <option value="">-- Select Location --</option>
+                                </select>
+                                <span asp-validation-for="AllocationLocationId" class="text-danger"></span>
+                            </div>
+                        </div>
 
-                <!-- Expected Return Date -->
-                <div class="col-md-4 mb-3">
-                    <label asp-for="ExpectedReturnDate" class="form-label"></label>
-                    <input asp-for="ExpectedReturnDate" class="form-control datepicker" />
-                    <span asp-validation-for="ExpectedReturnDate" class="text-danger"></span>
-                </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="AllocationDate" class="form-label"></label>
+                                <input asp-for="AllocationDate" class="form-control" />
+                                <span asp-validation-for="AllocationDate" class="text-danger"></span>
+                            </div>
 
-                <!-- Monthly Rental -->
-                <div class="col-md-4 mb-3">
-                    <label asp-for="MonthlyRentalPrice" class="form-label required"></label>
-                    <div class="input-group">
-                        <span class="input-group-text">R</span>
-                        <input asp-for="MonthlyRentalPrice" class="form-control" type="number" step="0.01" min="0" />
+                            @if (Model.Id != 0)
+                            {
+                                    <div class="form-group mb-3">
+                                        <label asp-for="DeallocationDate" class="form-label"></label>
+                                        <input asp-for="DeallocationDate" class="form-control" />
+                                        <span asp-validation-for="DeallocationDate" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label asp-for="DeallocationReason" class="form-label"></label>
+                                        <textarea asp-for="DeallocationReason" class="form-control" rows="3"></textarea>
+                                        <span asp-validation-for="DeallocationReason" class="text-danger"></span>
+                                    </div>
+                            }
+                        </div>
                     </div>
-                    <span asp-validation-for="MonthlyRentalPrice" class="text-danger"></span>
-                </div>
-            </div>
 
-            <!-- Notes -->
-            <div class="mb-3">
-                <label asp-for="Notes" class="form-label"></label>
-                <textarea asp-for="Notes" class="form-control" rows="3"
-                          placeholder="Enter any additional notes or instructions..."></textarea>
-                <span asp-validation-for="Notes" class="text-danger"></span>
+                    <div class="form-group mt-4">
+                        <div class="btn-group" role="group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> @(Model.Id == 0 ? "Create" : "Update")
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </form>
             </div>
-
-            <!-- Status -->
-            <div class="mb-3">
-                <label asp-for="Status" class="form-label required"></label>
-                <select asp-for="Status" asp-items="Model.StatusList" class="form-select">
-                    <option value="">-- Select Status --</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-
-            <!-- Replacement Information (if applicable) -->
-            @if (Model.IsReplacement)
-            {
-                <div class="alert alert-info">
-                    <h6><i class="fas fa-exchange-alt me-2"></i>Replacement Allocation</h6>
-                    <p class="mb-0">This allocation is replacing allocation #@Model.ReplacedAllocationId</p>
-                </div>
-            }
-
-            <!-- Form Actions -->
-            <div class="d-flex justify-content-between mt-4">
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-                <div>
-                    @if (Model.Id > 0 && Model.CanEdit)
-                    {
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Update Allocation
-                        </button>
-                    }
-                    else if (Model.Id == 0)
-                    {
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i>Create Allocation
-                        </button>
-                    }
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        $(document).ready(function() {
-            // Auto-set allocation date to today if not set
-            if (!$('#AllocationDate').val()) {
-                $('#AllocationDate').val('@DateTime.Now.ToString("dd/MM/yyyy")');
-            }
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+        <script>
+            $(document).ready(function () {
+                $('#AllocationDate').datetimepicker({
+                    format: 'DD/MM/YYYY HH:mm',
+                    sideBySide: true
+                });
 
-            // Fridge selection change - update rental price
-            $('#FridgeId').change(function() {
-                var fridgeId = $(this).val();
-                if (fridgeId) {
-                    // In a real application, you'd fetch the fridge details via AJAX
-                    // and update the rental price accordingly
-                    console.log('Fridge selected:', fridgeId);
-                }
+                $('#DeallocationDate').datetimepicker({
+                    format: 'DD/MM/YYYY HH:mm',
+                    sideBySide: true
+                });
             });
-
-            // Customer selection change - update delivery location
-            $('#CustomerId').change(function() {
-                var customerId = $(this).val();
-                if (customerId) {
-                    // In a real application, you'd fetch customer's default location
-                    console.log('Customer selected:', customerId);
-                }
-            });
-        });
-    </script>
+        </script>
 }

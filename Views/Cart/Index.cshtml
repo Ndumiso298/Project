@@ -1,0 +1,279 @@
+﻿@model List<FridgeAllocation>
+
+@{
+    ViewData["Title"] = "My Fridge Cart";
+    var totalAmount = Model.Sum(a => (a.Fridge?.RentalPricePerMonth ?? 0) * a.Quantity);
+    var totalItems = Model.Sum(a => a.Quantity);
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2 class="text-primary">
+                <i class="bi bi-cart3"></i> @ViewData["Title"]
+            </h2>
+            <p class="text-muted">Review your fridge selections before submitting your request</p>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="Fridges" asp-action="Index" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i> Add More Fridges
+            </a>
+            @if (Model.Any())
+            {
+                <a asp-controller="AllocationRequests" asp-action="Upsert" class="btn btn-primary ms-2">
+                    <i class="bi bi-check-circle"></i> Submit Request
+                </a>
+            }
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-list-check"></i> Selected Fridges (@totalItems items)
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fridge Details</th>
+                                        <th width="120">Quantity</th>
+                                        <th width="120">Monthly Price</th>
+                                        <th width="120">Total</th>
+                                        <th width="100">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        var itemTotal = (item.Fridge?.RentalPricePerMonth ?? 0) * item.Quantity;
+                                        <tr data-item-id="@item.Id">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bi bi-refrigerator display-6 text-muted"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h6 class="mb-1">@item.Fridge?.Model</h6>
+                                                        <small class="text-muted">Serial: @item.Fridge?.SerialNumber</small><br>
+                                                        <small class="text-muted">Capacity: @item.Fridge?.CapacityLiters L</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="input-group input-group-sm">
+                                                    <button class="btn btn-outline-secondary btn-minus" type="button">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <input type="number" class="form-control text-center quantity-input"
+                                                           value="@item.Quantity" min="1" max="10" data-item-id="@item.Id">
+                                                    <button class="btn btn-outline-secondary btn-plus" type="button">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold">@((item.Fridge?.RentalPricePerMonth ?? 0).ToString("C"))</span><br>
+                                                <small class="text-muted">per month</small>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-success">@itemTotal.ToString("C")</span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-outline-danger btn-sm btn-remove"
+                                                        data-item-id="@item.Id" title="Remove from cart">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty Cart Message (hidden when items exist) -->
+                <div id="emptyCartMessage" class="text-center py-5" style="display: none;">
+                    <i class="bi bi-cart-x display-1 text-muted"></i>
+                    <h4 class="text-muted mt-3">Your cart is empty</h4>
+                    <p class="text-muted">Start by adding some fridges to your cart!</p>
+                    <a asp-controller="Fridges" asp-action="Index" class="btn btn-primary mt-3">
+                        <i class="bi bi-search"></i> Browse Available Fridges
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-receipt"></i> Order Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal (@totalItems items):</span>
+                            <span>@totalAmount.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Delivery Fee:</span>
+                            <span>R 0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tax (VAT):</span>
+                            <span>R 0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Total Monthly Cost:</strong>
+                            <strong class="h5 text-success">@totalAmount.ToString("C")</strong>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a asp-controller="AllocationRequests" asp-action="Upsert"
+                               class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Proceed to Checkout
+                            </a>
+                            <a asp-controller="Fridges" asp-action="Index" class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle"></i> Continue Shopping
+                            </a>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="mt-4">
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-info-circle"></i> Important Information</h6>
+                                <ul class="small mb-0">
+                                    <li>Prices are monthly rental fees</li>
+                                    <li>Minimum rental period: 12 months</li>
+                                    <li>Free delivery and installation</li>
+                                    <li>Maintenance included in rental price</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Empty Cart State -->
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center py-5">
+                <i class="bi bi-cart-x display-1 text-muted"></i>
+                <h3 class="text-muted mt-3">Your cart is empty</h3>
+                <p class="text-muted">You haven't added any fridges to your cart yet.</p>
+                <div class="mt-4">
+                    <a asp-controller="Fridges" asp-action="Index" class="btn btn-primary btn-lg">
+                        <i class="bi bi-search"></i> Browse Available Fridges
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Quantity increase
+            $('.btn-plus').click(function () {
+                const input = $(this).closest('.input-group').find('.quantity-input');
+                const currentVal = parseInt(input.val());
+                if (currentVal < 10) {
+                    input.val(currentVal + 1);
+                    updateQuantity(input);
+                }
+            });
+
+            // Quantity decrease
+            $('.btn-minus').click(function () {
+                const input = $(this).closest('.input-group').find('.quantity-input');
+                const currentVal = parseInt(input.val());
+                if (currentVal > 1) {
+                    input.val(currentVal - 1);
+                    updateQuantity(input);
+                }
+            });
+
+            // Manual quantity input
+            $('.quantity-input').on('change', function () {
+                updateQuantity($(this));
+            });
+
+            // Remove item
+            $('.btn-remove').click(function () {
+                const itemId = $(this).data('item-id');
+                removeItem(itemId);
+            });
+
+            function updateQuantity(input) {
+                const itemId = input.data('item-id');
+                const quantity = input.val();
+
+                $.ajax({
+                    url: '@Url.Action("UpdateQuantity", "Cart")',
+                    type: 'POST',
+                    data: {
+                        id: itemId,
+                        quantity: quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Reload the page to update totals
+                            location.reload();
+                        } else {
+                            alert('Error updating quantity');
+                        }
+                    },
+                    error: function () {
+                        alert('Error updating quantity');
+                    }
+                });
+            }
+
+            function removeItem(itemId) {
+                if (confirm('Are you sure you want to remove this item from your cart?')) {
+                    $.ajax({
+                        url: '@Url.Action("Remove", "Cart")',
+                        type: 'POST',
+                        data: {
+                            id: itemId
+                        },
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            // Remove the row from the table
+                            $(`tr[data-item-id="${itemId}"]`).fadeOut(300, function () {
+                                $(this).remove();
+                                checkEmptyCart();
+                            });
+                        },
+                        error: function () {
+                            alert('Error removing item from cart');
+                        }
+                    });
+                }
+            }
+
+            function checkEmptyCart() {
+                if ($('tbody tr').length === 0) {
+                    $('.table-responsive').hide();
+                    $('#emptyCartMessage').show();
+                    $('.col-lg-4 .card').hide(); // Hide summary when empty
+                }
+            }
+        });
+    </script>
+}

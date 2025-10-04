@@ -1,17 +1,4 @@
-﻿@inject ApplicationDbContext _db
-@using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
-@using Project.Data
-@{
-    var claimsIdentity = (ClaimsIdentity)User.Identity;
-    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-    var hasRequestedItems = _db.AllocationRequestHeaders.Any(r => r.Customer.UserId == userId);
-    var cartCount = _db.FridgeAllocations.Count(a => a.Customer.UserId == userId);
-}
-
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,8 +10,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Project.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
@@ -40,8 +25,15 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @*                         <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Fault" asp-action="Index">Fault</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="MaintenanceVisit" asp-action="Index">Visits</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="AboutUs">About Us</a>
@@ -51,122 +43,48 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
+                        </li>
                         @if (User.IsInRole(SD.AdminRole))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Admin" asp-action="Dashboard">Admin</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Users" asp-action="Index">Customers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Users" asp-action="Index">Employees</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Locations" asp-action="Index">Locations</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Fridges" asp-action="Index">Inventory Management</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Suppliers" asp-action="Index">Suppliers</a>
-                            </li>
-                            @*                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-area="" asp-controller="Fridge" asp-action="Index">Fridge</a>
-                            </li> *@
-@*                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="AllocationRequests" asp-action="Index">Requests</a>
-                            </li> *@
-                        }
-                        else if (User.IsInRole(SD.StockControllerRole))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Fridges" asp-action="Index">Inventory Management</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="AllocationRequests" asp-action="Allocate">Fridge Allocations</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Request" asp-action="UpdateRequestDetail">Requests</a>
                             </li>
                         }
                         else if (User.IsInRole(SD.CustomerRole))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="AllocationRequests" asp-action="Index">Allocation Requests</a>
-                            </li>
-                            
-                            @if (hasRequestedItems)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="FridgeAllocations" asp-action="Index">My Orders</a>
-                                </li>
-                            }
 
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Carts" asp-action="Index">
-                                    <i class="bi bi-cart4">&nbsp;(@cartCount)</i>
-                                </a>
-                            </li>
-                        }
-                        else if (User.IsInRole(SD.CustomerSupportRole))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="AllocationRequests" asp-action="Index">Allocation Requests</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Customers" asp-action="Index">Customer Data</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="FridgeAllocations" asp-action="Index">Fridge Allocations</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="ReplacementRequests" asp-action="Index">Replacement Requests</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Request" asp-action="UpdateRequestDetail">Requests</a>
                             </li>
                         }
                         else if (User.IsInRole(SD.MaintenanceTechnicianRole))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="MaintenanceVisits" asp-action="Index">Schedule Visit</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="MaintenanceRecords" asp-action="Index">Maintenance Records</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Faults" asp-action="Index">Fault Reports</a>
-                            </li>
+
                         }
                         else if (User.IsInRole(SD.FaultTechnicianRole))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Faults" asp-action="Index">Fault Management</a>
-                            </li>
-                        }
 
+                        }
+                        else if (User.IsInRole(SD.StockControllerRole))
+                        {
+
+                        }
+                        else if (User.IsInRole(SD.CustomerSupportRole))
+                        {
+
+                        }
 
                     </ul>
                     <partial name="_LoginPartial" />
-                    <!-- Sidebar -->
-                    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                        <div class="position-sticky pt-3">
-                            <partial name="_Sidebar" />
-                        </div>
-                    </nav>
-                    <!-- Main content -->
-                    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                        <!-- Notifications -->
-                        @if (TempData["success"] != null)
-                        {
-                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                <i class="fas fa-check-circle"></i> @TempData["success"]
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        }
-                        @if (TempData["error"] != null)
-                        {
-                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                                <i class="fas fa-exclamation-circle"></i> @TempData["error"]
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        }
                 </div>
             </div>
         </nav>
@@ -185,6 +103,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -36,11 +36,11 @@
                                         <label asp-for="Input.LastName">Last Name*</label>
                                         <span asp-validation-for="Input.LastName" class="text-danger"></span>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <label asp-for="Input.DOB" class="form-label"></label>
-                                        <input asp-for="Input.DOB" type="date" class="form-control"
-                                               min="1900-01-01" max="2007-01-01" value="@DateTime.Today.ToString("yyyy-MM-dd")" value="2007-01-01" />
-                                        <span asp-validation-for="Input.DOB" class="text-danger"></span>
+                                   <div class="form-floating mb-3">
+                                      <label asp-for="Input.DOB" class="form-label"></label>
+                                      <input asp-for="Input.DOB" type="date" class="form-control"
+                                             min="1900-01-01" max="2007-01-01" value="@DateTime.Today.ToString("yyyy-MM-dd")" value="2007-01-01" />
+                                      <span asp-validation-for="Input.DOB" class="text-danger"></span>
                                     </div>
                                     <div class="form-floating mb-3">
                                         <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="tel" placeholder="Phone Number" />
@@ -48,24 +48,6 @@
                                         <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                                     </div>
                                 </div>
-                                @* Business Document Upload: only visible if not Admin *@
-                                @if (User.IsInRole(SD.AdminRole))
-                                {
-                                    <div class="card mb-4 border-0 shadow-sm">
-                                        <div class="card-header bg-primary text-light">
-                                            <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Business Verification</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <label asp-for="Input.BusinessDocument" class="form-label fw-semibold"></label>
-                                                <input asp-for="Input.BusinessDocument" type="file" class="form-control" />
-                                                <span asp-validation-for="Input.BusinessDocument" class="text-danger"></span>
-                                                <small class="text-muted">Upload a valid document that proves your business (PDF, JPG, PNG).</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-
                             </div>
 
                             <div class="card mb-4 border-0 shadow-sm">
@@ -90,87 +72,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Right Column - Conditional Business/Employee Information -->
-                            @if (User.IsInRole(SD.AdminRole))
-                            {
-                                <!-- Business Information (Visible to Admins creating Customers) -->
-                                <div class="card mb-4 border-0 shadow-sm" id="businessInfoSection">
-                                    <div class="card-header bg-primary text-light">
-                                        <h5 class="mb-0"><i class="bi bi-building me-2"></i>Business Information</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-floating mb-3">
-                                            <input asp-for="Input.BusinessName" class="form-control" placeholder="Enter business name" />
-                                            <label asp-for="Input.BusinessName" class="form-label">Business Name</label>
-                                            <span asp-validation-for="Input.BusinessName" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <select asp-for="Input.BusinessType" asp-items="@Model.Input.BusinessTypeOptions" class="form-select">
-                                                <option value="">--Select Business Type--</option>
-                                            </select>
-                                            <label asp-for="Input.BusinessType" class="form-label">Business Type</label>
-                                            <span asp-validation-for="Input.BusinessType" class="text-danger"></span>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-floating mb-3">
-                                                    <input asp-for="Input.RegistrationNumber" class="form-control" placeholder="Registration Number" />
-                                                    <label asp-for="Input.RegistrationNumber" class="form-label">Registration Number</label>
-                                                    <span asp-validation-for="Input.RegistrationNumber" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-floating mb-3">
-                                                    <input asp-for="Input.VATNumber" class="form-control" placeholder="VAT Number" />
-                                                    <label asp-for="Input.VATNumber" class="form-label">VAT Number</label>
-                                                    <span asp-validation-for="Input.VATNumber" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
 
-                                <!-- Employee Information (Visible to Admins creating Employees) -->
-                                <div class="card mb-4 border-0 shadow-sm" id="employeeInfoSection">
-                                    <div class="card-header bg-primary text-light">
-                                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Employee Information</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-floating mb-3">
-                                            <input asp-for="Input.EmployeeNumber" class="form-control" placeholder="Employee Number" />
-                                            <label asp-for="Input.EmployeeNumber" class="form-label">Employee Number</label>
-                                            <span asp-validation-for="Input.EmployeeNumber" class="text-danger"></span>
-                                            <small class="text-muted">Will auto-generate if left blank</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <!-- Business Information for Customer Self-Registration -->
-                                <div class="card mb-4 border-0 shadow-sm">
-                                    <div class="card-header bg-primary text-light">
-                                        <h5 class="mb-0"><i class="bi bi-building me-2"></i>Business Information</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-floating mb-3">
-                                            <input asp-for="Input.BusinessName" class="form-control" placeholder="Enter business name" required />
-                                            <label asp-for="Input.BusinessName" class="form-label">Business Name*</label>
-                                            <span asp-validation-for="Input.BusinessName" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <select asp-for="Input.BusinessType" asp-items="@Model.Input.BusinessTypeOptions" class="form-select" required>
-                                                <option value="">--Select Business Type--</option>
-                                            </select>
-                                            <label asp-for="Input.BusinessType" class="form-label">Business Type*</label>
-                                            <span asp-validation-for="Input.BusinessType" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-
-                        </div> <!-- End of left column -->
-                        <!-- Right Column - Address Information -->
+                        <!-- Right Column - Address and Role -->
                         <div class="col-md-6">
                             <div class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
@@ -178,34 +82,34 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="form-floating mb-3">
-                                        <input asp-for="Input.Location.StreetAddress" class="form-control" placeholder="Please enter your street address." required />
-                                        <label asp-for="Input.Location.StreetAddress" class="form-label">Address Line 1*</label>
-                                        <span asp-validation-for="Input.Location.StreetAddress" class="text-danger"></span>
+                                        <input asp-for="Input.Location.AddressLine1" class="form-control" autocomplete="address-line1" placeholder="Address Line 1" />
+                                        <label asp-for="Input.Location.AddressLine1">Address Line 1*</label>
+                                        <span asp-validation-for="Input.Location.AddressLine1" class="text-danger"></span>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <select asp-for="Input.Location.Province" class="form-control" required id="provinceSelect">
-                                            <option value="">--Select Province--</option>
-                                        </select>
-                                        <label asp-for="Input.Location.Province" class="form-label">Province*</label>
-                                        <span asp-validation-for="Input.Location.Province" class="text-danger"></span>
+                                        <input asp-for="Input.Location.AddressLine2" class="form-control" autocomplete="address-line2" placeholder="Address Line 2" />
+                                        <label asp-for="Input.Location.AddressLine2">Address Line 2</label>
+                                        <span asp-validation-for="Input.Location.AddressLine2" class="text-danger"></span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input asp-for="Input.Location.City" class="form-control" autocomplete="address-level2" placeholder="City" />
+                                                <label asp-for="Input.Location.City">City*</label>
+                                                <span asp-validation-for="Input.Location.City" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input asp-for="Input.Location.Province" class="form-control" autocomplete="address-level1" placeholder="Province" />
+                                                <label asp-for="Input.Location.Province">Province*</label>
+                                                <span asp-validation-for="Input.Location.Province" class="text-danger"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <select asp-for="Input.Location.City" class="form-control" required id="citySelect">
-                                            <option value="">--Select City--</option>
-                                        </select>
-                                        <label asp-for="Input.Location.City" class="form-label">City*</label>
-                                        <span asp-validation-for="Input.Location.City" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <select asp-for="Input.Location.Suburb" class="form-control" required id="suburbSelect">
-                                            <option value="">--Select Suburb--</option>
-                                        </select>
-                                        <label asp-for="Input.Location.Suburb" class="form-label">Suburb*</label>
-                                        <span asp-validation-for="Input.Location.Suburb" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input asp-for="Input.Location.PostalCode" class="form-control" placeholder="Postal Code will auto-fill" pattern="^\d{4}$" required id="postalCodeInput" />
-                                        <label asp-for="Input.Location.PostalCode" class="form-label">Postal Code*</label>
+                                        <input asp-for="Input.Location.PostalCode" class="form-control" autocomplete="postal-code" placeholder="Postal Code" />
+                                        <label asp-for="Input.Location.PostalCode">Postal Code*</label>
                                         <span asp-validation-for="Input.Location.PostalCode" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -228,8 +132,8 @@
                                     </div>
                                 </div>
                             }
-                        </div> <!-- End of right column -->
-                    </div> <!-- End of row -->
+                        </div>
+                    </div>
 
                     <div class="d-grid gap-2 mt-4">
                         <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg py-2 fw-semibold">
@@ -237,10 +141,11 @@
                         </button>
                     </div>
                 </form>
-            </div> <!-- End of card-body -->
-        </div> <!-- End of card -->
-    </div> <!-- End of col-md-10 -->
-</div> <!-- End of row -->
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <style>
@@ -265,180 +170,4 @@
                 box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.3);
             }
     </style>
-    <script>
-        // Show/hide business/employee info based on role selection
-        document.getElementById('Input_UserRole').addEventListener('change', function() {
-            const selectedRole = this.value;
-            const businessSection = document.getElementById('businessInfoSection');
-            const employeeSection = document.getElementById('employeeInfoSection');
-            
-            // Hide both sections initially
-            if (businessSection) businessSection.style.display = 'none';
-            if (employeeSection) employeeSection.style.display = 'none';
-            
-            // Show appropriate section based on role
-            if (selectedRole === '@SD.CustomerRole') {
-                if (businessSection) businessSection.style.display = 'block';
-            } else if (selectedRole && selectedRole !== '@SD.CustomerRole') {
-                if (employeeSection) employeeSection.style.display = 'block';
-            }
-        });
-
-        // Trigger change event on page load in case there's a pre-selected role
-        document.addEventListener('DOMContentLoaded', function() {
-            const roleSelect = document.getElementById('Input_UserRole');
-            if (roleSelect) {
-                roleSelect.dispatchEvent(new Event('change'));
-            }
-        });
-
-
-        // Enhanced hierarchical data structure for South Africa
-        const locationData = {
-            "Eastern Cape": {
-                "Gqeberha": ["Walmer", "Summerstrand", "Central", "Humewood"],
-                "East London": ["Southernwood", "Vincent", "Berea", "Quigney"],
-                "Mthatha": ["Norwood", "Ilitha", "Bomvini"]
-            },
-            "Western Cape": {
-                "Cape Town": ["Epping", "Rondebosch", "Sea Point", "Gardens", "Claremont"],
-                "Stellenbosch": ["Central", "Idas Valley", "Cloetesville"],
-                "George": ["CBD", "Thembalethu", "Parkdene"]
-            },
-            "Gauteng": {
-                "Johannesburg": ["CBD", "Sandton", "Randburg", "Rosebank", "Parktown"],
-                "Pretoria": ["Arcadia", "Hatfield", "Brooklyn", "Sunnyside"]
-            },
-            "KwaZulu-Natal": {
-                "Durban": ["Pinetown", "Berea", "Umhlanga", "Morningside"],
-                "Pietermaritzburg": ["CBD", "Scottsville", "Montrose"]
-            },
-            "Free State": {
-                "Bloemfontein": ["Westdene", "Navalsig", "Fichardt Park"],
-                "Welkom": ["Central", "Flora Park"]
-            },
-            "Mpumalanga": {
-                "Mbombela": ["Riverside", "West Acres", "Sonheuwel"]
-            },
-            "Limpopo": {
-                "Polokwane": ["Flora Park", "Ster Park", "Bendor"]
-            },
-            "North West": {
-                "Rustenburg": ["Bo-dorp", "Geelhoutpark", "Ramblers"]
-            },
-            "Northern Cape": {
-                "Kimberley": ["Monument Heights", "Hadison Park", "Herbert"]
-            }
-        };
-
-        // Postal codes mapping
-        const postalCodes = {
-            "Walmer": "6070", "Summerstrand": "6001", "Central": "6001",
-            "Southernwood": "5201", "Vincent": "5247", "Berea": "4001",
-            "Norwood": "5100", "Epping": "7460", "Rondebosch": "7700",
-            "Sea Point": "8005", "Gardens": "8001", "CBD": "2001",
-            "Sandton": "2196", "Arcadia": "0083", "Hatfield": "0028",
-            "Pinetown": "3610", "Umhlanga": "4320", "Westdene": "9301",
-            "Riverside": "1200", "Flora Park": "0699", "Bo-dorp": "0299",
-            "Monument Heights": "8301"
-        };
-
-        // Get DOM elements
-        const provinceSelect = document.getElementById('provinceSelect');
-        const citySelect = document.getElementById('citySelect');
-        const suburbSelect = document.getElementById('suburbSelect');
-        const postalCodeInput = document.getElementById('postalCodeInput');
-
-        // Initialize province dropdown
-        function initializeProvinces() {
-            provinceSelect.innerHTML = '<option value="">--Select Province--</option>';
-            Object.keys(locationData).sort().forEach(province => {
-                const option = document.createElement('option');
-                option.value = province;
-                option.textContent = province;
-                provinceSelect.appendChild(option);
-            });
-        }
-
-        // Populate cities based on selected province
-        function populateCities(selectedProvince) {
-            citySelect.innerHTML = '<option value="">--Select City--</option>';
-            suburbSelect.innerHTML = '<option value="">--Select Suburb--</option>';
-            postalCodeInput.value = '';
-
-            if (selectedProvince && locationData[selectedProvince]) {
-                citySelect.disabled = false;
-                Object.keys(locationData[selectedProvince]).sort().forEach(city => {
-                    const option = document.createElement('option');
-                    option.value = city;
-                    option.textContent = city;
-                    citySelect.appendChild(option);
-                });
-            } else {
-                citySelect.disabled = true;
-                suburbSelect.disabled = true;
-            }
-        }
-
-        // Populate suburbs based on selected city
-        function populateSuburbs(selectedProvince, selectedCity) {
-            suburbSelect.innerHTML = '<option value="">--Select Suburb--</option>';
-            postalCodeInput.value = '';
-
-            if (selectedProvince && selectedCity &&
-                locationData[selectedProvince] &&
-                locationData[selectedProvince][selectedCity]) {
-
-                suburbSelect.disabled = false;
-                locationData[selectedProvince][selectedCity].sort().forEach(suburb => {
-                    const option = document.createElement('option');
-                    option.value = suburb;
-                    option.textContent = suburb;
-                    suburbSelect.appendChild(option);
-                });
-            } else {
-                suburbSelect.disabled = true;
-            }
-        }
-
-        // Auto-fill postal code
-        function autoFillPostalCode(selectedSuburb) {
-            if (selectedSuburb && postalCodes[selectedSuburb]) {
-                postalCodeInput.value = postalCodes[selectedSuburb];
-            } else {
-                postalCodeInput.value = '';
-            }
-        }
-
-        // Event listeners
-        provinceSelect.addEventListener('change', function() {
-            populateCities(this.value);
-        });
-
-        citySelect.addEventListener('change', function() {
-            const selectedProvince = provinceSelect.value;
-            populateSuburbs(selectedProvince, this.value);
-        });
-
-        suburbSelect.addEventListener('change', function() {
-            autoFillPostalCode(this.value);
-        });
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeProvinces();
-            citySelect.disabled = true;
-            suburbSelect.disabled = true;
-        });
-
-        // Optional: Allow manual postal code entry with validation
-        postalCodeInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '').substring(0, 4);
-        });
-
-                async function loadCities(province) {
-            const response = await fetch(`/api/locations/cities?province=${encodeURIComponent(province)}`);
-            return await response.json();
-        }
-    </script>
 }
