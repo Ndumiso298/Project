@@ -44,7 +44,7 @@ namespace Project.Models.ViewModels
         [Display(Name = "Parts Replaced")]
         public string? PartsReplaced { get; set; }
 
-        [Display(Name = "Repair Cost (R)")]
+        [Display(Name = "Repair ServiceCost")]
         [Range(0, 10000)]
         public decimal? RepairCost { get; set; }
     }

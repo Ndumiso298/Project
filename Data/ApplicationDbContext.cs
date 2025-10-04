@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project.Models;
@@ -18,13 +19,13 @@ namespace Project.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Fridge> Fridges { get; set; }
-        public DbSet<FridgeModel> FridgeModels { get; set; }
         public DbSet<FridgeAllocation> FridgeAllocations { get; set; }
         public DbSet<AllocationRequestHeader> AllocationRequestHeaders { get; set; }
         public DbSet<AllocationRequestDetail> AllocationRequestDetails { get; set; }
         public DbSet<FaultRecord> FaultRecords { get; set; }
         public DbSet<MaintenanceVisit> MaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
+        public DbSet<ReplacementRequest> ReplacementRequests { get; set; }
         public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
         public DbSet<PurchaseRequestItem> PurchaseRequestItems { get; set; }
 
@@ -32,1138 +33,753 @@ namespace Project.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // 1:N → new Allocations
-            modelBuilder.Entity<AllocationRequestHeader>()
-              .HasMany(h => h.Allocations)
-              .WithOne(a => a.RequestHeader)
-              .HasForeignKey(a => a.AllocationRequestHeaderId)
-              .OnDelete(DeleteBehavior.Cascade);
+            // Seed Roles
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Id = "1", Name = SD.AdminRole, NormalizedName = SD.AdminRole.ToUpper() },
+                new IdentityRole { Id = "2", Name = SD.CustomerSupportRole, NormalizedName = SD.CustomerSupportRole.ToUpper() },
+                new IdentityRole { Id = "3", Name = SD.StockControllerRole, NormalizedName = SD.StockControllerRole.ToUpper() },
+                new IdentityRole { Id = "4", Name = SD.FaultTechnicianRole, NormalizedName = SD.FaultTechnicianRole.ToUpper() },
+                new IdentityRole { Id = "5", Name = SD.MaintenanceTechnicianRole, NormalizedName = SD.MaintenanceTechnicianRole.ToUpper() },
+                new IdentityRole { Id = "6", Name = SD.CustomerRole, NormalizedName = SD.CustomerRole.ToUpper() }
+            );
 
-            // 1:N → replacement Allocations
-            modelBuilder.Entity<AllocationRequestHeader>()
-              .HasMany(h => h.ReplacementAllocations)
-              .WithOne(a => a.ReplacementRequestHeader)
-              .HasForeignKey(a => a.ReplacementRequestHeaderId)
-              .OnDelete(DeleteBehavior.Restrict);
-
+            // Precompute password hashes (use the same password for all seeded users for simplicity)
+            var user = new ApplicationUser();
             var hasher = new PasswordHasher<ApplicationUser>();
-            const string defaultPassword = "strongPassword#123";
-            var seedDate = new DateTime(2025, 2, 14, 0, 0, 0, DateTimeKind.Utc);
+            var defaultPassword = "strongPassword#123"; // Change this to a secure value in production
 
+            // Seed Users
             modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
-                    Id = "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1",
+                    Id = "1",
                     UserName = "admin@smartchill.com",
-                    NormalizedUserName = "ADMIN@SMARTCHILL.COM",
-                    Email = "admin@smartchill.com",
-                    NormalizedEmail = "ADMIN@SMARTCHILL.COM",
-                    EmailConfirmed = true,
-                    PhoneNumber = "+27645347790",
-                    PhoneNumberConfirmed = true,
                     FirstName = "Collins",
                     LastName = "Khosa",
-                    DOB = new DateTime(2000, 10, 1),
-                    //LocationId = 6, // Potchefstroom - personal/home location
+                    Email = "admin@smartchill.com",
+                    PhoneNumber = "+27 64 534 7790",
                     UserRole = SD.AdminRole,
-                    IsDeleted = false,
-                    CreatedAt = seedDate,
-                    CreatedBy = "System",
-                    SecurityStamp = "c1fa9012-34b5-4c6d-8e7f-56a7890bc123",
-                    ConcurrencyStamp = "a1b234c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c",
-                    PasswordHash = hasher.HashPassword(null, defaultPassword),
-                    LockoutEnabled = true,
+                    NormalizedUserName = "ADMIN@SMARTCHILL.COM",
+                    NormalizedEmail = "ADMIN@SMARTCHILL.COM",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    PasswordHash = hasher.HashPassword(user, defaultPassword),
+                    SecurityStamp = Guid.NewGuid().ToString(),
                     AccessFailedCount = 0,
-                    TwoFactorEnabled = false
+                    LocationId = 5
                 },
                 new ApplicationUser
                 {
-                    Id = "b5a771e9-2f8b-437a-9d0e-7f8b901cde12",
+                    Id = "2",
                     UserName = "customersupport@smartchill.com",
-                    NormalizedUserName = "CUSTOMERSUPPORT@SMARTCHILL.COM",
-                    Email = "customersupport@smartchill.com",
-                    NormalizedEmail = "CUSTOMERSUPPORT@SMARTCHILL.COM",
-                    EmailConfirmed = true,
-                    PhoneNumber = "+27710737734",
-                    PhoneNumberConfirmed = true,
                     FirstName = "Andries",
                     LastName = "Tatane",
-                    DOB = new DateTime(1985, 1, 1),
-                    //LocationId = 10, // Kimberley - personal/home location
+                    Email = "customersupport@smartchill.com",
+                    PhoneNumber = "+27 71 073 7734",
                     UserRole = SD.CustomerSupportRole,
-                    IsDeleted = false,
-                    CreatedAt = seedDate,
-                    CreatedBy = "System",
-                    SecurityStamp = "d2c345e6-f7a8-4b0c-9d1e-2f3a4b5c6d7e",
-                    ConcurrencyStamp = "c3d456f7-a8b0-4c1d-9e2f-3a4b5c6d7e8f",
-                    PasswordHash = hasher.HashPassword(null, defaultPassword),
-                    LockoutEnabled = true,
-                    AccessFailedCount = 0,
-                    TwoFactorEnabled = false
+                    NormalizedUserName = "CUSTOMERSUPPORT@SMARTCHILL.COM",
+                    NormalizedEmail = "CUSTOMERSUPPORT@SMARTCHILL.COM",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    PasswordHash = hasher.HashPassword(user, defaultPassword),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    LocationId = 5
                 },
                 new ApplicationUser
                 {
-                    Id = "c6d882fa-47b9-448b-a9e0-8f9b012d3e45",
+                    Id = "3",
                     UserName = "stockcontroller@smartchill.com",
-                    NormalizedUserName = "STOCKCONTROLLER@SMARTCHILL.COM",
-                    Email = "stockcontroller@smartchill.com",
-                    NormalizedEmail = "STOCKCONTROLLER@SMARTCHILL.COM",
-                    EmailConfirmed = true,
-                    PhoneNumber = "+27662934430",
-                    PhoneNumberConfirmed = true,
                     FirstName = "Mido",
                     LastName = "Macia",
-                    DOB = new DateTime(1999, 9, 1),
-                    //LocationId = 2, // East London - personal/home location
+                    Email = "stockcontroller@smartchill.com",
+                    PhoneNumber = "+27 66 293 4430",
                     UserRole = SD.StockControllerRole,
-                    IsDeleted = false,
-                    CreatedAt = seedDate,
-                    CreatedBy = "System",
-                    SecurityStamp = "f4e678a9-b0c1-4d3e-9f5a-6b7c8d9e0f12",
-                    ConcurrencyStamp = "d5f789ab-c0de-4e1f-9a2b-7c8d9e0f1234",
-                    PasswordHash = hasher.HashPassword(null, defaultPassword),
-                    LockoutEnabled = true,
-                    AccessFailedCount = 0,
-                    TwoFactorEnabled = false
+                    NormalizedUserName = "STOCKCONTROLLER@SMARTCHILL.COM",
+                    NormalizedEmail = "STOCKCONTROLLER@SMARTCHILL.COM",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    PasswordHash = hasher.HashPassword(user, defaultPassword),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    LocationId = 2
                 },
                 new ApplicationUser
                 {
-                    Id = "d7e9930b-58c0-459c-ba1f-9a0a123b4c56",
+                    Id = "4",
                     UserName = "faulttechnician@smartchill.com",
-                    NormalizedUserName = "FAULTTECHNICIAN@SMARTCHILL.COM",
-                    Email = "faulttechnician@smartchill.com",
-                    NormalizedEmail = "FAULTTECHNICIAN@SMARTCHILL.COM",
-                    EmailConfirmed = true,
-                    PhoneNumber = "+27798946438",
-                    PhoneNumberConfirmed = true,
                     FirstName = "Nathaniel",
                     LastName = "Julies",
-                    DOB = new DateTime(1983, 11, 10),
-                    //LocationId = 5, // Durban - personal/home location
+                    Email = "faulttechnician@smartchill.com",
+                    PhoneNumber = "+27 79 894 6438",
                     UserRole = SD.FaultTechnicianRole,
-                    IsDeleted = false,
-                    CreatedAt = seedDate,
-                    CreatedBy = "System",
-                    SecurityStamp = "e6f89abc-0d12-4f2e-8b3c-0d4e5f6a7b8c",
-                    ConcurrencyStamp = "f7a9bcde-1e23-4f3a-9c4d-1e5f6a7b8c9d",
-                    PasswordHash = hasher.HashPassword(null, defaultPassword),
-                    LockoutEnabled = true,
-                    AccessFailedCount = 0,
-                    TwoFactorEnabled = false
+                    NormalizedUserName = "FAULTTECHNICIAN@SMARTCHILL.COM",
+                    NormalizedEmail = "FAULTTECHNICIAN@SMARTCHILL.COM",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    PasswordHash = hasher.HashPassword(user, defaultPassword),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    LocationId = 8
                 },
                 new ApplicationUser
                 {
-                    Id = "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e",
+                    Id = "5",
                     UserName = "maintenancetechnician@smartchill.com",
-                    NormalizedUserName = "MAINTENANCETECHNICIAN@SMARTCHILL.COM",
-                    Email = "maintenancetechnician@smartchill.com",
-                    NormalizedEmail = "MAINTENANCETECHNICIAN@SMARTCHILL.COM",
-                    EmailConfirmed = true,
-                    PhoneNumber = "+27614836998",
-                    PhoneNumberConfirmed = true,
                     FirstName = "Latiefa",
                     LastName = "Freeman",
-                    DOB = new DateTime(1978, 2, 1),
-                    //LocationId = 5, // Durban (proximity to Pietermaritzburg) - personal/home location
+                    Email = "maintenancetechnician@smartchill.com",
+                    PhoneNumber = "+27 61 483 6998",
                     UserRole = SD.MaintenanceTechnicianRole,
-                    IsDeleted = false,
-                    CreatedAt = seedDate,
-                    CreatedBy = "System",
-                    SecurityStamp = "a7b8c9d0-2f34-4e5a-9f6b-7c8d9e0f1a2b",
-                    ConcurrencyStamp = "b8c9d0e1-3f45-4a6b-9f7c-8d9e0f1a2b3c",
-                    PasswordHash = hasher.HashPassword(null, defaultPassword),
-                    LockoutEnabled = true,
-                    AccessFailedCount = 0,
-                    TwoFactorEnabled = false
+                    NormalizedUserName = "MAINTENANCETECHNICIAN@SMARTCHILL.COM",
+                    NormalizedEmail = "MAINTENANCETECHNICIAN@SMARTCHILL.COM",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    PasswordHash = hasher.HashPassword(user, defaultPassword),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    LocationId = 3
                 },
                 new ApplicationUser
                 {
-                    Id = "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d",
+                    Id = "6",
                     UserName = "naterobertson@gmail.com",
-                    NormalizedUserName = "NATEROBERTSON@GMAIL.COM",
-                    Email = "naterobertson@gmail.com",
-                    NormalizedEmail = "NATEROBERTSON@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PhoneNumber = "+27691745946",
-                    PhoneNumberConfirmed = true,
                     FirstName = "Nathan",
                     LastName = "Robertson",
-                    DOB = new DateTime(1985, 1, 1),
-                    //LocationId = 3, // Johannesburg - personal/home location
+                    Email = "naterobertson@gmail.com",
+                    PhoneNumber = "+27 69 174 5946",
                     UserRole = SD.CustomerRole,
-                    IsDeleted = false,
-                    CreatedAt = seedDate,
-                    CreatedBy = "System",
-                    SecurityStamp = "c9d0e1f2-4a56-4b7c-8d9e-0f1a2b3c4d5f",
-                    ConcurrencyStamp = "d0e1f2a3-5b67-4c8d-9e0f-1a2b3c4d5e6f",
-                    PasswordHash = hasher.HashPassword(null, defaultPassword),
-                    LockoutEnabled = true,
-                    AccessFailedCount = 0,
-                    TwoFactorEnabled = false
+                    NormalizedUserName = "NATEROBERTSON@GMAIL.COM",
+                    NormalizedEmail = "NATEROBERTSON@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    PasswordHash = hasher.HashPassword(user, defaultPassword),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    LocationId = 1 // Assuming Location with UserId 1 exists
                 }
             );
-
-
-            // Seed Identity Roles
-            modelBuilder.Entity<IdentityRole>().HasData(
-                new IdentityRole
-                {
-                    Id = "admin_role_id",
-                    Name = SD.AdminRole,
-                    NormalizedName = SD.AdminRole.ToUpper(),
-                    ConcurrencyStamp = "admin_concurrency_stamp"
-                },
-                new IdentityRole
-                {
-                    Id = "customer_support_role_id",
-                    Name = SD.CustomerSupportRole,
-                    NormalizedName = SD.CustomerSupportRole.ToUpper(),
-                    ConcurrencyStamp = "customer_support_concurrency_stamp"
-                },
-                new IdentityRole
-                {
-                    Id = "stock_controller_role_id",
-                    Name = SD.StockControllerRole,
-                    NormalizedName = SD.StockControllerRole.ToUpper(),
-                    ConcurrencyStamp = "stock_controller_concurrency_stamp"
-                },
-                new IdentityRole
-                {
-                    Id = "fault_technician_role_id",
-                    Name = SD.FaultTechnicianRole,
-                    NormalizedName = SD.FaultTechnicianRole.ToUpper(),
-                    ConcurrencyStamp = "fault_technician_concurrency_stamp"
-                },
-                new IdentityRole
-                {
-                    Id = "maintenance_technician_role_id",
-                    Name = SD.MaintenanceTechnicianRole,
-                    NormalizedName = SD.MaintenanceTechnicianRole.ToUpper(),
-                    ConcurrencyStamp = "maintenance_technician_concurrency_stamp"
-                },
-                new IdentityRole
-                {
-                    Id = "customer_role_id",
-                    Name = SD.CustomerRole,
-                    NormalizedName = SD.CustomerRole.ToUpper(),
-                    ConcurrencyStamp = "customer_concurrency_stamp"
-                }
-            );
-
-            // Seed User Roles (AspNetUserRoles)
+            // Assign Roles to Users
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(
-                new IdentityUserRole<string> { UserId = "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1", RoleId = "admin_role_id" },
-                new IdentityUserRole<string> { UserId = "b5a771e9-2f8b-437a-9d0e-7f8b901cde12", RoleId = "customer_support_role_id" },
-                new IdentityUserRole<string> { UserId = "c6d882fa-47b9-448b-a9e0-8f9b012d3e45", RoleId = "stock_controller_role_id" },
-                new IdentityUserRole<string> { UserId = "d7e9930b-58c0-459c-ba1f-9a0a123b4c56", RoleId = "fault_technician_role_id" },
-                new IdentityUserRole<string> { UserId = "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e", RoleId = "maintenance_technician_role_id" },
-                new IdentityUserRole<string> { UserId = "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d", RoleId = "customer_role_id" }
+                new IdentityUserRole<string> { UserId = "1", RoleId = "1" },
+                new IdentityUserRole<string> { UserId = "2", RoleId = "2" },
+                new IdentityUserRole<string> { UserId = "3", RoleId = "3" },
+                new IdentityUserRole<string> { UserId = "4", RoleId = "4" },
+                new IdentityUserRole<string> { UserId = "5", RoleId = "5" },
+                new IdentityUserRole<string> { UserId = "6", RoleId = "6" }
             );
+            modelBuilder.Entity<Employee>()
+                .HasDiscriminator<string>("EmployeeType");
 
             modelBuilder.Entity<Employee>()
-                .HasOne(e => e.WorkLocation)
-                .WithMany(l => l.Employees) // This tells EF Core to use the Employees collection
-                .HasForeignKey(e => e.WorkLocationId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
+                .Property("EmployeeType")                // Configure discriminator column
+                .HasMaxLength(21)
+                .HasColumnType("nvarchar(21)")
+                .IsRequired();
 
-            modelBuilder.Entity<Customer>()
-                .HasOne(c => c.TradingLocation)
-                .WithMany()
-                .HasForeignKey(c => c.TradingLocationId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            // Seed Employees with WorkLocationId (work location) matching ApplicationUser LocationId where applicable
             modelBuilder.Entity<Employee>().HasData(
+                // Customer Support
                 new Employee
                 {
                     Id = 1,
-                    UserId = "e4b662f8-9c3a-4d6e-8a9f-8d7f784b4ac1", // Collins Khosa - Administrator
-                    EmployeeNumber = "EMP00001",
-                    EmployeeType = EmployeeType.Administrator,
+                    UserId = "2",
+                    EmployeeNumber = "CS001",
+                    EmployeeType = EmployeeType.CustomerSupport,
                     AvailabilityStatus = AvailabilityStatus.Available,
-                    WorkPhone = "+27645347790",
-                    WorkEmail = "admin@smartchill.com",
-                    WorkLocationId = 6, // Potchefstroom - work location
-                    IsDeleted = false
+                    CreatedAt = new DateTime(2025, 9, 21), // fixed value
+                    IsActive = true
                 },
+                // Stock Controller
                 new Employee
                 {
                     Id = 2,
-                    UserId = "b5a771e9-2f8b-437a-9d0e-7f8b901cde12", // Andries Tatane - Customer Support
-                    EmployeeNumber = "EMP00002",
-                    EmployeeType = EmployeeType.CustomerSupport,
-                    AvailabilityStatus = AvailabilityStatus.Available,
-                    WorkPhone = "+27710737734",
-                    WorkEmail = "customersupport@smartchill.com",
-                    WorkLocationId = 10, // Kimberley - work location
-                    IsDeleted = false
+                    UserId = "3",
+                    EmployeeNumber = "SC001",
+                    EmployeeType = EmployeeType.StockController,
+                    AvailabilityStatus = AvailabilityStatus.OnDuty,
+                    CreatedAt = new DateTime(2025, 9, 21),
+                    IsActive = true
                 },
+                // Fault AssignedTechnician
                 new Employee
                 {
                     Id = 3,
-                    UserId = "c6d882fa-47b9-448b-a9e0-8f9b012d3e45", // Mido Macia - Stock Controller
-                    EmployeeNumber = "EMP00003",
-                    EmployeeType = EmployeeType.StockController,
+                    UserId = "4",
+                    EmployeeNumber = "FT001",
+                    EmployeeType = EmployeeType.FaultTechnician,
                     AvailabilityStatus = AvailabilityStatus.Available,
-                    WorkPhone = "+27662934430",
-                    WorkEmail = "stockcontroller@smartchill.com",
-                    WorkLocationId = 2, // East London - work location
-                    IsDeleted = false
+                    CreatedAt = new DateTime(2025, 9, 21),
+                    IsActive = true
                 },
+                // Maintenance AssignedTechnician
                 new Employee
                 {
                     Id = 4,
-                    UserId = "d7e9930b-58c0-459c-ba1f-9a0a123b4c56", // Nathaniel Julies - Fault Technician
-                    EmployeeNumber = "EMP00004",
-                    EmployeeType = EmployeeType.FaultTechnician,
-                    AvailabilityStatus = AvailabilityStatus.Available,
-                    WorkPhone = "+27798946438",
-                    WorkEmail = "faulttechnician@smartchill.com",
-                    WorkLocationId = 5, // Durban - work location
-                    IsDeleted = false
-                },
-                new Employee
-                {
-                    Id = 5,
-                    UserId = "f8a0ab1c-6a1d-46bd-cb2e-0f1a2b3c4d5e", // Latiefa Freeman - Maintenance Technician
-                    EmployeeNumber = "EMP00005",
+                    UserId = "5",
+                    EmployeeNumber = "MT001",
                     EmployeeType = EmployeeType.MaintenanceTechnician,
                     AvailabilityStatus = AvailabilityStatus.Available,
-                    WorkPhone = "+27614836998",
-                    WorkEmail = "maintenancetechnician@smartchill.com",
-                    WorkLocationId = 5, // Durban (proximity to Pietermaritzburg) - work location
-                    IsDeleted = false
+                    CreatedAt = new DateTime(2025, 9, 21),
+                    IsActive = true
                 }
             );
 
-            // Seed Customers with LocationId as business address
+            //Customer
             modelBuilder.Entity<Customer>().HasData(
                 new Customer
                 {
                     Id = 1,
-                    UserId = "a9b1c2d3-7e4f-45a6-bc3d-9e0f1a2b3c4d", // Nathan Robertson - Links to ApplicationUser ID
-                    AssignedEmployeeId = 2, // Andries Tatane - Customer Support Specialist
-                    BusinessName = "Boerewors Palace",
-                    BusinessType = BusinessType.Shebeen,
-                    RegistrationNumber = "2024/123456/07",
-                    VATNumber = "4871253690",
-                    BusinessEmail = "orders@boereworspalace.co.za",
-                    BusinessPhoneNumber = "+27218765432",
-                    AlternativePhone = "+27836549871",
-                    TradingLocationId = 1, // Paarl Spaza Shop - business location/address
-                    StreetAddress = "12 Voortrekker Road",
-                    Suburb = "Paarl",
-                    City = "Paarl",
-                    Province = "Western Cape",
-                    PostalCode = "7646",
-                    CreditLimit = 50000.00m,
-                    OutstandingBalance = 1250.50m,
-                    PaymentTermsDays = 30,
-                    DiscountRate = 5.00m, // 5% discount for good standing
-                    CreditStatus = CreditStatus.Good,
-                    CustomerSince = new DateTime(2023, 6, 15),
-                    OperatingHours = "Mon-Fri: 7:00-18:00, Sat: 7:00-14:00, Sun: Closed",
-                    AccountStatus = AccountStatus.Approved,
-                    IsDeleted = false
+                    UserId = "6", // FK to ApplicationUser
+                    CustomerLiaisonId = 1, // FK to Employee
+                    TradingName = "Boerewors Palace",
+                    BusinessType = BusinessType.SmallRetail,
+                    BusinessEmail = "info@boereworspalace.co.za",
+                    BusinessPhoneNumber = "+27 11 555 0101",
+                    AddressLine1 = "123 Main Street",
+                    AddressLine2 = "Corner of 5th Ave",
+                    City = "Johannesburg",
+                    Province = "Gauteng",
+                    PostalCode = "2001"
                 }
             );
 
-            //// Configure Customer - TradingLocation relationship
-            //modelBuilder.Entity<Customer>()
-            //    .HasOne(c => c.TradingLocation)
-            //    .WithMany()
-            //    .HasForeignKey(c => c.LocationId)
-            //    .OnDelete(DeleteBehavior.Restrict)
-            //    .IsRequired(false);
 
-            //// Configure ApplicationUser - PrimaryLocation relationship
-            //modelBuilder.Entity<ApplicationUser>()
-            //    .HasOne(u => u.PrimraryLocation)
-            //    .WithMany()
-            //    .HasForeignKey(u => u.LocationId)
-            //    .OnDelete(DeleteBehavior.Restrict)
-            //    .IsRequired(false);
-
-            modelBuilder.Entity<Location>().HasData(
-    new Location
-    {
-        Id = 1,
-        Name = "Paarl Spaza Shop",
-        LocationType = LocationType.CustomerSite,
-        LocationCode = "PAARL-SPZ",
-        StreetAddress = "12 Voortrekker Road",
-        Suburb = "Paarl",
-        City = "Paarl",
-        Province = "Western Cape",
-        PostalCode = "7646",
-        Country = "South Africa",
-        ContactPerson = "Sophie van der Merwe",
-        ContactPhone = "+27 21 865 1234",
-        ContactEmail = "sophie@paarlspaza.co.za",
-        OperatingHours = "08:00 – 20:00",
-        Capacity = 60,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 15, 8, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 2,
-        Name = "Berea Convenience Store",
-        LocationType = LocationType.CustomerSite,
-        LocationCode = "BEREA-CSV",
-        StreetAddress = "45 Mitchell Street",
-        Suburb = "Berea",
-        City = "East London",
-        Province = "Eastern Cape",
-        PostalCode = "5241",
-        Country = "South Africa",
-        ContactPerson = "Sipho Mkhize",
-        ContactPhone = "+27 43 743 5567",
-        ContactEmail = "sipho@bereaconvenience.co.za",
-        OperatingHours = "07:00 – 21:00",
-        Capacity = 80,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 16, 9, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 3,
-        Name = "Yeoville Shebeen",
-        LocationType = LocationType.CustomerSite,
-        LocationCode = "YEOV-SHB",
-        StreetAddress = "88 Goble Road",
-        Suburb = "Yeoville",
-        City = "Johannesburg",
-        Province = "Gauteng",
-        PostalCode = "2198",
-        Country = "South Africa",
-        ContactPerson = "Thabo Khumalo",
-        ContactPhone = "+27 11 482 3344",
-        ContactEmail = "thabo@yeovilleshebeen.co.za",
-        OperatingHours = "10:00 – 23:00",
-        Capacity = 40,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 17, 10, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 4,
-        Name = "Hatfield Campus Depot",
-        LocationType = LocationType.Warehouse,
-        LocationCode = "HATF-DEPOT",
-        StreetAddress = "15 Jan Shoba Street",
-        Suburb = "Hatfield",
-        City = "Pretoria",
-        Province = "Gauteng",
-        PostalCode = "0028",
-        Country = "South Africa",
-        ContactPerson = "Claire van Wyk",
-        ContactPhone = "+27 12 420 5000",
-        ContactEmail = "cw@campusdepot.example.com",
-        OperatingHours = "08:00 – 17:00",
-        Capacity = 200,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 18, 11, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 5,
-        Name = "Morningside Distribution Hub",
-        LocationType = LocationType.Warehouse,
-        LocationCode = "MORN-HUB",
-        StreetAddress = "247 Florida Road",
-        Suburb = "Morningside",
-        City = "Durban",
-        Province = "KwaZulu-Natal",
-        PostalCode = "4001",
-        Country = "South Africa",
-        ContactPerson = "Lindiwe Dlamini",
-        ContactPhone = "+27 31 577 8900",
-        ContactEmail = "lindiwe@distmorningside.co.za",
-        OperatingHours = "07:00 – 18:00",
-        Capacity = 300,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 19, 12, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 6,
-        Name = "Potchefstroom Depot",
-        LocationType = LocationType.Warehouse,
-        LocationCode = "POTCH-DEP",
-        StreetAddress = "88 Kerk Street",
-        Suburb = "Potchefstroom",
-        City = "Potchefstroom",
-        Province = "North West",
-        PostalCode = "2531",
-        Country = "South Africa",
-        ContactPerson = "Jan van der Merwe",
-        ContactPhone = "+27 18 299 4000",
-        ContactEmail = "jan@potchdepot.co.za",
-        OperatingHours = "08:30 – 17:30",
-        Capacity = 250,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 20, 13, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 7,
-        Name = "Arcadia Service Centre",
-        LocationType = LocationType.ServiceCenter,
-        LocationCode = "ARCA-SVC",
-        StreetAddress = "22 Beatrix Street",
-        Suburb = "Arcadia",
-        City = "Bloemfontein",
-        Province = "Free State",
-        PostalCode = "9301",
-        Country = "South Africa",
-        ContactPerson = "Nokuthula Mokoena",
-        ContactPhone = "+27 51 432 2100",
-        ContactEmail = "nokuthula@arcadiaservice.co.za",
-        OperatingHours = "09:00 – 17:00",
-        Capacity = 100,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 21, 14, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 8,
-        Name = "Newlands Central Warehouse",
-        LocationType = LocationType.Warehouse,
-        LocationCode = "NEWL-WHS",
-        StreetAddress = "45 Colinton Road",
-        Suburb = "Newlands",
-        City = "Cape Town",
-        Province = "Western Cape",
-        PostalCode = "7700",
-        Country = "South Africa",
-        ContactPerson = "Peter Adams",
-        ContactPhone = "+27 21 650 1234",
-        ContactEmail = "peter@newlandswhs.co.za",
-        OperatingHours = "08:00 – 18:00",
-        Capacity = 400,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 22, 15, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 9,
-        Name = "Dullstroom Spaza Shop",
-        LocationType = LocationType.CustomerSite,
-        LocationCode = "DULL-SPZ",
-        StreetAddress = "1 Kerk Street",
-        Suburb = "Dullstroom",
-        City = "Dullstroom",
-        Province = "Mpumalanga",
-        PostalCode = "1110",
-        Country = "South Africa",
-        ContactPerson = "Mpho Khumalo",
-        ContactPhone = "+27 13 253 4021",
-        ContactEmail = "mpho@dullstroomspaza.co.za",
-        OperatingHours = "08:00 – 19:00",
-        Capacity = 45,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 23, 16, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    },
-    new Location
-    {
-        Id = 10,
-        Name = "Kimberley Supplier Yard",
-        LocationType = LocationType.SupplierSite,
-        LocationCode = "KIMB-SUP",
-        StreetAddress = "12 Schröder Street",
-        Suburb = "Kimberley",
-        City = "Kimberley",
-        Province = "Northern Cape",
-        PostalCode = "8301",
-        Country = "South Africa",
-        ContactPerson = "Cheryl Schröder",
-        ContactPhone = "+27 53 831 9000",
-        ContactEmail = "cheryl.schroeder@mandela.ac.za",
-        OperatingHours = "07:30 – 16:30",
-        Capacity = 150,
-        IsDeleted = false,
-        CreatedAt = new DateTime(2024, 1, 24, 17, 0, 0, DateTimeKind.Utc),
-        CreatedBy = "System",
-        UpdatedAt = null,
-        UpdatedBy = null
-    }
-);
-
-
-            modelBuilder.Entity<FridgeModel>().HasData(
-                new FridgeModel
+            modelBuilder.Entity<Fridge>().HasData(
+                // Industrial Fridges for Shebeens (bars)
+                new Fridge
                 {
                     Id = 1,
-                    Manufacturer = "Defy",
-                    ModelName = "Compact 100L",
-                    ModelCode = "DEF-C100",
-                    Type = FridgeType.UprightFridge,
-                    CapacityLiters = 100,
-                    Description = "Compact upright fridge ideal for limited-space spaza shops.",
-                    EnergyRating = "A",
-                    Dimensions = "85×55×60",
-                    Color = "White",
-                    MonthlyRentalPrice = 299.00m,
-                    PurchasePrice = 3499.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 3,
-                    ReorderQuantity = 5,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/defy-compact-100l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "Samsung",
+                    SerialNumber = "SAM-BEER-001",
+                    Model = "RB29F",
+                    CapacityLiters = 290,
+                    Type = "Double Door Commercial",
+                    Description = "Commercial beverage fridge with glass door, perfect for beer and drinks display.",
+                    RentalPricePerMonth = 1500.00m,
+                    LastMaintenanceDate = new DateTime(2024, 6, 15),
+                    LocationId = 1, // Assuming LocationId 1 is a warehouse
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1629367494173-c78a56567877",
+                    PurchaseDate = new DateTime(2024, 1, 10),
+                    PurchasePrice = 12000.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 1, 10),
+                    EnergyRating = "A+",
+                    Dimensions = "180×70×70cm",
+                    Weight = 85.5m,
+                    Color = "Stainless Steel",
+                    CreatedDate = new DateTime(2024, 1, 10),
+                    ModifiedDate = new DateTime(2024, 6, 15)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 2,
-                    Manufacturer = "Defy",
-                    ModelName = "Classic Chest 150L",
-                    ModelCode = "DEF-CF150",
-                    Type = FridgeType.ChestFreezer,
-                    CapacityLiters = 150,
-                    Description = "Sturdy chest freezer for high-volume frozen storage.",
-                    EnergyRating = "B",
-                    Dimensions = "85×70×60",
-                    Color = "White",
-                    MonthlyRentalPrice = 319.00m,
-                    PurchasePrice = 3899.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = false,
-                    IsFrostFree = false,
-                    ServiceIntervalMonths = 12,
-                    WarrantyPeriodMonths = 36,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 4,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/defy-chest-150l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "LG",
+                    SerialNumber = "LG-BAR-202",
+                    Model = "GL-D422CL",
+                    CapacityLiters = 420,
+                    Type = "Glass Door Display",
+                    Description = "Large capacity glass door fridge for bar use, ideal for beverage storage.",
+                    RentalPricePerMonth = 1800.00m,
+                    LastMaintenanceDate = new DateTime(2024, 5, 20),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Allocated,
+                    ImageUrl = "https://images.unsplash.com/photo-1579389083078-4e7018379f7e",
+                    PurchaseDate = new DateTime(2023, 3, 15),
+                    PurchasePrice = 15000.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 3, 15),
+                    EnergyRating = "A",
+                    Dimensions = "190×80×75cm",
+                    Weight = 92.0m,
+                    Color = "Black",
+                    CreatedDate = new DateTime(2023, 3, 15),
+                    ModifiedDate = new DateTime(2024, 5, 20)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 3,
                     Manufacturer = "Hisense",
-                    ModelName = "Upright Freezer 200L",
-                    ModelCode = "HIS-UF200",
-                    Type = FridgeType.UprightFreezer,
-                    CapacityLiters = 200,
-                    Description = "Vertical freezer with adjustable shelves and frost-free tech.",
+                    SerialNumber = "HIS-SHEB-303",
+                    Model = "QR638W",
+                    CapacityLiters = 638,
+                    Type = "Commercial Reach-In",
+                    Description = "Large capacity reach-in fridge for high-volume shebeen operations.",
+                    RentalPricePerMonth = 2200.00m,
+                    LastMaintenanceDate = new DateTime(2024, 4, 10),
+                    LocationId = 1,
+                    Condition = FridgeCondition.NeedsService,
+                    Status = FridgeStatus.InRepair,
+                    ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
+                    PurchaseDate = new DateTime(2022, 8, 22),
+                    PurchasePrice = 18000.00m,
+                    WarrantyExpiryDate = new DateTime(2024, 8, 22),
                     EnergyRating = "B",
-                    Dimensions = "170×58×60",
-                    Color = "White",
-                    MonthlyRentalPrice = 429.00m,
-                    PurchasePrice = 4999.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = true,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 12,
-                    WarrantyPeriodMonths = 36,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 3,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/hisense-upright-freezer-200l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Dimensions = "200×90×85cm",
+                    Weight = 110.0m,
+                    Color = "Silver",
+                    CreatedDate = new DateTime(2022, 8, 22),
+                    ModifiedDate = new DateTime(2024, 4, 10)
                 },
-                new FridgeModel
+
+                // Freezers for Spaza Shops
+                new Fridge
                 {
                     Id = 4,
-                    Manufacturer = "Galaxy",
-                    ModelName = "Display Chiller 200L",
-                    ModelCode = "GAL-DF200",
-                    Type = FridgeType.GlassDisplayFridge,
-                    CapacityLiters = 200,
-                    Description = "Glass-fronted display fridge with internal LED lighting.",
+                    Manufacturer = "Defy",
+                    SerialNumber = "DEFY-SPAZA-404",
+                    Model = "FF388",
+                    CapacityLiters = 388,
+                    Type = "Upright Freezer",
+                    Description = "Upright freezer with multiple shelves, perfect for frozen goods in spaza shops.",
+                    RentalPricePerMonth = 1200.00m,
+                    LastMaintenanceDate = new DateTime(2024, 7, 5),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1595425970377-2f8ded7c7b19",
+                    PurchaseDate = new DateTime(2024, 2, 14),
+                    PurchasePrice = 9500.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 2, 14),
                     EnergyRating = "A+",
-                    Dimensions = "180×58×60",
-                    Color = "Silver",
-                    MonthlyRentalPrice = 499.00m,
-                    PurchasePrice = 5499.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 3,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/galaxy-display-200l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Dimensions = "170×65×65cm",
+                    Weight = 75.0m,
+                    Color = "White",
+                    CreatedDate = new DateTime(2024, 2, 14),
+                    ModifiedDate = new DateTime(2024, 7, 5)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 5,
-                    Manufacturer = "LG",
-                    ModelName = "Beverage Cooler 120L",
-                    ModelCode = "LG-BC120",
-                    Type = FridgeType.BeverageCooler,
-                    CapacityLiters = 120,
-                    Description = "Slim beverage cooler for cans and bottles display.",
+                    Manufacturer = "Snapper",
+                    SerialNumber = "SNAP-SPAZA-505",
+                    Model = "CUF270",
+                    CapacityLiters = 270,
+                    Type = "Chest Freezer",
+                    Description = "Energy-efficient chest freezer for bulk frozen food storage.",
+                    RentalPricePerMonth = 950.00m,
+                    LastMaintenanceDate = new DateTime(2024, 3, 18),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Allocated,
+                    ImageUrl = "https://images.unsplash.com/photo-1631549916768-4119c9ff7ac5",
+                    PurchaseDate = new DateTime(2023, 5, 30),
+                    PurchasePrice = 7000.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 5, 30),
                     EnergyRating = "A",
-                    Dimensions = "90×50×60",
-                    Color = "Black",
-                    MonthlyRentalPrice = 389.00m,
-                    PurchasePrice = 4299.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 3,
-                    ReorderQuantity = 5,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/lg-beverage-120l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Dimensions = "140×75×85cm",
+                    Weight = 68.0m,
+                    Color = "Silver",
+                    CreatedDate = new DateTime(2023, 5, 30),
+                    ModifiedDate = new DateTime(2024, 3, 18)
                 },
-                new FridgeModel
+
+                // More varied fridges
+                new Fridge
                 {
                     Id = 6,
-                    Manufacturer = "Defy",
-                    ModelName = "Undercounter 120L",
-                    ModelCode = "DEF-UC120",
-                    Type = FridgeType.UndercounterFridge,
-                    CapacityLiters = 120,
-                    Description = "Under-counter fridge perfect for back-bar integration.",
-                    EnergyRating = "A",
-                    Dimensions = "82×60×57",
-                    Color = "White",
-                    MonthlyRentalPrice = 349.00m,
-                    PurchasePrice = 4299.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 3,
-                    ReorderQuantity = 5,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/defy-undercounter-120l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "Kelvinator",
+                    SerialNumber = "KELV-SPAZA-606",
+                    Model = "KFR450",
+                    CapacityLiters = 450,
+                    Type = "Double Door Fridge",
+                    Description = "Spacious double door fridge with separate freezer compartment.",
+                    RentalPricePerMonth = 1300.00m,
+                    LastMaintenanceDate = new DateTime(2024, 6, 28),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5",
+                    PurchaseDate = new DateTime(2024, 3, 10),
+                    PurchasePrice = 11000.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 3, 10),
+                    EnergyRating = "A+",
+                    Dimensions = "175×70×70cm",
+                    Weight = 80.0m,
+                    Color = "Silver",
+                    CreatedDate = new DateTime(2024, 3, 10),
+                    ModifiedDate = new DateTime(2024, 6, 28)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 7,
                     Manufacturer = "LG",
-                    ModelName = "Undercounter Freezer 100L",
-                    ModelCode = "LG-UCF100",
-                    Type = FridgeType.UndercounterFreezer,
-                    CapacityLiters = 100,
-                    Description = "Under-counter freezer module for compact storage.",
-                    EnergyRating = "B",
-                    Dimensions = "82×60×57",
-                    Color = "White",
-                    MonthlyRentalPrice = 369.00m,
-                    PurchasePrice = 4299.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 12,
-                    WarrantyPeriodMonths = 36,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 3,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/lg-undercounter-freezer-100l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    SerialNumber = "LG-SHEB-707",
+                    Model = "LFXS28566",
+                    CapacityLiters = 780,
+                    Type = "French Door Commercial",
+                    Description = "Large French door commercial fridge with ice maker, perfect for high-volume establishments.",
+                    RentalPricePerMonth = 2500.00m,
+                    LastMaintenanceDate = new DateTime(2024, 5, 12),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.UnderMaintenance,
+                    ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
+                    PurchaseDate = new DateTime(2023, 1, 15),
+                    PurchasePrice = 22000.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 1, 15),
+                    EnergyRating = "A++",
+                    Dimensions = "185×95×80cm",
+                    Weight = 125.0m,
+                    Color = "Stainless Steel",
+                    CreatedDate = new DateTime(2023, 1, 15),
+                    ModifiedDate = new DateTime(2024, 5, 12)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 8,
-                    Manufacturer = "KIC",
-                    ModelName = "Wine Cooler 50L",
-                    ModelCode = "KIC-WC50",
-                    Type = FridgeType.WineCooler,
-                    CapacityLiters = 50,
-                    Description = "Temperature-controlled wine cooler with glass door.",
-                    EnergyRating = "A",
-                    Dimensions = "85×50×60",
-                    Color = "Black",
-                    MonthlyRentalPrice = 519.00m,
-                    PurchasePrice = 5799.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = true,
-                    HasLock = false,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 2,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/kic-wine-50l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "Samsung",
+                    SerialNumber = "SAM-SPAZA-808",
+                    Model = "RT38K",
+                    CapacityLiters = 385,
+                    Type = "Top Mount Freezer",
+                    Description = "Reliable top mount freezer fridge for small spaza shops.",
+                    RentalPricePerMonth = 1100.00m,
+                    LastMaintenanceDate = new DateTime(2024, 4, 22),
+                    LocationId = 1,
+                    Condition = FridgeCondition.NeedsService,
+                    Status = FridgeStatus.InRepair,
+                    ImageUrl = "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5",
+                    PurchaseDate = new DateTime(2022, 11, 5),
+                    PurchasePrice = 9000.00m,
+                    WarrantyExpiryDate = new DateTime(2024, 11, 5),
+                    EnergyRating = "B",
+                    Dimensions = "170×65×65cm",
+                    Weight = 72.0m,
+                    Color = "White",
+                    CreatedDate = new DateTime(2022, 11, 5),
+                    ModifiedDate = new DateTime(2024, 4, 22)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 9,
-                    Manufacturer = "Samsung",
-                    ModelName = "Combi 300L",
-                    ModelCode = "SAM-CBF300",
-                    Type = FridgeType.CombiFridgeFreezer,
-                    CapacityLiters = 300,
-                    Description = "Combined fridge-freezer with separate temperature zones.",
+                    Manufacturer = "Defy",
+                    SerialNumber = "DEFY-SHEB-909",
+                    Model = "DDT392",
+                    CapacityLiters = 392,
+                    Type = "Double Door Commercial",
+                    Description = "Commercial double door fridge with digital temperature control.",
+                    RentalPricePerMonth = 1600.00m,
+                    LastMaintenanceDate = new DateTime(2024, 7, 8),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
+                    PurchaseDate = new DateTime(2024, 2, 20),
+                    PurchasePrice = 13000.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 2, 20),
                     EnergyRating = "A+",
-                    Dimensions = "175×70×65",
-                    Color = "Grey",
-                    MonthlyRentalPrice = 599.00m,
-                    PurchasePrice = 6499.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = true,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 2,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/samsung-combi-300l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Dimensions = "180×70×70cm",
+                    Weight = 85.0m,
+                    Color = "Black",
+                    CreatedDate = new DateTime(2024, 2, 20),
+                    ModifiedDate = new DateTime(2024, 7, 8)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 10,
-                    Manufacturer = "KIC",
-                    ModelName = "Ice Maker Pro",
-                    ModelCode = "KIC-IM50",
-                    Type = FridgeType.IceMaker,
-                    CapacityLiters = 0,
-                    Description = "High-capacity ice maker, up to 50kg daily output.",
-                    EnergyRating = "B",
-                    Dimensions = "85×60×60",
-                    Color = "White",
-                    MonthlyRentalPrice = 799.00m,
-                    PurchasePrice = 8999.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = true,
-                    HasLock = false,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 12,
-                    WarrantyPeriodMonths = 36,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 1,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/kic-ice-maker-50kg.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "Snapper",
+                    SerialNumber = "SNAP-SHEB-1010",
+                    Model = "CRF550",
+                    CapacityLiters = 550,
+                    Type = "Commercial Reach-In",
+                    Description = "Heavy-duty commercial reach-in fridge for bars and shebeens.",
+                    RentalPricePerMonth = 1900.00m,
+                    LastMaintenanceDate = new DateTime(2024, 3, 30),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Allocated,
+                    ImageUrl = "https://images.unsplash.com/photo-1629367494173-c78a56567877",
+                    PurchaseDate = new DateTime(2023, 4, 12),
+                    PurchasePrice = 16000.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 4, 12),
+                    EnergyRating = "A",
+                    Dimensions = "190×80×75cm",
+                    Weight = 95.0m,
+                    Color = "Stainless Steel",
+                    CreatedDate = new DateTime(2023, 4, 12),
+                    ModifiedDate = new DateTime(2024, 3, 30)
                 },
-                new FridgeModel
+
+                // Additional fridges to reach 20
+                new Fridge
                 {
                     Id = 11,
-                    Manufacturer = "Hisense",
-                    ModelName = "Bottle Cooler 80L",
-                    ModelCode = "HIS-BC80",
-                    Type = FridgeType.BottleCooler,
-                    CapacityLiters = 80,
-                    Description = "Slim bottle cooler with glass door, ideal for display.",
-                    EnergyRating = "A",
-                    Dimensions = "82×43×58",
-                    Color = "Black",
-                    MonthlyRentalPrice = 289.00m,
-                    PurchasePrice = 3299.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 4,
-                    ReorderQuantity = 6,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/hisense-bottle-80l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "LG",
+                    SerialNumber = "LG-SPAZA-1111",
+                    Model = "GN-B472SLC",
+                    CapacityLiters = 472,
+                    Type = "Bottom Freezer",
+                    Description = "Bottom freezer fridge with ample storage for spaza shops.",
+                    RentalPricePerMonth = 1400.00m,
+                    LastMaintenanceDate = new DateTime(2024, 6, 10),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1595425970377-2f8ded7c7b19",
+                    PurchaseDate = new DateTime(2024, 1, 25),
+                    PurchasePrice = 11500.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 1, 25),
+                    EnergyRating = "A+",
+                    Dimensions = "175×70×70cm",
+                    Weight = 82.0m,
+                    Color = "Silver",
+                    CreatedDate = new DateTime(2024, 1, 25),
+                    ModifiedDate = new DateTime(2024, 6, 10)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 12,
                     Manufacturer = "Samsung",
-                    ModelName = "Upright Fridge 250L",
-                    ModelCode = "SAM-UF250",
-                    Type = FridgeType.UprightFridge,
-                    CapacityLiters = 250,
-                    Description = "High-capacity upright fridge for beverage storage.",
-                    EnergyRating = "A+",
-                    Dimensions = "175×70×68",
-                    Color = "Grey",
-                    MonthlyRentalPrice = 599.00m,
-                    PurchasePrice = 6499.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = true,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 4,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/samsung-upright-250l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    SerialNumber = "SAM-SHEB-1212",
+                    Model = "BRB260",
+                    CapacityLiters = 260,
+                    Type = "Bar Fridge",
+                    Description = "Compact bar fridge perfect for small shebeens or as additional storage.",
+                    RentalPricePerMonth = 850.00m,
+                    LastMaintenanceDate = new DateTime(2024, 5, 5),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.QualityControl,
+                    ImageUrl = "https://images.unsplash.com/photo-1579389083078-4e7018379f7e",
+                    PurchaseDate = new DateTime(2023, 7, 18),
+                    PurchasePrice = 6800.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 7, 18),
+                    EnergyRating = "A",
+                    Dimensions = "85×55×55cm",
+                    Weight = 45.0m,
+                    Color = "Black",
+                    CreatedDate = new DateTime(2023, 7, 18),
+                    ModifiedDate = new DateTime(2024, 5, 5)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 13,
-                    Manufacturer = "Whirlpool",
-                    ModelName = "Chest Freezer 300L",
-                    ModelCode = "WHR-CF300",
-                    Type = FridgeType.ChestFreezer,
-                    CapacityLiters = 300,
-                    Description = "Large chest freezer for bulk frozen inventory.",
-                    EnergyRating = "B",
-                    Dimensions = "90×85×65",
-                    Color = "White",
-                    MonthlyRentalPrice = 489.00m,
-                    PurchasePrice = 5599.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = false,
-                    ServiceIntervalMonths = 12,
-                    WarrantyPeriodMonths = 36,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 2,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/whirlpool-chest-300l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "Defy",
+                    SerialNumber = "DEFY-SPAZA-1313",
+                    Model = "PLT420",
+                    CapacityLiters = 420,
+                    Type = "Platinum Series",
+                    Description = "Premium fridge with advanced cooling technology for spaza shops.",
+                    RentalPricePerMonth = 1700.00m,
+                    LastMaintenanceDate = new DateTime(2024, 4, 15),
+                    LocationId = 1,
+                    Condition = FridgeCondition.NeedsService,
+                    Status = FridgeStatus.InTransit,
+                    ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
+                    PurchaseDate = new DateTime(2022, 12, 10),
+                    PurchasePrice = 14000.00m,
+                    WarrantyExpiryDate = new DateTime(2024, 12, 10),
+                    EnergyRating = "A",
+                    Dimensions = "180×70×70cm",
+                    Weight = 88.0m,
+                    Color = "Stainless Steel",
+                    CreatedDate = new DateTime(2022, 12, 10),
+                    ModifiedDate = new DateTime(2024, 4, 15)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 14,
-                    Manufacturer = "Bosch",
-                    ModelName = "Glass Display 350L",
-                    ModelCode = "BOS-GDF350",
-                    Type = FridgeType.GlassDisplayFridge,
-                    CapacityLiters = 350,
-                    Description = "Extra-large glass display fridge for retail aisles.",
-                    EnergyRating = "A+",
-                    Dimensions = "190×80×70",
+                    Manufacturer = "Hisense",
+                    SerialNumber = "HIS-SHEB-1414",
+                    Model = "QR718W",
+                    CapacityLiters = 718,
+                    Type = "Commercial Reach-In",
+                    Description = "Extra large reach-in fridge for high-capacity shebeen operations.",
+                    RentalPricePerMonth = 2400.00m,
+                    LastMaintenanceDate = new DateTime(2024, 3, 8),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Reserved,
+                    ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
+                    PurchaseDate = new DateTime(2023, 2, 28),
+                    PurchasePrice = 20000.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 2, 28),
+                    EnergyRating = "B",
+                    Dimensions = "200×90×85cm",
+                    Weight = 115.0m,
                     Color = "Silver",
-                    MonthlyRentalPrice = 799.00m,
-                    PurchasePrice = 8999.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 2,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/bosch-display-350l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    CreatedDate = new DateTime(2023, 2, 28),
+                    ModifiedDate = new DateTime(2024, 3, 8)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 15,
                     Manufacturer = "Kelvinator",
-                    ModelName = "Beverage Cooler 150L",
-                    ModelCode = "KEL-BC150",
-                    Type = FridgeType.BeverageCooler,
-                    CapacityLiters = 150,
-                    Description = "Medium-size beverage cooler with fan-forced cooling.",
+                    SerialNumber = "KELV-SPAZA-1515",
+                    Model = "KFR300",
+                    CapacityLiters = 300,
+                    Type = "Single Door",
+                    Description = "Economical single door fridge for small spaza shops.",
+                    RentalPricePerMonth = 950.00m,
+                    LastMaintenanceDate = new DateTime(2024, 7, 12),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5",
+                    PurchaseDate = new DateTime(2024, 4, 5),
+                    PurchasePrice = 7800.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 4, 5),
                     EnergyRating = "A",
-                    Dimensions = "150×60×60",
+                    Dimensions = "150×60×60cm",
+                    Weight = 65.0m,
                     Color = "White",
-                    MonthlyRentalPrice = 519.00m,
-                    PurchasePrice = 5799.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 4,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/kelvinator-beverage-150l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    CreatedDate = new DateTime(2024, 4, 5),
+                    ModifiedDate = new DateTime(2024, 7, 12)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 16,
-                    Manufacturer = "Russell Hobbs",
-                    ModelName = "UnderCounter 100L",
-                    ModelCode = "RH-UC100",
-                    Type = FridgeType.UndercounterFridge,
-                    CapacityLiters = 100,
-                    Description = "Compact under-counter fridge for limited space.",
+                    Manufacturer = "Snapper",
+                    SerialNumber = "SNAP-SHEB-1616",
+                    Model = "BVF200",
+                    CapacityLiters = 200,
+                    Type = "Beverage Cooler",
+                    Description = "Compact beverage cooler for bars and shebeens.",
+                    RentalPricePerMonth = 800.00m,
+                    LastMaintenanceDate = new DateTime(2024, 5, 25),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Quarantined,
+                    ImageUrl = "https://images.unsplash.com/photo-1629367494173-c78a56567877",
+                    PurchaseDate = new DateTime(2023, 9, 15),
+                    PurchasePrice = 6500.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 9, 15),
                     EnergyRating = "A",
-                    Dimensions = "82×60×57",
-                    Color = "White",
-                    MonthlyRentalPrice = 319.00m,
-                    PurchasePrice = 3799.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 3,
-                    ReorderQuantity = 5,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/rh-undercounter-100l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Dimensions = "90×50×50cm",
+                    Weight = 42.0m,
+                    Color = "Black",
+                    CreatedDate = new DateTime(2023, 9, 15),
+                    ModifiedDate = new DateTime(2024, 5, 25)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 17,
-                    Manufacturer = "Hisense",
-                    ModelName = "UnderCounter Freezer 120L",
-                    ModelCode = "HIS-UCF120",
-                    Type = FridgeType.UndercounterFreezer,
-                    CapacityLiters = 120,
-                    Description = "Under-counter freezer for back-bar deployment.",
-                    EnergyRating = "B",
-                    Dimensions = "82×60×57",
-                    Color = "White",
-                    MonthlyRentalPrice = 399.00m,
-                    PurchasePrice = 4599.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 12,
-                    WarrantyPeriodMonths = 36,
-                    MinimumStockLevel = 2,
-                    ReorderQuantity = 3,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/hisense-undercounter-freezer-120l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "LG",
+                    SerialNumber = "LG-SPAZA-1717",
+                    Model = "GL-L502CL",
+                    CapacityLiters = 502,
+                    Type = "Glass Door Display",
+                    Description = "Glass door display fridge for spaza shops to showcase products.",
+                    RentalPricePerMonth = 1750.00m,
+                    LastMaintenanceDate = new DateTime(2024, 6, 20),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1579389083078-4e7018379f7e",
+                    PurchaseDate = new DateTime(2024, 3, 15),
+                    PurchasePrice = 14500.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 3, 15),
+                    EnergyRating = "A+",
+                    Dimensions = "185×75×75cm",
+                    Weight = 90.0m,
+                    Color = "Stainless Steel",
+                    CreatedDate = new DateTime(2024, 3, 15),
+                    ModifiedDate = new DateTime(2024, 6, 20)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 18,
-                    Manufacturer = "Defy",
-                    ModelName = "Wine Cooler 70L",
-                    ModelCode = "DEF-WC70",
-                    Type = FridgeType.WineCooler,
-                    CapacityLiters = 70,
-                    Description = "Stylish wine cooler with precise temperature control.",
-                    EnergyRating = "A",
-                    Dimensions = "85×50×60",
+                    Manufacturer = "Samsung",
+                    SerialNumber = "SAM-SHEB-1818",
+                    Model = "RB33T",
+                    CapacityLiters = 330,
+                    Type = "Double Door Commercial",
+                    Description = "Commercial double door fridge with digital display and precise temperature control.",
+                    RentalPricePerMonth = 1650.00m,
+                    LastMaintenanceDate = new DateTime(2024, 4, 28),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Allocated,
+                    ImageUrl = "https://images.unsplash.com/photo-1598301257982-0cf01499abb2",
+                    PurchaseDate = new DateTime(2023, 6, 10),
+                    PurchasePrice = 13500.00m,
+                    WarrantyExpiryDate = new DateTime(2025, 6, 10),
+                    EnergyRating = "A+",
+                    Dimensions = "180×70×70cm",
+                    Weight = 87.0m,
                     Color = "Black",
-                    MonthlyRentalPrice = 579.00m,
-                    PurchasePrice = 6299.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = true,
-                    HasLock = false,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 2,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/defy-wine-70l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    CreatedDate = new DateTime(2023, 6, 10),
+                    ModifiedDate = new DateTime(2024, 4, 28)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 19,
-                    Manufacturer = "LG",
-                    ModelName = "Combi 450L",
-                    ModelCode = "LG-CBF450",
-                    Type = FridgeType.CombiFridgeFreezer,
-                    CapacityLiters = 450,
-                    Description = "Large combi fridge-freezer with water dispenser.",
-                    EnergyRating = "A+",
-                    Dimensions = "179×91×76",
-                    Color = "Stainless Steel",
-                    MonthlyRentalPrice = 1099.00m,
-                    PurchasePrice = 11999.00m,
-                    HasGlassDoor = false,
-                    HasDigitalDisplay = true,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 1,
-                    ReorderQuantity = 2,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/lg-combi-450l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    Manufacturer = "Defy",
+                    SerialNumber = "DEFY-SPAZA-1919",
+                    Model = "FFT250",
+                    CapacityLiters = 250,
+                    Type = "Top Mount Freezer",
+                    Description = "Compact top mount freezer fridge for small spaza shop operations.",
+                    RentalPricePerMonth = 1000.00m,
+                    LastMaintenanceDate = new DateTime(2024, 7, 3),
+                    LocationId = 1,
+                    Condition = FridgeCondition.New,
+                    Status = FridgeStatus.Available,
+                    ImageUrl = "https://images.unsplash.com/photo-1595425970377-2f8ded7c7b19",
+                    PurchaseDate = new DateTime(2024, 5, 20),
+                    PurchasePrice = 8200.00m,
+                    WarrantyExpiryDate = new DateTime(2026, 5, 20),
+                    EnergyRating = "A",
+                    Dimensions = "160×65×65cm",
+                    Weight = 70.0m,
+                    Color = "White",
+                    CreatedDate = new DateTime(2024, 5, 20),
+                    ModifiedDate = new DateTime(2024, 7, 3)
                 },
-                new FridgeModel
+                new Fridge
                 {
                     Id = 20,
-                    Manufacturer = "Whirlpool",
-                    ModelName = "Bottle Cooler 90L",
-                    ModelCode = "WHR-BC90",
-                    Type = FridgeType.BottleCooler,
-                    CapacityLiters = 90,
-                    Description = "Bottle cooler with glass door and internal LED.",
-                    EnergyRating = "A",
-                    Dimensions = "90×50×60",
+                    Manufacturer = "Hisense",
+                    SerialNumber = "HIS-SHEB-2020",
+                    Model = "QR828W",
+                    CapacityLiters = 828,
+                    Type = "Commercial Reach-In",
+                    Description = "Extra large commercial reach-in fridge for high-volume shebeen operations.",
+                    RentalPricePerMonth = 2600.00m,
+                    LastMaintenanceDate = new DateTime(2024, 5, 15),
+                    LocationId = 1,
+                    Condition = FridgeCondition.PreOwned,
+                    Status = FridgeStatus.Scrapped,
+                    ImageUrl = "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91",
+                    PurchaseDate = new DateTime(2022, 10, 5),
+                    PurchasePrice = 21000.00m,
+                    WarrantyExpiryDate = new DateTime(2024, 10, 5),
+                    EnergyRating = "B",
+                    Dimensions = "210×95×90cm",
+                    Weight = 125.0m,
                     Color = "Silver",
-                    MonthlyRentalPrice = 329.00m,
-                    PurchasePrice = 3899.00m,
-                    HasGlassDoor = true,
-                    HasDigitalDisplay = false,
-                    HasLock = true,
-                    IsFrostFree = true,
-                    ServiceIntervalMonths = 6,
-                    WarrantyPeriodMonths = 24,
-                    MinimumStockLevel = 4,
-                    ReorderQuantity = 6,
-                    Status = FridgeModelStatus.Active,
-                    ImageUrl = "/images/fridges/whirlpool-bottle-90l.jpg",
-                    CreatedAt = seedDate,
-                    CreatedBy = "System"
+                    CreatedDate = new DateTime(2022, 10, 5),
+                    ModifiedDate = new DateTime(2024, 5, 15)
                 }
             );
 
-
+            modelBuilder.Entity<PurchaseRequest>().HasData(
+                // Request 1: Stock Controller requesting new fridges due to low stock
+                new PurchaseRequest
+                {
+                    Id = 1,
+                    RequestedById = 2, // Stock Controller (UserId 2 from prior seeding)
+                    RequestDate = new DateTime(2025, 9, 15, 14, 30, 0, DateTimeKind.Utc), // Mid-September 2025
+                    Status = PurchaseRequestStatus.Approved,
+                    Reason = PurchaseRequestReason.LowStock,
+                    Urgency = PurchaseRequestUrgency.High,
+                    RequiredByDate = new DateTime(2025, 10, 1), // Needed by early October
+                    EstimatedTotalCost = 24000.00m, // e.g., 2 fridges at ~12,000 each
+                    CreatedAt = new DateTime(2025, 9, 15, 14, 30, 0, DateTimeKind.Utc)
+                },
+                // Request 2: Stock Controller requesting maintenance parts due to equipment failure
+                new PurchaseRequest
+                {
+                    Id = 2,
+                    RequestedById = 2, // Stock Controller (UserId 2)
+                    RequestDate = new DateTime(2025, 8, 20, 9, 15, 0, DateTimeKind.Utc), // Late August 2025
+                    Status = PurchaseRequestStatus.Draft,
+                    Reason = PurchaseRequestReason.Replacement,
+                    CustomReason = "Compressor failure in multiple units",
+                    Urgency = PurchaseRequestUrgency.Normal,
+                    RequiredByDate = new DateTime(2025, 9, 30), // Needed by end of September
+                    EstimatedTotalCost = 5000.00m, // e.g., parts and labor
+                    CreatedAt = new DateTime(2025, 8, 20, 9, 15, 0, DateTimeKind.Utc)
+                }
+            );
         }
     }
 }
+
+

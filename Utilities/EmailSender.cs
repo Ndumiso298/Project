@@ -5,40 +5,44 @@ using System.Net;
 
 namespace Project.Utilities
 {
-    //private readonly IConfiguration _config;
-
-    //public EmailSender(IConfiguration config)
+    //public class EmailSender : IEmailSender
     //{
-    //    _config = config;
+    //    Task IEmailSender.SendEmailAsync(string email, string subject, string htmlMessage)
+    //    {
+    //        return Task.CompletedTask;
+    //    }
     //}
 
-    //public async Task SendEmailAsync(string email, string subject, string htmlMessage)
-    //{
-    //    using var mail = new MailMessage
-    //    {
-    //        From = new MailAddress(_config["EmailSettings:From"]),
-    //        Subject = subject,
-    //        Body = htmlMessage,
-    //        IsBodyHtml = true
-    //    };
-    //    mail.To.Add(email);
-
-    //    using var smtpServer = new SmtpClient("smtp.gmail.com")
-    //    {
-    //        Port = 587,
-    //        Credentials = new NetworkCredential(
-    //            _config["EmailSettings:Username"],
-    //            _config["EmailSettings:Password"]
-    //        ),
-    //        EnableSsl = true
-    //    };
-    //    await smtpServer.SendMailAsync(mail);
-    //}
     public class EmailSender : IEmailSender
     {
-        Task IEmailSender.SendEmailAsync(string email, string subject, string htmlMessage)
+        private readonly IConfiguration _config;
+
+        public EmailSender(IConfiguration config)
         {
-            return Task.CompletedTask;
+            _config = config;
+        }
+
+        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+        {
+            using var mail = new MailMessage
+            {
+                From = new MailAddress(_config["EmailSettings:From"]),
+                Subject = subject,
+                Body = htmlMessage,
+                IsBodyHtml = true
+            };
+            mail.To.Add(email);
+
+            using var smtpServer = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential(
+                    _config["EmailSettings:Username"],
+                    _config["EmailSettings:Password"]
+                ),
+                EnableSsl = true
+            };
+            await smtpServer.SendMailAsync(mail);
         }
     }
 }

@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Fault\" />
     <Folder Include="wwwroot\Images\Fridges\" />
     <Folder Include="wwwroot\Images\Logo\" />
   </ItemGroup>

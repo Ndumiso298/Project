@@ -1,173 +1,226 @@
-﻿@model MaintenanceRecord
+﻿@using Project.Utilities.Enums
+@model MaintenanceRecord
 @{
-    ViewData["Title"] = $"Maintenance Record - {Model.ServiceDate:dd/MM/yyyy}";
+    ViewData["Title"] = "Maintenance Record Details";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>
-        <i class="fas fa-clipboard-list me-2"></i>Maintenance Record
-        <small class="text-muted">@Model.ServiceDate?.ToString("dd/MM/yyyy")</small>
-    </h1>
-    <div>
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to List
-        </a>
-        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
-            <i class="fas fa-edit me-1"></i>Edit
-        </a>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-tools me-2"></i> @ViewData["Title"]
+                </h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Maintenance Records</a></li>
+                        <li class="breadcrumb-item active">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="row">
-    <!-- Main Information -->
-    <div class="col-lg-8">
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Service Information</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tr>
-                                <th class="w-40">Service Date:</th>
-                                <td>@Model.ServiceDate?.ToString("dd/MM/yyyy HH:mm")</td>
-                            </tr>
-                            <tr>
-                                <th>Fridge:</th>
-                                <td>
-                                    <strong>@Model.Fridge?.SerialNumber</strong><br>
-                                    <small class="text-muted">@Model.Fridge?.FridgeModel?.Manufacturer @Model.Fridge?.FridgeModel?.ModelName</small>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Technician:</th>
-                                <td>@Model.Technician?.UserAccount?.FirstName @Model.Technician?.UserAccount?.LastName</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Service Notes -->
-                @if (!string.IsNullOrEmpty(Model.ServiceNotes))
-                {
-                    <div class="mt-4">
-                        <h6><i class="fas fa-sticky-note me-2"></i>Service Notes</h6>
-                        <div class="border rounded p-3 bg-light">
-                            @Html.Raw(Model.ServiceNotes?.Replace("\n", "<br>"))
-                        </div>
-                    </div>
-                }
-
-@*         <!-- Technical Checks -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Technical Checks</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 text-center">
-                        <div class="mb-3">
-                            <i class="fas @(Model.CompressorWorking == true ? "fa-check text-success" : "fa-times text-danger") fa-2x mb-2"></i>
-                            <div>Compressor</div>
-                            <small class="text-muted">@(Model.CompressorWorking == true ? "Working" : "Not Working")</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="mb-3">
-                            <i class="fas @(Model.CondenserClean == true ? "fa-check text-success" : "fa-times text-danger") fa-2x mb-2"></i>
-                            <div>Condenser</div>
-                            <small class="text-muted">@(Model.CondenserClean == true ? "Clean" : "Dirty")</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="mb-3">
-                            <i class="fas @(Model.DoorSealIntact == true ? "fa-check text-success" : "fa-times text-danger") fa-2x mb-2"></i>
-                            <div>Door Seal</div>
-                            <small class="text-muted">@(Model.DoorSealIntact == true ? "Intact" : "Damaged")</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> *@
-
-    <!-- Sidebar -->
-    <div class="col-lg-4">
-        <!-- Fridge Information -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-refrigerator me-2"></i>Fridge Information</h5>
-            </div>
-            <div class="card-body">
-                @if (Model.Fridge != null)
-                {
-                    <strong>@Model.Fridge.SerialNumber</strong>
-
-                    <br>
-                    <small class="text-muted">
-                        @Model.Fridge.FridgeModel?.Manufacturer @Model.Fridge.FridgeModel?.ModelName<br>
-                        Capacity: @Model.Fridge.FridgeModel?.CapacityLiters liters<br>
-                        Status: <span class="badge bg-info">@Model.Fridge.Status</span><br>
-                        Condition: <span class="badge bg-success">@Model.Fridge.Condition</span>
-                    </small>
-                }
-            </div>
-        </div>
-
-        <!-- Related Visit -->
-        @if (Model.MaintenanceVisitId.HasValue && Model.MaintenanceVisit != null)
-        {
-            <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Related Visit</h5>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i> Service Information
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <strong>Visit #@Model.MaintenanceVisit.Id</strong><br>
-                    <small class="text-muted">
-                        Scheduled: @Model.MaintenanceVisit.ScheduledDate.ToString("dd/MM/yyyy")<br>
-                        Status: <span class="badge @Model.MaintenanceVisit.StatusBadgeClass">@Model.MaintenanceVisit.Status</span>
-                    </small>
-                    <div class="mt-2">
-                        <a asp-controller="MaintenanceVisits" asp-action="Details"
-                           asp-route-id="@Model.MaintenanceVisit.Id" class="btn btn-outline-info btn-sm">
-                            View Visit Details
-                        </a>
-                    </div>
+                    <dl class="row">
+                        <dt class="col-sm-4">Service Date:</dt>
+                        <dd class="col-sm-8">@Model.ServiceDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-4">Service Type:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @GetServiceTypeBadge(Model.ServiceType)">
+                                @Model.ServiceType
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">Fridge:</dt>
+                        <dd class="col-sm-8">
+                            @Model.Fridge?.SerialNumber - @Model.Fridge?.Model
+                            <br><small class="text-muted">ID: @Model.FridgeId</small>
+                        </dd>
+
+                        <dt class="col-sm-4">Technician:</dt>
+                        <dd class="col-sm-8">
+                            @Model.Technician?.UserAccount?.FirstName @Model.Technician?.UserAccount?.LastName
+                            <br><small class="text-muted">ID: @Model.TechnicianId</small>
+                        </dd>
+
+                        @if (Model.MaintenanceVisitId.HasValue)
+                        {
+                            <dt class="col-sm-4">Maintenance Visit:</dt>
+                            <dd class="col-sm-8">
+                                Visit #@Model.MaintenanceVisitId
+                                <br><small class="text-muted">
+                                    Scheduled: @Model.MaintenanceVisit?.ScheduledDate.ToString("dd/MM/yyyy")
+                                </small>
+                            </dd>
+                        }
+                    </dl>
                 </div>
             </div>
-        }
 
-        <!-- Audit Information -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Audit Information</h5>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i> Time Tracking
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        @if (Model.StartTime.HasValue)
+                        {
+                            <dt class="col-sm-4">Start Time:</dt>
+                            <dd class="col-sm-8">@Model.StartTime.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                        }
+
+                        @if (Model.EndTime.HasValue)
+                        {
+                            <dt class="col-sm-4">End Time:</dt>
+                            <dd class="col-sm-8">@Model.EndTime.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                        }
+
+                        @if (Model.DurationMinutes.HasValue)
+                        {
+                            <dt class="col-sm-4">Duration:</dt>
+                            <dd class="col-sm-8">
+                                @(Model.DurationMinutes.Value / 60)h @(Model.DurationMinutes.Value % 60)m
+                                <br><small class="text-muted">(@Model.DurationMinutes.Value minutes)</small>
+                            </dd>
+                        }
+
+                        <dt class="col-sm-4">Work Hours:</dt>
+                        <dd class="col-sm-8">
+                            @(Model.WorkHours?.ToString("F1") ?? "N/A") hours
+                        </dd>
+                    </dl>
+                </div>
             </div>
-            <div class="card-body">
-                <small class="text-muted">
-                    <strong>Created:</strong><br>
-                    @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm") by @Model.CreatedBy<br><br>
+        </div>
 
-                    @if (Model.UpdatedAt.HasValue)
-                    {
-                        <strong>Last Updated:</strong>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-receipt me-2"></i> Cost & Parts
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Service Cost:</dt>
+                        <dd class="col-sm-8 h5 text-success">@Model.Cost.ToString("C")</dd>
 
-                        <br>
-                        @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
-                        @Model.UpdatedBy
+                        <dt class="col-sm-4">Service Complexity:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @GetComplexityBadge(Model.ServiceComplexity)">
+                                @Model.ServiceComplexity
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">Warranty Claim:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsWarrantyClaim)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                                @if (!string.IsNullOrEmpty(Model.WarrantyReference))
+                                {
+                                    <br>
+
+                                    <small class="text-muted">Ref: @Model.WarrantyReference</small>
+                                }
                             }
-                </small>
+                            else
+                            {
+                                <span class="badge bg-secondary">No</span>
+                            }
+                        </dd>
+
+                        @if (!string.IsNullOrEmpty(Model.PartsUsed))
+                        {
+                            <dt class="col-sm-4">Parts Used:</dt>
+                            <dd class="col-sm-8">@Model.PartsUsed</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i> Notes & Description
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>Description:</h6>
+                    <p class="mb-3">@Model.Description</p>
+
+                    @if (!string.IsNullOrEmpty(Model.ServiceNotes))
+                    {
+                        <h6>Service Notes:</h6>
+                        <p class="mb-0">@Model.ServiceNotes</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Record Management</h5>
+                    <div>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i> Edit Record
+                        </a>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <form asp-action="Delete" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this record?')">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .star-rating {
-        font-size: 1.1em;
+@functions {
+    public string GetServiceTypeBadge(ServicingType serviceType)
+    {
+        return serviceType switch
+        {
+            ServicingType.PreventiveMaintenance => "bg-primary",
+            ServicingType.CorrectiveRepair => "bg-warning",
+            ServicingType.EmergencyService => "bg-danger",
+            _ => "bg-secondary"
+        };
     }
-</style>
+
+    public string GetComplexityBadge(string complexity)
+    {
+        return complexity switch
+        {
+            "High" => "bg-danger",
+            "Medium" => "bg-warning",
+            "Low" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}

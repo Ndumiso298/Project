@@ -1,0 +1,48 @@
+﻿@model Project.Models.MaintenanceVisit
+@{
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+        <!-- Header -->
+        <div class="card-header bg-primary text-light py-4 text-center">
+            <h2 class="text-white fw-bold mb-1">Book Maintenance Visit</h2>
+            <p class="text-light mb-0 opacity-75">Schedule a maintenance check for your allocated fridge</p>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="BookVisit" method="post">
+                @* AllocationId comes from the fridge allocation *@
+                <input asp-for="AllocationId" type="hidden" />
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">Fridge</label>
+                    <input type="text" class="form-control" value="@ViewBag.FridgeInfo" readonly />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ScheduledDate" class="form-label fw-semibold text-dark">Select Visit Date</label>
+                    <input asp-for="ScheduledDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="ScheduledDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="CustomerNote" class="form-label fw-semibold text-dark">Notes (optional)</label>
+                    <textarea asp-for="CustomerNote" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="CustomerNote" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
+                    <i class="bi bi-calendar-check me-2"></i> Book Visit
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

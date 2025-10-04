@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Utilities.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,74 +8,87 @@ namespace Project.Models.ViewModels
     {
         public int Id { get; set; }
 
-        // === CORE MAINTENANCE INFORMATION ===
-        [Required(ErrorMessage = "Fridge is required.")]
-        [Display(Name = "Fridge Serial Number")]
+        [Required]
+        [Display(Name = "Fridge")]
         public int FridgeId { get; set; }
+        public IEnumerable<SelectListItem>? FridgeList { get; set; }
 
-        [Required(ErrorMessage = "Maintenance technician is required.")]
-        [Display(Name = "Service Technician")]
+        [Required]
+        [Display(Name = "Technician")]
         public int TechnicianId { get; set; }
+        public IEnumerable<SelectListItem>? TechnicianList { get; set; }
 
-        [Display(Name = "Related Maintenance Visit")]
+        [Display(Name = "Service Type")]
+        public IEnumerable<SelectListItem>? ServiceTypeList { get; set; }
+
+        [Display(Name = "Maintenance Visit")]
         public int? MaintenanceVisitId { get; set; }
+        public IEnumerable<SelectListItem>? VisitList { get; set; }
 
-        [Required(ErrorMessage = "Service date is required.")]
+
+        [Required]
         [Display(Name = "Service Date")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime? ServiceDate { get; set; } = DateTime.Today;
+        public DateTime ServiceDate { get; set; } // Changed from MaintenanceDate to match entity
 
-        // === SERVICE CHECKLIST (Mandatory per requirements) ===
+        [Required(ErrorMessage = "Service type is required.")]
+        [Display(Name = "Service Type")]
+        public ServicingType ServiceType { get; set; } = ServicingType.PreventiveMaintenance;
+
+        [Required(ErrorMessage = "Description is required.")]
+        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
+        [Display(Name = "Description")]
+        public string Description { get; set; } = string.Empty; // Changed from ServiceNotes to match entity
+
+        [StringLength(2000, ErrorMessage = "Service notes cannot exceed 2000 characters.")]
+        [Display(Name = "Service Notes")]
+        public string? ServiceNotes { get; set; }
+
+        [Required(ErrorMessage = "ServiceCost is required.")]
+        [Range(0, 100000, ErrorMessage = "ServiceCost must be a positive value.")]
+        [Display(Name = "ServiceCost (R)")]
+        public decimal ServiceCost { get; set; } // Changed from ServiceCost to match entity and made non-nullable
+
+        [Display(Name = "Parts Used/Replaced")]
+        [StringLength(1000, ErrorMessage = "Parts information cannot exceed 1000 characters.")]
+        public string? PartsUsed { get; set; } // Changed from PartsReplaced to match entity
+
+        // Service checklist (mandatory per requirements)
         [Display(Name = "Service Checklist Completed")]
         public bool IsChecklistCompleted { get; set; }
 
-        // === TECHNICAL CHECKS ===
-        [Display(Name = "Condition Rating (1-5)")]
-        [Range(1, 5, ErrorMessage = "Condition rating must be between 1 and 5.")]
-        public int? ConditionRating { get; set; }
-
-        [Display(Name = "Temperature Reading (°C)")]
-        [Range(-30, 10, ErrorMessage = "Temperature must be between -30°C and 10°C.")]
-        public decimal? TemperatureReading { get; set; }
-
-        [Display(Name = "Compressor Working")]
-        public bool? CompressorWorking { get; set; }
-
-        [Display(Name = "Condenser Clean")]
-        public bool? CondenserClean { get; set; }
-
-        [Display(Name = "Door Seal Intact")]
-        public bool? DoorSealIntact { get; set; }
-
-        // === SERVICE DETAILS ===
-        [StringLength(2000, ErrorMessage = "Service notes cannot exceed 2000 characters.")]
-        [Display(Name = "Service Notes & Observations")]
-        public string? ServiceNotes { get; set; }
-
-        [StringLength(1000, ErrorMessage = "Checklist notes cannot exceed 1000 characters.")]
-        [Display(Name = "Checklist Notes")]
+        [StringLength(1000)]
+        [Display(Name = "Service Checklist Notes")]
         public string? ChecklistNotes { get; set; }
 
-        [Display(Name = "Follow-up Required")]
-        public bool FollowUpRequired { get; set; }
+        [Display(Name = "Next Service Due")]
+        public DateTime? NextServiceDue { get; set; }
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [Display(Name = "Follow-up Date")]
-        public DateTime? FollowUpDate { get; set; }
+        [Display(Name = "Work Hours")]
+        [Range(0, 24)]
+        public decimal? WorkHours { get; set; }
 
-        // === DROPDOWN LISTS ===
-        [ValidateNever]
-        public IEnumerable<SelectListItem> FridgeList { get; set; } = new List<SelectListItem>();
+        // Additional properties from entity
+        [Display(Name = "Start Time")]
+        public DateTime? StartTime { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> TechnicianList { get; set; } = new List<SelectListItem>();
+        [Display(Name = "End Time")]
+        public DateTime? EndTime { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> VisitList { get; set; } = new List<SelectListItem>();
+        [Display(Name = "Warranty Claim")]
+        public bool IsWarrantyClaim { get; set; } = false;
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> ServiceTypeList { get; set; } = new List<SelectListItem>();
+        [Display(Name = "Warranty Reference")]
+        [StringLength(100, ErrorMessage = "Warranty reference cannot exceed 100 characters.")]
+        public string? WarrantyReference { get; set; }
+
+        // Computed properties (read-only for display)
+        [Display(Name = "Duration (minutes)")]
+        public int? DurationMinutes { get; set; }
+
+        [Display(Name = "Is Emergency Service")]
+        public bool IsEmergency { get; set; }
+
+        [Display(Name = "Service Complexity")]
+        public string ServiceComplexity { get; set; } = string.Empty;
     }
 }

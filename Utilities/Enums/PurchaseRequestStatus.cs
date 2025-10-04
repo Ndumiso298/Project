@@ -5,36 +5,20 @@ namespace Project.Utilities.Enums
     public enum PurchaseRequestStatus
     {
         [Display(Name = "Draft")]
-        Draft,                 // Being prepared, not yet submitted
-
-        [Display(Name = "Submitted")]
-        Submitted,             // Sent for review but not yet processed
-
+        Draft,
         [Display(Name = "Under Review")]
-        UnderReview,           // Currently being reviewed
-
+        UnderReview,
         [Display(Name = "Approved")]
-        Approved,              // Approved and ready to order
-
+        Approved,
         [Display(Name = "Rejected")]
-        Rejected,              // Denied, won’t move forward
-
-        [Display(Name = "On Hold")]
-        OnHold,                // Paused temporarily
-
+        Rejected,
         [Display(Name = "Ordered")]
-        Ordered,               // Order placed with supplier
-
+        Ordered,
         [Display(Name = "Partially Fulfilled")]
-        PartiallyFulfilled,    // Some items delivered
-
+        PartiallyFulfilled,
         [Display(Name = "Fulfilled")]
-        Fulfilled,             // Fully delivered
-
+        Fulfilled,
         [Display(Name = "Cancelled")]
-        Cancelled,             // Cancelled before order/fulfillment
-
-        [Display(Name = "Closed")]
-        Closed                 // Archived/finalized state
+        Cancelled
     }
 }

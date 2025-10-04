@@ -1,334 +1,243 @@
-﻿@model LocationVM
-@using Microsoft.AspNetCore.Mvc.Rendering
-
+﻿@model Location
 @{
     ViewData["Title"] = "Location Details";
 }
 
 <div class="container-fluid">
-    <!-- Page Header -->
     <div class="row mb-4">
-        <div class="col">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a asp-action="Index">Location Management</a></li>
-                    <li class="breadcrumb-item active">Details</li>
-                </ol>
-            </nav>
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="h2 text-primary">
-                    <i class="fas fa-map-marker-alt me-2"></i>Location Details
-                </h1>
-                <div class="btn-group">
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>Back to List
-                    </a>
-                    <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
-                        <i class="fas fa-edit me-1"></i>Edit
-                    </a>
-                    <!-- Added Delete button for better UX -->
-                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-                        <i class="fas fa-trash me-1"></i>Delete
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Location Details Card -->
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white py-3">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Location Information
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <!-- Combined Address Fields - Using AddressLine1/AddressLine2 approach -->
-                                <dt class="col-sm-4">Street Address</dt>
-                                <dd class="col-sm-8">@Model.StreetAddress</dd>
-
-                                <dt class="col-sm-4">Suburb</dt>
-                                <dd class="col-sm-8">@Model.Suburb</dd>
-
-                                <dt class="col-sm-4">City</dt>
-                                <dd class="col-sm-8">@Model.City</dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Province</dt>
-                                <dd class="col-sm-8">@Model.Province</dd>
-
-                                <dt class="col-sm-4">Postal Code</dt>
-                                <dd class="col-sm-8">@Model.PostalCode</dd>
-
-                                <dt class="col-sm-4">Country</dt>
-                                <dd class="col-sm-8">@Model.Country</dd>
-
-                                <!-- Unified Status Display -->
-                                <dt class="col-sm-4">Status</dt>
-                                <dd class="col-sm-8">
-                                    @if (!Model.IsDeleted)
-                                    {
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check-circle me-1"></i>Active
-                                        </span>
-                                    }
-                                    else if (Model.IsDeleted)
-                                    {
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-pause-circle me-1"></i>Inactive
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-times-circle me-1"></i>Deleted
-                                        </span>
-                                    }
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-
-                    <!-- Full Address Display -->
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <strong><i class="fas fa-address-card me-2"></i>Complete Address:</strong><br>
-                        @Model.CompleteAddress
-                    </div>
-
-                    <!-- Location Type/Classification (if available in model) -->
-                    @if (Model.LocationType == null)
-                    {
-                        <div class="mt-2">
-                            <strong>Location Type:</strong>
-                            <span class="badge bg-info">@Model.LocationType</span>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Quick Actions Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white py-3">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-bolt me-2"></i>Quick Actions
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-3 mb-2">
-                            <a href="@Url.Action("Index", "Fridges", new { locationId = Model.Id })"
-                               class="btn btn-outline-primary btn-sm w-100">
-                                <i class="fas fa-refrigerator me-1"></i>View Fridges
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a href="@Url.Action("Index", "Customers", new { locationId = Model.Id })"
-                               class="btn btn-outline-success btn-sm w-100">
-                                <i class="fas fa-users me-1"></i>View Customers
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a href="@Url.Action("Index", "Employees", new { locationId = Model.Id })"
-                               class="btn btn-outline-warning btn-sm w-100">
-                                <i class="fas fa-user-tie me-1"></i>View Employees
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a href="@Url.Action("Create", "FridgeAllocations", new { locationId = Model.Id })"
-                               class="btn btn-outline-info btn-sm w-100">
-                                <i class="fas fa-truck me-1"></i>New Allocation
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistics Sidebar -->
-        <div class="col-lg-4">
-            <!-- Statistics Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-success text-white py-3">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-chart-bar me-2"></i>Location Statistics
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6 mb-3">
-                            <div class="bg-primary text-white rounded p-3">
-                                <i class="fas fa-refrigerator fa-2x mb-2"></i>
-                                <h4 class="mb-0">@Model.TotalFridges</h4>
-                                <small>Total Fridges</small>
-                            </div>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <div class="bg-info text-white rounded p-3">
-                                <i class="fas fa-check-circle fa-2x mb-2"></i>
-                                <h4 class="mb-0">@Model.AvailableFridges</h4>
-                                <small>Available</small>
-                            </div>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <div class="bg-warning text-dark rounded p-3">
-                                <i class="fas fa-users fa-2x mb-2"></i>
-                                <h4 class="mb-0">@Model.TotalCustomers</h4>
-                                <small>Customers</small>
-                            </div>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <div class="bg-secondary text-white rounded p-3">
-                                <i class="fas fa-user-tie fa-2x mb-2"></i>
-                                <h4 class="mb-0">@Model.TotalEmployees</h4>
-                                <small>Employees</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Utilization Rate -->
-                    <div class="mt-3 p-3 bg-light rounded text-center">
-                        <h5 class="mb-1">Utilization Rate</h5>
-                        <div class="progress mb-2" style="height: 20px;">
-                            @{
-                                var utilizationPercent = Model.TotalFridges > 0 ?
-                                (double)Model.AvailableFridges / Model.TotalFridges * 100 : 0;
-                                var utilizationClass = utilizationPercent > 80 ? "bg-success" :
-                                utilizationPercent > 50 ? "bg-warning" : "bg-danger";
-                            }
-                            <div class="progress-bar @utilizationClass"
-                                 role="progressbar"
-                                 style="width: @(utilizationPercent)%"
-                                 aria-valuenow="@(utilizationPercent)"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100">
-                                @Model.UtilizationRate
-                            </div>
-                        </div>
-                        <small class="text-muted">@Model.AvailableFridges of @Model.TotalFridges fridges available</small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Activity Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark py-3">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-bell me-2"></i>Activity Summary
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="fas fa-tools me-2"></i>Pending Maintenance</span>
-                            <span class="badge bg-warning">@Model.PendingMaintenance</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="fas fa-exclamation-triangle me-2"></i>Open Fault Reports</span>
-                            <span class="badge bg-danger">@Model.OpenFaults</span>
-                        </div>
-                        <!-- Added Active Allocations -->
-                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span><i class="fas fa-truck-loading me-2"></i>Active Allocations</span>
-                            <span class="badge bg-info">@Model.AllocatedFridges</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Audit Information -->
-    <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white py-3">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-map-marker-alt me-2"></i> @ViewData["Title"]
+                </h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Locations</a></li>
+                        <li class="breadcrumb-item active">@Model.Name</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Location Information -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-history me-2"></i>Audit Information
+                        <i class="fas fa-info-circle me-2"></i> Location Information
                     </h5>
                 </div>
                 <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Name:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Address:</dt>
+                        <dd class="col-sm-8">
+                            @Model.AddressLine1<br>
+                            @if (!string.IsNullOrEmpty(Model.AddressLine2))
+                            {
+                                @Model.AddressLine2
+
+                                <br>
+                            }
+                            @Model.Suburb, @Model.City<br>
+                            @Model.Province, @Model.PostalCode<br>
+                            @Model.Country
+                        </dd>
+
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                                @(Model.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">Created:</dt>
+                        <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy")</dd>
+
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <dt class="col-sm-4">Last Updated:</dt>
+                            <dd class="col-sm-8">@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.EmployeeCount</h4>
+                                    <p class="mb-0">Active Employees</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.CustomerCount</h4>
+                                    <p class="mb-0">Active Customers</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-store fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-info text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.FridgeCount</h4>
+                                    <p class="mb-0">Available Fridges</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-refrigerator fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">@ViewBag.ActiveAllocations</h4>
+                                    <p class="mb-0">Active Allocations</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-truck-loading fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Created Date</dt>
-                                <dd class="col-sm-8">
-                                    <i class="fas fa-calendar-plus me-2 text-muted"></i>
-                                    @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
-                                </dd>
-
-                                <dt class="col-sm-4">Created By</dt>
-                                <dd class="col-sm-8">
-                                    <i class="fas fa-user-plus me-2 text-muted"></i>
-                                    @(string.IsNullOrEmpty(Model.CreatedBy) ? "System" : Model.CreatedBy)
-                                </dd>
-                            </dl>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="Employees" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users me-2"></i> View Employees
+                            </a>
                         </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <!-- Unified Audit Fields - Using UpdatedAt/UpdatedBy -->
-                                <dt class="col-sm-4">Last Updated</dt>
-                                <dd class="col-sm-8">
-                                    <i class="fas fa-calendar-check me-2 text-muted"></i>
-                                    @(Model.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "Never")
-                                </dd>
-
-                                <dt class="col-sm-4">Updated By</dt>
-                                <dd class="col-sm-8">
-                                    <i class="fas fa-user-edit me-2 text-muted"></i>
-                                    @(string.IsNullOrEmpty(Model.UpdatedBy) ? "N/A" : Model.UpdatedBy)
-                                </dd>
-                            </dl>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="Customers" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-success w-100">
+                                <i class="fas fa-store me-2"></i> View Customers
+                            </a>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="Fridges" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-info w-100">
+                                <i class="fas fa-refrigerator me-2"></i> View Fridges
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a asp-controller="FridgeAllocations" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-outline-warning w-100">
+                                <i class="fas fa-truck-loading me-2"></i> View Allocations
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance and Faults Summary -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i> Maintenance Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-circle me-2"></i> Pending Maintenance</h6>
+                        <p class="mb-1">Scheduled visits: <strong>@ViewBag.PendingMaintenance</strong></p>
+                        @if (ViewBag.PendingMaintenance > 0)
+                        {
+                            <a asp-controller="MaintenanceVisits" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-sm btn-warning mt-2">
+                                View Maintenance Schedule
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Fault Reports Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-bug me-2"></i> Open Faults</h6>
+                        <p class="mb-1">Active fault reports: <strong>@ViewBag.OpenFaults</strong></p>
+                        @if (ViewBag.OpenFaults > 0)
+                        {
+                            <a asp-controller="Faults" asp-action="Index" asp-route-locationId="@Model.Id"
+                               class="btn btn-sm btn-danger mt-2">
+                                View Fault Reports
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Location Management</h5>
+                    <div>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
+                        <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i> Edit Location
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        // Enhanced auto-refresh with user confirmation
-        let refreshInterval = setInterval(() => {
-            if (document.hasFocus()) { // Only refresh if page is active
-                window.location.reload();
-            }
-        }, 300000); // 5 minutes
-
-        // Clear interval when page becomes inactive
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                clearInterval(refreshInterval);
-            } else {
-                refreshInterval = setInterval(() => {
-                    window.location.reload();
-                }, 300000);
-            }
-        });
-
-        // Quick action button enhancements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add loading states to quick action buttons
-            const quickActionButtons = document.querySelectorAll('.btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-info');
-            quickActionButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    const originalText = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
-                    this.disabled = true;
-
-                    setTimeout(() => {
-                        this.innerHTML = originalText;
-                        this.disabled = false;
-                    }, 2000);
-                });
-            });
-        });
-    </script>
-}
