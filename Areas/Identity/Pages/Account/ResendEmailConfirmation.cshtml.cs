@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.IO;
+using Project.Models;
 
 namespace Project.Areas.Identity.Pages.Account
 {
@@ -64,7 +66,16 @@ namespace Project.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+                ModelState.AddModelError(string.Empty, "Error: User not Found!");
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory + @"EmailTemplate\ConfirmEmailTemplate.html");
+                var htmlTemplate =  System.IO.File.ReadAllText(path);
+                htmlTemplate = htmlTemplate.Replace("{Url}", "google.com")
+                    .Replace("{Heading}", $"Email Confirmation")
+                    .Replace("{Body}", "Verify your email to proceed.");
+                await _emailSender.SendEmailAsync(
+                    Input.Email,
+                    "Confirm your email",
+                    htmlTemplate);
                 return Page();
             }
 
@@ -76,6 +87,7 @@ namespace Project.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
+          
             await _emailSender.SendEmailAsync(
                 Input.Email,
                 "Confirm your email",
