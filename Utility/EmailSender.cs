@@ -1,42 +1,56 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.Configuration;
-using System.Net;
-using System.Net.Mail;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
+using Microsoft.Extensions.Configuration;
+using RestSharp;
+using RestSharp.Authenticators;
+using Method = RestSharp.Method;
 
-public class EmailSender : IEmailSender
+namespace Project.Utilities
 {
-    private readonly IConfiguration _config;
-
-    public EmailSender(IConfiguration config)
+    public class EmailSender : IEmailSender
     {
-        _config = config;
-    }
+        private readonly IConfiguration _config;
 
-    public async Task SendEmailAsync(string to, string subject, string body)
-    {
-        
-        var fromEmail = _config["EmailSettings:FromEmail"];
-        var Username = _config["EmailSettings:Username"];
-        var Password = _config["EmailSettings:Password"]; 
-        var SmtpHost = _config["EmailSettings:SmtpHost"];
-        var SmtpPort = int.Parse(_config["EmailSettings:SmtpPort"]);
-
-       
-        var message = new MailMessage
+        public EmailSender(IConfiguration config)
         {
-            From = new MailAddress(fromEmail),
-            Subject = subject,
-            Body = body,
-            IsBodyHtml = true
-        };
-        message.To.Add(to);
+            _config = config;
+        }
 
-        using (var smtp = new SmtpClient(SmtpHost, SmtpPort))
+        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            smtp.Credentials = new NetworkCredential(Username, Password);
-            smtp.EnableSsl = true;  
-            await smtp.SendMailAsync(message);
+            try
+            {
+                var apiKey = _config["EmailSettingsNondu:ApiKey"];
+                var domain = _config["EmailSettingsNondu:Domain"];
+                var from = _config["EmailSettingsNondu:From"];
+
+                var options = new RestClientOptions("https://api.mailgun.net")
+                {
+                    Authenticator = new HttpBasicAuthenticator("api", apiKey)
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest($"/v3/{domain}/messages", Method.Post);
+                request.AlwaysMultipartFormData = true;
+
+                request.AddParameter("from", from);
+                request.AddParameter("to", email);
+                request.AddParameter("subject", subject);
+                request.AddParameter("html", htmlMessage);
+
+                var response = await client.ExecuteAsync(request);
+
+                if (!response.IsSuccessful)
+                {
+                    throw new Exception($"Mailgun error: {response.StatusCode} - {response.Content}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to send email: {ex.Message}");
+            }
         }
     }
 }
