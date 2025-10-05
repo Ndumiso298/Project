@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Data;
@@ -13,15 +14,16 @@ namespace Project.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment hostingEnvironment)
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _hostingEnvironment = hostingEnvironment;
         }
 
-        // List all users
         public async Task<IActionResult> Index()
         {
             var userList = _db.AppUser.ToList();
@@ -38,7 +40,6 @@ namespace Project.Controllers
             return View(userList);
         }
 
-        // Lock/Unlock user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockUnlock(string userId)
@@ -47,15 +48,14 @@ namespace Project.Controllers
             if (user == null) return NotFound();
 
             if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
-                user.LockoutEnd = DateTime.Now; // unlock
+                user.LockoutEnd = DateTime.Now; 
             else
-                user.LockoutEnd = DateTime.Now.AddYears(1000); // lock
+                user.LockoutEnd = DateTime.Now.AddYears(1000); 
 
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 
-        // Delete user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteUser(string userId)
@@ -68,7 +68,6 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Manage user roles - GET
         public async Task<IActionResult> ManagerRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -94,7 +93,6 @@ namespace Project.Controllers
             return View(model);
         }
 
-        // Manage user roles - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManagerRole(RolesViewModel rolesViewModel)
@@ -111,7 +109,6 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Manage user claims - GET
         public async Task<IActionResult> ManagerUserClaim(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -137,7 +134,6 @@ namespace Project.Controllers
             return View(model);
         }
 
-        // Manage user claims - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManagerUserClaim(ClaimsViewModel claimsViewModel)
@@ -192,17 +188,31 @@ namespace Project.Controllers
             TempData["Success"] = $"User {user.FirstName} declined.";
             return RedirectToAction(nameof(Index));
         }
-
-
-        public IActionResult ApproveDeclineUser(string userId)
+        public async Task<IActionResult> ApproveDeclineUser(string userId)
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+           
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
                 return NotFound();
+            }
 
-            return View(user);
+          
+            var applicationUser = user as ApplicationUser;
+
+         
+            var userRoles = await _userManager.GetRolesAsync(user);
+            applicationUser.Role = string.Join(",", userRoles);
+
+           
+            Console.WriteLine($"Document Path: {applicationUser?.BusinessDocumentPath}");
+            Console.WriteLine($"Document Data Length: {applicationUser?.BusinessDocumentData?.Length ?? 0} bytes");
+
+            return View(applicationUser);
         }
-      
+
+       
+
 
     }
 }

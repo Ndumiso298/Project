@@ -51,6 +51,7 @@ public class Employee
 
     [Display(Name = "Account Status")]
     public bool IsActive { get; set; } = true;
+    public string UserName { get; internal set; }
 
     //[Display(Name = "Deleted")]
     //public bool IsDeleted { get; set; } = false;

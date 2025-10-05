@@ -2,26 +2,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using Project.Models;
 using Project.Utility;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Project.Areas.Identity.Pages.Account
 {
@@ -34,14 +27,15 @@ namespace Project.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
-
+        private readonly IUserNumberService _userNumberService;
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IUserNumberService userNumberService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -50,6 +44,7 @@ namespace Project.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _userNumberService = userNumberService;
         }
 
         [BindProperty]
@@ -59,7 +54,6 @@ namespace Project.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            // Login
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -76,7 +70,6 @@ namespace Project.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            // Personal
             [Required]
             public string FirstName { get; set; }
 
@@ -87,19 +80,18 @@ namespace Project.Areas.Identity.Pages.Account
             public string State { get; set; }
             public string PostalCode { get; set; }
             public string CellNumber { get; set; }
+            [Display(Name = "User Number")]
+            public string UserNumber { get; set; }
 
-            // Business Proof
             [Display(Name = "Business Proof Document")]
             public IFormFile BusinessDocument { get; set; }
 
-            // Role selection (only visible if Admin is registering user)
             public string Role { get; set; }
             public IEnumerable<SelectListItem> RoleList { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            // Ensure roles exist in DB
             if (!await _roleManager.RoleExistsAsync(SD.AdminRole))
             {
                 await _roleManager.CreateAsync(new IdentityRole(SD.AdminRole));
@@ -132,7 +124,6 @@ namespace Project.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                // Extra fields
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.StreetAddress = Input.StreetAddress;
@@ -141,12 +132,14 @@ namespace Project.Areas.Identity.Pages.Account
                 user.PostalCode = Input.PostalCode;
                 user.CellNumber = Input.CellNumber;
 
-                // Determine role
                 string roleToAssign = string.IsNullOrEmpty(Input.Role) ? SD.CustomerRole : Input.Role;
-
-                // Customer-specific: require business document
+                int count = 1;
                 if (roleToAssign == SD.CustomerRole)
                 {
+                   
+                    user.CustomerNumber = "CUST-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss")+"0"+count++;
+                    
+
                     if (Input.BusinessDocument == null)
                     {
                         ModelState.AddModelError("Input.BusinessDocument", "Business document is required for Customer accounts.");
@@ -171,13 +164,18 @@ namespace Project.Areas.Identity.Pages.Account
 
                     user.BusinessDocumentPath = "/uploads/businessDocs/" + fileName;
 
-                    // Customer requires admin approval and email confirmation
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await Input.BusinessDocument.CopyToAsync(memoryStream);
+                        user.BusinessDocumentData = memoryStream.ToArray();
+                    }
+
                     user.IsApproved = false;
                     user.EmailConfirmed = false;
                 }
                 else
                 {
-                    // Other roles approved immediately
+                    user.EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss")+"-0"+count++;
                     user.IsApproved = true;
                     user.EmailConfirmed = true;
                 }
@@ -194,7 +192,6 @@ namespace Project.Areas.Identity.Pages.Account
 
                     if (roleToAssign == SD.CustomerRole)
                     {
-                        // Generate email confirmation
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -207,12 +204,10 @@ namespace Project.Areas.Identity.Pages.Account
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                        // Redirect to Pending Approval page
                         return RedirectToPage("/Account/PendingApproval");
                     }
                     else
                     {
-                        // Other roles login immediately
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
@@ -224,7 +219,6 @@ namespace Project.Areas.Identity.Pages.Account
                 }
             }
 
-            // repopulate role list
             Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
             {
                 Text = r.Name,
