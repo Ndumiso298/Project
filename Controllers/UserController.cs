@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModels;
+using Project.Utility;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -190,28 +191,63 @@ namespace Project.Controllers
         }
         public async Task<IActionResult> ApproveDeclineUser(string userId)
         {
-           
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if (user == null) return NotFound();
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            string role = string.Join(",", userRoles);
+
+            var vm = new UserVM
             {
-                return NotFound();
+                Id = user.Id,
+                Role = role,
+                IsApproved = _db.AppUser.FirstOrDefault(u => u.Id == userId)?.IsApproved ?? false,
+                RejectionReason = _db.AppUser.FirstOrDefault(u => u.Id == userId)?.RejectionReason
+            };
+
+            // Common info from AppUser
+            var appUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            if (appUser != null)
+            {
+                vm.FirstName = appUser.FirstName;
+                vm.LastName = appUser.LastName;
+                vm.Email = appUser.Email;
+                vm.CellNumber = appUser.CellNumber;
             }
 
-          
-            var applicationUser = user as ApplicationUser;
+            if (role.Contains(SD.CustomerRole))
+            {
+                var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
+                if (customer != null)
+                {
+                    vm.CustomerNumber = customer.CustomerNumber;
+                    vm.BusinessDocumentPath = customer.BusinessDocumentPath;
+                    vm.StreetAddress = customer.ApplicationUser.StreetAddress;
+                    vm.City = customer.ApplicationUser.City;
+                    vm.State = customer.ApplicationUser.State;
+                    vm.PostalCode = customer.ApplicationUser.PostalCode;
+                }
+            }
 
-         
-            var userRoles = await _userManager.GetRolesAsync(user);
-            applicationUser.Role = string.Join(",", userRoles);
+            else if (role.Contains(SD.CustomerSupport) || role.Contains(SD.AdminRole) || role.Contains(SD.StockController) || role.Contains(SD.MaintenanceTechnician) || role.Contains(SD.FaultTechnician))
+            {
+                var employee = _db.tblEmployee.FirstOrDefault(e => e.ApplicationUserId == userId);
+                if (employee != null)
+                {
+                    vm.EmployeeNumber = employee.EmployeeNumber;
+                    vm.StreetAddress = employee.ApplicationUser.StreetAddress;
+                    vm.City = employee.ApplicationUser.City;
+                    vm.State = employee.ApplicationUser.State;
+                    vm.PostalCode = employee.ApplicationUser.PostalCode;
+                }
+            }
 
-           
-            Console.WriteLine($"Document Path: {applicationUser?.BusinessDocumentPath}");
-            Console.WriteLine($"Document Data Length: {applicationUser?.BusinessDocumentData?.Length ?? 0} bytes");
 
-            return View(applicationUser);
+            return View(vm);
         }
 
-       
+
+
 
 
     }

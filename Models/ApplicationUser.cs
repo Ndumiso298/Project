@@ -22,8 +22,8 @@ namespace Project.Models
         public bool IsApproved { get; set; } = false;
         public string? RejectionReason { get; set; }
    
-        public string? BusinessDocumentPath { get; set; }
-        public byte[]? BusinessDocumentData { get; set; } 
+        //public string? BusinessDocumentPath { get; set; }
+        //public byte[]? BusinessDocumentData { get; set; } 
                                                             
         [NotMapped]
         public string RoleId { get; set; }
@@ -33,8 +33,6 @@ namespace Project.Models
         public string UserClaim { get; set; }
         public string Status { get; internal set; }
         public DateTime? DeclinedAt { get; set; }
-        public string? CustomerNumber { get; set; }
-        public string? EmployeeNumber { get; set; }
-
+     
     }
 }
