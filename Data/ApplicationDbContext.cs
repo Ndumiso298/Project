@@ -19,8 +19,9 @@ namespace Project.Data
         public DbSet<RequestDetails> tblRequestDetais { get; set; }
         public DbSet<Fault> tblFaults { get; set; }
         public DbSet<ProcessFault> tblProcessFaults { get; set; }
-        public DbSet<Customer> tblCustomerS { get; set; }
-     
+        public DbSet<Customer> tblCustomer { get; set; }
+        public DbSet<Employee> tblEmployee { get; set; }
+
         public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }
