@@ -3,7 +3,7 @@ using Project.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-public class CustomerSupport 
+public class CustomerSupport
 {
     // Customers managed by this liaison
     [Display(Name = "Customers")]

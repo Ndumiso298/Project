@@ -82,7 +82,7 @@ namespace Project.Areas.Identity.Pages.Account
             public string CellNumber { get; set; }
 
             [Display(Name = "Business Proof Document")]
-            public IFormFile BusinessDocument { get; set; }
+            public IFormFile? BusinessDocument { get; set; }
             [ValidateNever]
             public string Role { get; set; }
             [ValidateNever]
@@ -118,38 +118,12 @@ namespace Project.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            if (!ModelState.IsValid)
-            {
-                Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
-                {
-                    Text = r.Name,
-                    Value = r.Name
-                });
-                return Page();
-            }
-
-            var user = CreateUser();
-            user.FirstName = Input.FirstName;
-            user.LastName = Input.LastName;
-            user.StreetAddress = Input.StreetAddress;
-            user.City = Input.City;
-            user.State = Input.State;
-            user.PostalCode = Input.PostalCode;
-            user.CellNumber = Input.CellNumber;
-            user.Email = Input.Email;
-            user.UserName = Input.Email;
-
             string roleToAssign = string.IsNullOrEmpty(Input.Role) ? SD.CustomerRole : Input.Role;
-            int count = 1;
-            //
             if (roleToAssign == SD.CustomerRole)
             {
-                user.IsApproved = false;
-                user.Status = "Pending";
-
                 if (Input.BusinessDocument == null)
                 {
+
                     ModelState.AddModelError("Input.BusinessDocument", "Business document is required for Customer accounts.");
                     Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
                     {
@@ -158,83 +132,115 @@ namespace Project.Areas.Identity.Pages.Account
                     });
                     return Page();
                 }
-
-                var uploadsFolder = Path.Combine("wwwroot", "uploads", "businessDocs");
-                Directory.CreateDirectory(uploadsFolder);
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.BusinessDocument.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                    await Input.BusinessDocument.CopyToAsync(stream);
-
-                using var ms = new MemoryStream();
-                await Input.BusinessDocument.CopyToAsync(ms);
-                var documentData = ms.ToArray();
-
-                user.EmailConfirmed = false;
-
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    return Page();
-                }
-
-                await _userManager.AddToRoleAsync(user, roleToAssign);
-
-                
-                var customer = new Customer
-                {
-                    ApplicationUserId = user.Id,
-                    CustomerNumber = "CUST-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss")+"_0"+count++,
-                    BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
-                    BusinessDocumentData = documentData
-                };
-                _db.tblCustomer.Add(customer);
-                await _db.SaveChangesAsync();
-
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId, code, returnUrl },
-                    protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-                return RedirectToPage("/Account/PendingApproval");
             }
             else
             {
-                user.IsApproved = true;
-                user.Status = "Approved";
-                user.EmailConfirmed = true;
-
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                if (!result.Succeeded)
+                if (!ModelState.IsValid)
                 {
-                    foreach (var error in result.Errors)
-                        ModelState.AddModelError(string.Empty, error.Description);
+                    Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
+                    {
+                        Text = r.Name,
+                        Value = r.Name
+                    });
                     return Page();
                 }
-
-                await _userManager.AddToRoleAsync(user, roleToAssign);
-
-                var employee = new Employee
-                {
-                    ApplicationUserId = user.Id,
-                    EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "-0" + count++
-                };
-                _db.tblEmployee.Add(employee);
-                await _db.SaveChangesAsync();
-
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl);
             }
-        }
+                var user = CreateUser();
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.State = Input.State;
+                user.PostalCode = Input.PostalCode;
+                user.CellNumber = Input.CellNumber;
+                user.Email = Input.Email;
+                user.UserName = Input.Email;
 
+                int count = 1;
+                //
+                if (roleToAssign == SD.CustomerRole)
+                {
+                    user.IsApproved = false;
+                    user.Status = "Pending";
+
+
+
+                    var uploadsFolder = Path.Combine("wwwroot", "uploads", "businessDocs");
+                    Directory.CreateDirectory(uploadsFolder);
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.BusinessDocument.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                        await Input.BusinessDocument.CopyToAsync(stream);
+
+                    using var ms = new MemoryStream();
+                    await Input.BusinessDocument.CopyToAsync(ms);
+                    var documentData = ms.ToArray();
+
+                    user.EmailConfirmed = false;
+
+                    var result = await _userManager.CreateAsync(user, Input.Password);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        return Page();
+                    }
+
+                    await _userManager.AddToRoleAsync(user, roleToAssign);
+
+
+                    var customer = new Customer
+                    {
+                        ApplicationUserId = user.Id,
+                        CustomerNumber = "CUST-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + $"_0{count++}",
+                        BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
+                        BusinessDocumentData = documentData
+                    };
+                    _db.tblCustomer.Add(customer);
+                    await _db.SaveChangesAsync();
+
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId, code, returnUrl },
+                        protocol: Request.Scheme);
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    return RedirectToPage("/Account/PendingApproval");
+                }
+                else
+                {
+                    user.IsApproved = true;
+                    user.Status = "Approved";
+                    user.EmailConfirmed = true;
+
+                    var result = await _userManager.CreateAsync(user, Input.Password);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        return Page();
+                    }
+
+                    await _userManager.AddToRoleAsync(user, roleToAssign);
+
+                    var employee = new Employee
+                    {
+                        ApplicationUserId = user.Id,
+                        EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + $"_0{count++}"
+                    };
+                    _db.tblEmployee.Add(employee);
+                    await _db.SaveChangesAsync();
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return LocalRedirect(returnUrl);
+                }
+            }
+        
         private ApplicationUser CreateUser()
         {
             try
