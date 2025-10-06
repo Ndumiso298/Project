@@ -105,6 +105,7 @@
 
 @section Scripts {
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('requestSearch');
             const rows = document.querySelectorAll('#requestTable tbody tr');
@@ -118,5 +119,8 @@
                 });
             });
         });
+       
+    <partial name="_ValidationScriptsPartial" />
+
     </script>
 }

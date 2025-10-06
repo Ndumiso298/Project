@@ -2,6 +2,16 @@
     @{
         Layout = "_CustomerLayout";
     }
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="h3 fw-bold text-primary mb-1">Fridge Management</h2>
+            <p class="text-muted">Manage and monitor all refrigeration units</p>
+        </div>
+        <a asp-area="Identity" asp-page="/Account/Register"
+           class="btn btn-primary d-flex align-items-center">
+            <i class="bi bi-plus-circle me-2"></i> Add New User
+        </a>
+    </div>
     @if (Model.Count > 0)
     {
         <table class="table table-bordered table-striped">
@@ -10,8 +20,8 @@
                 <th>Name</th>
                 <th>Roles</th>
               
-                <th>Status</th> <!-- New column for approval status -->
-                <th>Actions</th> <!-- Existing actions column -->
+                <th>Status</th> 
+                <th>Actions</th> 
             </tr>
             @foreach (var item in Model)
             {
@@ -75,3 +85,6 @@
         </table>
     }
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
