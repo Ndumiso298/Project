@@ -20,6 +20,7 @@ namespace Project.Data
         public DbSet<Fault> tblFaults { get; set; }
         public DbSet<ProcessFault> tblProcessFaults { get; set; }
         public DbSet<Customer> tblCustomerS { get; set; }
+        public DbSet<Employee> tblEmployees { get; set; }
      
         public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }

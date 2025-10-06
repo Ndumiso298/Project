@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251006082602_AddEmployeeTableToDB")]
+    partial class AddEmployeeTableToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,35 +261,30 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.Customer", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CustomerID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("ApplicationUserId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("BusinessDocumentData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("BusinessDocumentPath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerNote")
-                        .IsRequired()
+                    b.Property<string>("CustomerNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("CustomerID");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasIndex("ApplicationUserId");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tblCustomerS");
+                    b.ToTable("tblCustomer");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
@@ -425,9 +423,6 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -457,8 +452,6 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FridgeId");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("tblFridges");
 
@@ -1103,9 +1096,6 @@ namespace Project.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("BusinessDocumentPath")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CellNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -1252,7 +1242,7 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.HasOne("Project.Models.Customer", "ReportedByCustomer")
-                        .WithMany("Faults")
+                        .WithMany()
                         .HasForeignKey("ReportedByCustomerId");
 
                     b.HasOne("Project.Models.FaultTechnician", "ResolvedByTechnician")
@@ -1268,17 +1258,10 @@ namespace Project.Migrations
                     b.Navigation("ResolvedByTechnician");
                 });
 
-            modelBuilder.Entity("Project.Models.Fridge", b =>
-                {
-                    b.HasOne("Project.Models.Customer", null)
-                        .WithMany("Fridges")
-                        .HasForeignKey("CustomerId");
-                });
-
             modelBuilder.Entity("Project.Models.FridgeRequest", b =>
                 {
                     b.HasOne("Project.Models.Customer", "Customer")
-                        .WithMany("Requests")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1343,7 +1326,7 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.MaintenanceVisit", b =>
                 {
                     b.HasOne("Project.Models.Customer", "Customer")
-                        .WithMany("MaintenanceVisits")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1407,17 +1390,6 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Allocation", b =>
                 {
                     b.Navigation("FridgeVisits");
-                });
-
-            modelBuilder.Entity("Project.Models.Customer", b =>
-                {
-                    b.Navigation("Faults");
-
-                    b.Navigation("Fridges");
-
-                    b.Navigation("MaintenanceVisits");
-
-                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("Project.Models.FaultTechnician", b =>

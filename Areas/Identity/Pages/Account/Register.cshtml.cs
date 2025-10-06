@@ -16,10 +16,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Project.Data;
 using Project.Models;
 using Project.Utility;
 
@@ -34,6 +36,7 @@ namespace Project.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _db;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -41,7 +44,8 @@ namespace Project.Areas.Identity.Pages.Account
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext db)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -50,6 +54,7 @@ namespace Project.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _db = db;
         }
 
         [BindProperty]
@@ -90,9 +95,8 @@ namespace Project.Areas.Identity.Pages.Account
 
             // Business Proof
             [Display(Name = "Business Proof Document")]
-            public IFormFile BusinessDocument { get; set; }
-
-            // Role selection (only visible if Admin is registering user)
+            public IFormFile? BusinessDocument { get; set; }
+            [ValidateNever]
             public string Role { get; set; }
             public IEnumerable<SelectListItem> RoleList { get; set; }
         }
@@ -127,12 +131,34 @@ namespace Project.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            if (ModelState.IsValid)
+            string roleToAssign = string.IsNullOrEmpty(Input.Role) ? SD.CustomerRole : Input.Role;
+            if (roleToAssign == SD.CustomerRole)
             {
-                var user = CreateUser();
+                if (Input.BusinessDocument == null)
+                {
 
-                // Extra fields
+                    ModelState.AddModelError("Input.BusinessDocument", "Business document is required for Customer accounts.");
+                    Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
+                    {
+                        Text = r.Name,
+                        Value = r.Name
+                    });
+                    return Page();
+                }
+            }
+            else
+            {
+                if (!ModelState.IsValid)
+                {
+                    Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
+                    {
+                        Text = r.Name,
+                        Value = r.Name
+                    });
+                    return Page();
+                }
+            }
+                var user = CreateUser();
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.StreetAddress = Input.StreetAddress;
@@ -140,100 +166,94 @@ namespace Project.Areas.Identity.Pages.Account
                 user.State = Input.State;
                 user.PostalCode = Input.PostalCode;
                 user.CellNumber = Input.CellNumber;
+                user.Email = Input.Email;
+                user.UserName = Input.Email;
 
-                // Determine role
-                string roleToAssign = string.IsNullOrEmpty(Input.Role) ? SD.CustomerRole : Input.Role;
-
-                // Customer-specific: require business document
+                int count = 1;
+                //
                 if (roleToAssign == SD.CustomerRole)
                 {
-                    if (Input.BusinessDocument == null)
-                    {
-                        ModelState.AddModelError("Input.BusinessDocument", "Business document is required for Customer accounts.");
-                        Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
-                        {
-                            Text = r.Name,
-                            Value = r.Name
-                        });
-                        return Page();
-                    }
+                    user.IsApproved = false;
+                    user.Status = "Pending";
+
+
 
                     var uploadsFolder = Path.Combine("wwwroot", "uploads", "businessDocs");
                     Directory.CreateDirectory(uploadsFolder);
-
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.BusinessDocument.FileName);
                     var filePath = Path.Combine(uploadsFolder, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
                         await Input.BusinessDocument.CopyToAsync(stream);
-                    }
 
-                    user.BusinessDocumentPath = "/uploads/businessDocs/" + fileName;
+                    using var ms = new MemoryStream();
+                    await Input.BusinessDocument.CopyToAsync(ms);
+                    var documentData = ms.ToArray();
 
-                    // Customer requires admin approval and email confirmation
-                    user.IsApproved = false;
                     user.EmailConfirmed = false;
-                }
-                else
-                {
-                    // Other roles approved immediately
-                    user.IsApproved = true;
-                    user.EmailConfirmed = true;
-                }
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User registration successful.");
+                    var result = await _userManager.CreateAsync(user, Input.Password);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        return Page();
+                    }
 
                     await _userManager.AddToRoleAsync(user, roleToAssign);
 
-                    if (roleToAssign == SD.CustomerRole)
-                    {
-                        // Generate email confirmation
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                            protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                        // Redirect to Pending Approval page
-                        return RedirectToPage("/Account/PendingApproval");
-                    }
-                    else
+                    var customer = new Customer
                     {
-                        // Other roles login immediately
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                        ApplicationUserId = user.Id,
+                        CustomerNumber = "CUST-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + $"_0{count++}",
+                        BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
+                        BusinessDocumentData = documentData
+                    };
+                    _db.tblCustomerS.Add(customer);
+                    await _db.SaveChangesAsync();
+
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId, code, returnUrl },
+                        protocol: Request.Scheme);
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    return RedirectToPage("/Account/PendingApproval");
                 }
-
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    user.IsApproved = true;
+                    user.Status = "Approved";
+                    user.EmailConfirmed = true;
+
+                    var result = await _userManager.CreateAsync(user, Input.Password);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        return Page();
+                    }
+
+                    await _userManager.AddToRoleAsync(user, roleToAssign);
+
+                    var employee = new Employee
+                    {
+                        UserId = user.Id,
+                        EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + $"_0{count++}"
+                    };
+                    _db.tblEmployees.Add(employee);
+                    await _db.SaveChangesAsync();
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return LocalRedirect(returnUrl);
                 }
             }
-
-            // repopulate role list
-            Input.RoleList = _roleManager.Roles.Select(r => new SelectListItem
-            {
-                Text = r.Name,
-                Value = r.Name
-            });
-
-            return Page();
-        }
-
+        
         private ApplicationUser CreateUser()
         {
             try
