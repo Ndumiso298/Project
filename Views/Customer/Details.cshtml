@@ -97,16 +97,15 @@
                         <div class="fs-1 fw-bold text-primary mt-1">@Model.Fridge.RentalPricePerMonth.ToString("c")</div>
                         <div class="small text-muted mt-2">Plus applicable taxes & delivery fee</div>
                     </div>
-                   
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
-                                <i class="bi bi-check-circle me-2"></i> Add To Cart
-                            </button>
-                          
-                        </div>
-                    </div>
-                   
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow"
+                                title="This fridge is currently not available"
+                                @(Model.Fridge.AvailabilityStatus != "Available" ? "disabled" : "")>
+                            <i class="bi bi-check-circle me-2"></i>
+                            @(Model.Fridge.AvailabilityStatus == "Available" ? "Add To Cart" : "Not Available")
+                        </button>
+
                 </div>
             </div>
         </div>
