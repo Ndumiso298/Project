@@ -108,9 +108,9 @@
                         <button type="submit"
                                 class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow"
                                 title="This fridge is currently not available"
-                                @(Model.Fridge.AvailabilityStatus != "Available" ? "disabled" : "")>
+                                @(Model.Fridge.Status != "Available" ? "disabled" : "")>
                             <i class="bi bi-check-circle me-2"></i>
-                            @(Model.Fridge.AvailabilityStatus == "Available" ? "Add To Cart" : "Not Available")
+                            @(Model.Fridge.Status == "Available" ? "Add To Cart" : "Not Available")
                         </button>
 
                 </div>
