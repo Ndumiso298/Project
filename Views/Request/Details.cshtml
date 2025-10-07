@@ -79,8 +79,8 @@
 
                             <!-- State -->
                             <div class="mb-3">
-                                <label asp-for="RequstHeader.State" class="form-label fw-semibold text-dark">State</label>
-                                <input asp-for="RequstHeader.State" class="form-control"
+                                <label asp-for="RequstHeader.Province" class="form-label fw-semibold text-dark">State</label>
+                                <input asp-for="RequstHeader.Province" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
                             </div>
 

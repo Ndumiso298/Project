@@ -61,7 +61,7 @@ namespace Project.Controllers
             AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.ApplicationUser.LastName;
             AllocationVM.RequestHeader.StreetAddress = AllocationVM.RequestHeader.ApplicationUser.StreetAddress;
             AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.ApplicationUser.City;
-            AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.ApplicationUser.State;
+            AllocationVM.RequestHeader.Province = AllocationVM.RequestHeader.ApplicationUser.Province;
             AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.ApplicationUser.PostalCode;
             AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.ApplicationUser.CellNumber;
 
