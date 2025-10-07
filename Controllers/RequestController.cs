@@ -84,7 +84,7 @@ namespace Project.Controllers
             RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
             RequestHeaderFromDb.StreetAddress = RequestVM.RequstHeader.StreetAddress;
             RequestHeaderFromDb.City = RequestVM.RequstHeader.City;
-            RequestHeaderFromDb.State = RequestVM.RequstHeader.State;
+            RequestHeaderFromDb.Province = RequestVM.RequstHeader.Province;
             RequestHeaderFromDb.PostalCode = RequestVM.RequstHeader.PostalCode;
 
            

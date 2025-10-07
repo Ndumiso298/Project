@@ -2,6 +2,10 @@
 @{
     Layout = "_CustomerLayout";
 }
+<section class="text-center bg-light border-bottom py-4 mb-4">
+    <h1 class="fw-bold text-primary mb-1">SmartChill Solutions</h1>
+    <p class="text-muted mb-0">Reliable refrigeration for your business — powered by innovation.</p>
+</section>
 
 <form method="post">
     <input asp-for="AllocationId" type="hidden" />
@@ -35,23 +39,26 @@
                     <img src="@Model.Fridge.ImageUrl" class="fridge-image img-fluid rounded-3 shadow-sm"
                          alt="@Model.Fridge.Brand @Model.Fridge.Model commercial refrigerator">
                     <div class="mt-3">
-                        @if (Model.Fridge.AvailabilityStatus == "Available")
+                        @if (Model.Fridge.Status == "Available")
                         {
-                            <span class="badge bg-success px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
+                            <span class="badge bg-success px-4 py-2 fs-6">@Model.Fridge.Status</span>
                         }
-                        else if (Model.Fridge.AvailabilityStatus == "Unavailable")
+                        else if (Model.Fridge.Status == "Unavailable")
                         {
-                            <p class="text-center text-danger small mt-3">
-                                By requesting, you agree to our rental terms. A representative will contact you within 24 hours to confirm details.
-                            </p>
+                            // 1. Add the badge
+                                <span class="badge bg-danger px-4 py-2 fs-6">@Model.Fridge.Status</span>
+                                // 2. Display the terms text separately below
+                                <p class="text-center text-danger small mt-3">
+                                    By requesting, you agree to our rental terms. A representative will contact you within 24 hours to confirm details.
+                                </p>
                         }
-                        else if (Model.Fridge.AvailabilityStatus == "Maintenance")
+                        else if (Model.Fridge.Status == "Maintenance")
                         {
-                            <span class="badge bg-warning text-dark px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
+                            <span class="badge bg-warning text-dark px-4 py-2 fs-6">@Model.Fridge.Status</span>
                         }
                         else
                         {
-                            <span class="badge bg-secondary px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
+                            <span class="badge bg-secondary px-4 py-2 fs-6">@Model.Fridge.Status</span>
                         }
                     </div>
                 </div>
@@ -97,16 +104,21 @@
                         <div class="fs-1 fw-bold text-primary mt-1">@Model.Fridge.RentalPricePerMonth.ToString("c")</div>
                         <div class="small text-muted mt-2">Plus applicable taxes & delivery fee</div>
                     </div>
-                   
-                    <div class="row mt-4">
+                       <div class="row mt-4">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
-                                <i class="bi bi-check-circle me-2"></i> Add To Cart
-                            </button>
-                          
+                                <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
+                                    <i class="bi bi-bag-plus me-2"></i> Request Fridge Allocation
+                                </button>                          
                         </div>
                     </div>
-                   
+                        <div class="alert alert-info d-flex align-items-center mt-4 rounded-3" role="alert">
+                            <i class="bi bi-headset fs-4 me-3 text-primary"></i>
+                            <div>
+                                Need help choosing the right model?
+                                <a asp-controller="Support" asp-action="Index" class="fw-semibold text-decoration-none">Contact our support team</a>.
+                            </div>
+                        </div>
+
                 </div>
             </div>
         </div>

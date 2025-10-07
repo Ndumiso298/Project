@@ -28,7 +28,7 @@
             <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
             <p><strong>Email:</strong> @Model.Email</p>
             <p><strong>Phone:</strong> @Model.CellNumber</p>
-            <p><strong>Address:</strong> @Model.StreetAddress, @Model.City, @Model.State, @Model.PostalCode</p>
+            <p><strong>Address:</strong> @Model.StreetAddress, @Model.City, @Model.Province, @Model.PostalCode</p>
 
             @* Show document only if user is Customer and document exists *@
             @if (Model.Role != null && Model.Role.Contains("Customer") && !string.IsNullOrEmpty(Model.BusinessDocumentPath))

@@ -84,7 +84,7 @@ namespace Project.Areas.Identity.Pages.Account
             public string LastName { get; set; }
             public string StreetAddress { get; set; }
             public string City { get; set; }
-            public string State { get; set; }
+            public string Province { get; set; }
             public string PostalCode { get; set; }
             public string CellNumber { get; set; }
 
@@ -137,7 +137,7 @@ namespace Project.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
                 user.StreetAddress = Input.StreetAddress;
                 user.City = Input.City;
-                user.State = Input.State;
+                user.Province = Input.Province;
                 user.PostalCode = Input.PostalCode;
                 user.CellNumber = Input.CellNumber;
 
