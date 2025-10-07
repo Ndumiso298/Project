@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project.Migrations
 {
     /// <inheritdoc />
-    public partial class addedLocationTable : Migration
+    public partial class addedLocationsTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,7 +42,6 @@ namespace Project.Migrations
                     CellNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsApproved = table.Column<bool>(type: "bit", nullable: true),
                     RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BusinessDocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeclinedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -314,7 +313,7 @@ namespace Project.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblEmployees_tblLocations_WorkLocationId",
                         column: x => x.WorkLocationId,
@@ -359,19 +358,24 @@ namespace Project.Migrations
                 name: "tblCustomerS",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    CustomerID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerNote = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CustomerNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusinessDocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusinessDocumentData = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     EmployeeId = table.Column<int>(type: "int", nullable: true),
                     LocationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblCustomerS", x => x.Id);
+                    table.PrimaryKey("PK_tblCustomerS", x => x.CustomerID);
+                    table.ForeignKey(
+                        name: "FK_tblCustomerS_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblCustomerS_tblEmployees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -379,6 +383,49 @@ namespace Project.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_tblCustomerS_tblLocations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "tblLocations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblFridges",
+                columns: table => new
+                {
+                    FridgeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FridgeNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CapacityLiters = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RentalPricePerMonth = table.Column<double>(type: "float", nullable: false),
+                    LastMaintenanceDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Condition = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRented = table.Column<bool>(type: "bit", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true),
+                    FridgeModelId = table.Column<int>(type: "int", nullable: true),
+                    LocationId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFridges", x => x.FridgeId);
+                    table.ForeignKey(
+                        name: "FK_tblFridges_FridgeModel_FridgeModelId",
+                        column: x => x.FridgeModelId,
+                        principalTable: "FridgeModel",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_tblFridges_tblEmployees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "tblEmployees",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_tblFridges_tblLocations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "tblLocations",
                         principalColumn: "Id");
@@ -425,87 +472,6 @@ namespace Project.Migrations
                         column: x => x.SupplierId,
                         principalTable: "tblSuppliers",
                         principalColumn: "SupplierId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblFridges",
-                columns: table => new
-                {
-                    FridgeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FridgeNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CapacityLiters = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RentalPricePerMonth = table.Column<double>(type: "float", nullable: false),
-                    LastMaintenanceDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Condition = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
-                    EmployeeId = table.Column<int>(type: "int", nullable: true),
-                    FridgeModelId = table.Column<int>(type: "int", nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblFridges", x => x.FridgeId);
-                    table.ForeignKey(
-                        name: "FK_tblFridges_FridgeModel_FridgeModelId",
-                        column: x => x.FridgeModelId,
-                        principalTable: "FridgeModel",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_tblFridges_tblCustomerS_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_tblFridges_tblEmployees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "tblEmployees",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_tblFridges_tblLocations_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "tblLocations",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblPurchaseRequestItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PurchaseRequestId = table.Column<int>(type: "int", nullable: false),
-                    FridgeModelId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    EstimatedUnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    QuantityOrdered = table.Column<int>(type: "int", nullable: false),
-                    QuantityReceived = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblPurchaseRequestItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_tblPurchaseRequestItems_FridgeModel_FridgeModelId",
-                        column: x => x.FridgeModelId,
-                        principalTable: "FridgeModel",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_tblPurchaseRequestItems_tblPurchaseRequests_PurchaseRequestId",
-                        column: x => x.PurchaseRequestId,
-                        principalTable: "tblPurchaseRequests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -576,7 +542,7 @@ namespace Project.Migrations
                         name: "FK_tblFridgeRequests_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "tblCustomerS",
-                        principalColumn: "Id",
+                        principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblFridges_FaultyFridgeId",
@@ -615,7 +581,7 @@ namespace Project.Migrations
                         name: "FK_tblMaintenanceVisits_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "tblCustomerS",
-                        principalColumn: "Id",
+                        principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblMaintenanceVisits_tblEmployees_EmployeeId",
@@ -674,6 +640,39 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblPurchaseRequestItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PurchaseRequestId = table.Column<int>(type: "int", nullable: false),
+                    FridgeModelId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    EstimatedUnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    QuantityOrdered = table.Column<int>(type: "int", nullable: false),
+                    QuantityReceived = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblPurchaseRequestItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblPurchaseRequestItems_FridgeModel_FridgeModelId",
+                        column: x => x.FridgeModelId,
+                        principalTable: "FridgeModel",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_tblPurchaseRequestItems_tblPurchaseRequests_PurchaseRequestId",
+                        column: x => x.PurchaseRequestId,
+                        principalTable: "tblPurchaseRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblFridgeVisits",
                 columns: table => new
                 {
@@ -727,7 +726,7 @@ namespace Project.Migrations
                         name: "FK_tblFaults_tblCustomerS_ReportedByCustomerId",
                         column: x => x.ReportedByCustomerId,
                         principalTable: "tblCustomerS",
-                        principalColumn: "Id");
+                        principalColumn: "CustomerID");
                     table.ForeignKey(
                         name: "FK_tblFaults_tblEmployees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -828,29 +827,29 @@ namespace Project.Migrations
 
             migrationBuilder.InsertData(
                 table: "tblFridges",
-                columns: new[] { "FridgeId", "Brand", "CapacityLiters", "Condition", "CustomerId", "Description", "EmployeeId", "FridgeModelId", "FridgeNo", "ImageUrl", "LastMaintenanceDate", "Location", "LocationId", "Model", "RentalPricePerMonth", "Status", "Type" },
+                columns: new[] { "FridgeId", "Brand", "CapacityLiters", "Condition", "Description", "EmployeeId", "FridgeModelId", "FridgeNo", "ImageUrl", "IsRented", "LastMaintenanceDate", "Location", "LocationId", "Model", "RentalPricePerMonth", "Status", "Type" },
                 values: new object[,]
                 {
-                    { 1, "Samsung", 253, "Excellent", null, "Energy-efficient double door fridge with frost-free technology.", null, null, "FRG-001", "https://example.com/images/fridge1.jpg", new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "RT28T", 1200.0, "Available", "Double Door" },
-                    { 2, "LG", 190, "Good", null, "Compact single door fridge ideal for small apartments.", null, null, "FRG-002", "https://example.com/images/fridge2.jpg", new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "GL-B201", 900.0, "Rented", "Single Door" },
-                    { 3, "Whirlpool", 500, "Excellent", null, "Spacious fridge with advanced cooling technology.", null, null, "FRG-003", "https://example.com/images/fridge3.jpg", new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "WRT518", 1500.0, "Available", "Double Door" },
-                    { 4, "Defy", 350, "Good", null, "Durable fridge with energy-saving features.", null, null, "FRG-004", "https://example.com/images/fridge4.jpg", new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "DAC700", 1100.0, "Available", "Double Door" },
-                    { 5, "Hisense", 310, "Good", null, "Compact fridge with adjustable shelves.", null, null, "FRG-005", "https://example.com/images/fridge5.jpg", new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "H310BI", 800.0, "Rented", "Single Door" },
-                    { 6, "Bosch", 420, "Excellent", null, "Premium fridge with no-frost technology.", null, null, "FRG-006", "https://example.com/images/fridge6.jpg", new DateTime(2025, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "KDN42", 1600.0, "Available", "Double Door" },
-                    { 7, "Kelvinator", 250, "Fair", null, "Affordable fridge with basic features.", null, null, "FRG-007", "https://example.com/images/fridge7.jpg", new DateTime(2025, 2, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "KEL250", 700.0, "Available", "Single Door" },
-                    { 8, "Smeg", 281, "Excellent", null, "Retro-style fridge with modern cooling.", null, null, "FRG-008", "https://example.com/images/fridge8.jpg", new DateTime(2025, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "FAB28", 2000.0, "Available", "Single Door" },
-                    { 9, "AEG", 300, "Excellent", null, "Built-in fridge with adjustable compartments.", null, null, "FRG-009", "https://example.com/images/fridge9.jpg", new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "SKE818", 1800.0, "Rented", "Single Door" },
-                    { 10, "Panasonic", 347, "Good", null, "Fridge with inverter technology for energy saving.", null, null, "FRG-010", "https://example.com/images/fridge10.jpg", new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "NR-BL347", 1300.0, "Available", "Double Door" },
-                    { 11, "Haier", 565, "Excellent", null, "Large capacity fridge with twin inverter technology.", null, null, "FRG-011", "https://example.com/images/fridge11.jpg", new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "HRF-619", 2200.0, "Available", "Side by Side" },
-                    { 12, "Hitachi", 640, "Excellent", null, "Premium French door fridge with eco-friendly features.", null, null, "FRG-012", "https://example.com/images/fridge12.jpg", new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "R-WB640", 2500.0, "Available", "French Door" },
-                    { 13, "Electrolux", 370, "Good", null, "Fridge with taste guard deodorizer.", null, null, "FRG-013", "https://example.com/images/fridge13.jpg", new DateTime(2025, 4, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "ETB3700", 1400.0, "Rented", "Top Freezer" },
-                    { 14, "Sharp", 600, "Excellent", null, "Fridge with plasmacluster ion technology.", null, null, "FRG-014", "https://example.com/images/fridge14.jpg", new DateTime(2025, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "SJ-GX60", 2300.0, "Available", "French Door" },
-                    { 15, "Midea", 400, "Good", null, "Affordable fridge with large freezer compartment.", null, null, "FRG-015", "https://example.com/images/fridge15.jpg", new DateTime(2025, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "HD-400", 1000.0, "Available", "Double Door" },
-                    { 16, "Gorenje", 326, "Good", null, "Stylish bottom freezer fridge with crisp zone for vegetables.", null, null, "FRG-016", "https://example.com/images/fridge16.jpg", new DateTime(2025, 3, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "NRK6192", 1250.0, "Available", "Bottom Freezer" },
-                    { 17, "Westinghouse", 528, "Excellent", null, "Family-sized fridge with humidity-controlled crisper.", null, null, "FRG-017", "https://example.com/images/fridge17.jpg", new DateTime(2025, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "WBE5300", 1700.0, "Available", "Top Freezer" },
-                    { 18, "Fisher & Paykel", 519, "Excellent", null, "Premium French door fridge with active smart technology.", null, null, "FRG-018", "https://example.com/images/fridge18.jpg", new DateTime(2025, 4, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "RF522", 2400.0, "Rented", "French Door" },
-                    { 19, "Ariston", 383, "Good", null, "Reliable fridge with antibacterial coating.", null, null, "FRG-019", "https://example.com/images/fridge19.jpg", new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "MBA3832", 1150.0, "Available", "Top Freezer" },
-                    { 20, "Beko", 560, "Excellent", null, "Spacious bottom freezer fridge with NeoFrost cooling.", null, null, "FRG-020", "https://example.com/images/fridge20.jpg", new DateTime(2025, 2, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "RCNE560", 1850.0, "Available", "Bottom Freezer" }
+                    { 1, "Samsung", 253, "Excellent", "Energy-efficient double door fridge with frost-free technology.", null, null, "FRG-001", "https://example.com/images/fridge1.jpg", false, new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "RT28T", 1200.0, "Available", "Double Door" },
+                    { 2, "LG", 190, "Good", "Compact single door fridge ideal for small apartments.", null, null, "FRG-002", "https://example.com/images/fridge2.jpg", false, new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "GL-B201", 900.0, "Rented", "Single Door" },
+                    { 3, "Whirlpool", 500, "Excellent", "Spacious fridge with advanced cooling technology.", null, null, "FRG-003", "https://example.com/images/fridge3.jpg", false, new DateTime(2025, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "WRT518", 1500.0, "Available", "Double Door" },
+                    { 4, "Defy", 350, "Good", "Durable fridge with energy-saving features.", null, null, "FRG-004", "https://example.com/images/fridge4.jpg", false, new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "DAC700", 1100.0, "Available", "Double Door" },
+                    { 5, "Hisense", 310, "Good", "Compact fridge with adjustable shelves.", null, null, "FRG-005", "https://example.com/images/fridge5.jpg", false, new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "H310BI", 800.0, "Rented", "Single Door" },
+                    { 6, "Bosch", 420, "Excellent", "Premium fridge with no-frost technology.", null, null, "FRG-006", "https://example.com/images/fridge6.jpg", false, new DateTime(2025, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "KDN42", 1600.0, "Available", "Double Door" },
+                    { 7, "Kelvinator", 250, "Fair", "Affordable fridge with basic features.", null, null, "FRG-007", "https://example.com/images/fridge7.jpg", false, new DateTime(2025, 2, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "KEL250", 700.0, "Available", "Single Door" },
+                    { 8, "Smeg", 281, "Excellent", "Retro-style fridge with modern cooling.", null, null, "FRG-008", "https://example.com/images/fridge8.jpg", false, new DateTime(2025, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "FAB28", 2000.0, "Available", "Single Door" },
+                    { 9, "AEG", 300, "Excellent", "Built-in fridge with adjustable compartments.", null, null, "FRG-009", "https://example.com/images/fridge9.jpg", false, new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "SKE818", 1800.0, "Rented", "Single Door" },
+                    { 10, "Panasonic", 347, "Good", "Fridge with inverter technology for energy saving.", null, null, "FRG-010", "https://example.com/images/fridge10.jpg", false, new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "NR-BL347", 1300.0, "Available", "Double Door" },
+                    { 11, "Haier", 565, "Excellent", "Large capacity fridge with twin inverter technology.", null, null, "FRG-011", "https://example.com/images/fridge11.jpg", false, new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "HRF-619", 2200.0, "Available", "Side by Side" },
+                    { 12, "Hitachi", 640, "Excellent", "Premium French door fridge with eco-friendly features.", null, null, "FRG-012", "https://example.com/images/fridge12.jpg", false, new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "R-WB640", 2500.0, "Available", "French Door" },
+                    { 13, "Electrolux", 370, "Good", "Fridge with taste guard deodorizer.", null, null, "FRG-013", "https://example.com/images/fridge13.jpg", false, new DateTime(2025, 4, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "ETB3700", 1400.0, "Rented", "Top Freezer" },
+                    { 14, "Sharp", 600, "Excellent", "Fridge with plasmacluster ion technology.", null, null, "FRG-014", "https://example.com/images/fridge14.jpg", false, new DateTime(2025, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "SJ-GX60", 2300.0, "Available", "French Door" },
+                    { 15, "Midea", 400, "Good", "Affordable fridge with large freezer compartment.", null, null, "FRG-015", "https://example.com/images/fridge15.jpg", false, new DateTime(2025, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "HD-400", 1000.0, "Available", "Double Door" },
+                    { 16, "Gorenje", 326, "Good", "Stylish bottom freezer fridge with crisp zone for vegetables.", null, null, "FRG-016", "https://example.com/images/fridge16.jpg", false, new DateTime(2025, 3, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "NRK6192", 1250.0, "Available", "Bottom Freezer" },
+                    { 17, "Westinghouse", 528, "Excellent", "Family-sized fridge with humidity-controlled crisper.", null, null, "FRG-017", "https://example.com/images/fridge17.jpg", false, new DateTime(2025, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "WBE5300", 1700.0, "Available", "Top Freezer" },
+                    { 18, "Fisher & Paykel", 519, "Excellent", "Premium French door fridge with active smart technology.", null, null, "FRG-018", "https://example.com/images/fridge18.jpg", false, new DateTime(2025, 4, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "RF522", 2400.0, "Rented", "French Door" },
+                    { 19, "Ariston", 383, "Good", "Reliable fridge with antibacterial coating.", null, null, "FRG-019", "https://example.com/images/fridge19.jpg", false, new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "MBA3832", 1150.0, "Available", "Top Freezer" },
+                    { 20, "Beko", 560, "Excellent", "Spacious bottom freezer fridge with NeoFrost cooling.", null, null, "FRG-020", "https://example.com/images/fridge20.jpg", false, new DateTime(2025, 2, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "Available", null, "RCNE560", 1850.0, "Available", "Bottom Freezer" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -918,6 +917,11 @@ namespace Project.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblCustomerS_ApplicationUserId",
+                table: "tblCustomerS",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblCustomerS_EmployeeId",
                 table: "tblCustomerS",
                 column: "EmployeeId");
@@ -981,11 +985,6 @@ namespace Project.Migrations
                 name: "IX_tblFridgeRequests_ReplacementFridgeId",
                 table: "tblFridgeRequests",
                 column: "ReplacementFridgeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tblFridges_CustomerId",
-                table: "tblFridges",
-                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFridges_EmployeeId",
@@ -1171,6 +1170,9 @@ namespace Project.Migrations
                 name: "tblSuppliers");
 
             migrationBuilder.DropTable(
+                name: "tblCustomerS");
+
+            migrationBuilder.DropTable(
                 name: "tblFaultTechnicians");
 
             migrationBuilder.DropTable(
@@ -1178,9 +1180,6 @@ namespace Project.Migrations
 
             migrationBuilder.DropTable(
                 name: "FridgeModel");
-
-            migrationBuilder.DropTable(
-                name: "tblCustomerS");
 
             migrationBuilder.DropTable(
                 name: "tblEmployees");

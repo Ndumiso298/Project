@@ -289,39 +289,18 @@ namespace Project.Migrations
                     b.Property<string>("BusinessDocumentPath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CustomerNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("CustomerID");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("tblCustomer");
-                });
-
-            modelBuilder.Entity("Project.Models.Employee", b =>
-                {
-                    b.Property<int>("EmployeeID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("EmployeeNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EmployeeID");
 
                     b.HasIndex("EmployeeId");
 
@@ -556,8 +535,6 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FridgeId");
-
-                    b.HasIndex("CustomerId");
 
                     b.HasIndex("EmployeeId");
 
@@ -1737,6 +1714,12 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.Customer", b =>
                 {
+                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Project.Models.Employee", null)
                         .WithMany("ManagedCustomers")
                         .HasForeignKey("EmployeeId");
@@ -1744,6 +1727,8 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Location", null)
                         .WithMany("Customers")
                         .HasForeignKey("LocationId");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
@@ -1804,10 +1789,6 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
-                    b.HasOne("Project.Models.Customer", null)
-                        .WithMany("Fridges")
-                        .HasForeignKey("CustomerId");
-
                     b.HasOne("Project.Models.Employee", null)
                         .WithMany("ManagedFridges")
                         .HasForeignKey("EmployeeId");
@@ -2020,17 +2001,6 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Allocation", b =>
                 {
                     b.Navigation("FridgeVisits");
-                });
-
-            modelBuilder.Entity("Project.Models.Customer", b =>
-                {
-                    b.Navigation("Faults");
-
-                    b.Navigation("Fridges");
-
-                    b.Navigation("MaintenanceVisits");
-
-                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
