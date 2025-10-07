@@ -30,8 +30,9 @@ namespace Project.Models
         //[Required]
         public string? ImageUrl { get; set; }
         [Required]
-        public string AvailabilityStatus { get; set; } 
+        public string Status { get; set; } 
         public string? Location { get; set; }
+        
+        public bool IsRented { get; set; }
     }
-
 }

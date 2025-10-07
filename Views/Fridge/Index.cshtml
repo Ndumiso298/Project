@@ -49,7 +49,7 @@
                                 Available
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                @Model.Count(f => f.AvailabilityStatus == "Available")
+                                @Model.Count(f => f.Status == "Available")
                             </div>
                         </div>
                         <div class="col-auto">
@@ -69,7 +69,7 @@
                                 Maintenance
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                @Model.Count(f => f.AvailabilityStatus == "Maintenance")
+                                @Model.Count(f => f.Status == "Maintenance")
                             </div>
                         </div>
                         <div class="col-auto">
@@ -89,7 +89,7 @@
                                 Unavailable
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                @Model.Count(f => f.AvailabilityStatus == "Unavailable")
+                                @Model.Count(f => f.Status == "Unavailable")
                             </div>
                         </div>
                         <div class="col-auto">
@@ -150,28 +150,28 @@
                                     </div>
                                 </td>
                                 <td class="align-middle">
-                                    @if (obj.AvailabilityStatus == "Available")
+                                    @if (obj.Status == "Available")
                                     {
                                         <span class="badge bg-success bg-opacity-10 text-success">
-                                            <i class="bi bi-check-circle-fill me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-check-circle-fill me-1"></i> @obj.Status
                                         </span>
                                     }
-                                    else if (obj.AvailabilityStatus == "Unavailable")
+                                    else if (obj.Status == "Unavailable")
                                     {
                                         <span class="badge bg-danger bg-opacity-10 text-danger">
-                                            <i class="bi bi-x-circle-fill me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-x-circle-fill me-1"></i> @obj.Status
                                         </span>
                                     }
-                                    else if (obj.AvailabilityStatus == "Maintenance")
+                                    else if (obj.Status == "Maintenance")
                                     {
                                         <span class="badge bg-warning bg-opacity-10 text-warning">
-                                            <i class="bi bi-tools me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-tools me-1"></i> @obj.Status
                                         </span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-secondary bg-opacity-10 text-secondary">
-                                            <i class="bi bi-question-circle me-1"></i> @obj.AvailabilityStatus
+                                            <i class="bi bi-question-circle me-1"></i> @obj.Status
                                         </span>
                                     }
                                 </td>
@@ -236,5 +236,7 @@
                 });
             });
         });
+        <partial name="_ValidationScriptsPartial" />
+
     </script>
 }

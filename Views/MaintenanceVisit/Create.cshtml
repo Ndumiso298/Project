@@ -66,13 +66,13 @@
             <i class="bi bi-person-fill me-2"></i> Customer Information
         </div>
         <div class="card-body">
-            <p><strong>Name:</strong> @Model.ReportedByCustomer?.Name</p>
-            <p><strong>Address:</strong> @Model.ReportedByCustomer?.Address</p>
-            <p><strong>Customer Note:</strong> @(string.IsNullOrWhiteSpace(Model.ReportedByCustomer?.CustomerNote) ? "—" : Model.ReportedByCustomer.CustomerNote)</p>
+            <p><strong>Name:</strong> @Model.ReportedByCustomer/p>
+            <p><strong>Address:</strong> @Model.ReportedByCustomer?</p>
         </div>
     </div>
 </div>
 
 @section Scripts {
-   
+    <partial name="_ValidationScriptsPartial" />
+
 }

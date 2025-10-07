@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project.Models.ApplicationUser>
+﻿@* @model IEnumerable<Project.Models.ApplicationUser>
 
 @{
     ViewData["Title"] = "Pending User Approvals";
@@ -26,18 +26,31 @@
                 <td>@user.CellNumber</td>
                 <td>
                     @user.StreetAddress <br />
-                    @user.City, @user.State, @user.PostalCode
+                    @user.City, @user.Province, @user.PostalCode
                 </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(user.BusinessDocumentPath))
-                    {
-                        <a href="@Url.Content(user.BusinessDocumentPath)" target="_blank">View Document</a>
-                    }
-                    else
-                    {
-                        <span>No Document</span>
-                    }
-                </td>
+               <td>
+    @if (!string.IsNullOrEmpty(user.BusinessDocumentPath))
+    {
+        <div class="btn-group" role="group">
+            <a href="@Url.Content(user.BusinessDocumentPath)" 
+               target="_blank" 
+               class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-eye"></i> View
+            </a>
+
+            <a href="@Url.Content(user.BusinessDocumentPath)" 
+               download 
+               class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-download"></i> Download
+            </a>
+        </div>
+    }
+    else
+    {
+        <span class="text-muted">No Document Uploaded</span>
+    }
+</td>
+
                 <td>
                     <div class="d-flex flex-column gap-2">
                         <form asp-action="ApproveUser" asp-controller="User" method="post">
@@ -58,3 +71,4 @@
         }
     </tbody>
 </table>
+ *@

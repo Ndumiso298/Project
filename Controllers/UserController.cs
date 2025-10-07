@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
+using Project.Models.ViewModel;
 using Project.Models.ViewModels;
+using Project.Utility;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -13,15 +16,16 @@ namespace Project.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment hostingEnvironment)
         {
             _db = db;
             _userManager = userManager;
             _roleManager = roleManager;
+            _hostingEnvironment = hostingEnvironment;
         }
 
-        // List all users
         public async Task<IActionResult> Index()
         {
             var userList = _db.AppUser.ToList();
@@ -38,7 +42,6 @@ namespace Project.Controllers
             return View(userList);
         }
 
-        // Lock/Unlock user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockUnlock(string userId)
@@ -47,15 +50,14 @@ namespace Project.Controllers
             if (user == null) return NotFound();
 
             if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
-                user.LockoutEnd = DateTime.Now; // unlock
+                user.LockoutEnd = DateTime.Now; 
             else
-                user.LockoutEnd = DateTime.Now.AddYears(1000); // lock
+                user.LockoutEnd = DateTime.Now.AddYears(1000); 
 
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 
-        // Delete user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteUser(string userId)
@@ -68,7 +70,6 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Manage user roles - GET
         public async Task<IActionResult> ManagerRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -94,7 +95,6 @@ namespace Project.Controllers
             return View(model);
         }
 
-        // Manage user roles - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManagerRole(RolesViewModel rolesViewModel)
@@ -111,7 +111,6 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Manage user claims - GET
         public async Task<IActionResult> ManagerUserClaim(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -137,7 +136,6 @@ namespace Project.Controllers
             return View(model);
         }
 
-        // Manage user claims - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManagerUserClaim(ClaimsViewModel claimsViewModel)
@@ -192,17 +190,66 @@ namespace Project.Controllers
             TempData["Success"] = $"User {user.FirstName} declined.";
             return RedirectToAction(nameof(Index));
         }
-
-
-        public IActionResult ApproveDeclineUser(string userId)
+        public async Task<IActionResult> ApproveDeclineUser(string userId)
         {
-            var user = _db.AppUser.FirstOrDefault(u => u.Id == userId);
-            if (user == null)
-                return NotFound();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
 
-            return View(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            string role = string.Join(",", userRoles);
+
+            var vm = new UserVM
+            {
+                Id = user.Id,
+                Role = role,
+                IsApproved = _db.AppUser.FirstOrDefault(u => u.Id == userId)?.IsApproved ?? false,
+                RejectionReason = _db.AppUser.FirstOrDefault(u => u.Id == userId)?.RejectionReason
+            };
+
+            // Common info from AppUser
+            var appUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            if (appUser != null)
+            {
+                vm.FirstName = appUser.FirstName;
+                vm.LastName = appUser.LastName;
+                vm.Email = appUser.Email;
+                vm.CellNumber = appUser.CellNumber;
+            }
+
+            if (role.Contains(SD.CustomerRole))
+            {
+                var customer = _db.tblCustomerS.FirstOrDefault(c => c.ApplicationUserId == userId);
+                if (customer != null)
+                {
+                    vm.CustomerNumber = customer.CustomerNumber;
+                    vm.BusinessDocumentPath = customer.BusinessDocumentPath;
+                    vm.StreetAddress = customer.ApplicationUser.StreetAddress;
+                    vm.City = customer.ApplicationUser.City;
+                    vm.Province = customer.ApplicationUser.Province;
+                    vm.PostalCode = customer.ApplicationUser.PostalCode;
+                }
+            }
+
+            else if (role.Contains(SD.CustomerSupport) || role.Contains(SD.AdminRole) || role.Contains(SD.StockController) || role.Contains(SD.MaintenanceTechnician) || role.Contains(SD.FaultTechnician))
+            {
+                var employee = _db.tblEmployees.FirstOrDefault(e => e.UserId == userId);
+                if (employee != null)
+                {
+                    vm.EmployeeNumber = employee.EmployeeNumber;
+                    vm.StreetAddress = employee.UserAccount.StreetAddress;
+                    vm.City = employee.UserAccount.City;
+                    vm.Province = employee.UserAccount.Province;
+                    vm.PostalCode = employee.UserAccount.PostalCode;
+                }
+            }
+
+
+            return View(vm);
         }
-      
+
+
+
+
 
     }
 }
