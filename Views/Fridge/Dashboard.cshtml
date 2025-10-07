@@ -1,0 +1,72 @@
+﻿@model Project.Models.ViewModel.DashboardVM
+@{
+    ViewData["Title"] = "Fridge Dashboard";
+    Layout = "_CustomerLayout";
+
+}
+
+<div class="container">
+    <h2>Fridge Inventory Dashboard</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalFridgeModels</h5>
+                    <p class="card-text">Fridge Models</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalFridgeInstances</h5>
+                    <p class="card-text">Total Fridges</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalAvailableInstances</h5>
+                    <p class="card-text">Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalRentedInstances</h5>
+                    <p class="card-text">Rented</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var stock in Model.FridgeStock)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>@stock.FridgeModel.Brand @stock.FridgeModel.Model</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Capacity:</strong> @stock.FridgeModel.CapacityLiters L</p>
+                        <p><strong>Price:</strong> $@stock.FridgeModel.RentalPricePerMonth/month</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" style="width: @((stock.TotalInstances > 0 ? (double)stock.AvailableInstances/stock.TotalInstances : 0) * 100)%">
+                                Available: @stock.AvailableInstances
+                            </div>
+                            <div class="progress-bar bg-warning" style="width: @((stock.TotalInstances > 0 ? (double)stock.RentedInstances/stock.TotalInstances : 0) * 100)%">
+                                Rented: @stock.RentedInstances
+                            </div>
+                        </div>
+                        <a href="@Url.Action("Manage", "FridgeInStock", new { id = stock.FridgeModel.FridgeId })"
+                           class="btn btn-primary btn-sm">Manage Stock</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

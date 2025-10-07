@@ -1,4 +1,4 @@
-﻿@model Project.Models.MaintenanceVisit
+﻿@* @model Project.Models.MaintenanceVisit
 @{
     Layout = "_CustomerLayout";
     var daysUntilDue = (Model.ScheduledDate - DateTime.Now).Days;
@@ -70,3 +70,4 @@
     </div>
 </body>
 </html>
+ *@

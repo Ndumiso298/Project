@@ -1,0 +1,47 @@
+﻿@model Project.Models.FridgeInStock
+@{
+    ViewData["Title"] = "Edit Fridge Instance";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-warning text-dark">
+            <h4>Edit Fridge - @Model.Fridge.Brand @Model.Fridge.Model</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="FridgeInStockId" />
+                <input type="hidden" asp-for="FridgeId" />
+
+                <div class="mb-3">
+                    <label asp-for="FridgeNo" class="form-label"></label>
+                    <input asp-for="FridgeNo" class="form-control" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Condition" class="form-label"></label>
+                    <input asp-for="Condition" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastMaintenanceDate" class="form-label"></label>
+                    <input asp-for="LastMaintenanceDate" type="date" class="form-control" />
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsAvailable" class="form-check-input" />
+                    <label asp-for="IsAvailable" class="form-check-label"></label>
+                </div>
+
+                <button type="submit" class="btn btn-success">Save Changes</button>
+                <a asp-action="Manage" asp-route-id="@Model.FridgeId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

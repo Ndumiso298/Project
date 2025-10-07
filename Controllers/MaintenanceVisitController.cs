@@ -37,7 +37,7 @@ public class MaintenanceVisitController : Controller
             visits = visits.Where(v =>
                 v.Customer.Name.Contains(search) ||
                 v.Technician.Name.Contains(search) ||
-                v.Fridge.FridgeNo.Contains(search) ||
+                //v.Fridge.FridgeNo.Contains(search) ||
                 v.Fridge.Model.Contains(search));
         }
 

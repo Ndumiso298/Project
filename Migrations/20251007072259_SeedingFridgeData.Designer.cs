@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251007072259_SeedingFridgeData")]
+    partial class SeedingFridgeData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,35 +261,52 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.Customer", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CustomerID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("ApplicationUserId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("BusinessDocumentData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("BusinessDocumentPath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerNote")
-                        .IsRequired()
+                    b.Property<string>("CustomerNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
+                    b.HasKey("CustomerID");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("tblCustomer");
+                });
+
+            modelBuilder.Entity("Project.Models.Employee", b =>
+                {
+                    b.Property<int>("EmployeeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"));
+
+                    b.Property<string>("ApplicationUserId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EmployeeNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("EmployeeID");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasIndex("ApplicationUserId");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("tblCustomerS");
+                    b.ToTable("tblEmployee");
                 });
 
             modelBuilder.Entity("Project.Models.Fault", b =>
@@ -421,8 +441,6 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FridgeId");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("tblFridges");
 
@@ -722,408 +740,6 @@ namespace Project.Migrations
                     b.HasIndex("FridgeId");
 
                     b.ToTable("tblFridgeInStocks");
-
-                    b.HasData(
-                        new
-                        {
-                            FridgeInStockId = 1,
-                            Condition = "Excellent",
-                            FridgeId = 1,
-                            FridgeNo = "FRG001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 3, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 2,
-                            Condition = "Good",
-                            FridgeId = 1,
-                            FridgeNo = "FRG002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 3,
-                            Condition = "Excellent",
-                            FridgeId = 2,
-                            FridgeNo = "FRG003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 4,
-                            Condition = "Good",
-                            FridgeId = 2,
-                            FridgeNo = "FRG004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 5,
-                            Condition = "Fair",
-                            FridgeId = 3,
-                            FridgeNo = "FRG005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 6,
-                            Condition = "Excellent",
-                            FridgeId = 3,
-                            FridgeNo = "FRG006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 7,
-                            Condition = "Good",
-                            FridgeId = 4,
-                            FridgeNo = "FRG007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 8,
-                            Condition = "Fair",
-                            FridgeId = 4,
-                            FridgeNo = "FRG008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 9,
-                            Condition = "Good",
-                            FridgeId = 5,
-                            FridgeNo = "FRG009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 10,
-                            Condition = "Excellent",
-                            FridgeId = 5,
-                            FridgeNo = "FRG010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 5, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 11,
-                            Condition = "Good",
-                            FridgeId = 6,
-                            FridgeNo = "FRG011",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 3, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Port Elizabeth"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 12,
-                            Condition = "Excellent",
-                            FridgeId = 6,
-                            FridgeNo = "FRG012",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Port Elizabeth"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 13,
-                            Condition = "Excellent",
-                            FridgeId = 7,
-                            FridgeNo = "FRG013",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 14,
-                            Condition = "Fair",
-                            FridgeId = 7,
-                            FridgeNo = "FRG014",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 3, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 15,
-                            Condition = "Good",
-                            FridgeId = 8,
-                            FridgeNo = "FRG015",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 2, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 16,
-                            Condition = "Excellent",
-                            FridgeId = 8,
-                            FridgeNo = "FRG016",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 4, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 17,
-                            Condition = "Good",
-                            FridgeId = 9,
-                            FridgeNo = "FRG017",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 1, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 18,
-                            Condition = "Excellent",
-                            FridgeId = 9,
-                            FridgeNo = "FRG018",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 19,
-                            Condition = "Fair",
-                            FridgeId = 10,
-                            FridgeNo = "FRG019",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 3, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 20,
-                            Condition = "Excellent",
-                            FridgeId = 10,
-                            FridgeNo = "FRG020",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 5, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 21,
-                            Condition = "Excellent",
-                            FridgeId = 11,
-                            FridgeNo = "FRG021",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 3, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Bloemfontein"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 22,
-                            Condition = "Fair",
-                            FridgeId = 11,
-                            FridgeNo = "FRG022",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Bloemfontein"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 23,
-                            Condition = "Good",
-                            FridgeId = 12,
-                            FridgeNo = "FRG023",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 24,
-                            Condition = "Excellent",
-                            FridgeId = 12,
-                            FridgeNo = "FRG024",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 25,
-                            Condition = "Good",
-                            FridgeId = 13,
-                            FridgeNo = "FRG025",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 26,
-                            Condition = "Fair",
-                            FridgeId = 13,
-                            FridgeNo = "FRG026",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 4, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 27,
-                            Condition = "Excellent",
-                            FridgeId = 14,
-                            FridgeNo = "FRG027",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 28,
-                            Condition = "Good",
-                            FridgeId = 14,
-                            FridgeNo = "FRG028",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 29,
-                            Condition = "Excellent",
-                            FridgeId = 15,
-                            FridgeNo = "FRG029",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 30,
-                            Condition = "Fair",
-                            FridgeId = 15,
-                            FridgeNo = "FRG030",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 4, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 31,
-                            Condition = "Excellent",
-                            FridgeId = 16,
-                            FridgeNo = "FRG031",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 32,
-                            Condition = "Good",
-                            FridgeId = 16,
-                            FridgeNo = "FRG032",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 33,
-                            Condition = "Fair",
-                            FridgeId = 17,
-                            FridgeNo = "FRG033",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 1, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 34,
-                            Condition = "Excellent",
-                            FridgeId = 17,
-                            FridgeNo = "FRG034",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Cape Town"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 35,
-                            Condition = "Good",
-                            FridgeId = 18,
-                            FridgeNo = "FRG035",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 4, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 36,
-                            Condition = "Fair",
-                            FridgeId = 18,
-                            FridgeNo = "FRG036",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Johannesburg"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 37,
-                            Condition = "Excellent",
-                            FridgeId = 19,
-                            FridgeNo = "FRG037",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 38,
-                            Condition = "Good",
-                            FridgeId = 19,
-                            FridgeNo = "FRG038",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Pretoria"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 39,
-                            Condition = "Fair",
-                            FridgeId = 20,
-                            FridgeNo = "FRG039",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        },
-                        new
-                        {
-                            FridgeInStockId = 40,
-                            Condition = "Excellent",
-                            FridgeId = 20,
-                            FridgeNo = "FRG040",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 5, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Location = "Durban"
-                        });
                 });
 
             modelBuilder.Entity("Project.Models.FridgeRequest", b =>
@@ -1444,9 +1060,6 @@ namespace Project.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<string>("BusinessDocumentPath")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CellNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -1556,6 +1169,28 @@ namespace Project.Migrations
                     b.Navigation("Fridge");
                 });
 
+            modelBuilder.Entity("Project.Models.Customer", b =>
+                {
+                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Project.Models.Employee", b =>
+                {
+                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("Project.Models.Fault", b =>
                 {
                     b.HasOne("Project.Models.Fridge", "Fridge")
@@ -1571,7 +1206,7 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.HasOne("Project.Models.Customer", "ReportedByCustomer")
-                        .WithMany("Faults")
+                        .WithMany()
                         .HasForeignKey("ReportedByCustomerId");
 
                     b.HasOne("Project.Models.FaultTechnician", "ResolvedByTechnician")
@@ -1587,10 +1222,21 @@ namespace Project.Migrations
                     b.Navigation("ResolvedByTechnician");
                 });
 
+            modelBuilder.Entity("Project.Models.FridgeInStock", b =>
+                {
+                    b.HasOne("Project.Models.Fridge", "Fridge")
+                        .WithMany("FridgeInstances")
+                        .HasForeignKey("FridgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fridge");
+                });
+
             modelBuilder.Entity("Project.Models.FridgeRequest", b =>
                 {
                     b.HasOne("Project.Models.Customer", "Customer")
-                        .WithMany("Requests")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1655,7 +1301,7 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.MaintenanceVisit", b =>
                 {
                     b.HasOne("Project.Models.Customer", "Customer")
-                        .WithMany("MaintenanceVisits")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1719,17 +1365,6 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Allocation", b =>
                 {
                     b.Navigation("FridgeVisits");
-                });
-
-            modelBuilder.Entity("Project.Models.Customer", b =>
-                {
-                    b.Navigation("Faults");
-
-                    b.Navigation("Fridges");
-
-                    b.Navigation("MaintenanceVisits");
-
-                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("Project.Models.FaultTechnician", b =>
