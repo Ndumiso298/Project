@@ -63,7 +63,7 @@ namespace Project.Controllers
                 LastName = model.LastName,
                 StreetAddress = model.StreetAddress,
                 City = model.City,
-                State = model.State,
+                Province = model.State,
                 PostalCode = model.PostalCode,
                 CellNumber = model.CellNumber,
                 IsApproved = true, // default for employees
@@ -130,16 +130,16 @@ namespace Project.Controllers
                     BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
                     BusinessDocumentData = await System.IO.File.ReadAllBytesAsync(filePath)
                 };
-                _db.tblCustomer.Add(customer);
+                _db.tblCustomerS.Add(customer);
             }
             else
             {
                 var employee = new Employee
                 {
-                    ApplicationUserId = user.Id,
+                    UserId = user.Id,
                     EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss")
                 };
-                _db.tblEmployee.Add(employee);
+                _db.tblEmployees.Add(employee);
             }
 
             await _db.SaveChangesAsync();
