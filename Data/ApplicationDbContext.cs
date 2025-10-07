@@ -19,9 +19,13 @@ namespace Project.Data
         public DbSet<RequestDetails> tblRequestDetais { get; set; }
         public DbSet<Fault> tblFaults { get; set; }
         public DbSet<ProcessFault> tblProcessFaults { get; set; }
-        public DbSet<Customer> tblCustomer { get; set; }
-        public DbSet<Employee> tblEmployee { get; set; }
-
+        public DbSet<Customer> tblCustomerS { get; set; }
+        public DbSet<Employee> tblEmployees { get; set; }
+        public DbSet<Supplier> tblSuppliers { get; set; }
+        public DbSet<Location> tblLocations { get; set; }
+        public DbSet<PurchaseRequest> tblPurchaseRequests { get; set; }
+        public DbSet<PurchaseRequestItem> tblPurchaseRequestItems { get; set; }
+     
         public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }
@@ -60,7 +64,7 @@ namespace Project.Data
                 LastMaintenanceDate = new DateTime(2025, 1, 15),
                 Condition = "Excellent",
                 ImageUrl = "https://example.com/images/fridge1.jpg",
-                AvailabilityStatus = "Available",
+                Status = "Available",
                 Location = "Available"
             },
                 new Fridge
@@ -76,7 +80,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 3, 10),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge2.jpg",
-                    AvailabilityStatus = "Rented",
+                    Status = "Rented",
                     Location = "Available"
                 },
                 new Fridge
@@ -92,7 +96,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 2, 5),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge3.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -108,7 +112,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 4, 1),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge4.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -124,7 +128,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 1, 20),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge5.jpg",
-                    AvailabilityStatus = "Rented",
+                    Status = "Rented",
                     Location = "Available"
                 },
                 new Fridge
@@ -140,7 +144,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 3, 15),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge6.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -156,7 +160,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 2, 25),
                     Condition = "Fair",
                     ImageUrl = "https://example.com/images/fridge7.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -172,7 +176,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 4, 5),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge8.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -188,7 +192,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 3, 1),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge9.jpg",
-                    AvailabilityStatus = "Rented",
+                    Status = "Rented",
                     Location = "Available"
                 },
                 new Fridge
@@ -204,7 +208,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 2, 10),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge10.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -220,7 +224,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 1, 5),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge11.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -236,7 +240,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 3, 20),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge12.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -252,7 +256,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 4, 2),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge13.jpg",
-                    AvailabilityStatus = "Rented",
+                    Status = "Rented",
                     Location = "Available"
                 },
                 new Fridge
@@ -268,7 +272,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 2, 18),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge14.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -284,7 +288,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 1, 28),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge15.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -300,7 +304,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 3, 8),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge16.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -316,7 +320,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 2, 12),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge17.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -332,7 +336,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 4, 7),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge18.jpg",
-                    AvailabilityStatus = "Rented",
+                    Status = "Rented",
                     Location = "Available"
                 },
                 new Fridge
@@ -348,7 +352,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 1, 30),
                     Condition = "Good",
                     ImageUrl = "https://example.com/images/fridge19.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 },
                 new Fridge
@@ -364,7 +368,7 @@ namespace Project.Data
                     LastMaintenanceDate = new DateTime(2025, 2, 22),
                     Condition = "Excellent",
                     ImageUrl = "https://example.com/images/fridge20.jpg",
-                    AvailabilityStatus = "Available",
+                    Status = "Available",
                     Location = "Available"
                 }
             ) ;

@@ -218,28 +218,28 @@ namespace Project.Controllers
 
             if (role.Contains(SD.CustomerRole))
             {
-                var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var customer = _db.tblCustomerS.FirstOrDefault(c => c.ApplicationUserId == userId);
                 if (customer != null)
                 {
                     vm.CustomerNumber = customer.CustomerNumber;
                     vm.BusinessDocumentPath = customer.BusinessDocumentPath;
                     vm.StreetAddress = customer.ApplicationUser.StreetAddress;
                     vm.City = customer.ApplicationUser.City;
-                    vm.State = customer.ApplicationUser.State;
+                    vm.Province = customer.ApplicationUser.Province;
                     vm.PostalCode = customer.ApplicationUser.PostalCode;
                 }
             }
 
             else if (role.Contains(SD.CustomerSupport) || role.Contains(SD.AdminRole) || role.Contains(SD.StockController) || role.Contains(SD.MaintenanceTechnician) || role.Contains(SD.FaultTechnician))
             {
-                var employee = _db.tblEmployee.FirstOrDefault(e => e.ApplicationUserId == userId);
+                var employee = _db.tblEmployees.FirstOrDefault(e => e.UserId == userId);
                 if (employee != null)
                 {
                     vm.EmployeeNumber = employee.EmployeeNumber;
-                    vm.StreetAddress = employee.ApplicationUser.StreetAddress;
-                    vm.City = employee.ApplicationUser.City;
-                    vm.State = employee.ApplicationUser.State;
-                    vm.PostalCode = employee.ApplicationUser.PostalCode;
+                    vm.StreetAddress = employee.UserAccount.StreetAddress;
+                    vm.City = employee.UserAccount.City;
+                    vm.Province = employee.UserAccount.Province;
+                    vm.PostalCode = employee.UserAccount.PostalCode;
                 }
             }
 

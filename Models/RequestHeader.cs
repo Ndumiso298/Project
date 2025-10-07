@@ -25,7 +25,7 @@ namespace Project.Models
         [Required]
         public string City { get; set; }
         [Required]
-        public string State { get; set; }
+        public string Province { get; set; }
         [Required]
         public string PostalCode { get; set; }
         [Required]

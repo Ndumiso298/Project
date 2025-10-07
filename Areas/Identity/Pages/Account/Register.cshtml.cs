@@ -77,7 +77,7 @@ namespace Project.Areas.Identity.Pages.Account
 
             public string StreetAddress { get; set; }
             public string City { get; set; }
-            public string State { get; set; }
+            public string Province { get; set; }
             public string PostalCode { get; set; }
             public string CellNumber { get; set; }
 
@@ -150,7 +150,7 @@ namespace Project.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
                 user.StreetAddress = Input.StreetAddress;
                 user.City = Input.City;
-                user.State = Input.State;
+                user.Province = Input.Province;
                 user.PostalCode = Input.PostalCode;
                 user.CellNumber = Input.CellNumber;
                 user.Email = Input.Email;
@@ -197,7 +197,7 @@ namespace Project.Areas.Identity.Pages.Account
                         BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
                         BusinessDocumentData = documentData
                     };
-                    _db.tblCustomer.Add(customer);
+                    _db.tblCustomerS.Add(customer);
                     await _db.SaveChangesAsync();
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -230,10 +230,10 @@ namespace Project.Areas.Identity.Pages.Account
 
                     var employee = new Employee
                     {
-                        ApplicationUserId = user.Id,
+                        UserId = user.Id,
                         EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + $"_0{count++}"
                     };
-                    _db.tblEmployee.Add(employee);
+                    _db.tblEmployees.Add(employee);
                     await _db.SaveChangesAsync();
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
