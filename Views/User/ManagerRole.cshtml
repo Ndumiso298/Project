@@ -1,6 +1,8 @@
 ﻿@model Project.Models.ViewModels.RolesViewModel
 
 @{
+    
+    Layout = "_CustomerLayout";
     ViewData["Title"] = "Manage User Roles";
 }
 
@@ -48,3 +50,6 @@
         </div>
     </div>
 </form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

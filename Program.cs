@@ -52,6 +52,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IUserNumberService, UserNumberService>();
+
 builder.Services.AddHostedService<UserCleanupService>();
 builder.Services.AddControllersWithViews();
 

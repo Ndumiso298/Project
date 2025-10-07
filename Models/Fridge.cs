@@ -32,5 +32,7 @@ namespace Project.Models
         [Required]
         public string Status { get; set; } 
         public string? Location { get; set; }
+        
+        public bool IsRented { get; set; }
     }
 }

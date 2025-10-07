@@ -25,14 +25,14 @@ namespace Project.Controllers
                 .Include(f => f.Fridge)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(customerName))
-                faults = faults.Where(f => f.ReportedByCustomer.Name.Contains(customerName));
+            //if (!string.IsNullOrEmpty(customerName))
+            //    faults = faults.Where(f => f.ReportedByCustomer.Name.Contains(customerName));
 
-            if (!string.IsNullOrEmpty(location))
-                faults = faults.Where(f => f.ReportedByCustomer.Address.Contains(location));
+            //if (!string.IsNullOrEmpty(location))
+            //    faults = faults.Where(f => f.ReportedByCustomer.Address.Contains(location));
 
-            if (!string.IsNullOrEmpty(status))
-                faults = faults.Where(f => f.Status == status);
+            //if (!string.IsNullOrEmpty(status))
+            //    faults = faults.Where(f => f.Status == status);
 
             ViewBag.CustomerName = customerName;
             ViewBag.Location = location;
