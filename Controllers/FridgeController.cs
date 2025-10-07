@@ -11,10 +11,14 @@ namespace Project.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        public FridgeController(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public FridgeController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;
+
         }
+
 
         public IActionResult Dashboard()
         {
@@ -56,15 +60,38 @@ namespace Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Fridge fridge)
+        public IActionResult Create(Fridge objfridge, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                _db.Add(fridge);
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string fridgePath = Path.Combine(wwwRootPath, @"Images/Fridges/");
+
+                    if (objfridge.FridgeId != 0 && !string.IsNullOrEmpty(objfridge.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, objfridge.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+
+                        }
+                        using (var fileStream = new FileStream(Path.Combine(fridgePath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        objfridge.ImageUrl = @"/Images/Fridges/" + fileName;
+                    }
+                }
+
+                _db.Add(objfridge);
                 _db.SaveChanges();
                 return RedirectToAction(nameof(Manage));
             }
-            return View(fridge);
+            return View(objfridge);
         }
 
         public IActionResult Edit(int? id)
@@ -82,27 +109,59 @@ namespace Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Fridge fridge)
+        public IActionResult Edit(int id,Fridge objfridge, IFormFile? file)
         {
-            if (id != fridge.FridgeId) return NotFound();
+            if (id != objfridge.FridgeId)
+            { 
+                return NotFound();
+            }
 
             if (ModelState.IsValid)
             {
-                try
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+
+                if (file != null)
                 {
-                    _db.Update(fridge);
-                    _db.SaveChanges();
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string fridgePath = Path.Combine(wwwRootPath, @"Images/Fridges/");
+
+                    if (objfridge.FridgeId != 0 && !string.IsNullOrEmpty(objfridge.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, objfridge.ImageUrl.TrimStart('\\'));
+                        //Uma sikhona 
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            //siyasususa
+                            System.IO.File.Delete(oldImagePath);
+
+                        }
+                        //sifake new one uma kade ingekho
+                        using (var fileStream = new FileStream(Path.Combine(fridgePath, fileName), FileMode.Create))
+                        {
+                            //penda isithombe esisha
+                            file.CopyTo(fileStream);
+                        }
+                        objfridge.ImageUrl = @"/Images/Fridges/" + fileName;
+                    }
+
+
+                    try
+                    {
+                        _db.Update(objfridge);
+                        _db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!FridgeExists(objfridge.FridgeId))
+                            return NotFound();
+                        else
+                            throw;
+                    }
+                    return RedirectToAction(nameof(Manage));
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FridgeExists(fridge.FridgeId))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Manage));
             }
-            return View(fridge);
+            return View(objfridge);
+
         }
 
         public IActionResult Delete(int? id)
