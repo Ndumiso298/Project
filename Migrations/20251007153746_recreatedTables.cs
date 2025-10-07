@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project.Migrations
 {
     /// <inheritdoc />
-    public partial class customerConfirmBooking : Migration
+    public partial class recreatedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -282,7 +282,7 @@ namespace Project.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -313,7 +313,7 @@ namespace Project.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblEmployees_tblLocations_WorkLocationId",
                         column: x => x.WorkLocationId,
@@ -351,7 +351,7 @@ namespace Project.Migrations
                         column: x => x.LocationId,
                         principalTable: "tblLocations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -375,7 +375,7 @@ namespace Project.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblCustomerS_tblEmployees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -466,7 +466,7 @@ namespace Project.Migrations
                         column: x => x.RequestedById,
                         principalTable: "tblEmployees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblPurchaseRequests_tblSuppliers_SupplierId",
                         column: x => x.SupplierId,
@@ -495,7 +495,7 @@ namespace Project.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblAllocations_tblEmployees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -511,7 +511,7 @@ namespace Project.Migrations
                         column: x => x.FridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblAllocations_tblLocations_LocationId",
                         column: x => x.LocationId,
@@ -543,13 +543,13 @@ namespace Project.Migrations
                         column: x => x.CustomerId,
                         principalTable: "tblCustomerS",
                         principalColumn: "CustomerID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblFridges_FaultyFridgeId",
                         column: x => x.FaultyFridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblFridges_ReplacementFridgeId",
                         column: x => x.ReplacementFridgeId,
@@ -582,7 +582,7 @@ namespace Project.Migrations
                         column: x => x.CustomerId,
                         principalTable: "tblCustomerS",
                         principalColumn: "CustomerID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblMaintenanceVisits_tblEmployees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -630,13 +630,13 @@ namespace Project.Migrations
                         column: x => x.FridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
                         column: x => x.RequestHeaderId,
                         principalTable: "tblRequestHeaders",
                         principalColumn: "RequestHeaderId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -663,13 +663,13 @@ namespace Project.Migrations
                         column: x => x.FridgeModelId,
                         principalTable: "FridgeModel",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblPurchaseRequestItems_tblPurchaseRequests_PurchaseRequestId",
                         column: x => x.PurchaseRequestId,
                         principalTable: "tblPurchaseRequests",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -699,7 +699,7 @@ namespace Project.Migrations
                         column: x => x.RequestHeaderId,
                         principalTable: "tblRequestHeaders",
                         principalColumn: "RequestHeaderId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -744,7 +744,7 @@ namespace Project.Migrations
                         column: x => x.FridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblFaults_tblLocations_LocationId",
                         column: x => x.LocationId,
@@ -755,7 +755,7 @@ namespace Project.Migrations
                         column: x => x.MaintenanceVisitId,
                         principalTable: "tblMaintenanceVisits",
                         principalColumn: "MaintenanceVisitId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -787,13 +787,13 @@ namespace Project.Migrations
                         column: x => x.TechnicianId,
                         principalTable: "tblFaultTechnicians",
                         principalColumn: "TechnicianId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblMaintenanceRecords_tblFridges_FridgeId",
                         column: x => x.FridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblMaintenanceRecords_tblMaintenanceVisits_MaintenanceVisitId",
                         column: x => x.MaintenanceVisitId,
@@ -824,7 +824,7 @@ namespace Project.Migrations
                         column: x => x.FaultId,
                         principalTable: "tblFaults",
                         principalColumn: "FaultId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
