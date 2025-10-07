@@ -3,128 +3,218 @@
     Layout = "_CustomerLayout";
 }
 
- 
- 
-        <!-- Main Card -->
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
-                <h5 class="m-0 text-primary">
-                    <i class="fas fa-list me-2"></i>Allocated Request List
-                </h5>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+        <h5 class="m-0 text-primary">
+            <i class="fas fa-list me-2"></i>Allocated Request List
+        </h5>
 
-                <!-- Search Box -->
-                <div class="input-group search-container" style="max-width: 300px;">
-                    <span class="input-group-text bg-transparent border-end-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" id="allocatedSearch" class="form-control search-box border-start-0"
-                           placeholder="Search requests...">
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="allocatedTable">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="ps-4">Customer</th>
-                                <th scope="col">Request Date</th>
-                                <th scope="col">Visit Status</th>
-                                <th scope="col">Allocated Fridges</th>
-                                <th scope="col" class="text-end pe-4 action-cell">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
-                            {
-                                <tr>
-                                    <td class="ps-4 align-middle">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-semibold">@item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</span>
-                                            <small class="text-muted">@item.ApplicationUser?.Email</small>
-                                        </div>
-                                    </td>
-                                    <td class="align-middle">
-                                        <span class="fw-medium">@item.RequestDate.ToString("yyyy-MM-dd")</span>
-                                    </td>
-
-                                    <!-- Visit Status -->
-                                    <td class="align-middle">
-                                        @if (item.FridgeVisits != null && item.FridgeVisits.Any())
-                                        {
-                                            <div class="d-flex flex-column gap-2">
-                                                @foreach (var visit in item.FridgeVisits.OrderBy(v => v.VisitDate))
-                                                {
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="badge bg-success status-badge me-2">
-                                                            <i class="fas fa-calendar me-1"></i> @visit.VisitDate.ToString("yyyy-MM-dd")
-                                                        </span>
-                                                        <a asp-action="BookVisit"
-                                                           asp-route-requestId="@item.RequestHeaderId"
-                                                           asp-route-visitId="@visit.VisitId"
-                                                           class="btn btn-sm btn-outline-warning rounded-pill d-inline-flex align-items-center">
-                                                            <i class="fas fa-edit me-1"></i> Edit
-                                                        </a>
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-warning text-dark status-badge">
-                                                <i class="fas fa-clock me-1"></i> No Visit Booked
-                                            </span>
-                                        }
-                                    </td>
-
-                                   
-                                    <!-- Actions -->
-                                    <td class="text-end pe-4 align-middle">
-                                        <div class="d-flex flex-column gap-2">
-                                    <a asp-action="DetailsFoRProcessing" asp-route-id="@item.RequestHeaderId"
-                                       class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center">
-                                        <i class="fas fa-snowflake me-1"></i>
-                                        Fridge Details
-                                    </a>
-
-
-                                            <!-- Add new visit button -->
-                                            <a asp-action="BookVisit" asp-route-requestId="@item.RequestHeaderId"
-                                               class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-calendar-plus me-1"></i> Book Visit
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-                    @if (!Model.Any())
-                    {
-                        <div class="empty-state">
-                            <i class="fas fa-refrigerator"></i>
-                            <h4 class="mt-3">No Allocated Requests</h4>
-                            <p>Allocated fridges will appear here once assigned to customers</p>
-                        </div>
-                    }
-                </div>
-            </div>
+        <!-- Search Box -->
+        <div class="input-group search-container" style="max-width: 300px;">
+            <span class="input-group-text bg-transparent border-end-0">
+                <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" id="allocatedSearch" class="form-control search-box border-start-0"
+                   placeholder="Search requests...">
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('allocatedSearch');
-            const rows = document.querySelectorAll('#allocatedTable tbody tr');
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="allocatedTable">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ps-4">Customer</th>
+                        <th scope="col">Request Date</th>
+                        <th scope="col">Scheduled Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Allocated Fridges</th>
+                        <th scope="col" class="text-end pe-4 action-cell">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
+                    {
+                        // Determine the latest visit and its status
+                        var latestVisit = item.FridgeVisits?.OrderByDescending(v => v.VisitDate).FirstOrDefault();
+                        var hasConfirmedVisit = latestVisit?.IsConfirmed == true;
+                        var status = "No Visit Booked";
+                        var statusClass = "bg-warning text-dark";
 
-            searchInput.addEventListener('keyup', function () {
-                const searchText = this.value.toLowerCase();
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchText) ? '' : 'none';
-                });
+                        if (latestVisit != null)
+                        {
+                            var visitDate = latestVisit.VisitDate;
+                            var today = DateTime.Today;
+
+                            if (visitDate > today)
+                            {
+                                status = "Scheduled";
+                                statusClass = "bg-info";
+                            }
+                            else if (visitDate == today)
+                            {
+                                status = "In Progress";
+                                statusClass = "bg-primary";
+                            }
+                            else if (visitDate < today)
+                            {
+                                status = "Completed";
+                                statusClass = "bg-success";
+                            }
+
+                            // Check if visit was cancelled
+                            if (latestVisit.IsCancelled)
+                            {
+                                status = "Cancelled";
+                                statusClass = "bg-danger";
+                            }
+                        }
+
+                        <tr>
+                            <td class="ps-4 align-middle">
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">@item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</span>
+                                    <small class="text-muted">@item.ApplicationUser?.Email</small>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <span class="fw-medium">@item.RequestDate.ToString("yyyy-MM-dd")</span>
+                            </td>
+
+                            <!-- Scheduled Date -->
+                            <td class="align-middle">
+                                @if (latestVisit != null)
+                                {
+                                    <span class="fw-medium">@latestVisit.VisitDate.ToString("yyyy-MM-dd")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not scheduled</span>
+                                }
+                            </td>
+
+                            <!-- Status -->
+                            <td class="align-middle">
+                                <span class="badge @statusClass status-badge">
+                                    @if (status == "Scheduled")
+                                    {
+                                        <i class="fas fa-calendar-check me-1"></i>
+                                    }
+                                    else if (status == "In Progress")
+                                    {
+                                        <i class="fas fa-tools me-1"></i>
+                                    }
+                                    else if (status == "Completed")
+                                    {
+                                        <i class="fas fa-check-circle me-1"></i>
+                                    }
+                                    else if (status == "Cancelled")
+                                    {
+                                        <i class="fas fa-times-circle me-1"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-clock me-1"></i>
+                                    }
+                                    @status
+                                </span>
+                            </td>
+
+                            <!-- Allocated Fridges -->
+                            <td class="align-middle">
+                                <span class="fw-medium">@(item.FridgeVisits?.Count ?? 0)</span>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="text-end pe-4 align-middle">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <!-- Fridge Details Button -->
+                                    <a asp-action="DetailsFoRProcessing" asp-route-id="@item.RequestHeaderId"
+                                       class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center"
+                                       title="Fridge Details">
+                                        <i class="fas fa-snowflake me-1"></i>
+                                        Details
+                                    </a>
+
+                                    <!-- Edit Visit Button (only show if there's a visit) -->
+                                    @if (latestVisit != null)
+                                    {
+                                        <a asp-action="BookVisit"
+                                           asp-route-requestId="@item.RequestHeaderId"
+                                           asp-route-visitId="@latestVisit.VisitId"
+                                           class="btn btn-sm btn-outline-warning rounded-pill d-flex align-items-center"
+                                           title="Edit Visit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    }
+
+                                    <!-- Book Visit Button (only show if no confirmed visit exists) -->
+                                    @if (!hasConfirmedVisit)
+                                    {
+                                        <a asp-action="BookVisit" asp-route-requestId="@item.RequestHeaderId"
+                                           class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center"
+                                           title="Book Visit">
+                                            <i class="fas fa-calendar-plus"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <div class="empty-state">
+                    <i class="fas fa-refrigerator"></i>
+                    <h4 class="mt-3">No Allocated Requests</h4>
+                    <p>Allocated fridges will appear here once assigned to customers</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('allocatedSearch');
+        const rows = document.querySelectorAll('#allocatedTable tbody tr');
+
+        searchInput.addEventListener('keyup', function () {
+            const searchText = this.value.toLowerCase();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchText) ? '' : 'none';
             });
         });
-    </script>
+    });
+</script>
+
+<style>
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.4em 0.8em;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+    .table th {
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+</style>
