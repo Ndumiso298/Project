@@ -1,0 +1,85 @@
+﻿@model Project.Models.ViewModel.FridgeStockVM
+@{
+    ViewData["Title"] = $"Manage {Model.FridgeModel.Brand} {Model.FridgeModel.Model} Stock";
+}
+
+<div class="container">
+    <h2>@Model.FridgeModel.Brand @Model.FridgeModel.Model - Stock Management</h2>
+
+    <!-- Stock Summary -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h3>@Model.TotalInstances</h3>
+                    <p>Total Units</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>@Model.AvailableInstances</h3>
+                    <p>Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning">
+                <div class="card-body text-center">
+                    <h3>@Model.RentedInstances</h3>
+                    <p>Rented</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>
+        <a asp-action="Create" asp-route-fridgeId="@Model.FridgeModel.FridgeId" class="btn btn-success">Add New Fridge Unit</a>
+        <a asp-controller="Fridge" asp-action="Manage" class="btn btn-secondary">Back to Models</a>
+    </p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fridge No</th>
+                <th>Condition</th>
+                <th>Last Maintenance</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FridgeInstances)
+            {
+                <tr>
+                    <td>@item.FridgeNo</td>
+                    <td>@item.Condition</td>
+                    <td>@item.LastMaintenanceDate.ToString("MMM dd, yyyy")</td>
+                    <td>@item.Location</td>
+                    <td>
+                        @if (item.IsAvailable)
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Rented</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.FridgeInStockId" class="btn btn-warning btn-sm">Edit</a>
+                        <form asp-action="ToggleAvailability" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.FridgeInStockId" />
+                            <button type="submit" class="btn btn-info btn-sm">
+                                @(item.IsAvailable ? "Mark as Rented" : "Mark as Available")
+                            </button>
+                        </form>
+                        <a asp-action="Delete" asp-route-id="@item.FridgeInStockId" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

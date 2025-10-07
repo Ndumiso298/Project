@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Project.Models.Fridge>
+@{
+    ViewData["Title"] = "Manage Fridge Models";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Manage Fridge Models</h3>
+        <a asp-action="Create" class="btn btn-primary">+ Add New Model</a>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Total Units</th>
+                <th>Available</th>
+                <th>Rented</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fridge in Model)
+            {
+                var total = fridge.FridgeInstances?.Count ?? 0;
+                var available = fridge.FridgeInstances?.Count(f => f.IsAvailable) ?? 0;
+                var rented = total - available;
+
+                <tr>
+                    <td>@fridge.Brand</td>
+                    <td>@fridge.Model</td>
+                    <td>@fridge.Type</td>
+                    <td>@total</td>
+                    <td>@available</td>
+                    <td>@rented</td>
+                    <td>
+                        <a asp-controller="FridgeInStock" asp-action="Manage" asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-info">Manage Stock</a>
+                        <a asp-action="Edit" asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

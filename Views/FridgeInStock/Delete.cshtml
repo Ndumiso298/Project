@@ -1,0 +1,36 @@
+﻿@model Project.Models.FridgeInStock
+@{
+    ViewData["Title"] = "Delete Fridge Instance";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-danger text-white">
+            <h4>Delete Confirmation</h4>
+        </div>
+
+        <div class="card-body">
+            <h5>Are you sure you want to delete this fridge?</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Fridge No</dt>
+                <dd class="col-sm-9">@Model.FridgeNo</dd>
+
+                <dt class="col-sm-3">Condition</dt>
+                <dd class="col-sm-9">@Model.Condition</dd>
+
+                <dt class="col-sm-3">Available</dt>
+                <dd class="col-sm-9">@Model.IsAvailable</dd>
+
+                <dt class="col-sm-3">Fridge Model</dt>
+                <dd class="col-sm-9">@Model.Fridge.Brand @Model.Fridge.Model</dd>
+            </dl>
+
+            <form asp-action="DeleteConfirmed" method="post">
+                <input type="hidden" asp-for="FridgeInStockId" />
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a asp-action="Manage" asp-route-id="@Model.FridgeId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
