@@ -43,10 +43,10 @@
                         {
                             <tr>
                                 <td class="ps-4 fw-semibold align-middle">
-                                    @item.ApplicationUser?.FirstName
+                                    @item.Customer.ApplicationUser?.FirstName
                                 </td>
                                 <td class="align-middle">
-                                    @item.ApplicationUser?.LastName
+                                    @item.Customer.ApplicationUser?.LastName
                                 </td>
                                 <td class="align-middle">
                                     @if (item.Status == "Waiting For Payment")

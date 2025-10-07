@@ -10,10 +10,10 @@ namespace Project.Models
     {
         [Key]
         public int RequestHeaderId { get; set; }
-        public string ApplicationUserId { get; set; }
-        [ForeignKey("ApplicationUserId")]
+        public int CustomerID { get; set; }
+        [ForeignKey("CustomerID")]
         [ValidateNever]
-        public ApplicationUser ApplicationUser { get; set; }
+        public Customer Customer { get; set; }
         public DateTime RequestDate { get; set; }
         public double RequestTotal { get; set; }
        [Required]

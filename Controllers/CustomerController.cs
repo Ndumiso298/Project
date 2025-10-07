@@ -38,9 +38,9 @@ namespace Project.Controllers
         {
             var claimsIdedity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            allocation.ApplicationUserId = userId;
+            allocation.Customer.ApplicationUserId = userId;
 
-            Allocation allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.ApplicationUserId == userId &&
+            Allocation allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.Customer.ApplicationUserId == userId &&
             u.FridgeId == allocation.FridgeId);
 
             if (allocationFromDb != null)

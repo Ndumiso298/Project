@@ -29,7 +29,7 @@ namespace Project.Controllers
             {
                     AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId==userId)
+                    .Where(a => a.Customer.ApplicationUserId==userId)
                     .ToList(),
                      RequestHeader = new()
             };
@@ -49,21 +49,21 @@ namespace Project.Controllers
             {
                 AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId == userId)
+                    .Where(a => a.Customer.ApplicationUserId == userId)
                     .ToList(),
                 RequestHeader = new()
             };
-            AllocationVM.RequestHeader.ApplicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            AllocationVM.RequestHeader.Customer.ApplicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
 
 
 
-            AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.ApplicationUser.FirstName;
-            AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.ApplicationUser.LastName;
-            AllocationVM.RequestHeader.StreetAddress = AllocationVM.RequestHeader.ApplicationUser.StreetAddress;
-            AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.ApplicationUser.City;
-            AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.ApplicationUser.State;
-            AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.ApplicationUser.PostalCode;
-            AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.ApplicationUser.CellNumber;
+            AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.Customer.ApplicationUser.FirstName;
+            AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.Customer.ApplicationUser.LastName;
+            AllocationVM.RequestHeader.StreetAddress = AllocationVM.RequestHeader.Customer.ApplicationUser.StreetAddress;
+            AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.Customer.ApplicationUser.City;
+            AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.Customer.ApplicationUser.State;
+            AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.Customer.ApplicationUser.PostalCode;
+            AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.Customer.ApplicationUser.CellNumber;
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
@@ -83,11 +83,11 @@ namespace Project.Controllers
 
             AllocationVM.AllocationList = _db.tblAllocations
                      .Include(a => a.Fridge)
-                     .Where(a => a.ApplicationUserId == userId)
+                     .Where(a => a.Customer.ApplicationUserId == userId)
                      .ToList();
 
             AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
-            AllocationVM.RequestHeader.ApplicationUserId = userId;
+            AllocationVM.RequestHeader.Customer.ApplicationUserId = userId;
 
             ApplicationUser applicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
 

@@ -27,7 +27,7 @@ namespace Project.Controllers
 
             if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
             {
-                objRequestHeaders = _db.tblRequestHeaders.Include(a=>a.ApplicationUser).ToList();
+                objRequestHeaders = _db.tblRequestHeaders.Include(a=>a.Customer.ApplicationUser).ToList();
             }
             else
             {
@@ -36,8 +36,8 @@ namespace Project.Controllers
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 objRequestHeaders = _db.tblRequestHeaders
-                    .Include(u => u.ApplicationUser)
-                    .Where(r => r.ApplicationUserId == userId)
+                    .Include(u => u.Customer.ApplicationUser)
+                    .Where(r => r.Customer.ApplicationUserId == userId)
                     .ToList();
 
             }
@@ -45,12 +45,13 @@ namespace Project.Controllers
             return View(objRequestHeaders);
         }
 
+
         public IActionResult Details(int id)
         {
             RequestVM = new()
             {
                 RequstHeader = _db.tblRequestHeaders
-                               .Include(a => a.ApplicationUser)
+                               .Include(a => a.Customer.ApplicationUser)
                                .FirstOrDefault(o => o.RequestHeaderId == id),
 
                 RequstDetail = _db.tblRequestDetais
@@ -62,7 +63,6 @@ namespace Project.Controllers
             return View(RequestVM);
         }
 
-        [HttpPost]
         [HttpPost]
         public IActionResult UpdateRequestDetail(RequestVM RequestVM)
         {

@@ -6,13 +6,13 @@
     var claimsIdentity = (ClaimsIdentity)User.Identity;
     var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-    var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.ApplicationUserId == userId);
+    var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.Customer.ApplicationUserId == userId);
 
-    var cartCount = _db.tblAllocations.Count(a => a.ApplicationUserId == userId);
+    var cartCount = _db.tblAllocations.Count(a => a.Customer.ApplicationUserId == userId);
 
 
     var hasFridgeBookings = _db.tblFridgeVisits
-        .Any(v => v.RequestHeader.ApplicationUserId == userId);
+        .Any(v => v.RequestHeader.Customer.ApplicationUserId == userId);
 }
 
 <!DOCTYPE html>
