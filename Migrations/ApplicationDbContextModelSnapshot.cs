@@ -277,10 +277,20 @@ namespace Project.Migrations
                     b.Property<string>("CustomerNumber")
                         .HasColumnType("nvarchar(max)");
 
+<<<<<<< HEAD
+=======
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("int");
+
+>>>>>>> origin/Nokubonga07
                     b.HasKey("CustomerID");
 
                     b.HasIndex("ApplicationUserId");
 
+<<<<<<< HEAD
                     b.ToTable("tblCustomer");
                 });
 
@@ -302,6 +312,9 @@ namespace Project.Migrations
                     b.HasKey("EmployeeID");
 
                     b.HasIndex("ApplicationUserId");
+=======
+                    b.HasIndex("EmployeeId");
+>>>>>>> origin/Nokubonga07
 
                     b.ToTable("tblEmployee");
                 });
@@ -453,6 +466,15 @@ namespace Project.Migrations
 
                     b.HasKey("FridgeId");
 
+<<<<<<< HEAD
+=======
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("FridgeModelId");
+
+                    b.HasIndex("LocationId");
+
+>>>>>>> origin/Nokubonga07
                     b.ToTable("tblFridges");
 
                     b.HasData(
@@ -860,6 +882,12 @@ namespace Project.Migrations
                     b.Property<int?>("AllocationId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1232,7 +1260,19 @@ namespace Project.Migrations
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+<<<<<<< HEAD
 
+=======
+
+                    b.HasOne("Project.Models.Employee", null)
+                        .WithMany("ManagedCustomers")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("Project.Models.Location", null)
+                        .WithMany("Customers")
+                        .HasForeignKey("LocationId");
+
+>>>>>>> origin/Nokubonga07
                     b.Navigation("ApplicationUser");
                 });
 
@@ -1278,6 +1318,24 @@ namespace Project.Migrations
                     b.Navigation("ResolvedByTechnician");
                 });
 
+<<<<<<< HEAD
+=======
+            modelBuilder.Entity("Project.Models.Fridge", b =>
+                {
+                    b.HasOne("Project.Models.Employee", null)
+                        .WithMany("ManagedFridges")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("Project.Models.FridgeModel", null)
+                        .WithMany("Fridges")
+                        .HasForeignKey("FridgeModelId");
+
+                    b.HasOne("Project.Models.Location", null)
+                        .WithMany("Fridges")
+                        .HasForeignKey("LocationId");
+                });
+
+>>>>>>> origin/Nokubonga07
             modelBuilder.Entity("Project.Models.FridgeRequest", b =>
                 {
                     b.HasOne("Project.Models.Customer", "Customer")
@@ -1412,6 +1470,30 @@ namespace Project.Migrations
                     b.Navigation("FridgeVisits");
                 });
 
+<<<<<<< HEAD
+=======
+            modelBuilder.Entity("Project.Models.Employee", b =>
+                {
+                    b.Navigation("AllocatedFridges");
+
+                    b.Navigation("ApprovedPurchaseRequests");
+
+                    b.Navigation("AssignedFaults");
+
+                    b.Navigation("MaintenanceRecords");
+
+                    b.Navigation("MaintenanceVisits");
+
+                    b.Navigation("ManagedCustomers");
+
+                    b.Navigation("ManagedFridges");
+
+                    b.Navigation("ProcessedAllocations");
+
+                    b.Navigation("RequestedPurchaseRequests");
+                });
+
+>>>>>>> origin/Nokubonga07
             modelBuilder.Entity("Project.Models.FaultTechnician", b =>
                 {
                     b.Navigation("MaintenanceRecords");
