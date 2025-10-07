@@ -18,5 +18,7 @@ namespace Project.Models
         [ForeignKey("RequestHeaderId")]
         [ValidateNever]
         public RequestHeader RequestHeader { get; set; }
+        public bool IsConfirmed { get; set; }
+        public bool IsCancelled{get; set; }
     }
 }
