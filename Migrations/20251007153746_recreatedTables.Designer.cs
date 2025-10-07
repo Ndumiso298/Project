@@ -12,8 +12,8 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251007130046_customerConfirmBooking")]
-    partial class customerConfirmBooking
+    [Migration("20251007153746_recreatedTables")]
+    partial class recreatedTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1504,13 +1504,6 @@ namespace Project.Migrations
                     b.Property<DateTime?>("ShippingDate")
                         .HasColumnType("datetime2");
 
-<<<<<<< HEAD:Migrations/20251006185209_Cart.Designer.cs
-                    b.Property<string>("Province")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-=======
->>>>>>> origin/Nokubonga07:Migrations/20251007130046_customerConfirmBooking.Designer.cs
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -1633,11 +1626,7 @@ namespace Project.Migrations
                     b.Property<string>("Province")
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD:Migrations/20251006185209_Cart.Designer.cs
-                    b.Property<string>("Province")
-=======
                     b.Property<string>("RejectionReason")
->>>>>>> origin/Nokubonga07:Migrations/20251007130046_customerConfirmBooking.Designer.cs
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
