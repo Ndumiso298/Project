@@ -65,30 +65,28 @@ namespace Project.Controllers
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+
+                if (file != null && file.Length > 0)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string fridgePath = Path.Combine(wwwRootPath, @"Images/Fridges/");
 
-                    if (objfridge.FridgeId != 0 && !string.IsNullOrEmpty(objfridge.ImageUrl))
+                    if (!Directory.Exists(fridgePath))
                     {
-                        var oldImagePath = Path.Combine(wwwRootPath, objfridge.ImageUrl.TrimStart('\\'));
-
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-
-                        }
-                        using (var fileStream = new FileStream(Path.Combine(fridgePath, fileName), FileMode.Create))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        objfridge.ImageUrl = @"/Images/Fridges/" + fileName;
+                        Directory.CreateDirectory(fridgePath);
                     }
+
+                    string fullPath = Path.Combine(fridgePath, fileName);
+                    using (var fileStream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    objfridge.ImageUrl = @"/Images/Fridges/" + fileName;
                 }
 
                 _db.Add(objfridge);
                 _db.SaveChanges();
+                TempData["success"] = "Fridge created successfully";
                 return RedirectToAction(nameof(Manage));
             }
             return View(objfridge);
@@ -131,7 +129,7 @@ namespace Project.Controllers
                         //Uma sikhona 
                         if (System.IO.File.Exists(oldImagePath))
                         {
-                            //siyasususa
+                            //siyasisusa
                             System.IO.File.Delete(oldImagePath);
 
                         }
