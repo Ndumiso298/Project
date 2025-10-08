@@ -16,11 +16,16 @@ namespace Project.Controllers
         }
 
 
+        
         public IActionResult Index()
         {
-            IEnumerable<Fridge> fridgesList = _db.tblFridges.ToList();
+            
+            IEnumerable<Fridge> fridgesList = _db.tblFridges
+                .Where(f => f.AvailabilityStatus == "Available")
+                .ToList();
             return View(fridgesList);
         }
+        
         public IActionResult Details(int id)
         {
             Allocation allocation = new()
