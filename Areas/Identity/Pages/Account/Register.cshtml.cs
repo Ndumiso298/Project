@@ -130,6 +130,15 @@ namespace Project.Areas.Identity.Pages.Account
                         Text = r.Name,
                         Value = r.Name
                     });
+                    
+                    Input = new InputModel
+                    {
+                        RoleList = _roleManager.Roles.Select(r => new SelectListItem
+                        {
+                            Text = r.Name,
+                            Value = r.Name
+                        })
+                    };
                     return Page();
                 }
             }
@@ -143,6 +152,7 @@ namespace Project.Areas.Identity.Pages.Account
                         Value = r.Name
                     });
                     return Page();
+
                 }
             }
                 var user = CreateUser();
@@ -157,7 +167,7 @@ namespace Project.Areas.Identity.Pages.Account
                 user.UserName = Input.Email;
 
                 int count = 1;
-                //
+                
                 if (roleToAssign == SD.CustomerRole)
                 {
                     user.IsApproved = false;

@@ -34,6 +34,7 @@ namespace Project.Models
         public string? Status { get; set; } =SD.WaitingForPayment;
         public DateTime? ShippingDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
+
         public ICollection<RequestDetails> RequestFridges { get; set; }
         public ICollection<FridgeVisit> FridgeVisits { get; set; } = new List<FridgeVisit>();
 

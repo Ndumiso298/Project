@@ -98,36 +98,85 @@ namespace Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult ToggleStatus(RequestVM RequestVM)
+        public IActionResult Approve(RequestVM RequestVM)
         {
-           if (RequestVM == null || RequestVM.RequstHeader == null)
-           {
-              return BadRequest("Invalid request data.");
-           }
+            if (RequestVM == null || RequestVM.RequstHeader == null)
+            {
+                return BadRequest("Invalid request data.");
+            }
 
-           var requestHeaderFromDb = _db.tblRequestHeaders
-          .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
 
-           if (requestHeaderFromDb == null)
-           {
-              return NotFound("Request not found.");
-           }
+            if (requestHeaderFromDb == null)
+            {
+                return NotFound("Request not found.");
+            }
 
-           if (requestHeaderFromDb.Status == SD.Allocated)
-           {
-              requestHeaderFromDb.Status = SD.WaitingForPayment;
-           }
-          else
-          {
-            requestHeaderFromDb.Status = SD.Allocated;
-          }
+            // Update status to Approved
+            requestHeaderFromDb.Status = SD.Approved;
+            requestHeaderFromDb.RequestDate = DateTime.Now;
 
-          _db.tblRequestHeaders.Update(requestHeaderFromDb);
-          _db.SaveChanges();
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
 
-           TempData["Success"] = "Status updated successfully.";
+            TempData["Success"] = "Request approved successfully.";
 
-           return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+        }
+
+        public IActionResult Reject(RequestVM RequestVM)
+        {
+            if (RequestVM == null || RequestVM.RequstHeader == null)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+
+            if (requestHeaderFromDb == null)
+            {
+                return NotFound("Request not found.");
+            }
+
+            // Update status to Rejected
+            requestHeaderFromDb.Status = SD.Rejected;
+            requestHeaderFromDb.RequestDate = DateTime.Now;
+
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
+
+            TempData["Success"] = "Request rejected successfully.";
+
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+        }
+
+        public IActionResult Feedback(RequestVM RequestVM)
+        {
+            if (RequestVM == null || RequestVM.RequstHeader == null)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+
+            if (requestHeaderFromDb == null)
+            {
+                return NotFound("Request not found.");
+            }
+
+            // Update status to Needs Feedback or similar status
+            requestHeaderFromDb.Status = SD.NeedsFeedback;
+            requestHeaderFromDb.RequestDate = DateTime.Now;
+
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
+
+            TempData["Success"] = "Request marked as needing feedback.";
+
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
 

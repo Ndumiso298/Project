@@ -1,4 +1,4 @@
-﻿@* @model Allocation
+﻿ @model Allocation
 @{
     Layout = "_CustomerLayout";
 }
@@ -6,10 +6,10 @@
 <form method="post">
     <input asp-for="AllocationId" type="hidden" />
     <input asp-for="FridgeId" type="hidden" />
+    <input asp-for="CustomerID" type="hidden" />
 <div class="container py-5">
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-        <!-- Header -->
-        <div class="card-header bg-primary text-light py-4 position-relative">
+,        <div class="card-header bg-primary text-light py-4 position-relative">
             <div class="row align-items-center">
                 <div class="col-12 text-center">
                     <h2 class="text-white fw-bold mb-1">@Model.Fridge.Brand Professional Series</h2>
@@ -61,10 +61,10 @@
                     <h3 class="section-title mb-3 text-primary fw-bold">Specification Details</h3>
 
                     <div class="specs-container mb-4">
-                        <div class="spec-item d-flex align-items-center mb-3">
+                      @*   <div class="spec-item d-flex align-items-center mb-3">
                             <i class="bi bi-tag fs-4 text-primary me-3"></i>
                             <div><strong>Fridge Number:</strong> @Model.Fridge.FridgeNo</div>
-                        </div>
+                        </div> *@
 
                         <div class="spec-item d-flex align-items-center mb-3">
                             <i class="bi bi-grid-3x3 fs-4 text-primary me-3"></i>
@@ -114,4 +114,4 @@
 </div>
 
 
-</form> *@
+</form>

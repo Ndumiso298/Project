@@ -314,9 +314,7 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Dashboard">Dashboard</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FridgeInStock" asp-action="Manage">Manage</a>
-                            </li>
+                            
                             @*   <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Total Fridge Request</a>
                         </li> *@
@@ -370,7 +368,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Request</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Orders</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
@@ -379,8 +377,9 @@
                         else if (User.IsInRole(SD.StockController))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CustomerSupport" asp-action="Dashboard">Home</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Dashboard">Dashboard</a>
                             </li>
+
 
                         }
                         else if (User.IsInRole(SD.FaultTechnician))
@@ -397,7 +396,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Index">Service Booking</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Service Schedules</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Service Appointment</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="SafetyGuideLines">Safety GuideLines</a>

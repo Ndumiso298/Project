@@ -29,7 +29,8 @@ namespace Project.Controllers
             {
                     AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.Customer.ApplicationUserId==userId)
+                    .Include(a => a.Customer)
+                    .Where(a => a.Customer!=null && a.Customer.ApplicationUserId==userId)
                     .ToList(),
                      RequestHeader = new()
             };
@@ -49,13 +50,17 @@ namespace Project.Controllers
             {
                 AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.Customer.ApplicationUserId == userId)
+                    .Include(a => a.Customer)
+                    .Where(u=>u.Customer.ApplicationUserId == userId)
                     .ToList(),
                 RequestHeader = new()
             };
-            AllocationVM.RequestHeader.Customer.ApplicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            
 
 
+           
+            AllocationVM.RequestHeader.Customer = _db.tblCustomer.Include(u => u.ApplicationUser)
+             .FirstOrDefault(u => u.ApplicationUserId == userId);
 
             AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.Customer.ApplicationUser.FirstName;
             AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.Customer.ApplicationUser.LastName;
@@ -83,13 +88,18 @@ namespace Project.Controllers
 
             AllocationVM.AllocationList = _db.tblAllocations
                      .Include(a => a.Fridge)
+                     .Include(a=>a.Customer)
                      .Where(a => a.Customer.ApplicationUserId == userId)
                      .ToList();
 
-            AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
-            AllocationVM.RequestHeader.Customer.ApplicationUserId = userId;
+            Customer Customer = _db.tblCustomer.
+                Include(u => u.ApplicationUser).
+                FirstOrDefault(u => u.ApplicationUserId == userId);
 
-            ApplicationUser applicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
+            AllocationVM.RequestHeader.CustomerID = Customer.CustomerID; 
+
+           
 
 
 
@@ -151,19 +161,13 @@ namespace Project.Controllers
                 allocationFromDb.Count -= 1;
                 _db.tblAllocations.Update(allocationFromDb);
             }
-
-
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
         public IActionResult Remove(int id)
         {
             var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
-
             _db.tblAllocations.Remove(allocationFromDb);
-
-
-
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
