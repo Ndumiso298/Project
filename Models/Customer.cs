@@ -29,7 +29,10 @@ namespace Project.Models
         public byte[]? BusinessDocumentData { get; set; }
 
         public string CustomerNote { get; set; }
-      
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
         // Navigation properties
         public virtual ICollection<Fridge> Fridges { get; set; } 
         public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; }

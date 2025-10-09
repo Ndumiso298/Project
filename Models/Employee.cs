@@ -7,40 +7,16 @@ namespace Project.Models
     public class Employee
     {
         [Key]
-        public int Id { get; set; }
-
-        // Link to Identity user (employees must have accounts)
-        [Required]
-        public string UserId { get; set; } = string.Empty;
-
-        [ForeignKey("UserId")]
-        [ValidateNever]
-        public virtual ApplicationUser UserAccount { get; set; } = null!;
-
-        [Required(ErrorMessage = "Employee Number is required.")]
-        [StringLength(50, ErrorMessage = "Employee Number cannot exceed 50 characters.")]
-        [Display(Name = "Employee Number*")]
-        public string EmployeeNumber { get; set; } = string.Empty;
-
-        [Display(Name = "Availability Status")]
-        public string? AvailabilityStatus { get; set; }
+        public int EmployeeID { get; set; }
 
         [Required]
-        [MaxLength(21)]
-        public string EmployeeType { get; set; }
-        // Metadata
-        [Display(Name = "Created At")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string ApplicationUserId { get; set; }
+        [ForeignKey(nameof(ApplicationUserId))]
+        public ApplicationUser ApplicationUser { get; set; }
 
-        [Display(Name = "Updated At")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
-        public DateTime? UpdatedAt { get; set; }
+        public string? EmployeeNumber { get; set; }
 
-        [Display(Name = "Account Status")]
+        [Display(Name = "Active")]
         public bool IsActive { get; set; } = true;
-
-        //[Display(Name = "Deleted")]
-        //public bool IsDeleted { get; set; } = false;
     }
 }

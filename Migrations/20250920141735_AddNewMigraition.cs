@@ -61,7 +61,7 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblCustomerS",
+                name: "tblCustomers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -259,7 +259,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFridges_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "tblCustomers",
                         principalColumn: "Id");
                 });
 
@@ -318,7 +318,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFridgeRequests_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "tblCustomers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -355,7 +355,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblMaintenanceVisits_tblCustomerS_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "tblCustomers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -449,7 +449,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblFaults_tblCustomerS_ReportedByCustomerId",
                         column: x => x.ReportedByCustomerId,
-                        principalTable: "tblCustomerS",
+                        principalTable: "tblCustomers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_tblFaults_tblFaultTechnicians_ResolvedByTechnicianId",
@@ -773,7 +773,7 @@ namespace Project.Migrations
                 name: "tblFridges");
 
             migrationBuilder.DropTable(
-                name: "tblCustomerS");
+                name: "tblCustomers");
         }
     }
 }

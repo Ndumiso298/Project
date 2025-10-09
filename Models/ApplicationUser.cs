@@ -13,6 +13,11 @@ namespace Project.Models
 
         [Required]
         public string LastName { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Full Name")]
+        public string FullName => $"{FirstName} {LastName}";
+
         public string? StreetAddress { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }

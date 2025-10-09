@@ -286,7 +286,7 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tblCustomerS");
+                    b.ToTable("tblCustomers");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
