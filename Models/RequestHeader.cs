@@ -16,7 +16,7 @@ namespace Project.Models
         [ValidateNever]
         public Customer Customer { get; set; }
 
-        public int EmployeeID { get; set; }
+        public int? EmployeeID { get; set; }
         [ForeignKey("EmployeeID")]
         [ValidateNever]
         public Employee Employee { get; set; }
