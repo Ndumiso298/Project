@@ -110,8 +110,8 @@ namespace Project.Controllers
             }
 
            
-            _db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
-            _db.SaveChanges();
+            //_db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
+            //_db.SaveChanges();
 
             foreach (var allocation in AllocationVM.AllocationList)
             {

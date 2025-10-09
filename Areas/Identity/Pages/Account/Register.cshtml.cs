@@ -130,7 +130,7 @@ namespace Project.Areas.Identity.Pages.Account
                         Text = r.Name,
                         Value = r.Name
                     });
-                    
+
                     Input = new InputModel
                     {
                         RoleList = _roleManager.Roles.Select(r => new SelectListItem
@@ -155,23 +155,23 @@ namespace Project.Areas.Identity.Pages.Account
 
                 }
             }
-                var user = CreateUser();
-                user.FirstName = Input.FirstName;
-                user.LastName = Input.LastName;
-                user.StreetAddress = Input.StreetAddress;
-                user.City = Input.City;
-                user.State = Input.State;
-                user.PostalCode = Input.PostalCode;
-                user.CellNumber = Input.CellNumber;
-                user.Email = Input.Email;
-                user.UserName = Input.Email;
+            var user = CreateUser();
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            user.StreetAddress = Input.StreetAddress;
+            user.City = Input.City;
+            user.State = Input.State;
+            user.PostalCode = Input.PostalCode;
+            user.CellNumber = Input.CellNumber;
+            user.Email = Input.Email;
+            user.UserName = Input.Email;
 
-                int count = 1;
-                
-                if (roleToAssign == SD.CustomerRole)
-                {
-                    user.IsApproved = false;
-                    user.Status = "Pending";
+            //int count = 1;
+
+            //if (roleToAssign == SD.CustomerRole)
+            //{
+            //    user.IsApproved = false;
+            //    user.Status = "Pending";
 
 
 
@@ -258,25 +258,26 @@ namespace Project.Areas.Identity.Pages.Account
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
-            }
-        
-        private ApplicationUser CreateUser()
-        {
-            try
-            {
-                return Activator.CreateInstance<ApplicationUser>();
-            }
-            catch
-            {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. Ensure it has a parameterless constructor.");
-            }
         }
 
-        private IUserEmailStore<IdentityUser> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
-                throw new NotSupportedException("The default UI requires a user store with email support.");
-            return (IUserEmailStore<IdentityUser>)_userStore;
+            private ApplicationUser CreateUser()
+            {
+                try
+                {
+                    return Activator.CreateInstance<ApplicationUser>();
+                }
+                catch
+                {
+                    throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. Ensure it has a parameterless constructor.");
+                }
+            }
+
+            private IUserEmailStore<IdentityUser> GetEmailStore()
+            {
+                if (!_userManager.SupportsUserEmail)
+                    throw new NotSupportedException("The default UI requires a user store with email support.");
+                return (IUserEmailStore<IdentityUser>)_userStore;
+            }
         }
     }
-}
+
