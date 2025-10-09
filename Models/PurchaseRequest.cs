@@ -15,7 +15,7 @@ namespace Project.Models
         public int RequestedById { get; set; }
 
         [ForeignKey(nameof(RequestedById))]
-        [InverseProperty(nameof(Employee.RequestedPurchaseRequests))]
+        //[InverseProperty(nameof(Employee.RequestedPurchaseRequests))]
         [ValidateNever]
         public virtual Employee RequestedBy { get; set; } = null!;
 
@@ -66,7 +66,7 @@ namespace Project.Models
         public int? ApprovedById { get; set; }
 
         [ForeignKey(nameof(ApprovedById))]
-        [InverseProperty(nameof(Employee.ApprovedPurchaseRequests))]
+        //[InverseProperty(nameof(Employee.ApprovedPurchaseRequests))]
         [ValidateNever]
         public virtual Employee? ApprovedBy { get; set; }
 

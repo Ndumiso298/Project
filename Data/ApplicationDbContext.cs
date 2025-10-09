@@ -13,19 +13,19 @@ namespace Project.Data
         {
         }
         public DbSet<ApplicationUser> AppUser { get; set; }
+        public DbSet<Location> tblLocations { get; set; }
         public DbSet<Fridge> tblFridges { get; set; }
+        public DbSet<FridgeInStock> tblFridgeInStocks { get; set; }
+        public DbSet<PurchaseRequest> tblPurchaseRequests { get; set; }
+        public DbSet<PurchaseRequestItem> tblPurchaseRequestItems { get; set; }
         public DbSet<Allocation> tblAllocations { get; set; }
         public DbSet<RequestHeader> tblRequestHeaders { get; set; }
         public DbSet<RequestDetails> tblRequestDetais { get; set; }
         public DbSet<Fault> tblFaults { get; set; }
         public DbSet<ProcessFault> tblProcessFaults { get; set; }
-        public DbSet<Customer> tblCustomerS { get; set; }
+        public DbSet<Customer> tblCustomers { get; set; }
         public DbSet<Employee> tblEmployees { get; set; }
         public DbSet<Supplier> tblSuppliers { get; set; }
-        public DbSet<Location> tblLocations { get; set; }
-        public DbSet<PurchaseRequest> tblPurchaseRequests { get; set; }
-        public DbSet<PurchaseRequestItem> tblPurchaseRequestItems { get; set; }
-     
         public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }
         public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }

@@ -3,191 +3,207 @@
 *@
 
 @{
-    ViewData["Title"] = "SmartChill Solutions - Home";
+    ViewData["Title"] = "Fridge Management System";
 }
 
-<style>
-    /* Custom styles to match the cool-tone, modern design brief */
-    .hero-section {
-        /* Subtle blue-to-white gradient for the background */
-        background: linear-gradient(135deg, #1e90ff 0%, #ffffff 100%);
-        color: #000;
-        padding: 60px 0;
-        margin-bottom: 40px;
-        border-radius: 8px; /* Slight rounding for a modern look */
-    }
-
-    .feature-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        min-height: 250px;
-        text-align: center;
-    }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-
-    .footer-section {
-        background-color: #343a40; /* Darker footer, like some e-commerce sites */
-        color: #f8f9fa;
-        padding: 40px 0;
-    }
-
-    .smartchill-logo {
-        font-weight: 700;
-        font-size: 1.5rem;
-        color: #1e90ff !important; /* Ensure blue color for branding */
-    }
-</style>
-
-<div class="container-fluid hero-section">
-    <div class="container text-center py-5">
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
         <div class="row align-items-center">
-            <div class="col-md-7 text-md-start">
-                <h1 class="display-3 fw-bold mb-3">Streamline Your Fridge Management with <span class="text-primary">SmartChill</span></h1>
-                <p class="lead mb-4">
-                    Efficient solutions for **customer allocation, inventory tracking, fault resolution, maintenance, and procurement** – all in one web-based system.
-                </p>
-                <div class="d-grid gap-2 d-sm-flex justify-content-center justify-content-md-start">
-                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary btn-lg shadow-sm px-4 me-sm-3">Login Now</a>
-                    <a href="#contact-section" class="btn btn-outline-dark btn-lg px-4">Request Demo</a>
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3 text-center" style="color: white">Smart Fridge Management Solutions</h1>
+                <p class="lead mb-4">Professional refrigeration management for businesses of all sizes. Streamline your operations with our comprehensive fridge management system.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-light btn-lg px-4">
+                            <i class="fas fa-tachometer-alt me-2"></i>Home
+                        </a>
+@*                         <a href="@Url.Action("OurServices", "Home")" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-concierge-bell me-2"></i>Our Services
+                        </a>
+                        <a href="@Url.Action("AboutUs", "Home")" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-concierge-bell me-2"></i>About Us
+                        </a>
+                        <a href="@Url.Action("ContactUs", "Home")" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-concierge-bell me-2"></i>Contact Us
+                        </a> *@
+                    }
+@*                     else
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-light btn-lg px-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>Customer Login
+                        </a>
+                        <a href="@Url.Action("Contact", "Home")" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i>Contact Sales
+                        </a>
+                    } *@
                 </div>
             </div>
-            <div class="col-md-5 mt-4 mt-md-0">
-                @* Integrated visual of a commercial beverage fridge in action (Placeholder) *@
-
-            </div>
+           @*  <div class="col-lg-6 text-center">
+                <img src="~/images/fridge-management-hero.png" alt="Fridge Management System" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px;" />
+            </div> *@
         </div>
     </div>
-</div>
+</section>
 
-<div class="container py-5">
-    <h2 class="text-center mb-5 fw-bold">System Subsystems & Key Features</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-
-        <div class="col">
-            <div class="card feature-card h-100 p-3">
-                <i class="bi bi-gear-fill display-4 text-primary mb-3"></i>
-                <h5 class="card-title fw-bold">Administration</h5>
-                <p class="card-text text-muted">Manage customers, employees, locations, fridges, suppliers, and essential business information.</p>
-                <a href="#" class="mt-auto stretched-link text-decoration-none">Learn More &rarr;</a>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card feature-card h-100 p-3">
-                <i class="bi bi-person-check-fill display-4 text-primary mb-3"></i>
-                <h5 class="card-title fw-bold">Customer Management</h5>
-                <p class="card-text text-muted">Handle data, fridge allocations, inventory updates, and purchase requests with ease.</p>
-                <a href="#" class="mt-auto stretched-link text-decoration-none">Learn More &rarr;</a>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card feature-card h-100 p-3">
-                <i class="bi bi-exclamation-octagon-fill display-4 text-primary mb-3"></i>
-                <h5 class="card-title fw-bold">Fridge Fault Resolution</h5>
-                <p class="card-text text-muted">Report faults, track status, schedule repairs, and update conditions with quick notifications.</p>
-                <a href="#" class="mt-auto stretched-link text-decoration-none">Learn More &rarr;</a>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card feature-card h-100 p-3">
-                <i class="bi bi-tools display-4 text-primary mb-3"></i>
-                <h5 class="card-title fw-bold">Planned Maintenance</h5>
-                <p class="card-text text-muted">View service histories, schedule visits, and create transparent reports for optimal performance.</p>
-                <a href="#" class="mt-auto stretched-link text-decoration-none">Learn More &rarr;</a>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card feature-card h-100 p-3">
-                <i class="bi bi-cart-check-fill display-4 text-primary mb-3"></i>
-                <h5 class="card-title fw-bold">Automated Procurement</h5>
-                <p class="card-text text-muted">Manage suppliers, process requests, RFQs, quotations, and track delivery notes for timely fulfillment.</p>
-                <a href="#" class="mt-auto stretched-link text-decoration-none">Learn More &rarr;</a>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card feature-card h-100 bg-light p-4 border-primary">
-                <h5 class="card-title fw-bold mb-3">Why Choose SmartChill?</h5>
-                <ul class="list-unstyled text-start">
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> **Efficiency**: Transition from manual processes to automated tracking.</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> **User Roles**: Tailored access for Admin, Techs, Managers, Customers, and Suppliers.</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> **Compliance**: Adheres to best practices like soft deletes and input validation.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<hr />
-
-<div class="container py-5">
-    <div class="row align-items-center">
-        <div class="col-md-6 order-md-2 text-center mb-4 mb-md-0">
-            @* Image to complement the text *@
-
-        </div>
-        <div class="col-md-6 order-md-1">
-            <h2 class="mb-4 fw-bold">About SmartChill Solutions</h2>
-            <p class="lead">
-                SmartChill Solutions is a web-based **Fridge Management System** designed for beverage manufacturers operating in South Africa. Serving customers like spaza shops and shebeens, we streamline every aspect of operations, from **inventory tracking to field servicing.**
-            </p>
-            <p>
-                Built on user-friendly principles: we ensure **mandatory fields are clearly marked (*)**, maintain consistent date formats (dd/mm/yyyy), use encrypted passwords for security, and provide dynamic, meaningful reports. We ensure optimal screen use and internal consistency for all user roles.
-            </p>
-        </div>
-    </div>
-</div>
-
-<hr />
-
-@* Note: The Footer is also typically part of _Layout.cshtml, but we include its specific content structure here. *@
-<footer class="footer-section mt-auto" id="contact-section">
+<!-- Features Section -->
+<section class="features-section py-5 bg-light">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <span class="smartchill-logo text-white">SmartChill Solutions</span>
-                <p class="text-muted mt-2">Efficient management for a cooler business.</p>
-            </div>
-            <div class="col-md-3 mb-3">
-                <h5 class="fw-bold">Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-decoration-none text-light">Home</a></li>
-                    <li><a href="#" class="text-decoration-none text-light">Privacy Policy</a></li>
-                    <li><a href="#" class="text-decoration-none text-light">Terms of Use</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3 mb-3">
-                <h5 class="fw-bold">Contact Us</h5>
-                <ul class="list-unstyled">
-                    <li><i class="bi bi-envelope-fill me-2"></i> support@smartchill.co.za</li>
-                    <li><i class="bi bi-phone-fill me-2"></i> +27 10 555 CHIL (2445)</li>
-                    <li><i class="bi bi-geo-alt-fill me-2"></i> South Africa</li>
-                </ul>
-            </div>
-            <div class="col-md-2 mb-3">
-                <h5 class="fw-bold">Connect</h5>
-                <a href="#" class="text-light me-2"><i class="bi bi-facebook fs-4"></i></a>
-                <a href="#" class="text-light me-2"><i class="bi bi-twitter fs-4"></i></a>
-                <a href="#" class="text-light"><i class="bi bi-linkedin fs-4"></i></a>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold text-primary mb-3">Why Choose Our Fridge Management System?</h2>
+            <p class="lead">Comprehensive solutions designed to streamline your refrigeration management</p>
         </div>
-        <div class="row border-top pt-3 mt-3">
-            <div class="col-12 text-center text-muted">
-                <p class="mb-1">© 2025 SmartChill Solutions. All rights reserved.</p>
-                <small>Optimal screen use and internal consistency ensured | <a href="#" class="text-muted">Project Checklist Compliance</a></small>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-tools text-white fa-3x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Maintenance Tracking</h5>
+                        <p class="card-text">Schedule, track, and manage all fridge maintenance activities with automated reminders and service history.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-exclamation-triangle text-white fa-3x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Fault Reporting</h5>
+                        <p class="card-text">Quickly report and track fridge issues with real-time status updates and automated technician assignments.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-line text-white fa-3x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Inventory Management</h5>
+                        <p class="card-text">Track your fridge inventory, allocations, and stock levels with comprehensive reporting and analytics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-users text-white fa-3x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Customer Management</h5>
+                        <p class="card-text">Manage customer relationships, allocations, and service history with our comprehensive CRM features.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shipping-fast text-white fa-3x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Purchase Management</h5>
+                        <p class="card-text">Streamline fridge procurement with supplier management, purchase orders, and delivery tracking.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-mobile-alt text-white fa-3x"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Mobile Ready</h5>
+                        <p class="card-text">Access your fridge management system from any device with our responsive, mobile-friendly design.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</footer>
+</section>
 
-@section Scripts {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Statistics Section -->
+<section class="stats-section py-5 bg-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-bold text-primary">500+</h3>
+                    <p class="text-muted">Fridges Managed</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-bold text-primary">100+</h3>
+                    <p class="text-muted">Happy Customers</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-bold text-primary">24/7</h3>
+                    <p class="text-muted">Support Available</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <h3 class="display-4 fw-bold text-primary">99%</h3>
+                    <p class="text-muted">Uptime Guarantee</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-3">Ready to Transform Your Fridge Management?</h2>
+        <p class="lead mb-4">Join hundreds of businesses using our comprehensive fridge management system</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+           @*  <a href="@Url.Action("Contact", "Home")" class="btn btn-light btn-lg px-4">
+                <i class="fas fa-phone me-2"></i>Contact Us Today
+            </a>
+            <a href="@Url.Action("OurServices", "Home")" class="btn btn-outline-light btn-lg px-4">
+                <i class="fas fa-concierge-bell me-2"></i>View Our Services
+            </a> *@
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #008cba 0%, #008cba 100%);
+        }
+
+        .hover-shadow {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .hover-shadow:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+            }
+
+        .feature-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .feature-icon {
+            transform: scale(1.1);
+        }
+
+        .stat-item {
+            padding: 20px 0;
+        }
+    </style>
 }

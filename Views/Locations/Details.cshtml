@@ -1,0 +1,212 @@
+﻿@model LocationVM
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Location Details";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Location Management</a></li>
+                    <li class="breadcrumb-item active">Details</li>
+                </ol>
+            </nav>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 text-primary">
+                    <i class="fas fa-map-marker-alt me-2"></i>Location Details
+                </h1>
+                <div class="btn-group">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                    <a asp-action="Upsert" asp-route-id="@Model.Id" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Location Details Card -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Location Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Street Address</dt>
+                                <dd class="col-sm-8">@Model.StreetAddress</dd>
+
+                                <dt class="col-sm-4">Suburb</dt>
+                                <dd class="col-sm-8">@Model.Suburb</dd>
+
+                                <dt class="col-sm-4">City</dt>
+                                <dd class="col-sm-8">@Model.City</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Province</dt>
+                                <dd class="col-sm-8">@Model.Province</dd>
+
+                                <dt class="col-sm-4">Postal Code</dt>
+                                <dd class="col-sm-8">@Model.PostalCode</dd>
+
+                                <dt class="col-sm-4">Country</dt>
+                                <dd class="col-sm-8">@Model.Country</dd>
+
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                                        @(Model.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Full Address -->
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <strong>Complete Address:</strong><br>
+                        @Model.CompleteAddress
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Sidebar -->
+        <div class="col-lg-4">
+            <!-- Statistics Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Location Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="bg-primary text-white rounded p-3">
+                                <i class="fas fa-refrigerator fa-2x mb-2"></i>
+                                <h4 class="mb-0">@Model.TotalFridges</h4>
+                                <small>Total Fridges</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="bg-info text-white rounded p-3">
+                                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                <h4 class="mb-0">@Model.AvailableFridges</h4>
+                                <small>Available</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="bg-warning text-dark rounded p-3">
+                                <i class="fas fa-users fa-2x mb-2"></i>
+                                <h4 class="mb-0">@Model.TotalCustomers</h4>
+                                <small>Customers</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="bg-secondary text-white rounded p-3">
+                                <i class="fas fa-user-tie fa-2x mb-2"></i>
+                                <h4 class="mb-0">@Model.TotalEmployees</h4>
+                                <small>Employees</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Utilization Rate -->
+                    <div class="mt-3 p-3 bg-light rounded text-center">
+                        <h5 class="mb-1">Utilization Rate</h5>
+                        <div class="progress mb-2" style="height: 20px;">
+                            @{
+                                var utilizationPercent = Model.TotalFridges > 0 ?
+                                (double)Model.AvailableFridges / Model.TotalFridges * 100 : 0;
+                            }
+                            <div class="progress-bar @(utilizationPercent > 80 ? "bg-success" : utilizationPercent > 50 ? "bg-warning" : "bg-danger")"
+                                 role="progressbar" style="width: @(utilizationPercent)%">
+                                @Model.UtilizationRate
+                            </div>
+                        </div>
+                        <small class="text-muted">@Model.AvailableFridges of @Model.TotalFridges fridges available</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>Activity Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                            <span>Pending Maintenance</span>
+                            <span class="badge bg-warning">@Model.PendingMaintenance</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                            <span>Open Fault Reports</span>
+                            <span class="badge bg-danger">@Model.OpenFaults</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Information -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Audit Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Created Date</dt>
+                                <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                <dt class="col-sm-4">Created By</dt>
+                                <dd class="col-sm-8">@(Model.CreatedBy ?? "System")</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Last Updated</dt>
+                                <dd class="col-sm-8">@(Model.ModifiedAt?.ToString("dd/MM/yyyy HH:mm") ?? "Never")</dd>
+
+                                <dt class="col-sm-4">Updated By</dt>
+                                <dd class="col-sm-8">@(Model.ModifiedBy ?? "N/A")</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh page every 5 minutes to show updated statistics
+        setInterval(() => {
+            window.location.reload();
+        }, 300000); // 5 minutes
+    </script>
+}

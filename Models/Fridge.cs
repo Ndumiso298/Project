@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Project.Utility.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project.Models
 {
@@ -30,9 +33,20 @@ namespace Project.Models
         //[Required]
         public string? ImageUrl { get; set; }
         [Required]
-        public string Status { get; set; } 
+        public string AvailabilityStatus { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; } = true;
+
+        [Display(Name = "Scrapped")]
+        public bool IsScrapped { get; set; } = false;
+
         public string? Location { get; set; }
-        
-        public bool IsRented { get; set; }
+
+        [ValidateNever]
+        public virtual ICollection<FridgeInStock> FridgeInstances { get; set; }
+
+        [ValidateNever]
+        public virtual ICollection<SupplierFridge> SupplierLinks { get; set; } = new List<SupplierFridge>();
     }
 }

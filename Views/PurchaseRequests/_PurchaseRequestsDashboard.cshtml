@@ -1,0 +1,73 @@
+﻿@using Project.Utility.Enums
+@{
+    var recentRequests = ViewBag.RecentPurchaseRequests as IEnumerable<PurchaseRequest> ?? new List<PurchaseRequest>();
+    var pendingCount = ViewBag.PendingPurchaseRequestsCount as int? ?? 0;
+}
+
+<div class="card">
+    <div class="card-header bg-warning text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-shopping-cart me-2"></i>Recent Purchase Requests
+            @if (pendingCount > 0)
+            {
+                <span class="badge bg-light text-warning ms-2">@pendingCount Pending</span>
+            }
+        </h5>
+    </div>
+    <div class="card-body">
+        @if (recentRequests.Any())
+        {
+            <div class="list-group list-group-flush">
+                @foreach (var request in recentRequests.Take(5))
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">#@request.Id</div>
+                            <small class="text-muted">
+                                @request.RequestedBy?.ApplicationUser?.FullName •
+                                @request.Items.Count item(s) •
+                                R @(request.EstimatedTotalCost?.ToString("N2") ?? "-")
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-@GetStatusBadge(request.Status) mb-1">@request.Status</span>
+                            <br>
+                            <small class="text-muted">@request.CreatedAt.ToString("dd/MM")</small>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-3 text-center">
+                <a asp-controller="PurchaseRequests" asp-action="Index" class="btn btn-sm btn-outline-warning">
+                    View All Requests
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-3">
+                <i class="fas fa-shopping-cart fa-2x text-muted mb-2"></i>
+                <p class="text-muted mb-0">No recent purchase requests</p>
+                <a asp-controller="PurchaseRequests" asp-action="Upsert" class="btn btn-sm btn-warning mt-2">
+                    <i class="fas fa-plus me-1"></i>Create Request
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    public string GetStatusBadge(PurchaseRequestStatus status)
+    {
+        return status switch
+        {
+            PurchaseRequestStatus.Draft => "secondary",
+            PurchaseRequestStatus.UnderReview => "warning",
+            PurchaseRequestStatus.Approved => "success",
+            PurchaseRequestStatus.Rejected => "danger",
+            PurchaseRequestStatus.Submitted => "info",
+            _ => "secondary"
+        };
+    }
+}

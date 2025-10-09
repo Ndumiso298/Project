@@ -363,11 +363,29 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("tblCustomers");
+                });
 
-                    b.HasIndex("WorkLocationId");
+            modelBuilder.Entity("Project.Models.Employee", b =>
+                {
+                    b.Property<int>("EmployeeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.ToTable("tblEmployees");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeID"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EmployeeNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("EmployeeID");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("tblEmployee");
                 });
 
             modelBuilder.Entity("Project.Models.Fault", b =>
@@ -1726,32 +1744,18 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.Employee", null)
-                        .WithMany("ManagedCustomers")
-                        .HasForeignKey("EmployeeId");
-
-                    b.HasOne("Project.Models.Location", null)
-                        .WithMany("Customers")
-                        .HasForeignKey("LocationId");
-
                     b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
                 {
-                    b.HasOne("Project.Models.ApplicationUser", "UserAccount")
+                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.Location", "WorkLocation")
-                        .WithMany("Employees")
-                        .HasForeignKey("WorkLocationId");
-
-                    b.Navigation("UserAccount");
-
-                    b.Navigation("WorkLocation");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Project.Models.Fault", b =>

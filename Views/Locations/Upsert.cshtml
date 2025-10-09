@@ -1,0 +1,289 @@
+﻿@model LocationVM
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    var isCreate = Model.Id == 0;
+    ViewData["Title"] = isCreate ? "Add New Location" : "Edit Location";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Location Management</a></li>
+                    <li class="breadcrumb-item active">@(isCreate ? "Add New" : "Edit")</li>
+                </ol>
+            </nav>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 text-primary">
+                    <i class="fas fa-map-marker-alt me-2"></i>@ViewData["Title"]
+                </h1>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="card-title mb-0">
+                <i class="fas @(isCreate ? "fa-plus" : "fa-edit") me-2"></i>
+                @(isCreate ? "Add a new location" : "Edit location details")
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Upsert" method="post" id="locationForm">
+                @if (!isCreate)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row">
+                    <!-- Address Information Column -->
+                    <div class="col-lg-6">
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="fas fa-home me-2"></i>Address Information
+                        </h5>
+
+                        <!-- Address Line 1 -->
+                        <div class="mb-3">
+                            <label asp-for="StreetAddress" class="form-label required"></label>
+                            <input asp-for="StreetAddress" class="form-control"
+                                   placeholder="Enter street address, building name, etc." />
+                            <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                        </div>
+
+                        <!-- Suburb -->
+                        <div class="mb-3">
+                            <label asp-for="Suburb" class="form-label required"></label>
+                            <input asp-for="Suburb" class="form-control"
+                                   placeholder="Enter suburb name" id="suburbInput" />
+                            <span asp-validation-for="Suburb" class="text-danger"></span>
+                        </div>
+
+                        <!-- City -->
+                        <div class="mb-3">
+                            <label asp-for="City" class="form-label required"></label>
+                            <input asp-for="City" class="form-control"
+                                   placeholder="Enter city name" id="cityInput" list="citiesList" />
+                            <datalist id="citiesList"></datalist>
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Location Details Column -->
+                    <div class="col-lg-6">
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Location Details
+                        </h5>
+
+                        <!-- Province -->
+                        <div class="mb-3">
+                            <label asp-for="Province" class="form-label required"></label>
+                            <select asp-for="Province" class="form-select" id="provinceSelect">
+                                <option value="">-- Select Province --</option>
+                                @if (ViewBag.ProvinceList != null)
+                                {
+                                    foreach (var province in ViewBag.ProvinceList)
+                                    {
+                                        <option value="@province">@province</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="Province" class="text-danger"></span>
+                        </div>
+
+                        <!-- Postal Code -->
+                        <div class="mb-3">
+                            <label asp-for="PostalCode" class="form-label required"></label>
+                            <input asp-for="PostalCode" class="form-control"
+                                   placeholder="Enter 4-digit postal code" maxlength="4" />
+                            <span asp-validation-for="PostalCode" class="text-danger"></span>
+                        </div>
+
+                        <!-- Country -->
+                        <div class="mb-3">
+                            <label asp-for="Country" class="form-label required"></label>
+                            <input asp-for="Country" class="form-control" />
+                            <span asp-validation-for="Country" class="text-danger"></span>
+                        </div>
+
+                        <!-- Active Status -->
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                                <label asp-for="IsActive" class="form-check-label"></label>
+                            </div>
+                            <span asp-validation-for="IsActive" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Preview -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-eye me-2"></i>Address Preview
+                                </h6>
+                                <p class="card-text" id="addressPreview">
+                                    @Model.FullAddress
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <div class="btn-group">
+                                @if (!isCreate)
+                                {
+                                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </a>
+                                }
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>@(isCreate ? "Create Location" : "Update Location")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Address preview update
+        function updateAddressPreview() {
+            const addressLine1 = document.getElementById('AddressLine1').value;
+            const addressLine2 = document.getElementById('AddressLine2').value;
+            const suburb = document.getElementById('suburbInput').value;
+            const city = document.getElementById('cityInput').value;
+            const province = document.getElementById('provinceSelect').value;
+            const postalCode = document.getElementById('PostalCode').value;
+            const country = document.getElementById('Country').value;
+
+            let address = addressLine1;
+            if (addressLine2) address += ', ' + addressLine2;
+            if (suburb) address += ', ' + suburb;
+            if (city) address += ', ' + city;
+            if (province) address += ', ' + province;
+            if (postalCode) address += ', ' + postalCode;
+            if (country) address += ', ' + country;
+
+            document.getElementById('addressPreview').textContent = address || 'Enter address details to see preview...';
+        }
+
+        // Attach event listeners to all address fields
+        ['AddressLine1', 'AddressLine2', 'suburbInput', 'cityInput', 'provinceSelect', 'PostalCode', 'Country']
+            .forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updateAddressPreview);
+                    element.addEventListener('change', updateAddressPreview);
+                }
+            });
+
+        // Dynamic city loading based on province
+        document.getElementById('provinceSelect').addEventListener('change', function() {
+            const province = this.value;
+            const cityInput = document.getElementById('cityInput');
+            const citiesList = document.getElementById('citiesList');
+
+            if (!province) {
+                citiesList.innerHTML = '';
+                return;
+            }
+
+            fetch(`/Location/GetCities?province=${encodeURIComponent(province)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        citiesList.innerHTML = '';
+                        data.data.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city;
+                            citiesList.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading cities:', error));
+        });
+
+        // Location uniqueness check
+        document.getElementById('suburbInput').addEventListener('blur', function() {
+            const suburb = this.value;
+            const city = document.getElementById('cityInput').value;
+            const province = document.getElementById('provinceSelect').value;
+            const locationId = @Model.Id;
+
+            if (!suburb || !city || !province) return;
+
+            fetch(`/Location/CheckLocationExists?suburb=${encodeURIComponent(suburb)}&city=${encodeURIComponent(city)}&province=${encodeURIComponent(province)}&id=${locationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('locationExistsFeedback');
+                    if (!feedback) {
+                        const div = document.createElement('div');
+                        div.id = 'locationExistsFeedback';
+                        div.className = data.exists ? 'valid-feedback' : 'invalid-feedback';
+                        div.textContent = data.message;
+                        this.parentNode.appendChild(div);
+                    } else {
+                        feedback.className = data.exists ? 'valid-feedback' : 'invalid-feedback';
+                        feedback.textContent = data.message;
+                    }
+
+                    this.classList.remove('is-valid', 'is-invalid');
+                    this.classList.add(data.exists ? 'is-valid' : 'is-invalid');
+                });
+        });
+
+        // Form submission handler
+        document.getElementById('locationForm').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+        });
+
+        // Initialize address preview
+        document.addEventListener('DOMContentLoaded', updateAddressPreview);
+    </script>
+
+    <style>
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        #addressPreview {
+            min-height: 24px;
+            font-style: italic;
+        }
+    </style>
+}

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Project.Utility.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project.Models
@@ -24,5 +26,9 @@ namespace Project.Models
 
         [NotMapped]
         public double Price { get; set; }
+
+        [Required(ErrorMessage = "Status is required.")]
+        [Display(Name = "Status")]
+        public AllocationStatus Status { get; set; }
     }
 }
