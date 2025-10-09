@@ -69,7 +69,7 @@ namespace Project.Controllers
             AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.Customer.ApplicationUser.State;
             AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.Customer.ApplicationUser.PostalCode;
             AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.Customer.ApplicationUser.CellNumber;
-
+            
             foreach (var allocation in AllocationVM.AllocationList)
             {
                 allocation.Price = GetPriceBasedOnQuantity(allocation);

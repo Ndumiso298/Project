@@ -113,7 +113,6 @@ namespace Project.Controllers
                 return NotFound("Request not found.");
             }
 
-            // Update status to Approved
             requestHeaderFromDb.Status = SD.Approved;
             requestHeaderFromDb.RequestDate = DateTime.Now;
 
@@ -140,7 +139,6 @@ namespace Project.Controllers
                 return NotFound("Request not found.");
             }
 
-            // Update status to Rejected
             requestHeaderFromDb.Status = SD.Rejected;
             requestHeaderFromDb.RequestDate = DateTime.Now;
 
@@ -167,7 +165,6 @@ namespace Project.Controllers
                 return NotFound("Request not found.");
             }
 
-            // Update status to Needs Feedback or similar status
             requestHeaderFromDb.Status = SD.NeedsFeedback;
             requestHeaderFromDb.RequestDate = DateTime.Now;
 

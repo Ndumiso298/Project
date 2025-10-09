@@ -10,10 +10,17 @@ namespace Project.Models
     {
         [Key]
         public int RequestHeaderId { get; set; }
+
         public int CustomerID { get; set; }
         [ForeignKey("CustomerID")]
         [ValidateNever]
         public Customer Customer { get; set; }
+
+        public int EmployeeID { get; set; }
+        [ForeignKey("EmployeeID")]
+        [ValidateNever]
+        public Employee Employee { get; set; }
+
         public DateTime RequestDate { get; set; }
         public double RequestTotal { get; set; }
        [Required]

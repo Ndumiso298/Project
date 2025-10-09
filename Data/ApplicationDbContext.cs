@@ -19,26 +19,21 @@ namespace Project.Data
         public DbSet<Allocation> tblAllocations { get; set; }
         public DbSet<RequestHeader> tblRequestHeaders { get; set; }
         public DbSet<RequestDetails> tblRequestDetais { get; set; }
-        public DbSet<Fault> tblFaults { get; set; }
-        public DbSet<ProcessFault> tblProcessFaults { get; set; }
+       
         public DbSet<Customer> tblCustomer { get; set; }
         public DbSet<Employee> tblEmployee { get; set; }
-        public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
-        public DbSet<MaintenanceVisit> tblMaintenanceVisits { get; set; }
-        public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }
-        public DbSet<FridgeRequest> tblFridgeRequests { get; set; }
+       
         public DbSet<FridgeVisit> tblFridgeVisits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure FridgeInStock relationship
             modelBuilder.Entity<FridgeInStock>()
                 .HasOne(fis => fis.Fridge)
                 .WithMany(f => f.FridgeInstances)
                 .HasForeignKey(fis => fis.FridgeId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Seed Fridges
             modelBuilder.Entity<Fridge>().HasData(
