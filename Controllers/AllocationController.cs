@@ -16,30 +16,30 @@ namespace Project.Controllers
         private readonly ApplicationDbContext _db;
         [BindProperty]
         public AllocationVM AllocationVM { get; set; }
-      
+
         public AllocationController(ApplicationDbContext db)
         {
             _db = db;
         }
         public IActionResult Index()
         {
-            var claimsIdentity=(ClaimsIdentity)User.Identity;
-            var userId= claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             AllocationVM = new()
             {
-                    AllocationList = _db.tblAllocations
+                AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
                     .Include(a => a.Customer)
-                    .Where(a => a.Customer!=null && a.Customer.ApplicationUserId==userId)
+                    .Where(a => a.Customer != null && a.Customer.ApplicationUserId == userId)
                     .ToList(),
-                     RequestHeader = new()
+                RequestHeader = new()
             };
             foreach (var allocation in AllocationVM.AllocationList)
             {
-               allocation.Price=GetPriceBasedOnQuantity(allocation);
-               AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
+                allocation.Price = GetPriceBasedOnQuantity(allocation);
+                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
             }
-            return View(AllocationVM);          
+            return View(AllocationVM);
         }
         public IActionResult Summary()
         {
@@ -51,14 +51,14 @@ namespace Project.Controllers
                 AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
                     .Include(a => a.Customer)
-                    .Where(u=>u.Customer.ApplicationUserId == userId)
+                    .Where(u => u.Customer.ApplicationUserId == userId)
                     .ToList(),
                 RequestHeader = new()
             };
-            
 
 
-           
+
+
             AllocationVM.RequestHeader.Customer = _db.tblCustomer.Include(u => u.ApplicationUser)
              .FirstOrDefault(u => u.ApplicationUserId == userId);
 
@@ -68,8 +68,8 @@ namespace Project.Controllers
             AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.Customer.ApplicationUser.City;
             AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.Customer.ApplicationUser.State;
             AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.Customer.ApplicationUser.PostalCode;
-            AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.Customer.ApplicationUser.CellNumber;
-            
+            AllocationVM.RequestHeader.CellNumber = AllocationVM.RequestHeader.Customer.ApplicationUser.CellNumber;
+
             foreach (var allocation in AllocationVM.AllocationList)
             {
                 allocation.Price = GetPriceBasedOnQuantity(allocation);
@@ -88,7 +88,7 @@ namespace Project.Controllers
 
             AllocationVM.AllocationList = _db.tblAllocations
                      .Include(a => a.Fridge)
-                     .Include(a=>a.Customer)
+                     .Include(a => a.Customer)
                      .Where(a => a.Customer.ApplicationUserId == userId)
                      .ToList();
 
@@ -97,9 +97,9 @@ namespace Project.Controllers
                 FirstOrDefault(u => u.ApplicationUserId == userId);
 
             AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
-            AllocationVM.RequestHeader.CustomerID = Customer.CustomerID; 
+            AllocationVM.RequestHeader.CustomerID = Customer.CustomerID;
 
-           
+
 
 
 
@@ -109,9 +109,9 @@ namespace Project.Controllers
                 AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
             }
 
-           
-            //_db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
-            //_db.SaveChanges();
+
+            _db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
+            _db.SaveChanges();
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
@@ -136,10 +136,10 @@ namespace Project.Controllers
         }
         private double GetPriceBasedOnQuantity(Allocation Allocation)
         {
-            
-            
-                return Allocation.Fridge.RentalPricePerMonth;
-            
+
+
+            return Allocation.Fridge.RentalPricePerMonth;
+
         }
         public IActionResult Plus(int id)
         {
