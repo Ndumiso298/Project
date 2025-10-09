@@ -10,10 +10,17 @@ namespace Project.Models
     {
         [Key]
         public int RequestHeaderId { get; set; }
-        public string ApplicationUserId { get; set; }
-        [ForeignKey("ApplicationUserId")]
+
+        public int CustomerID { get; set; }
+        [ForeignKey("CustomerID")]
         [ValidateNever]
-        public ApplicationUser ApplicationUser { get; set; }
+        public Customer Customer { get; set; }
+
+        public int EmployeeID { get; set; }
+        [ForeignKey("EmployeeID")]
+        [ValidateNever]
+        public Employee Employee { get; set; }
+
         public DateTime RequestDate { get; set; }
         public double RequestTotal { get; set; }
        [Required]
@@ -34,6 +41,7 @@ namespace Project.Models
         public string? Status { get; set; } =SD.WaitingForPayment;
         public DateTime? ShippingDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
+
         public ICollection<RequestDetails> RequestFridges { get; set; }
         public ICollection<FridgeVisit> FridgeVisits { get; set; } = new List<FridgeVisit>();
 

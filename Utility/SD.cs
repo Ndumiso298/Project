@@ -16,6 +16,7 @@
         public const string WaitingForPayment = "Waiting For Payment";
         public const string Approved = "Approved";
         public const string Rejected = "Rejected";
+        public const string NeedsFeedback = "Needs Feedback";
 
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project.Models.FridgeVisit>
+﻿ @model IEnumerable<Project.Models.FridgeVisit>
 
 @{
     Layout = "_CustomerLayout";
@@ -64,12 +64,12 @@
                                             @visit.Notes
                                         </div>
                                     </td>
-                                    <td>@visit.RequestHeader.ApplicationUser?.FirstName</td>
-                                    <td>@visit.RequestHeader.ApplicationUser?.LastName</td>
-                                    <td>@visit.RequestHeader.ApplicationUser?.CellNumber</td>
+                                    <td>@visit.RequestHeader.Customer.ApplicationUser?.FirstName</td>
+                                    <td>@visit.RequestHeader.Customer.ApplicationUser?.LastName</td>
+                                    <td>@visit.RequestHeader.Customer.ApplicationUser?.CellNumber</td>
                                     <td>@detail.Fridge?.Type</td>
                                     <td>
-                                        <span class="badge bg-light text-dark">@detail.Fridge?.FridgeNo</span>
+                                        <span class="badge bg-light text-dark">@detail.Fridge?.Description</span>
                                     </td>
                                 </tr>
                             }
@@ -120,3 +120,4 @@
         });
     </script>
 }
+ 

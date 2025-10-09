@@ -419,7 +419,7 @@
                 {
                     id: @visit.VisitId,
                     date: new Date('@visit.VisitDate.ToString("yyyy-MM-dd")'),
-                    customer: '@visit.RequestHeader?.ApplicationUser?.FirstName @visit.RequestHeader?.ApplicationUser?.LastName',
+                    customer: '@visit.RequestHeader?.Customer.ApplicationUser?.FirstName @visit.RequestHeader?.Customer.ApplicationUser?.LastName',
                     technician: '@visit.TechnicianName',
                     fridge: '@visit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand' || 'Unknown Brand',
                    

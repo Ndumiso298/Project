@@ -6,13 +6,13 @@
     var claimsIdentity = (ClaimsIdentity)User.Identity;
     var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-    var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.ApplicationUserId == userId);
+    var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.Customer.ApplicationUserId == userId);
 
-    var cartCount = _db.tblAllocations.Count(a => a.ApplicationUserId == userId);
+    var cartCount = _db.tblAllocations.Count(a => a.Customer.ApplicationUserId == userId);
 
 
     var hasFridgeBookings = _db.tblFridgeVisits
-        .Any(v => v.RequestHeader.ApplicationUserId == userId);
+        .Any(v => v.RequestHeader.Customer.ApplicationUserId == userId);
 }
 
 <!DOCTYPE html>
@@ -24,11 +24,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <style>
         * {
             margin: 0;
@@ -312,16 +312,17 @@
                                 <a class="nav-link text-white" asp-area="" asp-controller="Admin" asp-action="Dashboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Fridge" asp-action="Index">Fridge</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Dashboard">Dashboard</a>
                             </li>
+                            
                             @*   <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Total Fridge Request</a>
                         </li> *@
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="Identity" asp-page="/Account/Register">
+                           @*  <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">
                                     Register User
                                 </a>
-                            </li>
+                            </li> *@
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-action="Index" asp-controller="User">
                                     Customer Requests
@@ -367,7 +368,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Request</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Orders</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
@@ -376,8 +377,9 @@
                         else if (User.IsInRole(SD.StockController))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CustomerSupport" asp-action="Dashboard">Home</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Dashboard">Dashboard</a>
                             </li>
+
 
                         }
                         else if (User.IsInRole(SD.FaultTechnician))
@@ -394,7 +396,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Index">Service Booking</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Service Schedules</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Service Appointment</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="SafetyGuideLines">Safety GuideLines</a>
