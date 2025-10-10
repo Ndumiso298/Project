@@ -16,29 +16,30 @@ namespace Project.Controllers
         private readonly ApplicationDbContext _db;
         [BindProperty]
         public AllocationVM AllocationVM { get; set; }
-      
+
         public AllocationController(ApplicationDbContext db)
         {
             _db = db;
         }
         public IActionResult Index()
         {
-            var claimsIdentity=(ClaimsIdentity)User.Identity;
-            var userId= claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             AllocationVM = new()
             {
-                    AllocationList = _db.tblAllocations
+                AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId==userId)
+                    .Include(a => a.Customer)
+                    .Where(a => a.Customer != null && a.Customer.ApplicationUserId == userId)
                     .ToList(),
-                     RequestHeader = new()
+                RequestHeader = new()
             };
             foreach (var allocation in AllocationVM.AllocationList)
             {
-               allocation.Price=GetPriceBasedOnQuantity(allocation);
-               AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
+                allocation.Price = GetPriceBasedOnQuantity(allocation);
+                AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
             }
-            return View(AllocationVM);          
+            return View(AllocationVM);
         }
         public IActionResult Summary()
         {
@@ -49,21 +50,25 @@ namespace Project.Controllers
             {
                 AllocationList = _db.tblAllocations
                     .Include(a => a.Fridge)
-                    .Where(a => a.ApplicationUserId == userId)
+                    .Include(a => a.Customer)
+                    .Where(u => u.Customer.ApplicationUserId == userId)
                     .ToList(),
                 RequestHeader = new()
             };
-            AllocationVM.RequestHeader.ApplicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
 
 
 
-            AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.ApplicationUser.FirstName;
-            AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.ApplicationUser.LastName;
-            AllocationVM.RequestHeader.StreetAddress = AllocationVM.RequestHeader.ApplicationUser.StreetAddress;
-            AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.ApplicationUser.City;
-            AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.ApplicationUser.State;
-            AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.ApplicationUser.PostalCode;
-            AllocationVM.RequestHeader.CellNumber=AllocationVM.RequestHeader.ApplicationUser.CellNumber;
+
+            AllocationVM.RequestHeader.Customer = _db.tblCustomer.Include(u => u.ApplicationUser)
+             .FirstOrDefault(u => u.ApplicationUserId == userId);
+
+            AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.Customer.ApplicationUser.FirstName;
+            AllocationVM.RequestHeader.LastName = AllocationVM.RequestHeader.Customer.ApplicationUser.LastName;
+            AllocationVM.RequestHeader.StreetAddress = AllocationVM.RequestHeader.Customer.ApplicationUser.StreetAddress;
+            AllocationVM.RequestHeader.City = AllocationVM.RequestHeader.Customer.ApplicationUser.City;
+            AllocationVM.RequestHeader.State = AllocationVM.RequestHeader.Customer.ApplicationUser.State;
+            AllocationVM.RequestHeader.PostalCode = AllocationVM.RequestHeader.Customer.ApplicationUser.PostalCode;
+            AllocationVM.RequestHeader.CellNumber = AllocationVM.RequestHeader.Customer.ApplicationUser.CellNumber;
 
             foreach (var allocation in AllocationVM.AllocationList)
             {
@@ -83,13 +88,18 @@ namespace Project.Controllers
 
             AllocationVM.AllocationList = _db.tblAllocations
                      .Include(a => a.Fridge)
-                     .Where(a => a.ApplicationUserId == userId)
+                     .Include(a => a.Customer)
+                     .Where(a => a.Customer.ApplicationUserId == userId)
                      .ToList();
 
-            AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
-            AllocationVM.RequestHeader.ApplicationUserId = userId;
+            Customer Customer = _db.tblCustomer.
+                Include(u => u.ApplicationUser).
+                FirstOrDefault(u => u.ApplicationUserId == userId);
 
-            ApplicationUser applicationUser = _db.AppUser.FirstOrDefault(u => u.Id == userId);
+            AllocationVM.RequestHeader.RequestDate = System.DateTime.Now;
+            AllocationVM.RequestHeader.CustomerID = Customer.CustomerID;
+
+
 
 
 
@@ -99,7 +109,7 @@ namespace Project.Controllers
                 AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
             }
 
-           
+
             _db.tblRequestHeaders.Add(AllocationVM.RequestHeader);
             _db.SaveChanges();
 
@@ -126,10 +136,10 @@ namespace Project.Controllers
         }
         private double GetPriceBasedOnQuantity(Allocation Allocation)
         {
-            
-            
-                return Allocation.Fridge.RentalPricePerMonth;
-            
+
+
+            return Allocation.Fridge.RentalPricePerMonth;
+
         }
         public IActionResult Plus(int id)
         {
@@ -151,19 +161,13 @@ namespace Project.Controllers
                 allocationFromDb.Count -= 1;
                 _db.tblAllocations.Update(allocationFromDb);
             }
-
-
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
         public IActionResult Remove(int id)
         {
             var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
-
             _db.tblAllocations.Remove(allocationFromDb);
-
-
-
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }

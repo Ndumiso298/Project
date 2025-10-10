@@ -23,11 +23,11 @@ namespace Project.Controllers
 
             var visits = _db.tblFridgeVisits
                 .Include(u => u.RequestHeader)
-                .ThenInclude(u => u.ApplicationUser)
+                .ThenInclude(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                //.Where(v => v.RequestHeader.ApplicationUserId == userId) 
+                //.Where(v => v.RequestHeader.ApplicationUserId == userId) sw2
                 .ToList();
 
             return View(visits);
@@ -39,7 +39,7 @@ namespace Project.Controllers
             //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             var allocatedRequests = _db.tblRequestHeaders
-                .Include(u => u.ApplicationUser)
+                .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
                 .Where(u => u.Status ==SD.Allocated) 
@@ -62,11 +62,11 @@ namespace Project.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             var requests = _db.tblRequestHeaders
-                .Include(u => u.ApplicationUser)
+                .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
                 .Include(u => u.FridgeVisits) 
-                .Where(u => u.ApplicationUserId == userId && u.Status == SD.Allocated)
+                .Where(u => u.Customer.ApplicationUserId == userId && u.Status == SD.Allocated)
                 .ToList();
 
             return View(requests);
@@ -75,7 +75,7 @@ namespace Project.Controllers
         public IActionResult DetailsFoRProcessing(int id)
         {
             var request = _db.tblRequestHeaders
-                .Include(u => u.ApplicationUser)
+                .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
                 .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == SD.Allocated);
@@ -97,7 +97,7 @@ namespace Project.Controllers
         {
             var visits =  _db.tblFridgeVisits
                 .Include(u => u.RequestHeader)
-                .ThenInclude(u => u.ApplicationUser)
+                .ThenInclude(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)      

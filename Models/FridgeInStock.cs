@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Project.Models
 {
@@ -23,7 +24,7 @@ namespace Project.Models
 
         [ForeignKey("Fridge")]
         public int FridgeId { get; set; }
-
+        [ValidateNever]
         public virtual Fridge Fridge { get; set; }
     }
 }
