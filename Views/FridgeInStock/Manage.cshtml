@@ -1,87 +1,129 @@
 ﻿@model Project.Models.ViewModel.FridgeStockVM
+
 @{
-    ViewData["Title"] = $"Manage {Model.FridgeModel.Brand} {Model.FridgeModel.Model} Stock";
     Layout = "_CustomerLayout";
 
+    ViewData["Title"] = "Manage Fridge Instances";
 }
 
-<div class="container">
-    <h2>@Model.FridgeModel.Brand @Model.FridgeModel.Model - Stock Management</h2>
+<div class="container py-4">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-primary text-light py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">@Model.FridgeModel.Brand @Model.FridgeModel.Model - Instances</h4>
+                <a asp-action="Create" asp-route-fridgeId="@Model.FridgeModel.FridgeId"
+                   class="btn btn-light rounded-pill">
+                    <i class="fas fa-plus me-2"></i>Add Instances
+                </a>
+            </div>
+        </div>
 
-    <!-- Stock Summary -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-light">
-                <div class="card-body text-center">
-                    <h3>@Model.TotalInstances</h3>
-                    <p>Total Units</p>
+        <div class="card-body p-4">
+            <!-- Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-light border-0">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary">@Model.TotalInstances</h3>
+                            <p class="mb-0 text-muted">Total Instances</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white border-0">
+                        <div class="card-body text-center">
+                            <h3>@Model.AvailableInstances</h3>
+                            <p class="mb-0">Available</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning border-0">
+                        <div class="card-body text-center">
+                            <h3>@Model.RentedInstances</h3>
+                            <p class="mb-0">Rented</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-success text-white">
-                <div class="card-body text-center">
-                    <h3>@Model.AvailableInstances</h3>
-                    <p>Available</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-warning">
-                <div class="card-body text-center">
-                    <h3>@Model.RentedInstances</h3>
-                    <p>Rented</p>
-                </div>
+
+            <!-- Fridge Instances Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fridge Number</th>
+                            <th>Condition</th>
+                            <th>Last Maintenance</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var instance in Model.FridgeInstances)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">@instance.FridgeNo</strong>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        @(instance.Condition == "Excellent" ? "bg-success" :
+                                          instance.Condition == "Good" ? "bg-info" :
+                                          instance.Condition == "Fair" ? "bg-warning" : "bg-danger")">
+                                        @instance.Condition
+                                    </span>
+                                </td>
+                                <td>@instance.LastMaintenanceDate.ToString("yyyy-MM-dd")</td>
+                                <td>@instance.Location</td>
+                                <td>
+                                    @if (instance.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">Available</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Rented</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a asp-action="Edit" asp-route-id="@instance.FridgeInStockId"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form asp-action="ToggleAvailability" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@instance.FridgeInStockId" />
+                                            <button type="submit" class="btn btn-sm
+                                                @(instance.IsAvailable ? "btn-outline-warning" : "btn-outline-success")">
+                                                <i class="fas @(instance.IsAvailable ? "fa-times" : "fa-check")"></i>
+                                            </button>
+                                        </form>
+                                        <a asp-action="Delete" asp-route-id="@instance.FridgeInStockId"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @if (!Model.FridgeInstances.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-refrigerator fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No fridge instances found</h5>
+                        <p class="text-muted">Add some fridge instances to get started</p>
+                        <a asp-action="Create" asp-route-fridgeId="@Model.FridgeModel.FridgeId"
+                           class="btn btn-primary rounded-pill">
+                            <i class="fas fa-plus me-2"></i>Add First Instance
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
-
-    <p>
-        <a asp-action="Create" asp-route-fridgeId="@Model.FridgeModel.FridgeId" class="btn btn-success">Add New Fridge Unit</a>
-        <a asp-controller="Fridge" asp-action="Manage" class="btn btn-secondary">Back to Models</a>
-    </p>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Fridge No</th>
-                <th>Condition</th>
-                <th>Last Maintenance</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.FridgeInstances)
-            {
-                <tr>
-                    <td>@item.FridgeNo</td>
-                    <td>@item.Condition</td>
-                    <td>@item.LastMaintenanceDate.ToString("MMM dd, yyyy")</td>
-                    <td>@item.Location</td>
-                    <td>
-                        @if (item.IsAvailable)
-                        {
-                            <span class="badge bg-success">Available</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning">Rented</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.FridgeInStockId" class="btn btn-warning btn-sm">Edit</a>
-                        <form asp-action="ToggleAvailability" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="@item.FridgeInStockId" />
-                            <button type="submit" class="btn btn-info btn-sm">
-                                @(item.IsAvailable ? "Mark as Rented" : "Mark as Available")
-                            </button>
-                        </form>
-                        <a asp-action="Delete" asp-route-id="@item.FridgeInStockId" class="btn btn-danger btn-sm">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>

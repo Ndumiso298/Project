@@ -19,7 +19,10 @@ namespace Project.Models
         public string Condition { get; set; } 
 
         [Required]
-        public bool IsAvailable { get; set; } 
+        public bool IsAvailable { get; set; }
+        [Required]
+        public int Quantity { get; set; }
+
         public string? Location { get; set; }
 
         [ForeignKey("Fridge")]

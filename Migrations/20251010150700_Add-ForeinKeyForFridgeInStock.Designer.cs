@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251010150700_Add-ForeinKeyForFridgeInStock")]
+    partial class AddForeinKeyForFridgeInStock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1135,6 +1138,9 @@ namespace Project.Migrations
                     b.Property<int>("FridgeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FridgeInStockId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -1144,6 +1150,8 @@ namespace Project.Migrations
                     b.HasKey("RequestDetailId");
 
                     b.HasIndex("FridgeId");
+
+                    b.HasIndex("FridgeInStockId");
 
                     b.HasIndex("RequestHeaderId");
 
@@ -1384,6 +1392,10 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Project.Models.FridgeInStock", "FridgeInStock")
+                        .WithMany()
+                        .HasForeignKey("FridgeInStockId");
+
                     b.HasOne("Project.Models.RequestHeader", "RequestHeader")
                         .WithMany("RequestFridges")
                         .HasForeignKey("RequestHeaderId")
@@ -1391,6 +1403,8 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.Navigation("Fridge");
+
+                    b.Navigation("FridgeInStock");
 
                     b.Navigation("RequestHeader");
                 });

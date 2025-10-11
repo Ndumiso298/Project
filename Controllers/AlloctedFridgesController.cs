@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
@@ -42,7 +43,7 @@ namespace Project.Controllers
                 .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .Where(u => u.Status ==SD.Allocated) 
+                .Where(u => u.Status ==SD.Approved) 
                 .ToList();
 
             var requestIds = allocatedRequests.Select(u => u.RequestHeaderId).ToList();
@@ -66,7 +67,7 @@ namespace Project.Controllers
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
                 .Include(u => u.FridgeVisits) 
-                .Where(u => u.Customer.ApplicationUserId == userId && u.Status == SD.Allocated)
+                .Where(u => u.Customer.ApplicationUserId == userId && u.Status == SD.Approved)
                 .ToList();
 
             return View(requests);
@@ -78,7 +79,7 @@ namespace Project.Controllers
                 .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == SD.Allocated);
+                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == SD.Approved);
 
             if (request == null)
             {
@@ -111,7 +112,7 @@ namespace Project.Controllers
             var request = _db.tblRequestHeaders
                 .Include(r => r.RequestFridges)
                 .ThenInclude(rf => rf.Fridge)
-                .FirstOrDefault(r => r.RequestHeaderId == requestId && r.Status == SD.Allocated);
+                .FirstOrDefault(r => r.RequestHeaderId == requestId && r.Status == SD.Approved);
 
             if (request == null)
             {

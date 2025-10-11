@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251010124311_SeedinGoICS")]
+    partial class SeedinGoICS
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -396,7 +399,7 @@ namespace Project.Migrations
                             Brand = "Defy",
                             CapacityLiters = 350,
                             Description = "A+ energy rated with multi-airflow system",
-                            ImageUrl = "Images/Fridges/3af820d9-c376-4432-8a69-db81af07350d.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Pretoria",
                             Model = "DAC621",
                             RentalPricePerMonth = 550.0,
@@ -409,7 +412,7 @@ namespace Project.Migrations
                             Brand = "Whirlpool",
                             CapacityLiters = 200,
                             Description = "Compact and efficient single door fridge",
-                            ImageUrl = "Images/Fridges/3fab2301-7b43-489c-a5eb-a4a84e146a0c.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Durban",
                             Model = "WDE205",
                             RentalPricePerMonth = 400.0,
@@ -422,7 +425,7 @@ namespace Project.Migrations
                             Brand = "Bosch",
                             CapacityLiters = 350,
                             Description = "No frost cooling with LED lighting",
-                            ImageUrl = "Images/Fridges/4ff51e2e-eb52-464d-9bd0-9b93671b7b1d.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Port Elizabeth",
                             Model = "KDN42",
                             RentalPricePerMonth = 600.0,
@@ -435,7 +438,7 @@ namespace Project.Migrations
                             Brand = "Smeg",
                             CapacityLiters = 270,
                             Description = "Stylish retro fridge with adjustable shelves",
-                            ImageUrl = "Images/Fridges/5f3c62bc-b7a1-4099-8453-0562449c1eba.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Johannesburg",
                             Model = "FAB28",
                             RentalPricePerMonth = 650.0,
@@ -448,7 +451,7 @@ namespace Project.Migrations
                             Brand = "Kelvinator",
                             CapacityLiters = 265,
                             Description = "Affordable fridge with efficient cooling",
-                            ImageUrl = "Images/Fridges/06d99650-49bb-46a0-9c87-479b064e20cf.jpg.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg.jpg",
                             Location = "Cape Town",
                             Model = "KRF265",
                             RentalPricePerMonth = 430.0,
@@ -461,7 +464,7 @@ namespace Project.Migrations
                             Brand = "Siemens",
                             CapacityLiters = 360,
                             Description = "No frost with multi-airflow system",
-                            ImageUrl = "Images/Fridges/6c99da3a-7e53-4a54-a4c2-179ba50f4552.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Pretoria",
                             Model = "KG36N",
                             RentalPricePerMonth = 590.0,
@@ -474,7 +477,7 @@ namespace Project.Migrations
                             Brand = "Haier",
                             CapacityLiters = 290,
                             Description = "Toughened glass shelves and energy efficient",
-                            ImageUrl = "Images/Fridges/7a5c9f14-43cc-4b88-98a1-2cd4f34b355a.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Durban",
                             Model = "HRF290",
                             RentalPricePerMonth = 470.0,
@@ -487,7 +490,7 @@ namespace Project.Migrations
                             Brand = "Hisense",
                             CapacityLiters = 310,
                             Description = "Low noise and efficient compressor",
-                            ImageUrl = "Images/Fridges/7a5ef7b8-7c58-4d8e-bf27-3c1c9a911b45.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Bloemfontein",
                             Model = "H310BI",
                             RentalPricePerMonth = 500.0,
@@ -500,7 +503,7 @@ namespace Project.Migrations
                             Brand = "Defy",
                             CapacityLiters = 420,
                             Description = "LED display and water dispenser",
-                            ImageUrl = "Images/Fridges/8e2d92bf-c306-4688-89f5-019d76a9539b.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Cape Town",
                             Model = "DAC700",
                             RentalPricePerMonth = 700.0,
@@ -513,7 +516,7 @@ namespace Project.Migrations
                             Brand = "LG",
                             CapacityLiters = 282,
                             Description = "Smart cooling with WiFi control",
-                            ImageUrl = "Images/Fridges/7e4c22d6-9a91-4d0c-83db-95856b2a30f0.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Durban",
                             Model = "GL-Q282",
                             RentalPricePerMonth = 530.0,
@@ -526,7 +529,7 @@ namespace Project.Migrations
                             Brand = "Samsung",
                             CapacityLiters = 340,
                             Description = "Twin cooling system for freshness",
-                            ImageUrl = "Images/Fridges/16eaa25a-e6ad-4584-869f-79c59db95573.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Pretoria",
                             Model = "RT34A",
                             RentalPricePerMonth = 560.0,
@@ -539,7 +542,7 @@ namespace Project.Migrations
                             Brand = "Whirlpool",
                             CapacityLiters = 500,
                             Description = "High capacity with 6th sense technology",
-                            ImageUrl = "Images/Fridges/33b3ec74-7862-44e1-afa0-4c4a42689a9f.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Johannesburg",
                             Model = "WDE520",
                             RentalPricePerMonth = 750.0,
@@ -552,7 +555,7 @@ namespace Project.Migrations
                             Brand = "Bosch",
                             CapacityLiters = 400,
                             Description = "Energy efficient and silent operation",
-                            ImageUrl = "Images/Fridges/59a41e73-af93-465b-a5aa-f0d7cf37fe2c.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Durban",
                             Model = "KDN43",
                             RentalPricePerMonth = 610.0,
@@ -565,7 +568,7 @@ namespace Project.Migrations
                             Brand = "Smeg",
                             CapacityLiters = 300,
                             Description = "Vintage design with modern efficiency",
-                            ImageUrl = "Images/Fridges/be54bce5-b511-4946-8f3a-55ae0a65ec35.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Cape Town",
                             Model = "FAB32",
                             RentalPricePerMonth = 670.0,
@@ -578,7 +581,7 @@ namespace Project.Migrations
                             Brand = "Siemens",
                             CapacityLiters = 390,
                             Description = "Multi-airflow and easy-clean interior",
-                            ImageUrl = "Images/Fridges/dff205af-9cde-4e97-876d-3b9a603e6459.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Johannesburg",
                             Model = "KG39N",
                             RentalPricePerMonth = 620.0,
@@ -591,7 +594,7 @@ namespace Project.Migrations
                             Brand = "Haier",
                             CapacityLiters = 330,
                             Description = "Tough build and fast cooling",
-                            ImageUrl = "Images/Fridges/45189b3d-8e97-49b3-8c90-47ec9d6db6b9.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Pretoria",
                             Model = "HRF330",
                             RentalPricePerMonth = 500.0,
@@ -604,7 +607,7 @@ namespace Project.Migrations
                             Brand = "Defy",
                             CapacityLiters = 473,
                             Description = "Spacious and frost-free design",
-                            ImageUrl = "Images/Fridges/2634148d-20b9-40c2-9849-3566df69f859.jpg",
+                            ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg",
                             Location = "Durban",
                             Model = "DAC473",
                             RentalPricePerMonth = 720.0,

@@ -15,13 +15,13 @@ namespace Project.Controllers
             _db = db;
         }
 
-        public async Task<IActionResult> Manage(int? id)
+        public IActionResult Manage(int? id)
         {
             if (id == null) return NotFound();
 
-            var fridge = await _db.tblFridges
+            var fridge = _db.tblFridges
                 .Include(f => f.FridgeInstances)
-                .FirstOrDefaultAsync(m => m.FridgeId == id);
+                .FirstOrDefault(m => m.FridgeId == id);
 
             if (fridge == null) return NotFound();
 
@@ -42,47 +42,94 @@ namespace Project.Controllers
             var fridge = _db.tblFridges.Find(fridgeId);
             if (fridge == null) return NotFound();
 
-            var fridgeInStock = new FridgeInStock
+            var viewModel = new CreateFridgeInstancesVM
             {
                 FridgeId = fridgeId,
+                FridgeModel = $"{fridge.Brand} {fridge.Model}",
+                Quantity = 1,
                 LastMaintenanceDate = DateTime.Now,
                 Condition = "Excellent",
-                IsAvailable = true
+                Location = fridge.Location ?? "Warehouse"
             };
 
-            ViewData["FridgeModel"] = $"{fridge.Brand} {fridge.Model}";
-            return View(fridgeInStock);
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(FridgeInStock fridgeInStock)
+        public IActionResult Create(CreateFridgeInstancesVM viewModel)
         {
             if (ModelState.IsValid)
             {
-                if (string.IsNullOrEmpty(fridgeInStock.FridgeNo))
+                var fridge = _db.tblFridges.Find(viewModel.FridgeId);
+                if (fridge == null)
                 {
-                    var fridge = await _db.tblFridges.FindAsync(fridgeInStock.FridgeId);
-                    var existingCount = await _db.tblFridgeInStocks
-                        .CountAsync(f => f.FridgeId == fridgeInStock.FridgeId);
-
-                    fridgeInStock.FridgeNo = $"{fridge.Brand.Substring(0, 3).ToUpper()}-{fridge.Model.Substring(0, 3).ToUpper()}-{existingCount + 1:000}";
+                    ModelState.AddModelError("", "Fridge model not found");
+                    return View(viewModel);
                 }
 
-                _db.Add(fridgeInStock);
-                await _db.SaveChangesAsync();
-                return RedirectToAction(nameof(Manage), new { id = fridgeInStock.FridgeId });
+                // Get the current count of instances for this fridge model
+                var existingInstancesCount =  _db.tblFridgeInStocks
+                    .Count(f => f.FridgeId == viewModel.FridgeId);
+
+                var fridgeInstances = new List<FridgeInStock>();
+
+                for (int i = 1; i <= viewModel.Quantity; i++)
+                {
+                    var fridgeNo = GenerateFridgeNumber(fridge, existingInstancesCount + i);
+
+                    var fridgeInstance = new FridgeInStock
+                    {
+                        FridgeId = viewModel.FridgeId,
+                        FridgeNo = fridgeNo,
+                        LastMaintenanceDate = viewModel.LastMaintenanceDate,
+                        Condition = viewModel.Condition,
+                        IsAvailable = true,
+                        Quantity = 1, // Each instance represents one physical fridge
+                        Location = viewModel.Location
+                    };
+
+                    fridgeInstances.Add(fridgeInstance);
+                }
+
+                _db.tblFridgeInStocks.AddRange(fridgeInstances);
+                _db.SaveChanges();
+
+                TempData["Success"] = $"{viewModel.Quantity} fridge instance(s) created successfully!";
+                return RedirectToAction(nameof(Manage), new { id = viewModel.FridgeId });
             }
-            return View(fridgeInStock);
+
+            // Reload fridge model name if validation fails
+            var fridgeReload = _db.tblFridges.Find(viewModel.FridgeId);
+            if (fridgeReload != null)
+            {
+                viewModel.FridgeModel = $"{fridgeReload.Brand} {fridgeReload.Model}";
+            }
+
+            return View(viewModel);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        private string GenerateFridgeNumber(Fridge fridge, int sequenceNumber)
+        {
+            // Extract first 3 characters from brand and model
+            var brandCode = fridge.Brand.Length >= 3 ? fridge.Brand.Substring(0, 3).ToUpper() : fridge.Brand.ToUpper().PadRight(3, 'X');
+            var modelCode = fridge.Model.Length >= 3 ? fridge.Model.Substring(0, 3).ToUpper() : fridge.Model.ToUpper().PadRight(3, 'X');
+
+            // Clean codes to ensure they're alphanumeric only
+            brandCode = System.Text.RegularExpressions.Regex.Replace(brandCode, "[^A-Z0-9]", "X");
+            modelCode = System.Text.RegularExpressions.Regex.Replace(modelCode, "[^A-Z0-9]", "X");
+
+            // Format: FRG-BRAND-MODEL-001
+            return $"FRG-{brandCode}-{modelCode}-{sequenceNumber:000}";
+        }
+
+        public  IActionResult Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            var fridgeInStock = await _db.tblFridgeInStocks
+            var fridgeInStock = _db.tblFridgeInStocks
                 .Include(f => f.Fridge)
-                .FirstOrDefaultAsync(m => m.FridgeInStockId == id);
+                .FirstOrDefault(m => m.FridgeInStockId == id);
 
             if (fridgeInStock == null) return NotFound();
 
@@ -91,7 +138,7 @@ namespace Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, FridgeInStock fridgeInStock)
+        public IActionResult Edit(int id, FridgeInStock fridgeInStock)
         {
             if (id != fridgeInStock.FridgeInStockId) return NotFound();
 
@@ -100,7 +147,7 @@ namespace Project.Controllers
                 try
                 {
                     _db.Update(fridgeInStock);
-                    await _db.SaveChangesAsync();
+                    _db.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -115,31 +162,31 @@ namespace Project.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ToggleAvailability(int id)
+        public IActionResult ToggleAvailability(int id)
         {
-            var fridgeInStock = await _db.tblFridgeInStocks.FindAsync(id);
+            var fridgeInStock = _db.tblFridgeInStocks.Find(id);
             if (fridgeInStock == null)
-            { 
-                return NotFound(); 
+            {
+                return NotFound();
             }
 
             fridgeInStock.IsAvailable = !fridgeInStock.IsAvailable;
             _db.Update(fridgeInStock);
-            await _db.SaveChangesAsync();
+            _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Manage), new { id = fridgeInStock.FridgeId });
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var fridgeInStock = await _db.tblFridgeInStocks
+            var fridgeInStock = _db.tblFridgeInStocks
                 .Include(f => f.Fridge)
-                .FirstOrDefaultAsync(m => m.FridgeInStockId == id);
+                .FirstOrDefault(m => m.FridgeInStockId == id);
 
             if (fridgeInStock == null) return NotFound();
 
@@ -148,14 +195,14 @@ namespace Project.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var fridgeInStock = await _db.tblFridgeInStocks.FindAsync(id);
+            var fridgeInStock = _db.tblFridgeInStocks.Find(id);
             if (fridgeInStock != null)
             {
                 var fridgeId = fridgeInStock.FridgeId;
                 _db.tblFridgeInStocks.Remove(fridgeInStock);
-                await _db.SaveChangesAsync();
+                _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Manage), new { id = fridgeId });
             }
             return RedirectToAction(nameof(Index));

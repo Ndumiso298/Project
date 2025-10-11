@@ -1,99 +1,66 @@
-﻿@model Project.Models.FridgeInStock
+﻿@model Project.Models.ViewModel.CreateFridgeInstancesVM
+
 @{
-    ViewData["Title"] = "Add Fridge Instance";
-    Layout = "_CustomerLayout";
-
-   
-}
-<style>
-.form-label.fw-semibold {
-    color: #495057;
-    margin-bottom: 0.5rem;
+    ViewData["Title"] = "Add Fridge Instances";
 }
 
-.card {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-.card-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.form-text {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-media (max-width: 576px) {
-    .d-flex.flex-wrap {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
-}
-}
-
-</style>
 <div class="container py-4">
-    <div class="card shadow border-0 rounded-4">
-        <div class="card-header bg-primary text-white">
-            <h1 class="h4 mb-0">Add New Fridge to Stock - @ViewData["FridgeModel"]</h1>
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-primary text-light py-3">
+            <h4 class="mb-0 text-center">Add Fridge Instances - @Model.FridgeModel</h4>
         </div>
-
-        <div class="card-body">
-            <form asp-action="Create" method="post" role="form">
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
                 <input type="hidden" asp-for="FridgeId" />
+                <input type="hidden" asp-for="FridgeModel" />
 
-                <div class="mb-3">
-                    <label asp-for="FridgeNo" class="form-label fw-semibold">Fridge Serial Number</label>
-                    <input asp-for="FridgeNo" class="form-control" aria-describedby="fridgeNoHelp" />
-                    <div id="fridgeNoHelp" class="form-text">Enter the unique serial number for this fridge.</div>
-                    <span asp-validation-for="FridgeNo" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Quantity" class="form-label fw-semibold">Number of Instances</label>
+                        <input asp-for="Quantity" class="form-control" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                        <small class="form-text text-muted">How many physical fridges do you want to add?</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="LastMaintenanceDate" class="form-label fw-semibold">Last Maintenance Date</label>
+                        <input asp-for="LastMaintenanceDate" type="date" class="form-control" />
+                        <span asp-validation-for="LastMaintenanceDate" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Condition" class="form-label fw-semibold">Current Condition</label>
-                    <select asp-for="Condition" class="form-select" aria-describedby="conditionHelp">
-                        <option value="">Select Condition</option>
-                        <option value="Excellent">Excellent</option>
-                        <option value="Good">Good</option>
-                        <option value="Fair">Fair</option>
-                        <option value="Needs Repair">Needs Repair</option>
-                    </select>
-                    <div id="conditionHelp" class="form-text">Select the current physical condition of the fridge.</div>
-                    <span asp-validation-for="Condition" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Condition" class="form-label fw-semibold">Condition</label>
+                        <select asp-for="Condition" class="form-select">
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Needs Maintenance">Needs Maintenance</option>
+                        </select>
+                        <span asp-validation-for="Condition" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Location" class="form-label fw-semibold">Location</label>
+                        <input asp-for="Location" class="form-control" placeholder="e.g., Warehouse, Store Room" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="LastMaintenanceDate" class="form-label fw-semibold">Last Maintenance Date</label>
-                    <input asp-for="LastMaintenanceDate" type="date" class="form-control" aria-describedby="maintenanceHelp" />
-                    <div id="maintenanceHelp" class="form-text">Enter the date when this fridge was last serviced.</div>
-                    <span asp-validation-for="LastMaintenanceDate" class="text-danger"></span>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Each instance will be assigned a unique fridge number automatically.
+                    Example: FRG-SAM-GAL-001, FRG-SAM-GAL-002, etc.
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Location" class="form-label fw-semibold">Current Location</label>
-                    <input asp-for="Location" class="form-control" aria-describedby="locationHelp" />
-                    <div id="locationHelp" class="form-text">Enter the current location of this fridge (optional).</div>
-                    <span asp-validation-for="Location" class="text-danger"></span>
-                </div>
-
-                <div class="form-check mb-4">
-                    <input asp-for="IsAvailable" class="form-check-input" role="switch" />
-                    <label asp-for="IsAvailable" class="form-check-label fw-semibold">Available for Use</label>
-                    <div class="form-text">Check this box if the fridge is currently available for use.</div>
-                </div>
-
-                <div class="d-flex gap-2 flex-wrap">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-check-lg me-2"></i>Save Fridge Instance
-                    </button>
-                    <a asp-action="Manage" asp-route-id="@Model.FridgeId" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-x-lg me-2"></i>Cancel
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a asp-action="Manage" asp-route-id="@Model.FridgeId" class="btn btn-secondary rounded-pill px-4">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
                     </a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus me-2"></i>Create Instances
+                    </button>
                 </div>
             </form>
         </div>
@@ -101,18 +68,7 @@ media (max-width: 576px) {
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
-    <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "WebPage",
-          "name": "Add Fridge Instance - @ViewData["FridgeModel"]",
-          "description": "Add a new fridge instance to inventory management system",
-          "publisher": {
-            "@@type": "Organization",
-            "name": "Your Company Name"
-          }
-        }
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
