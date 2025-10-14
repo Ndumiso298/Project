@@ -5,4 +5,49 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <!-- Button to trigger modal -->
+    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#infoModal">
+      Click here
+    </button>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Capture Comment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="userComment" class="form-label">Your Comment:</label>
+                <textarea class="form-control" id="userComment" rows="4" placeholder="Type your comment here..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveComment()">Save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let capturedComment = "";
+
+    function saveComment() {
+        capturedComment = document.getElementById("userComment").value;
+        console.log("Captured Comment:", capturedComment);
+
+        // Close the modal
+        const modalElement = document.getElementById('infoModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance.hide();
+    }
+
+    // Clear textarea when modal is hidden
+    document.getElementById('infoModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById("userComment").value = "";
+    });
+</script>
