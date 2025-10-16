@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Project.Models
 {
@@ -16,10 +17,13 @@ namespace Project.Models
         public DateTime LastMaintenanceDate { get; set; }
 
         [Required]
-        public string Condition { get; set; }
+        public string Condition { get; set; } 
 
         [Required]
         public bool IsAvailable { get; set; }
+        [Required]
+        public int Quantity { get; set; }
+
         public string? Location { get; set; }
 
         [ForeignKey("Fridge")]

@@ -1,0 +1,434 @@
+﻿@model Fridge
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Edit Fridge";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <!-- Card Header -->
+                <div class="card-header bg-gradient-primary bg-opacity-10 py-4 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="h4 mb-0 text-primary">
+                                <i class="bi bi-refrigerator me-2"></i>
+                                Edit Fridge
+                            </h2>
+                        </div>
+                        <div class="col-auto">
+                            <a asp-controller="Fridge" asp-action="Manage" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-arrow-left me-1"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+                    <form method="post" class="row g-4" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="FridgeId" type="hidden" />
+                        <input asp-for="ImageUrl" type="hidden" />
+
+                        <div class="col-12">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="row g-4">
+                                <!-- Basic Information Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-none">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0 text-primary">Basic Information</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label asp-for="Brand" class="form-label fw-semibold"></label>
+                                                    <select asp-for="Brand" class="form-select">
+                                                        <option value="">-- Select Brand --</option>
+                                                        <option value="Samsung">Samsung</option>
+                                                        <option value="LG">LG</option>
+                                                        <option value="Whirlpool">Whirlpool</option>
+                                                        <option value="Bosch">Bosch</option>
+                                                        <option value="Defy">Defy</option>
+                                                        <option value="Hisense">Hisense</option>
+                                                        <option value="Haier">Haier</option>
+                                                    </select>
+                                                    <span asp-validation-for="Brand" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="Model" class="form-label fw-semibold"></label>
+                                                    <input asp-for="Model" class="form-control" placeholder="Enter model name" />
+                                                    <span asp-validation-for="Model" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="Type" class="form-label fw-semibold"></label>
+                                                    <select asp-for="Type" class="form-select">
+                                                        <option value="">-- Select Fridge Type --</option>
+                                                        <option value="Top Freezer">Top Freezer</option>
+                                                        <option value="Bottom Freezer">Bottom Freezer</option>
+                                                        <option value="Side-by-Side">Side-by-Side</option>
+                                                        <option value="French Door">French Door</option>
+                                                        <option value="Mini Fridge">Mini Fridge</option>
+                                                        <option value="Counter Depth">Counter Depth</option>
+                                                    </select>
+                                                    <span asp-validation-for="Type" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="CapacityLiters" class="form-label fw-semibold"></label>
+                                                    <div class="input-group">
+                                                        <input asp-for="CapacityLiters" class="form-control" type="number" min="1" max="1000" />
+                                                        <span class="input-group-text">Liters</span>
+                                                    </div>
+                                                    <span asp-validation-for="CapacityLiters" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="Location" class="form-label fw-semibold"></label>
+                                                    <input asp-for="Location" class="form-control" placeholder="Enter location" />
+                                                    <span asp-validation-for="Location" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <label asp-for="Description" class="form-label fw-semibold"></label>
+                                                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter fridge description including features, specifications, etc."></textarea>
+                                                    <span asp-validation-for="Description" class="text-danger small"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rental Information Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-none">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0 text-primary">Rental Information</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label asp-for="RentalPricePerMonth" class="form-label fw-semibold"></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">R</span>
+                                                        <input asp-for="RentalPricePerMonth" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                                                        <span class="input-group-text">/month</span>
+                                                    </div>
+                                                    <span asp-validation-for="RentalPricePerMonth" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="AvailabilityStatus" class="form-label fw-semibold"></label>
+                                                    <select asp-for="AvailabilityStatus" class="form-select">
+                                                        <option value="">-- Select Availability Status --</option>
+                                                        <option value="Available">Available</option>
+                                                        <option value="Unavailable">Unavailable</option>
+                                                        <option value="Maintenance">Under Maintenance</option>
+                                                        <option value="Out of Order">Out of Order</option>
+                                                    </select>
+                                                    <span asp-validation-for="AvailabilityStatus" class="text-danger small"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Image Upload Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-none">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0 text-primary">Fridge Image</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label asp-for="ImageUrl" class="form-label fw-semibold">Update Fridge Image</label>
+                                                <input type="file" asp-for="ImageUrl" name="file" class="form-control" accept="image/*" id="fileInput" />
+                                                <div class="form-text">Upload a new image to replace the current one (JPG, PNG, or GIF, max 5MB)</div>
+                                                @if (ViewData["ImageError"] != null)
+                                                {
+                                                    <span class="text-danger small">@ViewData["ImageError"]</span>
+                                                }
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                            {
+                                                <div class="alert alert-info">
+                                                    <small>
+                                                        <i class="bi bi-info-circle me-1"></i>
+                                                        Leave empty to keep the current image.
+                                                    </small>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview and Action Buttons -->
+                        <div class="col-md-4">
+                            <div class="sticky-top" style="top: 20px;">
+                                <!-- Current Image Preview -->
+                                <div class="card border-0 shadow-none mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0 text-primary">Current Image</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                        {
+                                            <div id="currentImageContainer">
+                                                <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="Current fridge image" style="max-height: 250px; transition: opacity 0.3s;" id="currentImage" />
+                                                <div class="mt-2">
+                                                    <a href="@Model.ImageUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye me-1"></i> View Full
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCurrentImage()">
+                                                        <i class="bi bi-trash me-1"></i> Remove
+                                                    </button>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <small class="text-muted">This is the image uploaded when the fridge was created.</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- New Image Preview (hidden by default) -->
+                                            <div id="newImageContainer" class="d-none mt-3">
+                                                <hr>
+                                                <h6 class="text-primary mb-3">New Image Preview</h6>
+                                                <img id="imagePreview" class="img-fluid rounded shadow-sm" alt="New fridge preview" style="max-height: 200px;" />
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cancelNewImage()">
+                                                        <i class="bi bi-arrow-left me-1"></i> Keep Current Image
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center py-5 bg-light rounded">
+                                                <i class="bi bi-camera display-4 text-muted"></i>
+                                                <p class="text-muted mt-2">No image uploaded</p>
+                                            </div>
+
+                                            <!-- New Image Preview for fridges without existing image -->
+                                            <img id="imagePreview" class="img-fluid rounded shadow-sm d-none mt-3" alt="New fridge preview" style="max-height: 200px;" />
+                                            <div class="mt-2 d-none" id="imageActions">
+                                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeImagePreview()">Remove New Image</button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-check-circle me-2"></i> Update Fridge
+                                    </button>
+                                    <a asp-controller="Fridge" asp-action="Manage" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle me-2"></i> Cancel
+                                    </a>
+                                    <a asp-controller="Fridge" asp-action="Details" asp-route-id="@Model.FridgeId" class="btn btn-outline-info">
+                                        <i class="bi bi-eye me-2"></i> View Details
+                                    </a>
+                                </div>
+
+                                <!-- Fridge Info -->
+                                <div class="card border-0 shadow-none mt-4">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0 text-primary">Fridge Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="small">
+                                            <div class="mb-2">
+                                                <strong>Fridge ID:</strong> #@Model.FridgeId
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Current Image:</strong>
+                                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                                {
+                                                    <span class="text-success">Uploaded</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-warning">No Image</span>
+                                                }
+                                            </div>
+                                            <div>
+                                                <strong>Status:</strong>
+                                                <span class="badge bg-@(Model.AvailabilityStatus == "Available" ? "success" : Model.AvailabilityStatus == "Unavailable" ? "danger" : "warning")">
+                                                    @Model.AvailabilityStatus
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Preview image before upload
+        document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+                    const newImageContainer = document.getElementById('newImageContainer');
+                    const imagePreview = document.getElementById('imagePreview');
+                    const currentImage = document.getElementById('currentImage');
+
+                    if (currentImageContainer) {
+                        // Show new image preview alongside current image
+                        newImageContainer.classList.remove('d-none');
+                        imagePreview.src = event.target.result;
+
+                        // Dim the current image to indicate it will be replaced
+                        if (currentImage) {
+                            currentImage.style.opacity = '0.6';
+                        }
+                    } else {
+                        // For fridges without existing image
+                        const imageActions = document.getElementById('imageActions');
+                        imagePreview.src = event.target.result;
+                        imagePreview.classList.remove('d-none');
+                        imageActions.classList.remove('d-none');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removeCurrentImage() {
+            if (confirm('Are you sure you want to remove the current image? This action cannot be undone.')) {
+                // Create a hidden field to indicate image removal
+                let removeImageInput = document.createElement('input');
+                removeImageInput.type = 'hidden';
+                removeImageInput.name = 'removeImage';
+                removeImageInput.value = 'true';
+                document.querySelector('form').appendChild(removeImageInput);
+
+                // Hide current image and show message
+                const currentImageContainer = document.getElementById('currentImageContainer');
+                currentImageContainer.innerHTML = `
+                            <div class="alert alert-warning text-center">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Current image will be removed on save.
+                            </div>
+                        `;
+            }
+        }
+
+        function cancelNewImage() {
+            const fileInput = document.getElementById('fileInput');
+            const newImageContainer = document.getElementById('newImageContainer');
+            const currentImage = document.getElementById('currentImage');
+
+            fileInput.value = '';
+            newImageContainer.classList.add('d-none');
+
+            if (currentImage) {
+                currentImage.style.opacity = '1';
+            }
+        }
+
+        function removeImagePreview() {
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const imageActions = document.getElementById('imageActions');
+
+            fileInput.value = '';
+            imagePreview.classList.add('d-none');
+            imageActions.classList.add('d-none');
+        }
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const requiredFields = this.querySelectorAll('select[required], input[required], textarea[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+
+        // Initialize form with current values
+        document.addEventListener('DOMContentLoaded', function () {
+            // Pre-select dropdown values based on model
+            const brandSelect = document.querySelector('select[name="Brand"]');
+            const typeSelect = document.querySelector('select[name="Type"]');
+            const statusSelect = document.querySelector('select[name="AvailabilityStatus"]');
+
+            if (brandSelect && '@Model.Brand') {
+                brandSelect.value = '@Model.Brand';
+            }
+            if (typeSelect && '@Model.Type') {
+                typeSelect.value = '@Model.Type';
+            }
+            if (statusSelect && '@Model.AvailabilityStatus') {
+                statusSelect.value = '@Model.AvailabilityStatus';
+            }
+        });
+
+        // Confirm before leaving if changes were made
+        let formChanged = false;
+        const form = document.querySelector('form');
+
+        form.addEventListener('change', function () {
+            formChanged = true;
+        });
+
+        form.addEventListener('submit', function () {
+            formChanged = false;
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+    </script>
+
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

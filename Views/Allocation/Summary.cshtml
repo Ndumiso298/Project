@@ -1,10 +1,11 @@
-﻿@model AllocationVM
+﻿ @model AllocationVM
 @{
     Layout = "_CustomerLayout";
 }
 
 <form method="post">
     <input asp-for="RequestHeader.RequestHeaderId" type="hidden" />
+    <input asp-for="RequestHeader.CustomerID" type="hidden" />
 
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
@@ -19,7 +20,6 @@
                 </div>
             </div>
 
-            <!-- Body -->
             <div class="card-body p-4 p-md-5">
                 <!-- Back Button -->
                 <div class="row mb-4">
@@ -93,7 +93,7 @@
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="fw-semibold mb-1">@details.Fridge.FridgeNo</h6>
+                                        <h6 class="fw-semibold mb-1">@details.Fridge.Brand</h6>
                                         <small class="text-muted">Quantity: @details.Count</small>
                                     </div>
                                     <span class="fw-bold text-primary">@((details.Price * details.Count).ToString("c"))</span>
@@ -116,7 +116,6 @@
                 </div>
             </div>
 
-            <!-- Footer -->
             <div class="card-footer bg-white border-0 p-4">
                 <button type="submit" value="Place Order" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
                     <i class="bi bi-check-circle me-2"></i> Place Order

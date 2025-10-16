@@ -18,9 +18,9 @@
                         <i class="bi bi-person-circle me-2"></i> Customer Details
                     </h4>
                     <ul class="list-group mb-4">
-                        <li class="list-group-item"><strong>Name:</strong> @Model.ApplicationUser?.FirstName</li>
-                        <li class="list-group-item"><strong>Surname:</strong> @Model.ApplicationUser?.LastName</li>
-                        <li class="list-group-item"><strong>Email:</strong> @Model.ApplicationUser?.Email</li>
+                        <li class="list-group-item"><strong>Name:</strong> @Model.Customer.ApplicationUser?.FirstName</li>
+                        <li class="list-group-item"><strong>Surname:</strong> @Model.Customer.ApplicationUser?.LastName</li>
+                        <li class="list-group-item"><strong>Email:</strong> @Model.Customer.ApplicationUser?.Email</li>
                         <li class="list-group-item"><strong>Request Date:</strong> @Model.RequestDate.ToString("yyyy-MM-dd")</li>
                         <li class="list-group-item"><strong>Status:</strong> @Model.Status</li>
                     </ul>
@@ -37,7 +37,6 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="fw-semibold mb-1">@item.Fridge.Brand - @item.Fridge.Model</h6>
-                                    <h6 class="fw-semibold mb-1">@item.Fridge.FridgeNo</h6>
                                     <h6 class="fw-semibold mb-1">@item.Fridge.Type</h6>
 
                                     <small class="text-muted">Quantity: @item.Count</small><br />
@@ -62,3 +61,4 @@
         </div>
     </div>
 </div>
+ 

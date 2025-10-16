@@ -1,76 +1,33 @@
-﻿@model IEnumerable<Fridge>
+﻿@model IEnumerable<Project.Models.Fridge>
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Premium Fridge Rentals";
 }
 
-<!-- Enhanced Header with Hero Section -->
-<div class="hero-banner bg-primary bg-gradient py-5 mb-4">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-5 fw-bold text-white mb-3">Premium Fridge Rentals</h1>
-                <p class="lead text-white mb-4">Get the perfect refrigeration solution for your home or business with flexible rental terms and free delivery.</p>
-                <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-light text-primary fs-6 py-2 px-3">
-                        <i class="bi bi-truck me-1"></i> Free Delivery
-                    </span>
-                    <span class="badge bg-light text-primary fs-6 py-2 px-3">
-                        <i class="bi bi-shield-check me-1"></i> 5-Year Warranty
-                    </span>
-                    <span class="badge bg-light text-primary fs-6 py-2 px-3">
-                        <i class="bi bi-arrow-repeat me-1"></i> Easy Returns
-                    </span>
-                </div>
-            </div>
-            <div class="col-lg-6 text-center">
-                <div class="position-relative">
-                    <img src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                         class="img-fluid rounded-3 shadow-lg" alt="Premium Fridges" style="max-height: 300px;">
-                    <div class="position-absolute bottom-0 start-0 end-0 p-3 bg-dark bg-opacity-50 text-white rounded-bottom-3">
-                        <h5 class="mb-0">Rent Today, Enjoy Tomorrow</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container-fluid py-3">
-    <!-- Quick Stats & Filter Bar -->
+<div class="container-fluid py-4">
+    <!-- Header Section -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center">
-                    <span class="text-muted me-3 d-none d-md-block">Showing <strong>@Model.Count()</strong> products</span>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-grid me-1"></i> Categories
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                            <li><a class="dropdown-item" href="#">All Fridges</a></li>
-                            <li><a class="dropdown-item" href="#">Single Door</a></li>
-                            <li><a class="dropdown-item" href="#">Double Door</a></li>
-                            <li><a class="dropdown-item" href="#">Side-by-Side</a></li>
-                            <li><a class="dropdown-item" href="#">French Door</a></li>
-                            <li><a class="dropdown-item" href="#">Mini Fridges</a></li>
-                        </ul>
-                    </div>
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 fw-bold text-primary mb-1">Premium Fridge Rentals</h1>
+                    <p class="text-muted">Find the perfect refrigeration solution for your needs</p>
                 </div>
-
-                <div class="d-flex align-items-center gap-2">
-                    <span class="text-muted small d-none d-lg-block">Sort by:</span>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <span class="badge bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i> @Model.Count() Available Units
+                        </span>
+                    </div>
                     <div class="dropdown">
-                        <button class="btn btn-light border dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Recommended
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-filter me-1"></i> Sort By
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                            <li><a class="dropdown-item" href="#">Recommended</a></li>
                             <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
                             <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
-                            <li><a class="dropdown-item" href="#">Customer Ratings</a></li>
+                            <li><a class="dropdown-item" href="#">Capacity</a></li>
                             <li><a class="dropdown-item" href="#">Newest First</a></li>
-                            <li><a class="dropdown-item" href="#">Best Sellers</a></li>
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
@@ -230,19 +187,11 @@
                                 </span>
                             }
 
-                            <!-- Fridge Image with Hover Effects -->
-                            <div class="rental-image-container position-relative">
-                                <img src="@fridge.ImageUrl" class="card-img-top rental-image" alt="@fridge.Brand @fridge.Model">
-                                <div class="image-overlay"></div>
-                                <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex justify-content-center opacity-0 hover-opacity-100 transition-opacity">
-                                    <button class="btn btn-light btn-sm me-2 quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal" data-fridge-id="@fridge.FridgeId">
-                                        <i class="bi bi-eye me-1"></i> Quick View
-                                    </button>
-                                    <button class="btn btn-light btn-sm compare-btn">
-                                        <i class="bi bi-shuffle me-1"></i> Compare
-                                    </button>
-                                </div>
-                            </div>
+                    <!-- Fridge Image -->
+                    <div class="rental-image-container">
+                        <img src="@fridge.ImageUrl" class="card-img-top rental-image" alt="@fridge.Brand @fridge.Model">
+                        <div class="image-overlay"></div>
+                    </div>
 
                             <!-- Card Body -->
                             <div class="card-body d-flex flex-column">
@@ -255,41 +204,32 @@
                                 <!-- Title -->
                                 <h6 class="card-title text-dark mb-2">@fridge.Brand @fridge.Model</h6>
 
-                                <!-- Features -->
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check text-success me-1"></i> Capacity: @fridge.CapacityLiters Liters</li>
-                                    <li><i class="bi bi-check text-success me-1"></i> Energy Efficient</li>
-                                    <li><i class="bi bi-check text-success me-1"></i> Frost Free</li>
-                                </ul>
+                        <p class="card-text text-muted small flex-grow-1">
+                            @if (!string.IsNullOrEmpty(fridge.Description) && fridge.Description.Length > 100)
+                            {
+                                @fridge.Description.Substring(0, 100)
+                                <text>...</text>
+                            }
+                            else
+                            {
+                                @fridge.Description
+                            }
+                        </p>
 
-                                <!-- Rating -->
-                                <div class="mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="text-warning small">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-half"></i>
-                                        </div>
-                                        <span class="small text-muted ms-2">(128 reviews)</span>
-                                    </div>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="h5 mb-0 text-primary">@fridge.RentalPricePerMonth.ToString("C")</span>
+                                    <span class="text-muted small d-block">per month</span>
                                 </div>
-
-                                <div class="mt-auto">
-                                    <!-- Pricing -->
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div>
-                                            <span class="h5 mb-0 text-primary">R @fridge.RentalPricePerMonth.ToString("F2")</span>
-                                            <span class="text-muted small d-block">per month</span>
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="text-success small d-block">
-                                                <i class="bi bi-truck me-1"></i> Free delivery
-                                            </span>
-                                            <span class="text-muted small"><s>R @((fridge.RentalPricePerMonth * 1.15).ToString("F2"))</s> Save 15%</span>
-                                        </div>
-                                    </div>
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                </div>
+                            </div>
 
                                     <!-- Action Buttons -->
                                     <div class="d-grid gap-2">
@@ -322,149 +262,37 @@
                 }
             </div>
 
-            <!-- Pagination -->
-            <nav aria-label="Product pagination" class="mt-5">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
-                </ul>
-            </nav>
+    <!-- Empty State -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 my-5">
+            <i class="bi bi-refrigerator display-1 text-muted"></i>
+            <h3 class="mt-3 text-muted">No Fridges Available</h3>
+            <p class="text-muted">We're currently updating our inventory. Please check back later.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-2">
+                <i class="bi bi-house me-2"></i> Return Home
+            </a>
         </div>
-    </div>
+    }
 </div>
-
-<!-- Quick View Modal -->
-<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="quickViewModalLabel">Product Quick View</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <img id="quickViewImage" src="" class="img-fluid rounded" alt="Product Image">
-                    </div>
-                    <div class="col-md-6">
-                        <h4 id="quickViewTitle" class="mb-2"></h4>
-                        <div class="mb-3">
-                            <span class="h4 text-primary" id="quickViewPrice"></span>
-                            <span class="text-muted">/month</span>
-                        </div>
-                        <div class="mb-3">
-                            <div class="text-warning">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-half"></i>
-                                <span class="text-muted ms-1">(128 reviews)</span>
-                            </div>
-                        </div>
-                        <p id="quickViewDescription" class="mb-3"></p>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary">Add to Cart</button>
-                            <button class="btn btn-outline-secondary">Add to Wishlist</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Enhanced Footer -->
-<footer class="enhanced-footer mt-5">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>Cool Appliances</h3>
-                <p>Your trusted partner for premium appliance rentals in South Africa. Quality service since 2010.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="bi bi-facebook"></i></a>
-                    <a href="#"><i class="bi bi-twitter"></i></a>
-                    <a href="#"><i class="bi bi-instagram"></i></a>
-                    <a href="#"><i class="bi bi-linkedin"></i></a>
-                </div>
-            </div>
-            <div class="footer-column">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Home</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> About Us</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Fridge Rentals</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Special Offers</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Customer Service</h3>
-                <ul class="footer-links">
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> My Account</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Order Tracking</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> FAQ</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Returns & Refunds</a></li>
-                    <li><a href="#"><i class="bi bi-chevron-right"></i> Support Center</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Contact Info</h3>
-                <ul class="contact-info">
-                    <li>
-                        <i class="bi bi-geo-alt"></i>
-                        <span>123 Main Street, Johannesburg, South Africa</span>
-                    </li>
-                    <li>
-                        <i class="bi bi-telephone"></i>
-                        <span>+27 11 123 4567</span>
-                    </li>
-                    <li>
-                        <i class="bi bi-envelope"></i>
-                        <span>info@coolappliances.co.za</span>
-                    </li>
-                </ul>
-                <div class="newsletter-form">
-                    <input type="email" class="form-control" placeholder="Your email address">
-                    <button class="btn btn-warning">Subscribe</button>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="payment-methods">
-                <i class="bi bi-credit-card"></i>
-                <i class="bi bi-paypal"></i>
-                <i class="bi bi-coin"></i>
-            </div>
-            <p class="mt-3">&copy; 2023 Cool Appliances. All Rights Reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
-        </div>
-    </div>
-</footer>
 
 <style>
     .rental-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: all 0.3s ease;
         border-radius: 12px;
         overflow: hidden;
     }
 
         .rental-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
         }
 
     .rental-image-container {
         position: relative;
-        overflow: hidden;
         height: 200px;
-        background-color: #f8f9fa;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }
 
     .rental-image {
@@ -483,330 +311,78 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.05));
+        background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.1));
     }
 
     .card-title {
         font-weight: 600;
-        margin-bottom: 0.5rem;
+        line-height: 1.3;
     }
 
-    .price-tag {
-        font-weight: 700;
-        color: #0d6efd;
-    }
-
-    .rental-badge {
+    .badge {
         font-size: 0.75rem;
         font-weight: 500;
     }
 
-    .hover-opacity-100 {
-        opacity: 0;
-        transition: opacity 0.3s ease;
+    .btn-outline-primary {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
 
-    .rental-card:hover .hover-opacity-100 {
-        opacity: 1;
-    }
-
-    .quick-view-btn:hover, .compare-btn:hover {
-        background-color: #f8f9fa !important;
-        transform: scale(1.05);
-    }
-
-    .hero-banner {
-        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-    }
-
-    /* Enhanced Footer Styles */
-    .enhanced-footer {
-        background-color: #008cba;
-        color: white;
-        padding: 60px 0 30px;
-        margin-top: auto;
-        border-top: 5px solid #ff7e30;
-        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .footer-content {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 30px;
-        margin-bottom: 40px;
-    }
-
-    .footer-column h3 {
-        color: white;
-        font-size: 1.3rem;
-        margin-bottom: 25px;
-        position: relative;
-        padding-bottom: 10px;
-    }
-
-        .footer-column h3:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background-color: #ff7e30;
+        .btn-outline-primary:hover {
+            transform: translateY(-1px);
         }
 
-    .footer-column p {
-        margin-bottom: 20px;
-        color: #e8f4fd;
-    }
-
-    .footer-links {
-        list-style: none;
-        padding: 0;
-    }
-
-        .footer-links li {
-            margin-bottom: 15px;
-        }
-
-        .footer-links a {
-            color: #e8f4fd;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-
-            .footer-links a:hover {
-                color: #ff7e30;
-                transform: translateX(5px);
-            }
-
-        .footer-links i {
-            margin-right: 10px;
-            color: #ff7e30;
-        }
-
-    .contact-info {
-        list-style: none;
-        padding: 0;
-    }
-
-        .contact-info li {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .contact-info i {
-            margin-right: 15px;
-            color: #ff7e30;
-            margin-top: 5px;
-        }
-
-    .social-icons {
-        display: flex;
-        gap: 15px;
-        margin-top: 20px;
-    }
-
-        .social-icons a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.15);
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-            .social-icons a:hover {
-                background-color: #ff7e30;
-                transform: translateY(-3px);
-            }
-
-    .newsletter-form {
-        display: flex;
-        margin-top: 15px;
-    }
-
-        .newsletter-form input {
-            flex: 1;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 4px 0 0 4px;
-            outline: none;
-        }
-
-        .newsletter-form button {
-            background-color: #ff7e30;
-            color: white;
-            border: none;
-            padding: 0 20px;
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-            .newsletter-form button:hover {
-                background-color: #e5722a;
-            }
-
-    .footer-bottom {
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-        padding-top: 25px;
-        text-align: center;
-        color: #e8f4fd;
+    .text-warning {
         font-size: 0.9rem;
     }
 
-        .footer-bottom a {
-            color: #ff7e30;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-            .footer-bottom a:hover {
-                text-decoration: underline;
-            }
-
-    .payment-methods {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-top: 15px;
-    }
-
-        .payment-methods i {
-            font-size: 1.8rem;
-            color: #e8f4fd;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-            .payment-methods i:hover {
-                opacity: 1;
-            }
-
-    /* Responsive Design */
-    @@media (max-width: 992px) {
-        .footer-content {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
+    /* Responsive adjustments */
     @@media (max-width: 768px) {
-        .hero-banner .display-5 {
-            font-size: 2rem;
-        }
-
-        .hero-banner .lead {
-            font-size: 1rem;
-        }
-    }
-
-    @@media (max-width: 576px) {
-        .footer-content {
-            grid-template-columns: 1fr;
-        }
-
-        .newsletter-form {
+        .d-flex.justify-content-between.align-items-center {
             flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
         }
 
-            .newsletter-form input {
-                border-radius: 4px;
-                margin-bottom: 10px;
-            }
-
-            .newsletter-form button {
-                border-radius: 4px;
-                padding: 12px;
-            }
-
-        .hero-banner .display-5 {
-            font-size: 1.75rem;
+        .rental-image-container {
+            height: 180px;
         }
     }
 </style>
 
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Quick View Modal functionality
-            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-            const quickViewModal = document.getElementById('quickViewModal');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add click animation to cards
+        const cards = document.querySelectorAll('.rental-card');
 
-            if (quickViewModal) {
-                const quickViewTitle = document.getElementById('quickViewTitle');
-                const quickViewImage = document.getElementById('quickViewImage');
-                const quickViewPrice = document.getElementById('quickViewPrice');
-                const quickViewDescription = document.getElementById('quickViewDescription');
-
-                quickViewButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const card = this.closest('.rental-card');
-                        const title = card.querySelector('.card-title').textContent;
-                        const image = card.querySelector('.rental-image').src;
-                        const price = card.querySelector('.h5.text-primary').textContent;
-                        const description = card.querySelector('.card-text').textContent;
-
-                                        const modal = new bootstrap.Modal(quickViewModal);
-                modal.show();
-
-                        quickViewTitle.textContent = title;
-                        quickViewImage.src = image;
-                        quickViewPrice.textContent = price;
-                        quickViewDescription.textContent = description;
-                    });
-                });
-            }
-
-            // View mode toggle
-            const gridView = document.getElementById('gridView');
-            const listView = document.getElementById('listView');
-            const productGrid = document.getElementById('productGrid');
-
-            if (listView && productGrid) {
-                listView.addEventListener('change', function() {
-                    if (this.checked) {
-                        productGrid.classList.add('list-view');
-                        productGrid.classList.remove('row-cols-1', 'row-cols-md-2', 'row-cols-lg-3');
-                        const cards = productGrid.querySelectorAll('.col-xl-4, .col-lg-6, .col-md-6');
-                        cards.forEach(card => {
-                            card.classList.remove('col-xl-4', 'col-lg-6', 'col-md-6');
-                            card.classList.add('col-12', 'mb-4');
-                        });
+        cards.forEach(card => {
+            card.addEventListener('click', function (e) {
+                // Only trigger if not clicking a button or link
+                if (!e.target.closest('a') && !e.target.closest('button')) {
+                    const link = this.querySelector('a');
+                    if (link) {
+                        link.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            link.style.transform = '';
+                        }, 150);
                     }
-                });
-            }
-
-            if (gridView && productGrid) {
-                gridView.addEventListener('change', function() {
-                    if (this.checked) {
-                        productGrid.classList.remove('list-view');
-                        productGrid.classList.add('row-cols-1', 'row-cols-md-2', 'row-cols-lg-3');
-                        const cards = productGrid.querySelectorAll('.col-12');
-                        cards.forEach(card => {
-                            card.classList.remove('col-12', 'mb-4');
-                            card.classList.add('col-xl-4', 'col-lg-6', 'col-md-6');
-                        });
-                    }
-                });
-            }
-
-            // Price range filter
-            const priceRange = document.getElementById('priceRange');
-            if (priceRange) {
-                priceRange.addEventListener('input', function() {
-                    const minPriceInput = this.form.querySelector('input[placeholder="Min"]');
-                    if (minPriceInput) {
-                        minPriceInput.value = this.value;
-                    }
-                });
-            }
+                }
+            });
         });
-    </script>
-}
+
+        // Sort functionality (placeholder)
+        const sortItems = document.querySelectorAll('.dropdown-item');
+        sortItems.forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                const sortText = this.textContent;
+                const dropdownButton = document.getElementById('sortDropdown');
+                dropdownButton.innerHTML = '<i class="bi bi-filter me-1"></i> ' + sortText;
+                // Add actual sorting logic here
+                console.log('Sorting by:', sortText);
+            });
+        });
+    });
+</script>

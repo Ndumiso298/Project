@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project.Models.RequestHeader>
+﻿ @model IEnumerable<Project.Models.RequestHeader>
 
 @{
     ViewData["Title"] = "My Bookings";
@@ -30,7 +30,7 @@
                         {
                             <li>
                                 <i class="fas fa-snowflake text-info"></i>
-                                @rf.Fridge.Brand - @rf.Fridge.Type (@rf.Fridge.FridgeNo)
+                                @rf.Fridge.Brand - @rf.Fridge.Type (@rf.Fridge.Brand)
                             </li>
                         }
                     </ul>
@@ -59,3 +59,4 @@
         }
     }
 </div>
+ 

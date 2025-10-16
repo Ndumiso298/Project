@@ -218,14 +218,14 @@ namespace Project.Controllers
 
             if (role.Contains(SD.CustomerRole))
             {
-                var customer = _db.tblCustomerS.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
                 if (customer != null)
                 {
                     vm.CustomerNumber = customer.CustomerNumber;
                     vm.BusinessDocumentPath = customer.BusinessDocumentPath;
                     vm.StreetAddress = customer.ApplicationUser.StreetAddress;
                     vm.City = customer.ApplicationUser.City;
-                    vm.Province = customer.ApplicationUser.Province;
+                    vm.State = customer.ApplicationUser.State;
                     vm.PostalCode = customer.ApplicationUser.PostalCode;
                 }
             }

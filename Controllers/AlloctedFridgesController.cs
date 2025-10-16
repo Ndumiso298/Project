@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
@@ -23,11 +24,11 @@ namespace Project.Controllers
 
             var visits = _db.tblFridgeVisits
                 .Include(u => u.RequestHeader)
-                .ThenInclude(u => u.ApplicationUser)
+                .ThenInclude(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                //.Where(v => v.RequestHeader.ApplicationUserId == userId) 
+                //.Where(v => v.RequestHeader.ApplicationUserId == userId) sw2
                 .ToList();
 
             return View(visits);
@@ -39,10 +40,10 @@ namespace Project.Controllers
             //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             var allocatedRequests = _db.tblRequestHeaders
-                .Include(u => u.ApplicationUser)
+                .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .Where(u => u.Status ==SD.Allocated) 
+                .Where(u => u.Status ==SD.Approved) 
                 .ToList();
 
             var requestIds = allocatedRequests.Select(u => u.RequestHeaderId).ToList();
@@ -62,11 +63,11 @@ namespace Project.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
 
             var requests = _db.tblRequestHeaders
-                .Include(u => u.ApplicationUser)
+                .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
                 .Include(u => u.FridgeVisits) 
-                .Where(u => u.ApplicationUserId == userId && u.Status == SD.Allocated)
+                .Where(u => u.Customer.ApplicationUserId == userId && u.Status == SD.Approved)
                 .ToList();
 
             return View(requests);
@@ -75,10 +76,10 @@ namespace Project.Controllers
         public IActionResult DetailsFoRProcessing(int id)
         {
             var request = _db.tblRequestHeaders
-                .Include(u => u.ApplicationUser)
+                .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == SD.Allocated);
+                .FirstOrDefault(u => u.RequestHeaderId == id && u.Status == SD.Approved);
 
             if (request == null)
             {
@@ -97,7 +98,7 @@ namespace Project.Controllers
         {
             var visits =  _db.tblFridgeVisits
                 .Include(u => u.RequestHeader)
-                .ThenInclude(u => u.ApplicationUser)
+                .ThenInclude(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)      
@@ -111,7 +112,7 @@ namespace Project.Controllers
             var request = _db.tblRequestHeaders
                 .Include(r => r.RequestFridges)
                 .ThenInclude(rf => rf.Fridge)
-                .FirstOrDefault(r => r.RequestHeaderId == requestId && r.Status == SD.Allocated);
+                .FirstOrDefault(r => r.RequestHeaderId == requestId && r.Status == SD.Approved);
 
             if (request == null)
             {

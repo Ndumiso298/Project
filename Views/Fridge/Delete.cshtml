@@ -1,40 +1,8 @@
-﻿@model Fridge
-
+﻿@model Project.Models.Fridge
 @{
-
+    ViewData["Title"] = "Delete Fridge Model";
     Layout = "_CustomerLayout";
-
 }
-<div class="card shadow border-0 my-4">
-    <div class="card-header bg-primary bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2"> Delete Fridge Permanent</h2>
-            </div>
-        </div>
-    </div>
-    <div class="card-body p-4">
-        <form method="post">
-            <input asp-for="FridgeId" type="hidden" />
-            <div class="row">
-                <div class="col-10">
-                    <div class="border p-3">
-                        <div asp-validation-summary="ModelOnly"></div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Brand" class="form-control border-0 shadow" disabled/>
-                            <label asp-for="Brand" class="ms-2"></label>
-                            <span asp-validation-for="Brand" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="FridgeNo" class="form-control border-0 shadow" disabled />
-                            <label asp-for="FridgeNo" class="ms-2"></label>
-                            <span asp-validation-for="FridgeNo" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Model" class="form-control border-0 shadow" disabled />
-                            <label asp-for="Model" class="ms-2"></label>
-                            <span asp-validation-for="Model" class="text-danger"></span>
-                        </div>
 
                         <div class="form-floating py-2 col-12">
                             <input asp-for="CapacityLiters" class="form-control border-0 shadow" disabled />
@@ -87,41 +55,22 @@
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
 
+            <dl class="row mt-3">
+                <dt class="col-sm-3">Brand</dt>
+                <dd class="col-sm-9">@Model.Brand</dd>
 
-                        <div class="row pt-2">
+                <dt class="col-sm-3">Model</dt>
+                <dd class="col-sm-9">@Model.Model</dd>
 
-                            <div class="col-6 col-md-3">
-                                <button type="submit" class="btn btn-danger form-control">Delete</button>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <a asp-controller="Fridge" asp-action="Index" class="btn btn-outline-primary border  form-control">
-                                    Back to List
-                                </a>
-                            </div>
-                        </div>
+                <dt class="col-sm-3">Type</dt>
+                <dd class="col-sm-9">@Model.Type</dd>
+            </dl>
 
-                    </div>
-                    <div class="col-2">
-                    </div>
-                </div>
-            </div>
-        </form>
+            <form asp-action="DeleteConfirmed" method="post">
+                <input type="hidden" asp-for="FridgeId" />
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a asp-action="Manage" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
     </div>
 </div>
-
-
-
-
-@section Scripts {
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
-        });
-    </script>
-    @{
-        <partial name="_ValidationScriptsPartial" />
-    }
-}
-
