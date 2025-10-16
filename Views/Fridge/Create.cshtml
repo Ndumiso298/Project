@@ -1,0 +1,287 @@
+﻿@model Fridge
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Add New Fridge";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <!-- Card Header -->
+                <div class="card-header bg-gradient-primary bg-opacity-10 py-4 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="h4 mb-0 text-primary">
+                                <i class="bi bi-refrigerator me-2"></i>
+                                Add New Fridge
+                            </h2>
+                        </div>
+                        <div class="col-auto">
+                            <a asp-controller="Fridge" asp-action="Manage" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-arrow-left me-1"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+                    <form method="post" class="row g-4" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <div class="col-12">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="row g-4">
+                                <!-- Basic Information Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-none">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0 text-primary">Basic Information</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label asp-for="Brand" class="form-label fw-semibold"></label>
+                                                    <select asp-for="Brand" class="form-select">
+                                                        <option value="">-- Select Brand --</option>
+                                                        <option value="Samsung">Samsung</option>
+                                                        <option value="LG">LG</option>
+                                                        <option value="Whirlpool">Whirlpool</option>
+                                                        <option value="Bosch">Bosch</option>
+                                                        <option value="Defy">Defy</option>
+                                                        <option value="Hisense">Hisense</option>
+                                                        <option value="Haier">Haier</option>
+                                                    </select>
+                                                    <span asp-validation-for="Brand" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="Model" class="form-label fw-semibold"></label>
+                                                    <input asp-for="Model" class="form-control" placeholder="Enter model name" />
+                                                    <span asp-validation-for="Model" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="Type" class="form-label fw-semibold"></label>
+                                                    <select asp-for="Type" class="form-select">
+                                                        <option value="">-- Select Fridge Type --</option>
+                                                        <option value="Top Freezer">Top Freezer</option>
+                                                        <option value="Bottom Freezer">Bottom Freezer</option>
+                                                        <option value="Side-by-Side">Side-by-Side</option>
+                                                        <option value="French Door">French Door</option>
+                                                        <option value="Mini Fridge">Mini Fridge</option>
+                                                        <option value="Counter Depth">Counter Depth</option>
+                                                    </select>
+                                                    <span asp-validation-for="Type" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="CapacityLiters" class="form-label fw-semibold"></label>
+                                                    <div class="input-group">
+                                                        <input asp-for="CapacityLiters" class="form-control" type="number" min="1" max="1000" />
+                                                        <span class="input-group-text">Liters</span>
+                                                    </div>
+                                                    <span asp-validation-for="CapacityLiters" class="text-danger small"></span>
+                                                </div>
+
+                                              @*   <div class="col-md-6">
+                                                    <label asp-for="Condition" class="form-label fw-semibold">Condition</label>
+                                                    <select asp-for="Condition" class="form-select">
+                                                        <option value="">-- Select Condition --</option>
+                                                        <option value="New">New</option>
+                                                        <option value="Like New">Like New</option>
+                                                        <option value="Good">Good</option>
+                                                        <option value="Fair">Fair</option>
+                                                        <option value="Poor">Poor</option>
+                                                    </select>
+                                                    <span asp-validation-for="Condition" class="text-danger small"></span>
+                                                </div>
+ *@
+                                                <div class="col-md-6">
+                                                    <label asp-for="Location" class="form-label fw-semibold"></label>
+                                                    <input asp-for="Location" class="form-control" placeholder="Enter location" />
+                                                    <span asp-validation-for="Location" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <label asp-for="Description" class="form-label fw-semibold"></label>
+                                                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter fridge description including features, specifications, etc."></textarea>
+                                                    <span asp-validation-for="Description" class="text-danger small"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rental Information Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-none">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0 text-primary">Rental Information</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label asp-for="RentalPricePerMonth" class="form-label fw-semibold"></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">R</span>
+                                                        <input asp-for="RentalPricePerMonth" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                                                        <span class="input-group-text">/month</span>
+                                                    </div>
+                                                    <span asp-validation-for="RentalPricePerMonth" class="text-danger small"></span>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label asp-for="AvailabilityStatus" class="form-label fw-semibold"></label>
+                                                    <select asp-for="AvailabilityStatus" class="form-select">
+                                                        <option value="">-- Select Availability Status --</option>
+                                                        <option value="Available">Available</option>
+                                                        <option value="Unavailable">Unavailable</option>
+                                                        <option value="Maintenance">Under Maintenance</option>
+                                                        <option value="Out of Order">Out of Order</option>
+                                                    </select>
+                                                    <span asp-validation-for="AvailabilityStatus" class="text-danger small"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Image Upload Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-none">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0 text-primary">Fridge Image</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label asp-for="ImageUrl" class="form-label fw-semibold">Upload Fridge Image</label>
+                                                <input asp-for="ImageUrl" type="file" name="file" class="form-control" accept="image/*" />
+                                                <div class="form-text">Upload a clear image of the fridge (JPG, PNG, or GIF, max 5MB)</div>
+                                                @if (ViewData["ImageError"] != null)
+                                                {
+                                                    <span class="text-danger small">@ViewData["ImageError"]</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview and Action Buttons -->
+                        <div class="col-md-4">
+                            <div class="sticky-top" style="top: 20px;">
+                                <!-- Image Preview -->
+                                <div class="card border-0 shadow-none mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0 text-primary">Image Preview</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="text-center py-5 bg-light rounded" id="noImagePreview">
+                                            <i class="bi bi-camera display-4 text-muted"></i>
+                                            <p class="text-muted mt-2">No image uploaded</p>
+                                        </div>
+                                        <img id="imagePreview" class="img-fluid rounded shadow-sm d-none" alt="Fridge preview" style="max-height: 250px;" />
+                                        <div class="mt-2 d-none" id="imageActions">
+                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeImagePreview()">Remove Image</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-plus-circle me-2"></i> Create Fridge
+                                    </button>
+                                    <a asp-controller="Fridge" asp-action="Manage" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Preview image before upload
+        document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const noImagePreview = document.getElementById('noImagePreview');
+                    const imagePreview = document.getElementById('imagePreview');
+                    const imageActions = document.getElementById('imageActions');
+
+                    noImagePreview.classList.add('d-none');
+                    imagePreview.src = event.target.result;
+                    imagePreview.classList.remove('d-none');
+                    imageActions.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removeImagePreview() {
+            const fileInput = document.querySelector('input[type="file"]');
+            const noImagePreview = document.getElementById('noImagePreview');
+            const imagePreview = document.getElementById('imagePreview');
+            const imageActions = document.getElementById('imageActions');
+
+            fileInput.value = '';
+            imagePreview.classList.add('d-none');
+            imageActions.classList.add('d-none');
+            noImagePreview.classList.remove('d-none');
+        }
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const requiredFields = this.querySelectorAll('select[required], input[required], textarea[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+    </script>
+
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

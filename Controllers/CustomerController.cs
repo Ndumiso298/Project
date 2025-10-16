@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
@@ -36,27 +37,33 @@ namespace Project.Controllers
         [Authorize]
         public IActionResult Details(Allocation allocation)
         {
-            var claimsIdedity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdedity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            allocation.ApplicationUserId = userId;
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            Allocation allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.ApplicationUserId == userId &&
-            u.FridgeId == allocation.FridgeId);
+               
+                Allocation allocationFromDb = _db.tblAllocations
+                    .Include(a => a.Customer) 
+                    .FirstOrDefault(u => u.Customer.ApplicationUserId == userId && u.FridgeId == allocation.FridgeId);
 
-            if (allocationFromDb != null)
-            {
-                allocationFromDb.Count += allocation.Count;
-                _db.tblAllocations.Update(allocationFromDb);
-            }
-            else
-            {
-                _db.tblAllocations.Add(allocation);
-            }
-            TempData["success"] = "cart updated successfully";
-            _db.SaveChanges();
+                if (allocationFromDb != null)
+                {
+                   
+                    allocationFromDb.Count += allocation.Count;
+                }
+                else
+                {
+    
+                    var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
+                    if (customer != null)
+                    {
+                        allocation.CustomerID = customer.CustomerID; 
+                    }
+                    _db.tblAllocations.Add(allocation);
+                }
 
-            return RedirectToAction(nameof(Index));
+                TempData["success"] = "cart updated successfully";
+                _db.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            
         }
-
     }
 }

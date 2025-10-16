@@ -1,18 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +10,9 @@ using Microsoft.Extensions.Logging;
 using Project.Data;
 using Project.Models;
 using Project.Utility;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Project.Areas.Identity.Pages.Account
 {
@@ -59,19 +48,19 @@ namespace Project.Areas.Identity.Pages.Account
 
         [BindProperty]
         public InputModel Input { get; set; }
+
         public string ReturnUrl { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
         {
-            // Login
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
@@ -81,29 +70,28 @@ namespace Project.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            // Personal
             [Required]
             public string FirstName { get; set; }
 
             [Required]
             public string LastName { get; set; }
+
             public string StreetAddress { get; set; }
             public string City { get; set; }
             public string State { get; set; }
             public string PostalCode { get; set; }
             public string CellNumber { get; set; }
 
-            // Business Proof
             [Display(Name = "Business Proof Document")]
             public IFormFile? BusinessDocument { get; set; }
             [ValidateNever]
             public string Role { get; set; }
+            [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            // Ensure roles exist in DB
             if (!await _roleManager.RoleExistsAsync(SD.AdminRole))
             {
                 await _roleManager.CreateAsync(new IdentityRole(SD.AdminRole));
@@ -270,9 +258,7 @@ namespace Project.Areas.Identity.Pages.Account
         private IUserEmailStore<IdentityUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
-            {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
-            }
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
     }

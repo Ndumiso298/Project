@@ -1,130 +1,241 @@
 ﻿@model IEnumerable<Project.Models.RequestHeader>
+
 @{
     Layout = "_CustomerLayout";
 }
 
- 
- 
-        <!-- Main Card -->
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
-                <h5 class="m-0 text-primary">
-                    <i class="fas fa-list me-2"></i>Allocated Request List
-                </h5>
+<form method="post">
+    <div class="container py-5">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-                <!-- Search Box -->
-                <div class="input-group search-container" style="max-width: 300px;">
-                    <span class="input-group-text bg-transparent border-end-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" id="allocatedSearch" class="form-control search-box border-start-0"
-                           placeholder="Search requests...">
+            <!-- Page Header -->
+            <div class="card-header bg-primary text-light py-4">
+                <div class="row align-items-center">
+                    <div class="col-12 text-center">
+                        <h2 class="fw-bold text-white mb-0">Allocated Requests</h2>
+                        <p class="opacity-75 mb-0">Manage customer fridge allocations and service visits</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="allocatedTable">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="ps-4">Customer</th>
-                                <th scope="col">Request Date</th>
-                                <th scope="col">Visit Status</th>
-                                <th scope="col">Allocated Fridges</th>
-                                <th scope="col" class="text-end pe-4 action-cell">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
-                            {
-                                <tr>
-                                    <td class="ps-4 align-middle">
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-semibold">@item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</span>
-                                            <small class="text-muted">@item.ApplicationUser?.Email</small>
-                                        </div>
-                                    </td>
-                                    <td class="align-middle">
-                                        <span class="fw-medium">@item.RequestDate.ToString("yyyy-MM-dd")</span>
-                                    </td>
+            <!-- Body -->
+            <div class="card-body p-4 p-md-5">
 
-                                    <!-- Visit Status -->
-                                    <td class="align-middle">
-                                        @if (item.FridgeVisits != null && item.FridgeVisits.Any())
-                                        {
-                                            <div class="d-flex flex-column gap-2">
-                                                @foreach (var visit in item.FridgeVisits.OrderBy(v => v.VisitDate))
-                                                {
-                                                    <div class="d-flex align-items-center">
-                                                        <span class="badge bg-success status-badge me-2">
-                                                            <i class="fas fa-calendar me-1"></i> @visit.VisitDate.ToString("yyyy-MM-dd")
-                                                        </span>
-                                                        <a asp-action="BookVisit"
-                                                           asp-route-requestId="@item.RequestHeaderId"
-                                                           asp-route-visitId="@visit.VisitId"
-                                                           class="btn btn-sm btn-outline-warning rounded-pill d-inline-flex align-items-center">
-                                                            <i class="fas fa-edit me-1"></i> Edit
-                                                        </a>
+                <!-- Search -->
+                <div class="row mb-4 justify-content-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" id="allocatedSearch"
+                                   class="form-control border-start-0 rounded-pill"
+                                   placeholder="Search customers, fridges...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requests -->
+                <div id="requestsContainer">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
+                        {
+                            <!-- Record Header -->
+                            <div class="bg-primary text-white rounded-top-4 px-4 py-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="fw-bold mb-0">
+                                        <i class="bi bi-person-circle me-2"></i>
+                                        @item.Customer.ApplicationUser?.FirstName @item.Customer.ApplicationUser?.LastName
+                                    </h5>
+                                    <span class="small text-light opacity-75">
+                                        Request ID: @item.RequestHeaderId
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Record Body -->
+                            <div class="border-bottom pb-4 mb-5 request-card bg-white rounded-bottom-4 shadow-sm"
+                                 data-searchable="@($"{item.Customer.ApplicationUser?.FirstName} {item.Customer.ApplicationUser?.LastName} {item.Customer.ApplicationUser?.Email} {item.RequestFridges?.FirstOrDefault()?.Fridge?.Brand} {item.RequestFridges?.FirstOrDefault()?.Fridge?.Model}")">
+
+                                <!-- Request Info -->
+                                <div class="row align-items-center mb-3 mt-3 px-3">
+                                    <div class="col-md-8">
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-envelope"></i> @item.Customer.ApplicationUser?.Email &nbsp; | &nbsp;
+                                            <i class="bi bi-telephone"></i> @item.Customer.ApplicationUser?.PhoneNumber
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-md-end text-muted small">
+                                        <div>@item.RequestDate.ToString("MMM dd, yyyy")</div>
+                                        <div>@item.RequestDate.ToString("hh:mm tt")</div>
+                                    </div>
+                                </div>
+
+                                <!-- Allocated Fridges -->
+                                <div class="bg-light rounded-4 p-3 mb-3 mx-3">
+                                    <h6 class="fw-semibold text-dark mb-3">
+                                        <i class="bi bi-snow me-2"></i>Allocated Fridges
+                                        <span class="badge bg-primary ms-2">@item.RequestFridges?.Count()</span>
+                                    </h6>
+                                    @if (item.RequestFridges != null && item.RequestFridges.Any())
+                                    {
+                                        <div class="row">
+                                            @foreach (var fridge in item.RequestFridges)
+                                            {
+                                                <div class="col-md-4 mb-3">
+                                                    <div class="card h-100 shadow-sm border-0 rounded-3">
+                                                        <div class="card-body text-center">
+                                                            <h6 class="fw-bold text-primary mb-1">@fridge.Fridge?.Brand</h6>
+                                                            <p class="small text-muted mb-1">@fridge.Fridge?.Model</p>
+                                                            <span class="badge bg-secondary">@fridge.Fridge?.CapacityLiters L</span>
+                                                        </div>
                                                     </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-info text-center rounded-pill py-2">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>No fridges allocated
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Service Status -->
+                                <div class="bg-light rounded-4 p-3 mb-3 mx-3">
+                                    <h6 class="fw-semibold text-dark mb-3">
+                                        <i class="bi bi-calendar-check me-2"></i>Service Status
+                                    </h6>
+                                    @if (item.FridgeVisits != null && item.FridgeVisits.Any())
+                                    {
+                                        var upcomingVisits = item.FridgeVisits.Where(v => v.VisitDate >= DateTime.Now).OrderBy(v => v.VisitDate).ToList();
+                                        var pastVisits = item.FridgeVisits.Where(v => v.VisitDate < DateTime.Now).ToList();
+
+                                        if (upcomingVisits.Any())
+                                        {
+                                            var nextVisit = upcomingVisits.First();
+                                            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                                <span class="badge bg-success rounded-pill px-3 py-2 me-md-3 mb-2 mb-md-0">
+                                                    <i class="bi bi-calendar-event me-1"></i>Upcoming Visit
+                                                </span>
+                                                <span class="text-dark">@nextVisit.VisitDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</span>
+                                            </div>
+                                            <div class="mt-2 small text-muted">
+                                                <i class="bi bi-person-fill text-primary me-1"></i>@nextVisit.TechnicianName
+                                                @if (!string.IsNullOrEmpty(nextVisit.Notes))
+                                                {
+                                                    <div><i class="bi bi-journal-text me-1"></i>@nextVisit.Notes</div>
                                                 }
                                             </div>
                                         }
-                                        else
+                                        else if (pastVisits.Any())
                                         {
-                                            <span class="badge bg-warning text-dark status-badge">
-                                                <i class="fas fa-clock me-1"></i> No Visit Booked
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                                <i class="bi bi-check-circle me-1"></i>Service Completed (@pastVisits.Count)
                                             </span>
                                         }
-                                    </td>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                            <i class="bi bi-clock me-1"></i>No Visit Scheduled
+                                        </span>
+                                    }
+                                </div>
 
-                                   
-                                    <!-- Actions -->
-                                    <td class="text-end pe-4 align-middle">
-                                        <div class="d-flex flex-column gap-2">
+                                <!-- Actions -->
+                                <div class="d-flex flex-wrap gap-2 justify-content-md-end mt-3 px-3">
                                     <a asp-action="DetailsFoRProcessing" asp-route-id="@item.RequestHeaderId"
-                                       class="btn btn-sm btn-outline-primary rounded-pill d-flex align-items-center justify-content-center">
-                                        <i class="fas fa-snowflake me-1"></i>
-                                        Fridge Details
+                                       class="btn btn-outline-primary rounded-pill px-4">
+                                        <i class="bi bi-snow"></i> Fridge Details
                                     </a>
-
-
-                                            <!-- Add new visit button -->
-                                            <a asp-action="BookVisit" asp-route-requestId="@item.RequestHeaderId"
-                                               class="btn btn-sm btn-outline-success rounded-pill d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-calendar-plus me-1"></i> Book Visit
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-                    @if (!Model.Any())
+                                    <a asp-action="BookVisit" asp-route-requestId="@item.RequestHeaderId"
+                                       class="btn btn-outline-success rounded-pill px-4">
+                                        <i class="bi bi-calendar-plus"></i> Book Visit
+                                    </a>
+                                    @if (item.FridgeVisits != null && item.FridgeVisits.Any())
+                                    {
+                                        <button type="button"
+                                                class="btn btn-outline-info rounded-pill px-4 view-visits-btn"
+                                                data-request-id="@item.RequestHeaderId">
+                                            <i class="bi bi-eye"></i> View Visits
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
                     {
-                        <div class="empty-state">
-                            <i class="fas fa-refrigerator"></i>
-                            <h4 class="mt-3">No Allocated Requests</h4>
-                            <p>Allocated fridges will appear here once assigned to customers</p>
+                        <div class="alert alert-info text-center rounded-3 shadow-sm py-5">
+                            <i class="bi bi-box-seam fs-3 d-block mb-2"></i>
+                            No allocated requests yet.
                         </div>
                     }
                 </div>
             </div>
+
+            <!-- Footer -->
+           
+
         </div>
     </div>
+</form>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Visits Modal -->
+<div class="modal fade" id="visitsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-calendar3 me-2"></i>Visit History</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="visitsModalBody"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('allocatedSearch');
-            const rows = document.querySelectorAll('#allocatedTable tbody tr');
+            const requestCards = document.querySelectorAll('.request-card');
 
             searchInput.addEventListener('keyup', function () {
                 const searchText = this.value.toLowerCase();
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchText) ? '' : 'none';
+                requestCards.forEach(card => {
+                    const searchableText = card.getAttribute('data-searchable').toLowerCase();
+                    card.style.display = searchableText.includes(searchText) ? 'block' : 'none';
                 });
             });
+
+            const viewVisitsButtons = document.querySelectorAll('.view-visits-btn');
+            const visitsModal = new bootstrap.Modal(document.getElementById('visitsModal'));
+
+            viewVisitsButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const requestId = this.getAttribute('data-request-id');
+                    showVisitsForRequest(requestId);
+                });
+            });
+
+            function showVisitsForRequest(requestId) {
+                const modalBody = document.getElementById('visitsModalBody');
+                const requestCard = document.querySelector(`.view-visits-btn[data-request-id="${requestId}"]`).closest('.request-card');
+                const customerName = requestCard.querySelector('h5').textContent;
+
+                modalBody.innerHTML = `
+                            <div class="text-center py-5">
+                                <i class="bi bi-calendar2-week fs-1 text-primary mb-3"></i>
+                                <h5 class="fw-bold mb-2">Visit History for ${customerName}</h5>
+                                <p class="text-muted mb-0">Visit details would be loaded here via AJAX</p>
+                                <p class="small text-muted mt-1">Request ID: ${requestId}</p>
+                            </div>
+                        `;
+                visitsModal.show();
+            }
         });
     </script>
+}

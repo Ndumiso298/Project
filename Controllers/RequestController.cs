@@ -27,7 +27,7 @@ namespace Project.Controllers
 
             if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
             {
-                objRequestHeaders = _db.tblRequestHeaders.Include(a=>a.ApplicationUser).ToList();
+                objRequestHeaders = _db.tblRequestHeaders.Include(a=>a.Customer.ApplicationUser).ToList();
             }
             else
             {
@@ -36,8 +36,8 @@ namespace Project.Controllers
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 objRequestHeaders = _db.tblRequestHeaders
-                    .Include(u => u.ApplicationUser)
-                    .Where(r => r.ApplicationUserId == userId)
+                    .Include(u => u.Customer.ApplicationUser)
+                    .Where(r => r.Customer.ApplicationUserId == userId)
                     .ToList();
 
             }
@@ -45,12 +45,13 @@ namespace Project.Controllers
             return View(objRequestHeaders);
         }
 
+
         public IActionResult Details(int id)
         {
             RequestVM = new()
             {
                 RequstHeader = _db.tblRequestHeaders
-                               .Include(a => a.ApplicationUser)
+                               .Include(a => a.Customer.ApplicationUser)
                                .FirstOrDefault(o => o.RequestHeaderId == id),
 
                 RequstDetail = _db.tblRequestDetais
@@ -62,7 +63,6 @@ namespace Project.Controllers
             return View(RequestVM);
         }
 
-        [HttpPost]
         [HttpPost]
         public IActionResult UpdateRequestDetail(RequestVM RequestVM)
         {
@@ -98,36 +98,82 @@ namespace Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult ToggleStatus(RequestVM RequestVM)
+        public IActionResult Approve(RequestVM RequestVM)
         {
-           if (RequestVM == null || RequestVM.RequstHeader == null)
-           {
-              return BadRequest("Invalid request data.");
-           }
+            if (RequestVM == null || RequestVM.RequstHeader == null)
+            {
+                return BadRequest("Invalid request data.");
+            }
 
-           var requestHeaderFromDb = _db.tblRequestHeaders
-          .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
 
-           if (requestHeaderFromDb == null)
-           {
-              return NotFound("Request not found.");
-           }
+            if (requestHeaderFromDb == null)
+            {
+                return NotFound("Request not found.");
+            }
 
-           if (requestHeaderFromDb.Status == SD.Allocated)
-           {
-              requestHeaderFromDb.Status = SD.WaitingForPayment;
-           }
-          else
-          {
-            requestHeaderFromDb.Status = SD.Allocated;
-          }
+            requestHeaderFromDb.Status = SD.Approved;
+            requestHeaderFromDb.RequestDate = DateTime.Now;
 
-          _db.tblRequestHeaders.Update(requestHeaderFromDb);
-          _db.SaveChanges();
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
 
-           TempData["Success"] = "Status updated successfully.";
+            TempData["Success"] = "Request approved successfully.";
 
-           return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+        }
+
+        public IActionResult Reject(RequestVM RequestVM)
+        {
+            if (RequestVM == null || RequestVM.RequstHeader == null)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+
+            if (requestHeaderFromDb == null)
+            {
+                return NotFound("Request not found.");
+            }
+
+            requestHeaderFromDb.Status = SD.Rejected;
+            requestHeaderFromDb.RequestDate = DateTime.Now;
+
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
+
+            TempData["Success"] = "Request rejected successfully.";
+
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+        }
+
+        public IActionResult Feedback(RequestVM RequestVM)
+        {
+            if (RequestVM == null || RequestVM.RequstHeader == null)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+
+            if (requestHeaderFromDb == null)
+            {
+                return NotFound("Request not found.");
+            }
+
+            requestHeaderFromDb.Status = SD.NeedsFeedback;
+            requestHeaderFromDb.RequestDate = DateTime.Now;
+
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
+
+            TempData["Success"] = "Request marked as needing feedback.";
+
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
 

@@ -11,19 +11,16 @@
     <div class="col-md-10 mx-auto">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-            <!-- Header -->
             <div class="card-header bg-primary text-light py-4 text-center">
                 <h2 class="text-white mb-1"><i class="bi bi-person-plus me-2"></i>Create a new account</h2>
                 <p class="text-light mb-0 opacity-75">Join SmartChill Solutions today!</p>
             </div>
 
-            <!-- Body -->
             <div class="card-body p-4 p-md-5">
                 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                     <div class="row">
-                        <!-- Left Column -->
                         <div class="col-md-6">
                             <div class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
@@ -48,7 +45,6 @@
                                 </div>
                             </div>
 
-                            @* Business Document Upload: only visible if not Admin *@
                             @if (!isAdmin)
                             {
                                 <div class="card mb-4 border-0 shadow-sm">
@@ -60,14 +56,13 @@
                                             <label asp-for="Input.BusinessDocument" class="form-label fw-semibold"></label>
                                             <input asp-for="Input.BusinessDocument" type="file" class="form-control" />
                                             <span asp-validation-for="Input.BusinessDocument" class="text-danger"></span>
-                                            <small class="text-muted">Upload a valid document that proves your business (PDF, JPG, PNG).</small>
+                                            <small class="text-muted">Upload a valid document (PDF, JPG, PNG).</small>
                                         </div>
                                     </div>
                                 </div>
                             }
                         </div>
 
-                        <!-- Right Column -->
                         <div class="col-md-6">
                             <div class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
@@ -137,14 +132,11 @@
                                     </div>
 @*                                 } *@
                             </div>
-
-                          
                         </div>
                     </div>
 
-                    <!-- Submit -->
                     <div class="d-grid gap-2 mt-4">
-                        <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg py-2 fw-semibold">
+                        <button type="submit" class="btn btn-primary btn-lg py-2 fw-semibold">
                             <i class="bi bi-person-plus me-2"></i>Register
                         </button>
                     </div>
@@ -153,3 +145,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+using Project.Models;
 
 namespace Project.Models
 {
     public class Customer
     {
         [Key]
-        public int Id { get; set; }
+        public int CustomerID { get; set; }
 
         [Required]
         public string ApplicationUserId { get; set; }
@@ -28,8 +31,6 @@ namespace Project.Models
         public string? BusinessDocumentPath { get; set; }
         public byte[]? BusinessDocumentData { get; set; }
 
-        public string CustomerNote { get; set; }
-
         [Display(Name = "Active")]
         public bool IsActive { get; set; } = true;
 
@@ -38,5 +39,8 @@ namespace Project.Models
         public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; }
         public ICollection<Fault> Faults { get; set; }
         public ICollection<FridgeRequest> Requests { get; set; }
+        
+        
+
     }
 }

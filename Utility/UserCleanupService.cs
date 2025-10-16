@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿
 using Project.Data;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-public class UserCleanupService : BackgroundService
+using System.Threading.Tasks;   //Funda okuningi kwi(documentation) link below
+                                //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-9.0&tabs=visual-studio
+public class UserCleanupService : BackgroundService//Silethelwa  ngu asp.net lenza what ever ofuna liyenze behind seen 
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<UserCleanupService> _logger;
-    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1);
+    private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1);//
 
     public UserCleanupService(IServiceProvider serviceProvider, ILogger<UserCleanupService> logger)
     {
@@ -30,8 +25,8 @@ public class UserCleanupService : BackgroundService
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    var now = DateTime.UtcNow;
-
+                    var now = DateTime.UtcNow;//Isikhathi manje(real time tracking)
+                                       
                     var expiredUsers = db.AppUser
                         .Where(u => u.DeclinedAt != null && u.DeclinedAt.Value.AddMinutes(1) <= now)
                         .ToList();

@@ -13,7 +13,7 @@
             <div class="card-header bg-primary text-light py-4 position-relative">
                 <div class="row align-items-center">
                     <div class="col-12 text-center">
-                        <h2 class="text-white fw-bold mb-1">Request Details</h2>
+                        <h2 class="text-white fw-bold mb-1">Orders Details</h2>
                         <p class="text-light mb-0 opacity-75">Manage customer pickup & order information</p>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                             <!-- Email -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Email</label>
-                                <input asp-for="RequstHeader.ApplicationUser.Email" class="form-control" readonly />
+                                <input asp-for="RequstHeader.Customer.ApplicationUser.Email" class="form-control" readonly />
                             </div>
 
                             <!-- Order Date -->
@@ -115,34 +115,42 @@
                                 <label class="form-label fw-semibold text-dark">Shipping Date</label>
                                 <input value="@Model.RequstHeader.ShippingDate?.ToShortDateString()" class="form-control" readonly />
                             </div>
-
-                            <!-- Payment Status -->
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-dark">Payment Status</label>
-
-                                <div class="d-flex align-items-center gap-2">
-                                    <!-- Textbox that shows status -->
-                                    <input asp-for="RequstHeader.Status" class="form-control w-auto" readonly />
-
-                                    @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
-                                    {
-                                        <!-- Toggle button -->
-                                        <button type="submit" asp-action="ToggleStatus"
-                                                class="btn btn-warning rounded-pill shadow-sm">
-                                            <i class="bi bi-arrow-repeat me-1"></i> Change Status
-                                        </button>
-                                    }
-                                </div>
+                                <label asp-for="RequstHeader.Status" class="form-label fw-semibold text-dark">Status</label>
+                                <input asp-for="RequstHeader.Status" class="form-control" readonly />
                             </div>
 
+                            <!-- Payment Status -->
+                            
 
-
+                            <!-- Action Buttons -->
                             @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
                             {
-                                <button type="submit" asp-action="UpdateRequestDetail"
-                                        class="btn btn-warning w-100 py-2 fw-semibold rounded-pill shadow">
-                                    <i class="bi bi-pencil-square me-1"></i> Update Order Details
-                                </button>
+                                <div class="row g-2 mt-4">
+                                    <!-- Approve Button -->
+                                    <div class="col-12 col-md-4">
+                                        <button type="submit" asp-action="Approve" 
+                                                class="btn btn-success w-100 py-2 fw-semibold rounded-pill shadow">
+                                            <i class="bi bi-check-circle me-1"></i> Approve
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Feedback Button -->
+                                    <div class="col-12 col-md-4">
+                                        <button type="submit" asp-action="Feedback" 
+                                                class="btn btn-info w-100 py-2 fw-semibold rounded-pill shadow">
+                                            <i class="bi bi-chat-dots me-1"></i> Feedback
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Reject Button -->
+                                    <div class="col-12 col-md-4">
+                                        <button type="submit" asp-action="Reject" 
+                                                class="btn btn-danger w-100 py-2 fw-semibold rounded-pill shadow">
+                                            <i class="bi bi-x-circle me-1"></i> Reject
+                                        </button>
+                                    </div>
+                                </div>
                             }
                         </div>
                     </div>

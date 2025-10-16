@@ -10,10 +10,10 @@ namespace Project.Models
         public int AllocationId { get; set; } // Unique ID for each allocation
 
 
-        public string ApplicationUserId { get; set; }
-        [ForeignKey("ApplicationUserId")]
+        public int CustomerID { get; set; }
+        [ForeignKey("CustomerID")]
         [ValidateNever]
-        public ApplicationUser ApplicationUser { get; set; }
+        public Customer Customer { get; set; }
 
 
         [ForeignKey("FridgeId")]
@@ -22,7 +22,7 @@ namespace Project.Models
         public Fridge Fridge { get; set; }
         public int Count { get; set; }
         // Rental Period
-        public ICollection<FridgeVisit> FridgeVisits { get; set; }
+        //public ICollection<FridgeVisit> FridgeVisits { get; set; }
 
         [NotMapped]
         public double Price { get; set; }
