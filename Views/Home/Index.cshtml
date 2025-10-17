@@ -1,8 +1,273 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartChill Solutions - Fridge Rentals</title>
+    <link rel="icon" href="~/Images/LandingPage/Logo.png" type="image/svg+xml">
+    <link rel="alternate icon" href="~/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/landing-page.css" asp-append-version="true">
+   
+</head>
+
+<body>
+    <section id="header">
+        <div class="header container">
+            <div class="nav-bar">
+                <div class="brand">
+                    <a href="#hero">
+                        <img src="~/Images/LandingPage/Log3.png" alt="Logo" style="height: 100px; width: auto;">
+                    </a>
+                </div>
+                <div class="nav-list">
+                    <div class="hamburger">
+                        <div class="bar"></div>
+                    </div>
+                    <ul>
+                        <li><a href="#hero" data-after="Home">Home</a></li>
+                        <li><a href="#virsions" data-after="Virsion">About</a></li>
+                        <li><a href="#services" data-after="Services">Services</a></li>
+                        <li><a href="#about" data-after="About">Platform</a></li>
+                        <li><a href="#contact" data-after="Contact">Contact</a></li>
+                        <li style="list-style: none;">
+                            <form method="get" asp-area="Identity" asp-page="/Account/Login" style="margin: 0;">
+                                <button type="submit" class="btn btn-lg login-btn" id="loginBtn"
+                                        style="padding: 10px 20px; font-size: 18px; background-color: #00d9ff; color: white; border: none; border-radius: 50px; display: flex; align-items: center; gap: 8px; transition: transform 0.3s ease, background-color 0.3s ease;">
+                                    <i class="fa fa-user login-icon" style="display: inline-block; transition: transform 0.6s;"></i> Login
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+ 
+    <section id="hero">
+        <div class="hero container">
+            <div>
+                <h1 style="color: #00d9ff;">Welcome to <span></span></h1>
+                <h1 style="color: #00d9ff;">SmartChill Solutions, <span></span></h1>
+                <h1 style="color: #00d9ff;">Innovative Fridge Rentals<span></span></h1>
+            </div>
+        </div>
+    </section>
+  
+    <section id="virsions">
+        <div class="virsions container">
+            <div class="virsion-top">
+                <h1 class="section-title">About <span>Us</span></h1>
+            </div>
+            <div class="virsion-bottom">
+                <div class="virsion-item">
+                    <h2>Vision:</h2>
+                    <p>
+                        Our vision at SmartChill Solutions is to be the leading provider of innovative rental management solutions,
+                        empowering businesses with smart technology that simplifies operations and enhances customer experiences.
+                    </p>
+                </div>
+                <div class="virsion-item">
+                    <h2>Mission:</h2>
+                    <p>
+                        At SmartChill Solutions, our mission is to deliver cutting-edge rental management software
+                        that streamlines operations, improves efficiency, and drives growth for businesses in the rental industry.
+                    </p>
+                </div>
+                <div class="virsion-item">
+                    <h2>Objectives:</h2>
+                    <p>
+                        Our objective at SmartChill Solutions is to provide accessible, user-friendly rental management tools,
+                        promote operational excellence, support business growth, and uphold innovation through continuous development.
+                    </p>
+                </div>
+                <div class="virsion-item">
+                    <h2>Core Values</h2>
+                    <p>
+                        At SmartChill Solutions, we uphold integrity, innovation, excellence, and customer focus
+                        in every aspect of our service. These values guide our commitment to delivering trusted and
+                        effective solutions for rental businesses.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="services container">
+            <div class="services-header">
+                <h1 class="section-title">Our <span>Services</span></h1>
+            </div>
+            <div class="all-services">
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Fridge Rental Management</h2>
+                        <p>
+                            SmartChill Solutions offers comprehensive fridge rental management services to streamline
+                            your rental operations. Our platform helps you manage inventory, track rentals, and process
+                            payments efficiently.
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPage/Landing4.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Inventory Tracking</h2>
+                        <p>Our advanced inventory tracking system allows you to monitor fridge availability, maintenance schedules, and rental history in real-time, ensuring optimal asset utilization.</p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPages/OutPatientServices.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Payment Processing</h2>
+                        <p>Streamline your payment collection with our secure payment processing system. Accept various payment methods and automate billing for recurring rentals.</p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPages/Inpatient.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Customer Management</h2>
+                        <p>
+                            Manage customer relationships effectively with our CRM features. Track customer preferences,
+                            rental history, and communication to provide personalized service and build lasting relationships.
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPages/Maternity.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Analytics & Reporting</h2>
+                        <p>
+                            Gain valuable insights into your rental business with our comprehensive analytics and reporting tools.
+                            Make data-driven decisions to optimize operations and maximize profitability.
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPages/Diagnostic.jpg" alt="img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Projects Section -->
+    
+    <!-- About Section -->
+    <section id="about">
+        <div class="about container">
+            <div class="col-left">
+                <div class="about-img">
+                    <img src="~/Images/LandingPage/Landing6.jpg" alt="img">
+                </div>
+            </div>
+            <div class="col-right">
+                <h1 class="section-title">Our <span>Platform</span></h1>
+                <p>
+                    SmartChill Solutions is built on a modern, fully responsive platform designed to provide
+                    a seamless experience for all our users. Our system features intuitive dashboards, comprehensive
+                    reporting tools, and secure payment processing to ensure you have the best tools for managing
+                    your fridge rental business. Accessible from any device, our platform makes rental management
+                    hassle-free and efficient.
+                </p>
+                <a href="#" class="cta">Learn More</a>
+            </div>
+        </div>
+    </section>
+    <!-- End About Section -->
+    
+ 
+    
+    <!-- End Contact Section -->
+    
+    <!-- Enhanced Footer -->
+    <footer class="enhanced-footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About Us</h3>
+                    <p>SmartChill Solutions provides innovative rental management software to simplify property management, tenant relationships, and payment processing.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#hero"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#virsions"><i class="fas fa-chevron-right"></i> About</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right"></i> Services</a></li>
+                        <li><a href="#about"><i class="fas fa-chevron-right"></i> Platform</a></li>
+                        <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Rental Street, Property City, PC 10001</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@smartchillsolutions.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 9AM-5PM</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter to get updates on our latest features and special offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Your email address">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+           
+        </div>
+    </footer>
+    
+    <script src="./app.js"></script>
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', function (e) {
+            e.preventDefault(); 
+            const icon = this.querySelector('.login-icon');
+
+            icon.classList.add('flipped');
+
+            setTimeout(() => {
+                this.closest('form').submit();
+            }, 600); 
+        });
+
+        const hamburger = document.querySelector('.hamburger');
+        const navList = document.querySelector('.nav-list ul');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navList.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-list ul li a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navList.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

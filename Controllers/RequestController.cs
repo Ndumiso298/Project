@@ -72,7 +72,8 @@ namespace Project.Controllers
             }
 
             var RequestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+                .FirstOrDefault(u => u.RequestHeaderId == 
+                RequestVM.RequstHeader.RequestHeaderId);
 
             if (RequestHeaderFromDb == null)
             {
@@ -92,9 +93,10 @@ namespace Project.Controllers
             _db.tblRequestHeaders.Update(RequestHeaderFromDb);
             _db.SaveChanges();
 
-            TempData["Success"] = "Order Details Updated Successfully.";
+            TempData[SD.Success] = "Order Details Updated Successfully.";
 
-            return RedirectToAction(nameof(Details), new { id = RequestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), 
+                new { id = RequestHeaderFromDb.RequestHeaderId });
         }
 
         [HttpPost]
@@ -106,7 +108,8 @@ namespace Project.Controllers
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+                .FirstOrDefault(u => u.RequestHeaderId == 
+                RequestVM.RequstHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -119,9 +122,10 @@ namespace Project.Controllers
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
             _db.SaveChanges();
 
-            TempData["Success"] = "Request approved successfully.";
+            TempData[SD.Success] = "Request approved successfully.";
 
-            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), 
+                new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
         public IActionResult Reject(RequestVM RequestVM)
@@ -132,7 +136,8 @@ namespace Project.Controllers
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+                .FirstOrDefault(u => u.RequestHeaderId ==
+                RequestVM.RequstHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -145,9 +150,10 @@ namespace Project.Controllers
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
             _db.SaveChanges();
 
-            TempData["Success"] = "Request rejected successfully.";
+            TempData[SD.Success] = "Request rejected successfully.";
 
-            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), 
+                new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
         public IActionResult Feedback(RequestVM RequestVM)
@@ -158,7 +164,8 @@ namespace Project.Controllers
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+                .FirstOrDefault(u => u.RequestHeaderId ==
+                RequestVM.RequstHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -171,9 +178,10 @@ namespace Project.Controllers
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
             _db.SaveChanges();
 
-            TempData["Success"] = "Request marked as needing feedback.";
+            TempData[SD.Success] = "Request marked as needing feedback.";
 
-            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), 
+                new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
 
@@ -184,7 +192,9 @@ namespace Project.Controllers
         public IActionResult ShipOrder()
         {
 
-            var RequestHeader = _db.tblRequestHeaders.FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var RequestHeader = _db.tblRequestHeaders.
+                FirstOrDefault(u => u.RequestHeaderId ==
+                RequestVM.RequstHeader.RequestHeaderId);
             //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
             RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
             RequestHeader.ShippingDate = DateTime.Now;
@@ -195,8 +205,9 @@ namespace Project.Controllers
 
             _db.tblRequestHeaders.Update(RequestHeader);
             _db.SaveChanges();
-            TempData["Success"] = "Order Shipped Successfully.";
-            return RedirectToAction(nameof(Details), new { requesId = RequestVM.RequstHeader.RequestHeaderId });
+            TempData[SD.Success] = "Order Shipped Successfully.";
+            return RedirectToAction(nameof(Details), 
+                new { requesId = RequestVM.RequstHeader.RequestHeaderId });
         }
 
 

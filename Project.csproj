@@ -17,10 +17,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.12" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="MimeKit" Version="4.13.0" />
+    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="31.1.23" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="31.1.23" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\Images\Fridges\" />
+    <Folder Include="wwwroot\Images\LandingPage\" />
   </ItemGroup>
 
 </Project>

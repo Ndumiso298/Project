@@ -1,0 +1,207 @@
+﻿@model IEnumerable<Project.Models.FridgeVisit>
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Failed Checkups";
+}
+
+<div class="container py-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+        <!-- Header -->
+        <div class="card-header bg-danger text-light py-4">
+            <div class="row align-items-center">
+                <div class="col-12 text-center">
+                    <h2 class="fw-bold text-white mb-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Escalated Faults
+                    </h2>
+                    <p class="opacity-75 mb-0">Reported fridge faults and failed service inspections</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Navigation Buttons -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap gap-3 justify-content-center">
+                        <a asp-controller="FaultTechnician" asp-action="BookFaultTechnician"
+                           class="btn btn-primary rounded-pill px-4 py-2">
+                            <i class="bi bi-tools me-2"></i>Book Maintenance
+                        </a>
+                        <a asp-controller="FaultTechnician" asp-action="MyMaintenanceBookings"
+                           class="btn btn-success rounded-pill px-4 py-2">
+                            <i class="bi bi-list-check me-2"></i>My Maintenance Bookings
+                        </a>
+                        <a asp-controller="FaultTechnician" asp-action="Calendar"
+                           class="btn btn-info rounded-pill px-4 py-2">
+                            <i class="bi bi-calendar-week me-2"></i>View Calendar
+                        </a>
+                        <a asp-controller="FaultTechnician" asp-action="Completed"
+                           class="btn btn-warning rounded-pill px-4 py-2">
+                            <i class="bi bi-check-circle me-2"></i>Completed Visits
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" id="failedSearch"
+                               class="form-control border-start-0 rounded-pill"
+                               placeholder="Search by customer, fridge model, technician...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkup Cards -->
+            <div id="failedContainer">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var visit in Model.OrderByDescending(v => v.VisitDate))
+                    {
+                        var fridge = visit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge;
+                        var customer = visit.RequestHeader?.Customer?.ApplicationUser;
+
+                        <div class="bg-primary text-white rounded-top-4 px-4 py-3 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    @customer?.FirstName @customer?.LastName
+                                </h5>
+                                <span class="badge bg-light text-danger fw-semibold">
+                                    @visit.VisitDate.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="border-bottom pb-4 mb-5 request-card bg-white rounded-bottom-4 shadow-sm"
+                             data-searchable="@($"{customer?.FirstName} {customer?.LastName} {customer?.Email} {visit.TechnicianName} {fridge?.Model}")">
+
+                            <div class="row align-items-center mb-3 mt-3 px-3">
+                                <div class="col-md-8">
+                                    <p class="text-muted small mb-0">
+                                        <i class="bi bi-envelope"></i> @customer?.Email &nbsp; | &nbsp;
+                                        <i class="bi bi-telephone"></i> @customer?.CellNumber
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-md-end small">
+                                    <span class="text-danger fw-semibold">Technician:</span> @visit.TechnicianName
+                                </div>
+                            </div>
+
+                            <!-- Fridge Info -->
+                            <div class="bg-light rounded-4 p-3 mb-3 mx-3">
+                                <h6 class="fw-semibold text-dark mb-3">
+                                    <i class="bi bi-snow me-2"></i>Fridge Information
+                                </h6>
+                                @if (fridge != null)
+                                {
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card h-100 shadow-sm border-0 rounded-3 text-center">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold text-danger mb-1">@fridge.Model</h6>
+                                                    <p class="small text-muted mb-1">@fridge.Type</p>
+                                                    <span class="badge bg-secondary">@fridge.CapacityLiters L</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning text-center rounded-pill py-2">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>No fridge details available
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Notes and Status -->
+                            <div class="bg-light rounded-4 p-3 mb-3 mx-3">
+                                <h6 class="fw-semibold text-dark mb-3">
+                                    <i class="bi bi-journal-text me-2"></i>Checkup Notes
+                                </h6>
+                                @if (!string.IsNullOrEmpty(visit.Notes))
+                                {
+                                    <div class="border p-3 rounded-3 bg-white">
+                                        <p class="mb-0 text-muted">@visit.Notes</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info text-center rounded-pill py-2">
+                                        <i class="bi bi-info-circle me-1"></i>No notes provided
+                                    </div>
+                                }
+
+                                <div class="mt-3">
+                                    <strong>Status:</strong>
+                                    @{
+                                        var statusClass = visit.CustomerApproval?.ToLower() switch
+                                        {
+                                            "approved" => "badge bg-success",
+                                            "declined" => "badge bg-danger",
+                                            "pending" => "badge bg-warning text-dark",
+                                            _ => "badge bg-secondary"
+                                        };
+                                    }
+                                    <span class="@statusClass ms-2">@visit.CustomerApproval</span>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex flex-wrap gap-2 justify-content-md-end mt-3 px-3">
+                                <a asp-controller="CustomerConfirmation" asp-action="Details" asp-route-id="@visit.VisitId"
+                                   class="btn btn-outline-primary rounded-pill px-4">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                @*  <a asp-controller="FaultTechnicians" asp-action="Create" asp-route-visitId="@visit.VisitId"
+                        class="btn btn-outline-danger rounded-pill px-4">
+                        <i class="bi bi-wrench"></i> Repair Fault
+                        </a> *@
+                                @if (visit.CustomerApproval?.ToLower() == "pending")
+                                {
+                                    <a asp-controller="FaultTechnician" asp-action="BookMaintenance" asp-route-id="@visit.VisitId"
+                                       class="btn btn-outline-warning rounded-pill px-4">
+                                        <i class="bi bi-calendar-plus"></i> schedule Repair
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-success text-center rounded-3 shadow-sm py-5">
+                        <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                        No failed checkups found. All visits passed successfully!
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('failedSearch');
+            const cards = document.querySelectorAll('.request-card');
+
+            searchInput.addEventListener('keyup', function () {
+                const text = this.value.toLowerCase();
+                cards.forEach(card => {
+                    const searchable = card.getAttribute('data-searchable').toLowerCase();
+                    card.style.display = searchable.includes(text) ? 'block' : 'none';
+                });
+            });
+        });
+    </script>
+}

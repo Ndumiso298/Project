@@ -1,4 +1,4 @@
-﻿ @model IEnumerable<Project.Models.FridgeVisit>
+﻿@model IEnumerable<Project.Models.FridgeVisit>
 
 @{
     Layout = "_CustomerLayout";
@@ -6,7 +6,6 @@
 }
 
 <div class="container-fluid py-4">
-    <!-- Header Section -->
     <div class="row mb-4">
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
@@ -18,7 +17,6 @@
         </div>
     </div>
 
-    <!-- Visit List Card -->
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
             <h5 class="m-0 font-weight-bold text-primary">Visit Records</h5>
@@ -34,6 +32,7 @@
                 </ul>
             </div>
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover align-middle" id="visitTable">
@@ -46,7 +45,7 @@
                             <th>Last Name</th>
                             <th>Cellphone</th>
                             <th>Type</th>
-                            <th>Fridge No</th>
+                            <th>Checkup Status</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -69,7 +68,22 @@
                                     <td>@visit.RequestHeader.Customer.ApplicationUser?.CellNumber</td>
                                     <td>@detail.Fridge?.Type</td>
                                     <td>
-                                        <span class="badge bg-light text-dark">@detail.Fridge?.Description</span>
+                                        @if (visit.CheckupStatus == "Passed")
+                                        {
+                                            <span class="badge bg-success">@visit.CheckupStatus</span>
+                                        }
+                                        else if (visit.CheckupStatus == "Failed")
+                                        {
+                                            <span class="badge bg-warning text-dark">@visit.CheckupStatus</span>
+                                        }
+                                        else if (visit.CheckupStatus == "In Progress")
+                                        {
+                                            <span class="badge bg-info text-dark">@visit.CheckupStatus</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Not Started</span>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -77,14 +91,14 @@
                     </tbody>
                 </table>
 
-                 @if (!Model.Any())
+                @if (!Model.Any())
                 {
                     <div class="text-center py-5">
                         <i class="bi bi-calendar-x display-1 text-muted"></i>
                         <h4 class="mt-3 text-muted">No Visits Found</h4>
                         <p class="text-muted">Scheduled visits will appear here once created</p>
                     </div>
-                } 
+                }
             </div>
         </div>
     </div>
@@ -92,13 +106,11 @@
 
 @section Scripts {
     <script>
-        // Initialize tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+        });
 
-        // Simple search functionality
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.createElement('input');
             searchInput.type = 'text';
@@ -120,4 +132,3 @@
         });
     </script>
 }
- 

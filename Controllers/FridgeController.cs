@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
+using Project.Utility;
 using System.Linq;
 
 namespace Project.Controllers
@@ -86,7 +87,7 @@ namespace Project.Controllers
 
                 _db.Add(objfridge);
                 _db.SaveChanges();
-                TempData["success"] = "Fridge created successfully";
+                TempData[SD.Success] = "Fridge created successfully";
                 return RedirectToAction(nameof(Manage));
             }
             return View(objfridge);
@@ -155,6 +156,7 @@ namespace Project.Controllers
                         else
                             throw;
                     }
+                    TempData[SD.Success] = "Fridge updated successfully";
                     return RedirectToAction(nameof(Manage));
                 }
             }
@@ -184,6 +186,8 @@ namespace Project.Controllers
             }
 
              _db.SaveChanges();
+            TempData[SD.Success] = "Fridge updated successfully";
+
             return RedirectToAction(nameof(Manage));
         }
 

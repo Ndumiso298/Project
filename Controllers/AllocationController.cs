@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
-using Project.Utility;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -75,7 +73,10 @@ namespace Project.Controllers
                 allocation.Price = GetPriceBasedOnQuantity(allocation);
                 AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
             }
+            _db.tblAllocations.RemoveRange(AllocationVM.AllocationList);
+            _db.SaveChanges();
             return View(AllocationVM);
+           
         }
 
 
@@ -123,9 +124,11 @@ namespace Project.Controllers
                     Count = allocation.Count,
                 };
                 _db.tblRequestDetais.Add(requestDetail);
+              
                 _db.SaveChanges();
 
             }
+            
             return RedirectToAction(nameof(Confirmation));
         }
 
@@ -152,7 +155,7 @@ namespace Project.Controllers
         public IActionResult Minus(int id)
         {
             var allocationFromDb = _db.tblAllocations.FirstOrDefault(u => u.AllocationId == id);
-            if (allocationFromDb.Count >= 0)
+            if (allocationFromDb.Count <= 1)
             {
                 _db.tblAllocations.Remove(allocationFromDb);
             }

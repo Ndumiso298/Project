@@ -123,7 +123,7 @@ namespace Project.Areas.Identity.Pages.Account
                 if (await _userManager.IsInRoleAsync(user, SD.StockController))
                     return RedirectToAction("Dashboard", "StockController");
                 if (await _userManager.IsInRoleAsync(user, SD.FaultTechnician))
-                    return RedirectToAction("Dashboard", "FaultTech");
+                    return RedirectToAction("Dashboard", "FaultTechnician");
                 if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnician))
                     return RedirectToAction("Dashboard", "MaintenanceTech");
 

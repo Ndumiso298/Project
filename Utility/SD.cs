@@ -20,5 +20,10 @@
         public const string FaultResolved = "Fsult Resolved";
         public const string FaultPending = "Fsult Resolved";
         public const string Pending = "Pending";
+        public const string Declined = "Decline";
+        public const string NotStarted = "Not Started";
+        public const string Success = "Success";
+        public const string Error = "Error";
+
     }
 }

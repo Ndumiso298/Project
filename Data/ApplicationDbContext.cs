@@ -19,10 +19,9 @@ namespace Project.Data
         public DbSet<Allocation> tblAllocations { get; set; }
         public DbSet<RequestHeader> tblRequestHeaders { get; set; }
         public DbSet<RequestDetails> tblRequestDetais { get; set; }
-       // public DbSet<FaultReport> tblFaultReports { get; set; }
         public DbSet<Customer> tblCustomer { get; set; }
         public DbSet<Employee> tblEmployee { get; set; }
-       
+        public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<FridgeVisit> tblFridgeVisits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

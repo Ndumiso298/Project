@@ -305,6 +305,48 @@ namespace Project.Migrations
                     b.ToTable("tblEmployee");
                 });
 
+            modelBuilder.Entity("Project.Models.FaultTechnician", b =>
+                {
+                    b.Property<int>("FaultId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FaultId"));
+
+                    b.Property<DateTime?>("Bookingate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Completion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerBookingStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FaultDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RepairStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TechnicianAssigned")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VisitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FaultId");
+
+                    b.HasIndex("VisitId");
+
+                    b.ToTable("tblFaultTechnicians");
+                });
+
             modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
                     b.Property<int>("FridgeId")
@@ -1100,8 +1142,14 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VisitId"));
 
-                    b.Property<string>("Notes")
+                    b.Property<string>("CheckupStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerApproval")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RequestHeaderId")
@@ -1354,6 +1402,17 @@ namespace Project.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Project.Models.FaultTechnician", b =>
+                {
+                    b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
+                        .WithMany("FaultTechnicians")
+                        .HasForeignKey("VisitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FridgeVisit");
+                });
+
             modelBuilder.Entity("Project.Models.FridgeInStock", b =>
                 {
                     b.HasOne("Project.Models.Fridge", "Fridge")
@@ -1415,6 +1474,11 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
                     b.Navigation("FridgeInstances");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeVisit", b =>
+                {
+                    b.Navigation("FaultTechnicians");
                 });
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>

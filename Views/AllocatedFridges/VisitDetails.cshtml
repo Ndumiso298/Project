@@ -1,0 +1,47 @@
+﻿@model FridgeVisit
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title">Visit Details</h3>
+            </div>
+            <div class="card-body">
+                <!-- Your visit details content here -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Visit ID:</strong> @Model.VisitId</p>
+                        <p><strong>Visit Date:</strong> @Model.VisitDate.ToShortDateString()</p>
+                        <p><strong>Technician:</strong> @Model.TechnicianName</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Customer:</strong> @Model.RequestHeader.Customer.ApplicationUser.FirstName>
+                        <p><strong>Phone:</strong> @Model.RequestHeader.Customer.ApplicationUser.CellNumber</p>
+                        <p><strong>Email:</strong> @Model.RequestHeader.Customer.ApplicationUser.Email</p>
+                    </div>
+                </div>
+
+                <!-- Report Generation Buttons -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="btn-group" role="group">
+                            <form method="post" asp-action="GenerateVisitReport" asp-route-id="@Model.VisitId" asp-route-downloadType="word" class="d-inline">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-file-word"></i> Download Word
+                                </button>
+                            </form>
+                            <form method="post" asp-action="GenerateVisitReport" asp-route-id="@Model.VisitId" asp-route-downloadType="pdf" class="d-inline">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-file-pdf"></i> Download PDF
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-primary" onclick="window.print()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

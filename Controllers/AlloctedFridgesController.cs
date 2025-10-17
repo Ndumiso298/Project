@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
@@ -28,7 +29,7 @@ namespace Project.Controllers
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                //.Where(v => v.RequestHeader.ApplicationUserId == userId) sw2
+                //.Where(u => u.RequestHeader.ApplicationUserId == userId)
                 .ToList();
 
             return View(visits);
@@ -46,9 +47,12 @@ namespace Project.Controllers
                 .Where(u => u.Status ==SD.Approved) 
                 .ToList();
 
-            var requestIds = allocatedRequests.Select(u => u.RequestHeaderId).ToList();
+            var requestIds = allocatedRequests
+                .Select(u => u.RequestHeaderId)
+                .ToList();
             var visits = _db.tblFridgeVisits
-                .Where(u => requestIds.Contains(u.RequestHeaderId))
+                .Where(u => requestIds
+                .Contains(u.RequestHeaderId))
                 .ToList();
 
             foreach (var request in allocatedRequests)
@@ -118,7 +122,13 @@ namespace Project.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.CheckupStatusList = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Passed", Value = "Passed" },
+                new SelectListItem { Text = "Failed", Value = "Failed" },
+                new SelectListItem { Text = "In Progress", Value = "In Progress" },
+                new SelectListItem { Text = "Not Started", Value = "Not Started" }
+            };
             FridgeVisit visit;
 
             if (visitId.HasValue)
@@ -161,12 +171,54 @@ namespace Project.Controllers
                     _db.tblFridgeVisits.Update(visit);
                 }
                 _db.SaveChanges();
+                TempData[SD.Success] = "Booking successfully";
+
                 return RedirectToAction("Index", new { id = visit.RequestHeaderId });
             }
+            ViewBag.CheckupStatusList = new List<SelectListItem>
+            {
+               new SelectListItem { Text = "Passed", Value = "Passed" },
+               new SelectListItem { Text = "Failed", Value = "Failed" },
+               new SelectListItem { Text = "In Progress", Value = "In Progress" },
+            };
 
+            
             return View(visit);
         }
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ApproveVisit(int visitId)
+        {
+            var visit = _db.tblFridgeVisits.Find(visitId);
+            if (visit == null)
+            {
+                return NotFound();
+            }
 
+            visit.CustomerApproval = SD.Approved;
+            _db.SaveChanges();
+            TempData[SD.Success] = "Visit successfully Approved";
+
+            return RedirectToAction("CustomerBookings");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeclineVisit(int visitId)
+        {
+            var visit = _db.tblFridgeVisits.Find(visitId);
+            if (visit == null)
+            {
+                return NotFound();
+            }
+
+            visit.CustomerApproval = SD.Declined;
+            _db.SaveChanges();
+            TempData[SD.Error] = "Visit successfully Decline";
+
+            return RedirectToAction("CustomerBookings");
+        }
+    }
 }
+
 
