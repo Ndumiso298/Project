@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project.Models;
-using Project.Models.ViewModel;
+using Project.Utility;
 
 namespace Project.Data
 {
@@ -32,6 +32,8 @@ namespace Project.Data
         public DbSet<MaintenanceRecord> tblMaintenanceRecords { get; set; }
         public DbSet<FridgeRequest> tblFridgeRequests { get; set; }
         public DbSet<FridgeVisit> tblFridgeVisits { get; set; }
+        public DbSet<CustomerFridge> tblCustomerFridge { get; set; }
+        public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +44,61 @@ namespace Project.Data
                 .WithMany(f => f.FridgeInstances)
                 .HasForeignKey(fis => fis.FridgeId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Seed Admin User
+            var hasher = new PasswordHasher<ApplicationUser>();
+            var adminUser = new ApplicationUser
+            {
+                Id = "admin-id-123",
+                UserName = "admin@fridgesystem.com",
+                NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
+                Email = "admin@fridgesystem.com",
+                NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString("D"),
+                FirstName = "System",
+                LastName = "Administrator",
+                CellNumber = "+27123456789",
+                StreetAddress = "123 Admin Street",
+                City = "Johannesburg",
+                State = "Gauteng",
+                PostalCode = "2000",
+                Status = SD.Approved,
+                IsApproved = true
+            };
+            adminUser.PasswordHash = hasher.HashPassword(adminUser, "Sthandwa@97");
+
+            modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
+
+            // Seed Admin Role
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = "admin-role-id-123",
+                    Name = SD.AdminRole,
+                    NormalizedName = SD.AdminRole.ToUpper()
+                }
+            );
+
+            // Assign Admin Role to Admin User
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "admin-role-id-123",
+                    UserId = "admin-id-123"
+                }
+            );
+
+            // Seed Employee record for the admin
+            modelBuilder.Entity<Employee>().HasData(
+                new Employee
+                {
+                    EmployeeID = 1,
+                    ApplicationUserId = "admin-id-123",
+                    EmployeeNumber = "EMP001"
+                }
+            );
 
             // Seed Fridges
             modelBuilder.Entity<Fridge>().HasData(

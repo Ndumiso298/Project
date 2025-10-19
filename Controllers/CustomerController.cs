@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
+using Project.Utility;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -60,7 +61,7 @@ namespace Project.Controllers
                     _db.tblAllocations.Add(allocation);
                 }
 
-                TempData["success"] = "cart updated successfully";
+                TempData[SD.Success] = "cart updated successfully";
                 _db.SaveChanges();
                 return RedirectToAction(nameof(Index));
             

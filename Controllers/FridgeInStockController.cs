@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
+using Project.Utility;
 
 namespace Project.Controllers
 {
@@ -67,7 +68,6 @@ namespace Project.Controllers
                     return View(viewModel);
                 }
 
-                // Get the current count of instances for this fridge model
                 var existingInstancesCount =  _db.tblFridgeInStocks
                     .Count(f => f.FridgeId == viewModel.FridgeId);
 
@@ -84,7 +84,7 @@ namespace Project.Controllers
                         LastMaintenanceDate = viewModel.LastMaintenanceDate,
                         Condition = viewModel.Condition,
                         IsAvailable = true,
-                        Quantity = 1, // Each instance represents one physical fridge
+                        Quantity = 1,
                         Location = viewModel.Location
                     };
 
@@ -94,7 +94,7 @@ namespace Project.Controllers
                 _db.tblFridgeInStocks.AddRange(fridgeInstances);
                 _db.SaveChanges();
 
-                TempData["Success"] = $"{viewModel.Quantity} fridge instance(s) created successfully!";
+                TempData[SD.Success] = $"{viewModel.Quantity} fridge instance(s) created successfully!";
                 return RedirectToAction(nameof(Manage), new { id = viewModel.FridgeId });
             }
 
@@ -110,15 +110,16 @@ namespace Project.Controllers
 
         private string GenerateFridgeNumber(Fridge fridge, int sequenceNumber)
         {
-            // Extract first 3 characters from brand and model
-            var brandCode = fridge.Brand.Length >= 3 ? fridge.Brand.Substring(0, 3).ToUpper() : fridge.Brand.ToUpper().PadRight(3, 'X');
-            var modelCode = fridge.Model.Length >= 3 ? fridge.Model.Substring(0, 3).ToUpper() : fridge.Model.ToUpper().PadRight(3, 'X');
+            var brandCode = fridge.Brand.Length >= 3 ? fridge.Brand.Substring(0, 3)
+                .ToUpper() : fridge.Brand.ToUpper().PadRight(3, 'X');
+            var modelCode = fridge.Model.Length >= 3 ? fridge.Model.Substring(0, 3)
+                .ToUpper() : fridge.Model.ToUpper().PadRight(3, 'X');
 
-            // Clean codes to ensure they're alphanumeric only
-            brandCode = System.Text.RegularExpressions.Regex.Replace(brandCode, "[^A-Z0-9]", "X");
-            modelCode = System.Text.RegularExpressions.Regex.Replace(modelCode, "[^A-Z0-9]", "X");
+            brandCode = System.Text.RegularExpressions.Regex
+                .Replace(brandCode, "[^A-Z0-9]", "X");
+            modelCode = System.Text.RegularExpressions
+                .Regex.Replace(modelCode, "[^A-Z0-9]", "X");
 
-            // Format: FRG-BRAND-MODEL-001
             return $"FRG-{brandCode}-{modelCode}-{sequenceNumber:000}";
         }
 

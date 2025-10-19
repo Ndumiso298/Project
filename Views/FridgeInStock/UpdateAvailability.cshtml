@@ -1,0 +1,30 @@
+﻿@* @model IEnumerable<Project.Models.FridgeInStock>
+
+@{
+    ViewData["Title"] = "Available Fridges";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Fridge Model</th>
+            <th>Fridge No</th>
+            <th>Condition</th>
+            <th>Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var unit in Model)
+        {
+            <tr>
+                <td>@unit.Fridge.Model (@unit.Fridge.Brand)</td>
+                <td>@unit.FridgeNo</td>
+                <td>@unit.Condition</td>
+                <td>@unit.Location</td>
+            </tr>
+        }
+    </tbody>
+</table>
+ *@

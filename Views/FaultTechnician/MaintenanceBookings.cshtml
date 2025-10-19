@@ -1,0 +1,117 @@
+﻿@model IEnumerable<Project.Models.FaultTechnician>
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "My Maintenance Bookings";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h3 fw-bold text-primary mb-1">My Maintenance Bookings</h2>
+                    <p class="text-muted">View and manage your maintenance appointments</p>
+                </div>
+                <a asp-action="FailedFridges" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>New Booking
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">Booking History</h5>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Booking Date</th>
+                                <th>Fridge Details</th>
+                                <th>Fault Description</th>
+                                <th>Preferred Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var booking in Model)
+                            {
+                                var fridge = booking.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge;
+
+                                <tr>
+                                    <td>@booking.FridgeVisit.VisitDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (fridge != null)
+                                        {
+                                            <div>
+                                                <strong>@fridge.Brand @fridge.Model</strong><br>
+@*                                                 <small class="text-muted">@fridge.SerialNumber</small>
+ *@                                            </div>
+                                        }
+                                    </td>
+                                    <td>@booking.FaultDescription</td>
+                                    <td>
+                                        @if (booking.Bookingate.HasValue)
+                                        {
+                                            @booking.Bookingate.Value.ToString("MMM dd, yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not scheduled</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            var statusClass = booking.CustomerBookingStatus?.ToLower() switch
+                                            {
+                                                "approved" => "bg-success",
+                                                "pending" => "bg-warning",
+                                                "declined" => "bg-danger",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @statusClass">@booking.CustomerBookingStatus</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a asp-action="BookingConfirmation" asp-route-id="@booking.FaultId"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            @if (booking.CustomerBookingStatus == "Pending")
+                                            {
+                                                <form asp-action="CancelBooking" method="post" style="display: inline;">
+                                                    <input type="hidden" name="faultId" value="@booking.FaultId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                                        <i class="bi bi-x-circle"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">No Bookings Found</h4>
+                    <p class="text-muted">You haven't made any maintenance bookings yet.</p>
+                    <a asp-action="FailedFridges" class="btn btn-primary mt-3">
+                        <i class="bi bi-plus-circle me-2"></i>Book Maintenance
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-﻿ @model IEnumerable<Project.Models.RequestHeader>
+﻿@model IEnumerable<Project.Models.RequestHeader>
 
 @{
     ViewData["Title"] = "My Bookings";
@@ -20,8 +20,7 @@
         {
             <div class="card mb-4 shadow-sm rounded-3">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Request #@request.RequestHeaderId</h5>
-                    <span class="badge bg-success">@request.Status</span>
+                    Fridge Checkups
                 </div>
                 <div class="card-body">
                     <h6 class="fw-bold">Fridges</h6>
@@ -41,9 +40,26 @@
                         <ul>
                             @foreach (var visit in request.FridgeVisits)
                             {
-                                <li>
+                                <li class="mb-3">
                                     <i class="fas fa-calendar-check text-success"></i>
                                     Visit on <strong>@visit.VisitDate.ToString("dd MMM yyyy HH:mm")</strong>
+                                    <br />
+                                    <strong>Please Confirm Booking:</strong> @visit.CustomerApproval
+                                    
+
+                                    @* Approve/Decline buttons for Pending customer approval *@
+                                    @if (visit.CustomerApproval == SD.Pending)
+                                    {
+                                        <form asp-action="ApproveVisit" method="post" style="display:inline">
+                                            <input type="hidden" name="visitId" value="@visit.VisitId" />
+                                            <button type="submit" class="btn btn-success btn-sm ms-2">Approve</button>
+                                        </form>
+
+                                        <form asp-action="DeclineVisit" method="post" style="display:inline">
+                                            <input type="hidden" name="visitId" value="@visit.VisitId" />
+                                            <button type="submit" class="btn btn-danger btn-sm ms-1">Decline</button>
+                                        </form>
+                                    }
                                 </li>
                             }
                         </ul>
@@ -52,11 +68,8 @@
                     {
                         <p class="text-muted"><i class="fas fa-calendar-times"></i> No visits booked yet.</p>
                     }
-
-                  
                 </div>
             </div>
         }
     }
 </div>
- 

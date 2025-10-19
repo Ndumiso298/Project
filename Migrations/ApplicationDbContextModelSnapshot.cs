@@ -47,6 +47,14 @@ namespace Project.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "admin-role-id-123",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -208,6 +216,13 @@ namespace Project.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "admin-id-123",
+                            RoleId = "admin-role-id-123"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -252,7 +267,64 @@ namespace Project.Migrations
 
                     b.HasIndex("FridgeId");
 
-                    b.ToTable("tblAllocations");
+                    b.ToTable("tblAllocations", (string)null);
+                });
+
+            modelBuilder.Entity("Project.Models.BusinessInfo", b =>
+                {
+                    b.Property<int>("BusinessID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessID"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BusinessName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BusinessType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Industry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("LogoData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("LogoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BusinessID");
+
+                    b.ToTable("tblBusinessInfo", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.Customer", b =>
@@ -280,7 +352,41 @@ namespace Project.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("tblCustomer");
+                    b.ToTable("tblCustomer", (string)null);
+                });
+
+            modelBuilder.Entity("Project.Models.CustomerFridge", b =>
+                {
+                    b.Property<int>("CustomerFridgeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerFridgeId"));
+
+                    b.Property<DateTime?>("AllocatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FridgeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FridgeInStockId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReservedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CustomerFridgeId");
+
+                    b.HasIndex("CustomerID");
+
+                    b.HasIndex("FridgeId");
+
+                    b.HasIndex("FridgeInStockId");
+
+                    b.ToTable("tblCustomerFridge", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
@@ -303,6 +409,56 @@ namespace Project.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("tblEmployee");
+
+                    b.HasData(
+                        new
+                        {
+                            EmployeeID = 1,
+                            ApplicationUserId = "admin-id-123",
+                            EmployeeNumber = "EMP001"
+                        });
+                });
+
+            modelBuilder.Entity("Project.Models.FaultTechnician", b =>
+                {
+                    b.Property<int>("FaultId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FaultId"));
+
+                    b.Property<DateTime?>("Bookingate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Completion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerBookingStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FaultDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RepairStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TechnicianAssigned")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VisitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FaultId");
+
+                    b.HasIndex("VisitId");
+
+                    b.ToTable("tblFaultTechnicians", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.Fridge", b =>
@@ -347,7 +503,7 @@ namespace Project.Migrations
 
                     b.HasKey("FridgeId");
 
-                    b.ToTable("tblFridges");
+                    b.ToTable("tblFridges", (string)null);
 
                     b.HasData(
                         new
@@ -647,7 +803,7 @@ namespace Project.Migrations
 
                     b.HasIndex("FridgeId");
 
-                    b.ToTable("tblFridgeInStocks");
+                    b.ToTable("tblFridgeInStocks", (string)null);
 
                     b.HasData(
                         new
@@ -1100,8 +1256,14 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VisitId"));
 
-                    b.Property<string>("Notes")
+                    b.Property<string>("CheckupStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerApproval")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RequestHeaderId")
@@ -1118,7 +1280,7 @@ namespace Project.Migrations
 
                     b.HasIndex("RequestHeaderId");
 
-                    b.ToTable("tblFridgeVisits");
+                    b.ToTable("tblFridgeVisits", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.RequestDetails", b =>
@@ -1147,7 +1309,7 @@ namespace Project.Migrations
 
                     b.HasIndex("RequestHeaderId");
 
-                    b.ToTable("tblRequestDetais");
+                    b.ToTable("tblRequestDetais", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>
@@ -1216,7 +1378,7 @@ namespace Project.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.ToTable("tblRequestHeaders");
+                    b.ToTable("tblRequestHeaders", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.ApplicationUser", b =>
@@ -1260,6 +1422,33 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "admin-id-123",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3cb49037-e10d-4f6c-9178-c080e6497ccf",
+                            Email = "admin@fridgesystem.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
+                            NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAX+7/D0OxRGayk4zBpVKz7f2DqGYeZJE3dlW/mqxmcaSB7YRzMiHNYSFVP+9LAJzg==",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "2011129e-5e59-4e82-b591-c8405469ed82",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@fridgesystem.com",
+                            CellNumber = "+27123456789",
+                            City = "Johannesburg",
+                            FirstName = "System",
+                            IsApproved = true,
+                            LastName = "Administrator",
+                            PostalCode = "2000",
+                            State = "Gauteng",
+                            Status = "Approved",
+                            StreetAddress = "123 Admin Street"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1343,6 +1532,33 @@ namespace Project.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Project.Models.CustomerFridge", b =>
+                {
+                    b.HasOne("Project.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.Fridge", "Fridge")
+                        .WithMany()
+                        .HasForeignKey("FridgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.FridgeInStock", "FridgeInStock")
+                        .WithMany()
+                        .HasForeignKey("FridgeInStockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Fridge");
+
+                    b.Navigation("FridgeInStock");
+                });
+
             modelBuilder.Entity("Project.Models.Employee", b =>
                 {
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
@@ -1352,6 +1568,17 @@ namespace Project.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Project.Models.FaultTechnician", b =>
+                {
+                    b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
+                        .WithMany("FaultTechnicians")
+                        .HasForeignKey("VisitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FridgeVisit");
                 });
 
             modelBuilder.Entity("Project.Models.FridgeInStock", b =>
@@ -1415,6 +1642,11 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Fridge", b =>
                 {
                     b.Navigation("FridgeInstances");
+                });
+
+            modelBuilder.Entity("Project.Models.FridgeVisit", b =>
+                {
+                    b.Navigation("FaultTechnicians");
                 });
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>

@@ -1,5 +1,47 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<Project.Models.FridgeInStock>
+
 @{
+   
+    Layout = "_CustomerLayout";
+
+    ViewData["Title"] = "Fridge Units";
 }
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Upsert">Add New Fridge Unit</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Fridge Model</th>
+            <th>Fridge No</th>
+            <th>Condition</th>
+            <th>Last Maintenance</th>
+            <th>Availability</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var unit in Model)
+        {
+            <tr>
+                <td>@unit.Fridge.Model (@unit.Fridge.Brand)</td>
+                <td>@unit.FridgeNo</td>
+                <td>@unit.Condition</td>
+                <td>@unit.LastMaintenanceDate.ToShortDateString()</td>
+          
+                <td>@unit.Location</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" asp-action="Upsert" asp-route-id="@unit.FridgeInStockId">Edit</a>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@unit.FridgeInStockId">Delete</a>
+                    <a class="btn btn-sm btn-info" asp-action="UpdateAvailability" asp-route-id="@unit.FridgeInStockId" asp-route-status="Available">Available</a>
+                    <a class="btn btn-sm btn-secondary" asp-action="UpdateAvailability" asp-route-id="@unit.FridgeInStockId" asp-route-status="Rented">Rented</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
