@@ -27,18 +27,20 @@
         <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
             <h5 class="m-0 fw-bold text-primary">User Records</h5>
 
-            <!-- Filter Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
-                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-filter me-1"></i> Filter
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="#">All Users</a></li>
-                    <li><a class="dropdown-item" href="#">Approved</a></li>
-                    <li><a class="dropdown-item" href="#">Pending</a></li>
-                    <li><a class="dropdown-item" href="#">Declined</a></li>
-                </ul>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Filter Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#">All Users</a></li>
+                        <li><a class="dropdown-item" href="#">Approved</a></li>
+                        <li><a class="dropdown-item" href="#">Pending</a></li>
+                        <li><a class="dropdown-item" href="#">Declined</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -48,7 +50,7 @@
             {
                 <div class="table-responsive">
                     <table class="table table-hover align-middle" id="userTable">
-                        <thead>
+                        <thead class="table-light">
                             <tr>
                                 <th>Email</th>
                                 <th>Name</th>
@@ -137,7 +139,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // SweetAlert configuration for delete confirmation
+        // SweetAlert Delete Confirmation
         function confirmDelete(event, form) {
             event.preventDefault();
 
@@ -159,7 +161,6 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // If confirmed, submit the form
                     form.submit();
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire({
@@ -169,33 +170,56 @@
                     });
                 }
             });
-
-            return false;
         }
 
-        // Tooltip setup
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        // Search Functionality
         document.addEventListener('DOMContentLoaded', function () {
+            // Tooltip setup
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Create Search Input
             const searchInput = document.createElement('input');
             searchInput.type = 'text';
             searchInput.placeholder = 'Search users...';
             searchInput.className = 'form-control form-control-sm w-25 ms-auto';
-
             const cardHeader = document.querySelector('.card-header');
             cardHeader.appendChild(searchInput);
 
+            const rows = document.querySelectorAll('#userTable tbody tr');
+
+            // 🔍 Search Functionality
             searchInput.addEventListener('keyup', function () {
                 const searchText = this.value.toLowerCase();
-                const rows = document.querySelectorAll('#userTable tbody tr');
-
                 rows.forEach(row => {
                     const text = row.textContent.toLowerCase();
                     row.style.display = text.includes(searchText) ? '' : 'none';
+                });
+            });
+
+            // 🔽 Filter Functionality
+            document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const filter = this.textContent.trim().toLowerCase();
+
+                    rows.forEach(row => {
+                        const badge = row.querySelector('.badge');
+                        const status = badge ? badge.textContent.trim().toLowerCase() : '';
+
+                        if (filter === 'all users') {
+                            row.style.display = '';
+                        } else if (status.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Update dropdown button text
+                    const btn = document.getElementById('dropdownMenuButton');
+                    btn.innerHTML = `<i class="bi bi-filter me-1"></i> ${this.textContent}`;
                 });
             });
         });

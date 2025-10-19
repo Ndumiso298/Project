@@ -23,6 +23,8 @@ namespace Project.Data
         public DbSet<Employee> tblEmployee { get; set; }
         public DbSet<FaultTechnician> tblFaultTechnicians { get; set; }
         public DbSet<FridgeVisit> tblFridgeVisits { get; set; }
+        public DbSet<CustomerFridge> tblCustomerFridge { get; set; }
+        public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

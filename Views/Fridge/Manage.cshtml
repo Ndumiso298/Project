@@ -1,48 +1,206 @@
 ﻿@model IEnumerable<Project.Models.Fridge>
+
 @{
     ViewData["Title"] = "Manage Fridge Models";
     Layout = "_CustomerLayout";
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Manage Fridge Models</h3>
-        <a asp-action="Create" class="btn btn-primary">+ Add New Model</a>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h3 fw-bold text-primary mb-1">Manage Fridge Models</h2>
+                    <p class="text-muted">View and manage all available fridge models</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary d-flex align-items-center shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i> Add New Model
+                </a>
+            </div>
+        </div>
     </div>
 
-    <table class="table table-bordered table-striped align-middle">
-        <thead class="table-primary">
-            <tr>
-                <th>Brand</th>
-                <th>Model</th>
-                <th>Type</th>
-                <th>Total Units</th>
-                <th>Available</th>
-                <th>Rented</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var fridge in Model)
-            {
-                var total = fridge.FridgeInstances?.Count ?? 0;
-                var available = fridge.FridgeInstances?.Count(f => f.IsAvailable) ?? 0;
-                var rented = total - available;
+    <!-- Card Section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h5 class="m-0 fw-bold text-primary">Fridge Records</h5>
 
-                <tr>
-                    <td>@fridge.Brand</td>
-                    <td>@fridge.Model</td>
-                    <td>@fridge.Type</td>
-                    <td>@total</td>
-                    <td>@available</td>
-                    <td>@rented</td>
-                    <td>
-                        <a asp-controller="FridgeInStock" asp-action="Manage" asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-info">Manage Stock</a>
-                        <a asp-action="Edit" asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Filter Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <li><a class="dropdown-item" href="#">All</a></li>
+                        <li><a class="dropdown-item" href="#">Available</a></li>
+                        <li><a class="dropdown-item" href="#">Rented</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="fridgeTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Brand</th>
+                                <th>Model</th>
+                                <th>Type</th>
+                                <th>Total Units</th>
+                                <th>Available</th>
+                                <th>Rented</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var fridge in Model)
+                            {
+                                var total = fridge.FridgeInstances?.Count ?? 0;
+                                var available = fridge.FridgeInstances?.Count(f => f.IsAvailable) ?? 0;
+                                var rented = total - available;
+
+                                <tr>
+                                    <td>@fridge.Brand</td>
+                                    <td>@fridge.Model</td>
+                                    <td>@fridge.Type</td>
+                                    <td>@total</td>
+                                    <td>
+                                        <span class="badge bg-success">@available</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">@rented</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a asp-controller="FridgeInStock" asp-action="Manage"
+                                               asp-route-id="@fridge.FridgeId" class="btn btn-sm btn-info">
+                                                <i class="bi bi-box-seam me-1"></i> Manage Stock
+                                            </a>
+
+                                            <a asp-action="Edit" asp-route-id="@fridge.FridgeId"
+                                               class="btn btn-sm btn-warning text-dark">
+                                                <i class="bi bi-pencil-square me-1"></i> Edit
+                                            </a>
+
+                                            <form asp-action="Delete" asp-route-id="@fridge.FridgeId"
+                                                  method="post" onsubmit="return confirmDelete(event, this)">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash3 me-1"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-archive display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">No Fridge Models Found</h4>
+                    <p class="text-muted">Fridge models will appear here once added</p>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // 🧹 SweetAlert Delete Confirmation
+        function confirmDelete(event, form) {
+            event.preventDefault();
+
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: "Are you sure?",
+                text: "This fridge model will be deleted permanently!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel!",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelled",
+                        text: "Delete action cancelled",
+                        icon: "error"
+                    });
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 🔍 Add search input dynamically
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search fridges...';
+            searchInput.className = 'form-control form-control-sm w-25 ms-auto';
+            document.querySelector('.card-header').appendChild(searchInput);
+
+            const rows = document.querySelectorAll('#fridgeTable tbody tr');
+
+            // 🔎 Search functionality
+            searchInput.addEventListener('keyup', function () {
+                const query = this.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            // 🔽 Filter functionality
+            document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const filter = this.textContent.trim().toLowerCase();
+
+                    rows.forEach(row => {
+                        const available = parseInt(row.querySelector('td:nth-child(5) .badge').textContent);
+                        const rented = parseInt(row.querySelector('td:nth-child(6) .badge').textContent);
+
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else if (filter === 'available' && available > 0) {
+                            row.style.display = '';
+                        } else if (filter === 'rented' && rented > 0) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Update dropdown text
+                    document.getElementById('filterDropdown').innerHTML =
+                        `<i class="bi bi-filter me-1"></i> ${this.textContent}`;
+                });
+            });
+        });
+    </script>
+}

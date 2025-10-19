@@ -313,28 +313,34 @@
                         @if (User.IsInRole(SD.AdminRole))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Dashboard">Home</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Admin" asp-action="Dashboard">Home</a>
                             </li>
-                            @*  <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Dashboard">Dashboard</a>
-                        </li> *@
+                           
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Fridge" asp-action="Manage">Fridge</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Fridge" asp-action="Manage">Fridge</a>
                             </li>
-                            @*   <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Total Fridge Request</a>
-                        </li> *@
+                           
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-action="Index" asp-controller="User">
+                                    Users
+                                </a>
+                            </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-action="Index" asp-controller="User">
-                                    Register User
+                                <a class="nav-link text-white" asp-action="Index" asp-controller="BusinessInfo">
+                                    BusinessInfo
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-action="CustomerList" asp-controller="User">
+                                    Customers
                                 </a>
                             </li>
                         }
                         else if (User.IsInRole(SD.CustomerRole))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Customer" asp-action="Index">
                                     Available Items
                                 </a>
                             </li>
@@ -342,7 +348,7 @@
                             @if (hasRequestedItems)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">
+                                    <a class="nav-link text-white" asp-area="" asp-controller="Request" asp-action="Index">
                                         Requested Fridge
                                     </a>
                                 </li>
@@ -351,7 +357,7 @@
                             @if (hasFridgeBookings)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="CustomerBookings">
+                                    <a class="nav-link text-white" asp-area="" asp-controller="AllocatedFridges" asp-action="CustomerBookings">
                                         Fridge Checkups
                                     </a>
                                 </li>
@@ -367,13 +373,13 @@
                         else if (User.IsInRole(SD.CustomerSupport))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Home</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="MaintenanceVisit" asp-action="Dashboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Request" asp-action="Index">Orders</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Request" asp-action="Index">Orders</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
                             </li>
                         }
                         else if (User.IsInRole(SD.StockController))
@@ -388,17 +394,17 @@
                         {
                            
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="FaultTechnician" asp-action="Dashboard">
+                                <a class="nav-link text-white" asp-controller="FaultTechnician" asp-action="Dashboard">
                                     Home
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="FaultTechnician" asp-action="Index">
+                                <a class="nav-link text-white" asp-controller="FaultTechnician" asp-action="Index">
                                     Faults
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="FaultTechnician" asp-action="Calendar">
+                                <a class="nav-link text-white" asp-controller="FaultTechnician" asp-action="Calendar">
                                     Calendar
                                 </a>
                             </li>
@@ -407,19 +413,19 @@
                         else if (User.IsInRole(SD.MaintenanceTechnician))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FaultTech" asp-action="Dashboard">Home</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="FaultTech" asp-action="Dashboard">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Index">Service Booking</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="AllocatedFridges" asp-action="Index">Service Booking</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Service Appointment</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="AllocatedFridges" asp-action="Calendar">Service Appointment</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="SafetyGuideLines">Safety GuideLines</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="AllocatedFridges" asp-action="SafetyGuideLines">Safety GuideLines</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AllocatedFridges" asp-action="Completed">Upcoming and Completed</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="AllocatedFridges" asp-action="Completed">Upcoming and Completed</a>
                             </li>
                         }
 
@@ -450,7 +456,7 @@
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>About Us</h3>
-                    <p>Smart & Chill Solutions provides innovative rental management software to simplify property management, tenant relationships, and payment processing.</p>
+                    <p>SmartChill Solutions provides innovative rental management software to simplify property management, tenant relationships, and payment processing.</p>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -463,9 +469,9 @@
                     <h3>Quick Links</h3>
                     <ul class="footer-links">
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Home</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Features</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Pricing</a></li>
-                        <li><a href="#"><i class="fas fa-chevron-right"></i> Testimonials</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> About</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Services</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Platform</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
                     </ul>
                 </div>
@@ -475,7 +481,7 @@
                     <ul class="contact-info">
                         <li><i class="fas fa-map-marker-alt"></i> 123 Rental Street, Property City, PC 10001</li>
                         <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-envelope"></i> info@smartchillsolutions.com</li>
+                        <li><i class="fas fa-envelope"></i> smartchill3@gmail.com</li>
                         <li><i class="fas fa-clock"></i> Mon-Fri: 9AM-5PM</li>
                     </ul>
                 </div>
