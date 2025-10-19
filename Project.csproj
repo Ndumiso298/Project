@@ -51,7 +51,136 @@
     <Content Update="wwwroot\Images\Fridges\0f189537-b86b-46ed-88b0-697d64518b86.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\Images\Fridges\16849aa8-c4c7-4784-9aba-fbd34ffaf2f3.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\16eaa25a-e6ad-4584-869f-79c59db95573.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\2448ab1e-0492-477c-80f5-bcda6a5b3efb.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\2634148d-20b9-40c2-9849-3566df69f859.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\3161b1dd-76a7-4850-8ecb-13104d658683.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\33b3ec74-7862-44e1-afa0-4c4a42689a9f.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\3642f46a-d26e-4f72-8e41-39718b9c6e62.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\3af820d9-c376-4432-8a69-db81af07350d.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\3fab2301-7b43-489c-a5eb-a4a84e146a0c.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\400c34ae-42d5-46d8-b30e-29ffb16d78c6.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\4093dbc3-ca0a-4a5e-a800-06e2b5a45674.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\Images\Fridges\45189b3d-8e97-49b3-8c90-47ec9d6db6b9.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\467ede5b-2e0f-4547-991f-eff26a1ad923.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\4ff51e2e-eb52-464d-9bd0-9b93671b7b1d.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\59a41e73-af93-465b-a5aa-f0d7cf37fe2c.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\5a615c93-17e6-4d8a-af1c-0665a9e1785e.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\5f3c62bc-b7a1-4099-8453-0562449c1eba.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\609deb13-d161-444a-9fff-05b26c0c6a97.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\61a98f33-8cc1-4347-95d3-46d736c288c9.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\6262a6ec-e2c6-4c89-9dfa-b4ffa05f159a.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\6c99da3a-7e53-4a54-a4c2-179ba50f4552.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\7018666a-91a5-4ec1-b6fc-66c3364a4959.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\7a5c9f14-43cc-4b88-98a1-2cd4f34b355a.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\7a5ef7b8-7c58-4d8e-bf27-3c1c9a911b45.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\7dd74bf9-a984-4b8e-99c9-90b949397929.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\7e4c22d6-9a91-4d0c-83db-95856b2a30f0.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\8e2d92bf-c306-4688-89f5-019d76a9539b.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\903c7a81-7870-4839-b86b-afded493f83e.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\9214b5fb-fd45-418d-bd56-ae21d8b52b5e.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\9642570d-1a52-4aae-aa7a-9beec4b1b042.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\9df46e77-fc1b-41cc-b27a-da15e83c3075.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\9f2beba0-59ba-4680-a8c9-bc4e278a8d2b.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\af7c447d-8429-4fc2-a3c4-52a5d6d5ae4c.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\be54bce5-b511-4946-8f3a-55ae0a65ec35.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\bf9cb282-527a-4280-879a-a542b9625bc1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\c5ff0909-e811-4677-91d9-7657527c6d6f.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\d8d28a2e-8028-45e1-9230-165b76a70e53.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\dff205af-9cde-4e97-876d-3b9a603e6459.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\f4f9ffeb-d548-4499-8ba4-34f22eac1bcb.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\f93e22b7-e939-4885-836b-13c6009ca2e5.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\fcacc8b3-f398-42dc-ac5a-6b1c25d51d25.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\ff0f7afe-f500-4d55-9c8b-2db0e888668d.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\Fridges\fff71ebc-a0c1-45cb-9e22-66e9522d23b4.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\Images\LandingPage\AboutUs.jpg">
