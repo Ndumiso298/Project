@@ -122,19 +122,22 @@ namespace Project.Controllers
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
             _db.SaveChanges();
 
+            ReserveApprovedFridges(RequestVM);
+
             TempData[SD.Success] = "Request approved successfully.";
 
             return RedirectToAction(nameof(Details), 
                 new { id = requestHeaderFromDb.RequestHeaderId });
         }
-        private async Task ReserveApprovedFridges(RequestVM RequestVM)
+        //TODO auto reserve a fridge on approval
+        private async  Task ReserveApprovedFridges(RequestVM RequestVM)
         {
-            var fridgesInStock = await _db.tblFridgeInStocks.Where(x => x.IsAvailable).ToListAsync();
+            var fridgesInStock = await _db.tblFridgeInStocks.Where(x=>x.IsAvailable).ToListAsync();
 
             var selectedModels = RequestVM.RequstDetail.Select(x => x.FridgeId).ToList();
 
             var fridges = fridgesInStock.Where(x => selectedModels.Contains(x.FridgeId)).ToList();
-
+           
             _ = fridges.Take(selectedModels.Count); //TODO double check that the user is allocated the quantity of fridges they actually requested.
 
             foreach (var f in fridges)
@@ -149,6 +152,7 @@ namespace Project.Controllers
             _db.SaveChanges();
 
         }
+       
         public IActionResult Reject(RequestVM RequestVM)
         {
             if (RequestVM == null || RequestVM.RequstHeader == null)
