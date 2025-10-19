@@ -1,0 +1,130 @@
+﻿@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Fault Technician Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-speedometer2 me-2"></i>Fault Technician Dashboard
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="mb-0">@ViewBag.TotalFaults</h4>
+                                            <p class="mb-0">Total Faults</p>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-tools fs-1"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="mb-0">@ViewBag.PendingFaults</h4>
+                                            <p class="mb-0">Pending</p>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-clock-history fs-1"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="mb-0">@ViewBag.InProgress</h4>
+                                            <p class="mb-0">In Progress</p>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-gear fs-1"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="mb-0">@ViewBag.Completed</h4>
+                                            <p class="mb-0">Completed</p>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-check-circle fs-1"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Quick Actions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <a asp-action="Index" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-list-check me-2"></i>View All Faults
+                                        </a>
+                                        <a asp-action="Calendar" class="btn btn-success btn-lg">
+                                            <i class="bi bi-calendar-week me-2"></i>View Calendar
+                                        </a>
+                                        <a asp-action="MaintenanceBookings" class="btn btn-info btn-lg">
+                                            <i class="bi bi-tools me-2"></i>Maintenance Bookings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Recent Activities</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">New fault reported</h6>
+                                                <small>2 hours ago</small>
+                                            </div>
+                                            <p class="mb-1">Fridge Model: XYZ-123</p>
+                                        </div>
+                                        <div class="list-group-item">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">Maintenance completed</h6>
+                                                <small>5 hours ago</small>
+                                            </div>
+                                            <p class="mb-1">Customer: John Doe</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

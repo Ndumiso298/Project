@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Project.Models.BusinessInfo>
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Business List Management";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h3 fw-bold text-primary mb-1">Business Management</h2>
+                    <p class="text-muted">Manage all registered businesses</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary d-flex align-items-center shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i> Add New Business
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="m-0 fw-bold text-primary">Business Records</h5>
+            <input type="text" class="form-control form-control-sm w-25" id="searchInput" placeholder="Search businesses...">
+        </div>
+
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="businessTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Logo</th>
+                                <th>Business Name</th>
+                                <th>Registration No.</th>
+                                <th>Type</th>
+                                <th>Industry</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var business in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(business.LogoPath))
+                                        {
+                                            <img src="@business.LogoPath" alt="Logo" width="50" height="50" class="rounded-circle border" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No Logo</span>
+                                        }
+                                    </td>
+                                    <td>@business.BusinessName</td>
+                                    <td>@business.RegistrationNumber</td>
+                                    <td>@business.BusinessType</td>
+                                    <td>@business.Industry</td>
+                                    <td>@business.Email</td>
+                                    <td>@business.PhoneNumber</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a asp-action="Details" asp-route-id="@business.BusinessID" class="btn btn-sm btn-secondary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@business.BusinessID" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@business.BusinessID" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-building display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">No Businesses Found</h4>
+                    <p class="text-muted">Businesses will appear here once created.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#businessTable tbody tr");
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            });
+        });
+    </script>
+}

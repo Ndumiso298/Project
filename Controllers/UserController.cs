@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
@@ -25,6 +23,17 @@ namespace Project.Controllers
             _roleManager = roleManager;
             _hostingEnvironment = hostingEnvironment;
         }
+        public  IActionResult CustomerList()
+        {
+            var customers =  _db.tblCustomer.ToList();
+            return View(customers);
+        }
+        public IActionResult EmployeeList()
+        {
+            var customers = _db.tblEmployee.ToList();
+            return View(customers);
+        }
+
 
         public async Task<IActionResult> Index()
         {
@@ -55,6 +64,7 @@ namespace Project.Controllers
                 user.LockoutEnd = DateTime.Now.AddYears(1000); 
 
             _db.SaveChanges();
+            TempData[SD.Success] = $"Operation Successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -67,6 +77,8 @@ namespace Project.Controllers
 
             _db.AppUser.Remove(user);
             _db.SaveChanges();
+            TempData[SD.Error] = $"User {user.FirstName} Delete.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -167,7 +179,7 @@ namespace Project.Controllers
             user.RejectionReason = null; 
 
             _db.SaveChanges();
-            TempData["Success"] = $"User {user.FirstName} {user.LastName} approved successfully.";
+            TempData[SD.Success] = $"User {user.FirstName} {user.LastName} approved successfully.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -187,7 +199,7 @@ namespace Project.Controllers
 
             _db.SaveChanges();
 
-            TempData["Success"] = $"User {user.FirstName} declined.";
+            TempData[SD.Error] = $"User {user.FirstName} declined.";
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> ApproveDeclineUser(string userId)

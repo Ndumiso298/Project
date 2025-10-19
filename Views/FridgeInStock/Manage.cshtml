@@ -1,47 +1,74 @@
 ﻿@model Project.Models.ViewModel.FridgeStockVM
 
 @{
-    ViewData["Title"] = $"Manage {Model.FridgeModel.Brand} {Model.FridgeModel.Model} Stock";
     Layout = "_CustomerLayout";
-
     ViewData["Title"] = "Manage Fridge Instances";
 }
 
-<div class="container py-4">
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-        <div class="card-header bg-primary text-light py-3">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">@Model.FridgeModel.Brand @Model.FridgeModel.Model - Instances</h4>
+                <div>
+                    <h2 class="h3 fw-bold text-primary mb-1">
+                        @Model.FridgeModel.Brand @Model.FridgeModel.Model - Instances
+                    </h2>
+                    <p class="text-muted mb-0">Manage and track all fridge units for this model</p>
+                </div>
                 <a asp-action="Create" asp-route-fridgeId="@Model.FridgeModel.FridgeId"
-                   class="btn btn-light rounded-pill">
-                    <i class="fas fa-plus me-2"></i>Add Instances
+                   class="btn btn-primary d-flex align-items-center shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i> Add Instances
                 </a>
             </div>
         </div>
+    </div>
 
+    <!-- Card Section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h5 class="m-0 fw-bold text-primary">Fridge Instances</h5>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Filter Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <li><a class="dropdown-item" href="#">All</a></li>
+                        <li><a class="dropdown-item" href="#">Available</a></li>
+                        <li><a class="dropdown-item" href="#">Rented</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Body -->
         <div class="card-body p-4">
-            <!-- Statistics -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card bg-light border-0">
-                        <div class="card-body text-center">
-                            <h3 class="text-primary">@Model.TotalInstances</h3>
-                            <p class="mb-0 text-muted">Total Instances</p>
+            <!-- Statistics Section -->
+            <div class="row mb-4 text-center">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 bg-light shadow-sm">
+                        <div class="card-body">
+                            <h3 class="fw-bold text-primary">@Model.TotalInstances</h3>
+                            <p class="text-muted mb-0">Total Instances</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-success text-white border-0">
-                        <div class="card-body text-center">
-                            <h3>@Model.AvailableInstances</h3>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 bg-success text-white shadow-sm">
+                        <div class="card-body">
+                            <h3 class="fw-bold">@Model.AvailableInstances</h3>
                             <p class="mb-0">Available</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-warning border-0">
-                        <div class="card-body text-center">
-                            <h3>@Model.RentedInstances</h3>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 bg-warning text-dark shadow-sm">
+                        <div class="card-body">
+                            <h3 class="fw-bold">@Model.RentedInstances</h3>
                             <p class="mb-0">Rented</p>
                         </div>
                     </div>

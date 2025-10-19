@@ -1,0 +1,164 @@
+﻿@model IEnumerable<Project.Models.Customer>
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Customer List Management";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h3 fw-bold text-primary mb-1">Customer List Management</h2>
+                    <p class="text-muted">Manage all registered customers</p>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Section -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h5 class="m-0 fw-bold text-primary">Customer Records</h5>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Filter Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#">All Customers</a></li>
+                        <li><a class="dropdown-item" href="#">With Document</a></li>
+                        <li><a class="dropdown-item" href="#">Without Document</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="customerTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Customer Number</th>
+                                <th>Business Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int count = 1;
+                            }
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@count</td>
+                                    <td>@item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</td>
+                                    <td>@item.ApplicationUser?.Email</td>
+                                    <td>@item.CustomerNumber</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.BusinessDocumentPath))
+                                        {
+                                            <a href="@Url.Content(item.BusinessDocumentPath)" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-file-earmark-text me-1"></i> View Document
+                                            </a>
+                                            <span class="badge bg-success ms-2">Uploaded</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">No Document</span>
+                                        }
+                                    </td>
+                                  
+                                </tr>
+                                count++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-people display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">No Customers Found</h4>
+                    <p class="text-muted">Registered customers will appear here once created</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tooltip setup
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Search Input
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search customers...';
+            searchInput.className = 'form-control form-control-sm w-25 ms-auto';
+            const cardHeader = document.querySelector('.card-header');
+            cardHeader.appendChild(searchInput);
+
+            const rows = document.querySelectorAll('#customerTable tbody tr');
+
+            // 🔍 Search Functionality
+            searchInput.addEventListener('keyup', function () {
+                const searchText = this.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchText) ? '' : 'none';
+                });
+            });
+
+            // 🔽 Filter Functionality
+            document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const filter = this.textContent.trim().toLowerCase();
+
+                    rows.forEach(row => {
+                        const badge = row.querySelector('.badge');
+                        const status = badge ? badge.textContent.trim().toLowerCase() : '';
+
+                        if (filter === 'all customers') {
+                            row.style.display = '';
+                        } else if (filter === 'with document' && status.includes('uploaded')) {
+                            row.style.display = '';
+                        } else if (filter === 'without document' && status.includes('no document')) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Update dropdown button text
+                    const btn = document.getElementById('dropdownMenuButton');
+                    btn.innerHTML = `<i class="bi bi-filter me-1"></i> ${this.textContent}`;
+                });
+            });
+        });
+    </script>
+}

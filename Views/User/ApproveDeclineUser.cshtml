@@ -8,7 +8,6 @@
 <div class="container py-5">
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-        <!-- Header -->
         <div class="card-header bg-primary text-light py-4">
             <div class="row align-items-center">
                 <div class="col-12 text-center">
@@ -19,7 +18,6 @@
         </div>
 
         <div class="card-body p-4 p-md-5">
-            <!-- Back Button -->
             <div class="row mb-4">
                 <div class="col-12 col-md-3">
                     <a asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill">
@@ -29,7 +27,6 @@
             </div>
 
             <div class="container py-4">
-                <!-- Header Section -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h2 class="text-primary mb-1">User Review & Approval</h2>
@@ -37,7 +34,6 @@
                     </div>
                 </div>
 
-                <!-- Alert Messages -->
                 @if (TempData["Error"] != null)
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -57,7 +53,6 @@
                 }
 
                 <div class="row">
-                    <!-- User Information Card -->
                     <div class="col-lg-6 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-primary text-white">
@@ -106,7 +101,6 @@
                                     <p class="mb-0 fs-6">@Model.StreetAddress, @Model.City, @Model.State, @Model.PostalCode</p>
                                 </div>
 
-                                <!-- Account Status -->
                                 <div class="mt-3 pt-3 border-top">
                                     <label class="form-label fw-bold text-muted small">Account Status</label>
                                     <div>
@@ -129,7 +123,6 @@
                         </div>
                     </div>
 
-                    <!-- Business Document Card -->
                     <div class="col-lg-6 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-info text-white">
@@ -232,9 +225,9 @@
                         <div class="row justify-content-center">
                             <!-- Approve Button -->
                             <div class="col-md-4 mb-3">
-                                <form asp-action="ApproveUser" method="post" class="d-grid">
+                                <form asp-action="ApproveUser" method="post" class="d-grid" id="approveForm">
                                     <input type="hidden" name="userId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-success btn-lg py-3">
+                                    <button type="submit" class="btn btn-success btn-lg py-3" id="approveBtn">
                                         <i class="bi bi-check-circle-fill me-2"></i> Approve User
                                     </button>
                                     <small class="form-text text-muted mt-2">
@@ -248,7 +241,7 @@
                                 <form asp-action="DeclineUser" method="post" class="d-grid" id="declineForm">
                                     <input type="hidden" name="userId" value="@Model.Id" />
                                     <input type="hidden" name="rejectionReason" id="rejectionReason" value="Your account was declined due to failing verification requirements." />
-                                    <button type="button" class="btn btn-outline-danger btn-lg py-3" onclick="showDeclineConfirmation()">
+                                    <button type="button" class="btn btn-outline-danger btn-lg py-3" id="declineBtn" onclick="showDeclineConfirmation()">
                                         <i class="bi bi-x-circle me-2"></i> Decline User
                                     </button>
                                     <small class="form-text text-muted mt-2">
@@ -258,27 +251,7 @@
                             </div>
                         </div>
 
-                        <!-- Additional Actions -->
-                        <div class="mt-4 pt-3 border-top">
-                            <div class="row">
-                                <div class="col-md-4 mb-2">
-                                    <a asp-action="ManagerRole" asp-route-userId="@Model.Id" class="btn btn-outline-info w-100">
-                                        <i class="bi bi-person-gear me-2"></i> Manage Roles
-                                    </a>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <a asp-action="ManagerUserClaim" asp-route-userId="@Model.Id" class="btn btn-outline-info w-100">
-                                        <i class="bi bi-shield-check me-2"></i> Manage Claims
-                                    </a>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <a asp-action="Index" class="btn btn-outline-secondary w-100">
-                                        <i class="bi bi-list-ul me-2"></i> User List
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        
                 </div>
             </div>
         </div>
@@ -599,32 +572,38 @@
     <script>
         function showDeclineConfirmation() {
             if (confirm('Are you sure you want to decline this user? This action cannot be undone.')) {
+                const declineBtn = document.getElementById('declineBtn');
+                declineBtn.disabled = true;
+                declineBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2 spin"></i> Processing...';
                 document.getElementById('declineForm').submit();
             }
         }
 
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function () {
-            var alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function (alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-
-        // Handle document loading errors
         document.addEventListener('DOMContentLoaded', function () {
-            var images = document.querySelectorAll('img');
-            images.forEach(function (img) {
-                img.addEventListener('error', function () {
-                    this.style.display = 'none';
-                    var errorDiv = this.parentNode.querySelector('#fileError');
-                    if (errorDiv) {
-                        errorDiv.style.display = 'block';
-                    }
-                });
+            const approveForm = document.getElementById('approveForm');
+            const approveBtn = document.getElementById('approveBtn');
+
+            approveForm.addEventListener('submit', function () {
+                approveBtn.disabled = true;
+                approveBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2 spin"></i> Processing...';
             });
+
+            // Auto-hide alerts
+            setTimeout(function () {
+                document.querySelectorAll('.alert').forEach(function (alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
         });
+
+        // Spinner animation
+        const style = document.createElement('style');
+        style.innerHTML = `
+                    .spin { animation: spin 1s linear infinite; }
+        keyframes spin { 100% { transform: rotate(360deg); } }
+                `;
+        document.head.appendChild(style);
     </script>
 }
  *@

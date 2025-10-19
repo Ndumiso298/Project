@@ -1,0 +1,348 @@
+﻿@model Project.Models.FaultTechnician
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Fault Processing Details";
+}
+
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .detail-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+        padding: 1.5rem;
+    }
+
+    .detail-body {
+        padding: 1.5rem;
+    }
+
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-inprogress {
+        background-color: #cce7ff;
+        color: #004085;
+    }
+
+    .status-completed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-failed {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .customer-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .fridge-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #fafafa;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .notes-section {
+        background: #f0f8ff;
+        border-left: 4px solid #3498db;
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-left: 2px solid #3498db;
+    }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+    .timeline-dot {
+        position: absolute;
+        left: -0.5rem;
+        top: 0;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background: #3498db;
+    }
+
+    .timeline-content {
+        margin-left: 1rem;
+    }
+
+    .icon-container {
+        width: 50px;
+        height: 50px;
+        background: rgba(52, 152, 219, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+</style>
+
+<div class="detail-card">
+    <div class="detail-header">
+        <div class="d-flex align-items-center">
+            <div class="icon-container">
+                <i class="fas fa-tools fa-lg text-primary"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-1">Fault Processing Details</h1>
+                <p class="mb-0 opacity-75">Fault ID: @Model.FaultId</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-body">
+        <!-- Fault Information -->
+        <div class="info-group">
+            <h5 class="mb-3"><i class="fas fa-info-circle text-primary me-2"></i>Fault Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="info-label">Fault ID</div>
+                    <div class="info-value">@Model.FaultId</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-label">Repair Status</div>
+                    <div class="info-value">
+                        <span class="status-badge @GetStatusClass(Model.RepairStatus)">@Model.RepairStatus</span>
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="info-label">Fault Description</div>
+                    <div class="info-value">@Model.FaultDescription</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-label">Technician Assigned</div>
+                    <div class="info-value">@(Model.TechnicianAssigned ?? "Not Assigned")</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-label">Booking Date</div>
+                    <div class="info-value">@(Model.Bookingate?.ToString("MMM dd, yyyy hh:mm tt") ?? "Not Scheduled")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resolution Notes -->
+        @if (!string.IsNullOrEmpty(Model.ResolutionNotes))
+        {
+            <div class="info-group">
+                <h5 class="mb-3"><i class="fas fa-sticky-note text-warning me-2"></i>Resolution Notes</h5>
+                <div class="notes-section">
+                    @Model.ResolutionNotes
+                </div>
+            </div>
+        }
+
+        <!-- Customer Information -->
+        @if (Model.FridgeVisit?.RequestHeader?.Customer != null)
+        {
+            <div class="info-group">
+                <h5 class="mb-3"><i class="fas fa-user text-success me-2"></i>Customer Information</h5>
+                <div class="customer-info">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="info-label">Customer Name</div>
+                            <div class="info-value">
+                                @Model.FridgeVisit.RequestHeader.Customer.ApplicationUser?.FirstName
+                                @Model.FridgeVisit.RequestHeader.Customer.ApplicationUser?.LastName
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="info-label">Contact</div>
+                            <div class="info-value">
+                                @Model.FridgeVisit.RequestHeader.Customer.ApplicationUser?.PhoneNumber
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">
+                                @Model.FridgeVisit.RequestHeader.Customer.ApplicationUser?.Email
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Fridge Information -->
+        @if (Model.FridgeVisit?.RequestHeader?.RequestFridges != null && Model.FridgeVisit.RequestHeader.RequestFridges.Any())
+        {
+            <div class="info-group">
+                <h5 class="mb-3"><i class="fas fa-refrigerator text-info me-2"></i>Fridge Information</h5>
+                @foreach (var requestFridge in Model.FridgeVisit.RequestHeader.RequestFridges)
+                {
+                    <div class="fridge-item">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <div class="info-label">Brand</div>
+                                <div class="info-value">@requestFridge.Fridge?.Brand</div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="info-label">Model</div>
+                                <div class="info-value">@requestFridge.Fridge?.Model</div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="info-label">Capacity</div>
+                                <div class="info-value">@requestFridge.Fridge?.CapacityLiters</div>
+                            </div>
+                          @*   <div class="col-12 mb-2">
+                                <div class="info-label">Serial Number</div>
+                                <div class="info-value">@requestFridge.Fridge?.SerialNumber</div>
+                            </div> *@
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Visit Timeline -->
+        <div class="info-group">
+            <h5 class="mb-3"><i class="fas fa-history text-secondary me-2"></i>Visit Timeline</h5>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="info-label">Checkup Status</div>
+                        <div class="info-value">
+                            <span class="status-badge status-failed">@Model.FridgeVisit?.CheckupStatus</span>
+                        </div>
+                        <small class="text-muted">Fridge inspection completed</small>
+                    </div>
+                </div>
+
+                @if (Model.Bookingate.HasValue)
+                {
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="info-label">Repair Scheduled</div>
+                            <div class="info-value">@Model.Bookingate.Value.ToString("MMM dd, yyyy hh:mm tt")</div>
+                            <small class="text-muted">Repair visit scheduled</small>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Completion.HasValue)
+                {
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="info-label">Completion Date</div>
+                            <div class="info-value">@Model.Completion.Value.ToString("MMM dd, yyyy hh:mm tt")</div>
+                            <small class="text-muted">Repair completed</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="@Url.Action("Edit", "FaultTechnician", new { id = Model.FaultId })" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> Edit Fault
+            </a>
+            <a href="@Url.Action("Index", "FaultTechnician")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to List
+            </a>
+            <button type="button" class="btn btn-outline-info" onclick="printDetails()">
+                <i class="fas fa-print me-1"></i> Print Details
+            </button>
+
+            @if (Model.RepairStatus != "Completed" && Model.RepairStatus != "Failed")
+            {
+                <a href="@Url.Action("MarkCompleted", "FaultTechnician", new { id = Model.FaultId })" class="btn btn-success">
+                    <i class="fas fa-check me-1"></i> Mark as Completed
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function printDetails() {
+            window.print();
+        }
+
+        // Add any additional JavaScript functionality here
+        document.addEventListener('DOMContentLoaded', function () {
+            // You can add interactive features here
+            console.log('Fault details page loaded');
+        });
+    </script>
+}
+
+@functions {
+    public string GetStatusClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "pending" => "status-pending",
+            "in progress" => "status-inprogress",
+            "completed" => "status-completed",
+            "failed" => "status-failed",
+            _ => "status-pending"
+        };
+    }
+}

@@ -84,7 +84,7 @@ namespace Project.Migrations
                 column: "RoleId",
                 principalTable: "AspNetRoles",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
@@ -92,7 +92,7 @@ namespace Project.Migrations
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserLogins_AspNetUsers_UserId",
@@ -100,7 +100,7 @@ namespace Project.Migrations
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
@@ -108,7 +108,7 @@ namespace Project.Migrations
                 column: "RoleId",
                 principalTable: "AspNetRoles",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserRoles_AspNetUsers_UserId",
@@ -116,7 +116,7 @@ namespace Project.Migrations
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserTokens_AspNetUsers_UserId",
@@ -124,7 +124,7 @@ namespace Project.Migrations
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblAllocations_tblCustomer_CustomerID",
@@ -132,7 +132,7 @@ namespace Project.Migrations
                 column: "CustomerID",
                 principalTable: "tblCustomer",
                 principalColumn: "CustomerID",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblAllocations_tblFridges_FridgeId",
@@ -140,7 +140,7 @@ namespace Project.Migrations
                 column: "FridgeId",
                 principalTable: "tblFridges",
                 principalColumn: "FridgeId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblCustomer_AspNetUsers_ApplicationUserId",
@@ -148,7 +148,7 @@ namespace Project.Migrations
                 column: "ApplicationUserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblEmployee_AspNetUsers_ApplicationUserId",
@@ -156,7 +156,7 @@ namespace Project.Migrations
                 column: "ApplicationUserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblFridgeVisits_tblRequestHeaders_RequestHeaderId",
@@ -164,7 +164,7 @@ namespace Project.Migrations
                 column: "RequestHeaderId",
                 principalTable: "tblRequestHeaders",
                 principalColumn: "RequestHeaderId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblFridges_FridgeId",
@@ -172,7 +172,7 @@ namespace Project.Migrations
                 column: "FridgeId",
                 principalTable: "tblFridges",
                 principalColumn: "FridgeId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
@@ -180,7 +180,7 @@ namespace Project.Migrations
                 column: "RequestHeaderId",
                 principalTable: "tblRequestHeaders",
                 principalColumn: "RequestHeaderId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestHeaders_tblCustomer_CustomerID",
@@ -188,7 +188,7 @@ namespace Project.Migrations
                 column: "CustomerID",
                 principalTable: "tblCustomer",
                 principalColumn: "CustomerID",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />

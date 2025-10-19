@@ -1,0 +1,85 @@
+﻿@model Project.Models.FaultTechnician
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Book Maintenance";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-calendar-plus me-2"></i>Book Maintenance
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Fridge Details -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Fridge Details</h5>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var fridge = Model.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge;
+                                var customer = Model.FridgeVisit?.RequestHeader?.Customer?.ApplicationUser;
+                            }
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Customer:</strong> @customer?.FirstName @customer?.LastName</p>
+                                    <p><strong>Email:</strong> @customer?.Email</p>
+                                    <p><strong>Phone:</strong> @customer?.CellNumber</p>
+                                </div>
+                                <div class="col-md-6">
+                                    @if (fridge != null)
+                                    {
+                                        <p><strong>Fridge Model:</strong> @fridge.Model</p>
+                                        <p><strong>Brand:</strong> @fridge.Brand</p>
+                                        <p><strong>Capacity:</strong> @fridge.CapacityLiters L</p>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <p><strong>Fault Description:</strong> @Model.FaultDescription</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Form -->
+                    <form asp-action="BookMaintenance" method="post">
+                        <input type="hidden" name="faultId" value="@Model.FaultId" />
+
+                        <div class="mb-3">
+                            <label for="preferredDate" class="form-label">Preferred Maintenance Date *</label>
+                            <input type="date" class="form-control" id="preferredDate" name="preferredDate"
+                                   min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                            <div class="form-text">Select your preferred date for maintenance service</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="additionalNotes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="additionalNotes" name="additionalNotes"
+                                      rows="4" placeholder="Please provide any additional information about the issue..."></textarea>
+                            <div class="form-text">Optional: Add any specific details or concerns</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="FailedFridges" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Submit Booking Request</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('preferredDate').min = today;
+        });
+    </script>
+}

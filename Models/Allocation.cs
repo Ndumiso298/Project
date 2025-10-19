@@ -7,7 +7,7 @@ namespace Project.Models
 {
     public class Allocation
     {
-        public int AllocationId { get; set; } // Unique ID for each allocation
+        public int AllocationId { get; set; } 
 
 
         public int CustomerID { get; set; }
@@ -21,8 +21,7 @@ namespace Project.Models
         [ValidateNever]
         public Fridge Fridge { get; set; }
         public int Count { get; set; }
-        // Rental Period
-        //public ICollection<FridgeVisit> FridgeVisits { get; set; }
+       
 
         [NotMapped]
         public double Price { get; set; }

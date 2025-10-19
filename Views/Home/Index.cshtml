@@ -3,207 +3,292 @@
 *@
 
 @{
-    ViewData["Title"] = "Fridge Management System";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- Hero Section -->
-<section class="hero-section bg-gradient-primary text-white py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-3 text-center" style="color: white">Smart Fridge Management Solutions</h1>
-                <p class="lead mb-4">Professional refrigeration management for businesses of all sizes. Streamline your operations with our comprehensive fridge management system.</p>
-                <div class="d-flex flex-wrap gap-3 mt-4">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a href="@Url.Action("Index", "Home")" class="btn btn-light btn-lg px-4">
-                            <i class="fas fa-tachometer-alt me-2"></i>Home
-                        </a>
-@*                         <a href="@Url.Action("OurServices", "Home")" class="btn btn-outline-light btn-lg px-4">
-                            <i class="fas fa-concierge-bell me-2"></i>Our Services
-                        </a>
-                        <a href="@Url.Action("AboutUs", "Home")" class="btn btn-outline-light btn-lg px-4">
-                            <i class="fas fa-concierge-bell me-2"></i>About Us
-                        </a>
-                        <a href="@Url.Action("ContactUs", "Home")" class="btn btn-outline-light btn-lg px-4">
-                            <i class="fas fa-concierge-bell me-2"></i>Contact Us
-                        </a> *@
-                    }
-@*                     else
-                    {
-                        <a href="@Url.Action("Login", "Account")" class="btn btn-light btn-lg px-4">
-                            <i class="fas fa-sign-in-alt me-2"></i>Customer Login
-                        </a>
-                        <a href="@Url.Action("Contact", "Home")" class="btn btn-outline-light btn-lg px-4">
-                            <i class="fas fa-phone me-2"></i>Contact Sales
-                        </a>
-                    } *@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartChill Solutions - Fridge Rentals</title>
+    <link rel="icon" href="~/Images/LandingPage/Logo.png" type="image/svg+xml">
+    <link rel="alternate icon" href="~/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/stylesheet.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/landing-page.css" asp-append-version="true">
+   
+</head>
+
+<body>
+    <section id="header">
+        <div class="header container">
+            <div class="nav-bar">
+                <div class="brand">
+                    <a href="#hero">
+                        <img src="~/Images/LandingPage/Log3.png" alt="Logo" style="height: 100px; width: auto;">
+                    </a>
                 </div>
-            </div>
-           @*  <div class="col-lg-6 text-center">
-                <img src="~/images/fridge-management-hero.png" alt="Fridge Management System" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px;" />
-            </div> *@
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section class="features-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold text-primary mb-3">Why Choose Our Fridge Management System?</h2>
-            <p class="lead">Comprehensive solutions designed to streamline your refrigeration management</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-tools text-white fa-3x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Maintenance Tracking</h5>
-                        <p class="card-text">Schedule, track, and manage all fridge maintenance activities with automated reminders and service history.</p>
+                <div class="nav-list">
+                    <div class="hamburger">
+                        <div class="bar"></div>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-exclamation-triangle text-white fa-3x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Fault Reporting</h5>
-                        <p class="card-text">Quickly report and track fridge issues with real-time status updates and automated technician assignments.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-chart-line text-white fa-3x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Inventory Management</h5>
-                        <p class="card-text">Track your fridge inventory, allocations, and stock levels with comprehensive reporting and analytics.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-users text-white fa-3x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Customer Management</h5>
-                        <p class="card-text">Manage customer relationships, allocations, and service history with our comprehensive CRM features.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-shipping-fast text-white fa-3x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Purchase Management</h5>
-                        <p class="card-text">Streamline fridge procurement with supplier management, purchase orders, and delivery tracking.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm hover-shadow">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-mobile-alt text-white fa-3x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Mobile Ready</h5>
-                        <p class="card-text">Access your fridge management system from any device with our responsive, mobile-friendly design.</p>
-                    </div>
+                    <ul>
+                        <li><a href="#hero" data-after="Home">Home</a></li>
+                        <li><a href="#virsions" data-after="Virsion">About</a></li>
+                        <li><a href="#services" data-after="Services">Services</a></li>
+                        <li><a href="#about" data-after="About">Platform</a></li>
+                        <li><a href="#contact" data-after="Contact">Contact</a></li>
+                        <li style="list-style: none;">
+                            <form method="get" asp-area="Identity" asp-page="/Account/Login" style="margin: 0;">
+                                <button type="submit" class="btn btn-lg login-btn" id="loginBtn"
+                                        style="padding: 10px 20px; font-size: 18px; background-color: #00d9ff; color: white; border: none; border-radius: 50px; display: flex; align-items: center; gap: 8px; transition: transform 0.3s ease, background-color 0.3s ease;">
+                                    <i class="fa fa-user login-icon" style="display: inline-block; transition: transform 0.6s;"></i> Login
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Statistics Section -->
-<section class="stats-section py-5 bg-white">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <h3 class="display-4 fw-bold text-primary">500+</h3>
-                    <p class="text-muted">Fridges Managed</p>
-                </div>
+    </section>
+ 
+    <section id="hero">
+        <div class="hero container">
+            <div>
+                <h1 style="color: #00d9ff;">Welcome to <span></span></h1>
+                <h1 style="color: #00d9ff;">SmartChill Solutions, <span></span></h1>
+                <h1 style="color: #00d9ff;">Innovative Fridge Rentals<span></span></h1>
             </div>
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <h3 class="display-4 fw-bold text-primary">100+</h3>
-                    <p class="text-muted">Happy Customers</p>
-                </div>
+        </div>
+    </section>
+  
+    <section id="virsions">
+        <div class="virsions container">
+            <div class="virsion-top">
+                <h1 class="section-title">About <span>Us</span></h1>
             </div>
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <h3 class="display-4 fw-bold text-primary">24/7</h3>
-                    <p class="text-muted">Support Available</p>
+            <div class="virsion-bottom">
+                <div class="virsion-item">
+                    <h2>Vision:</h2>
+                    <p>
+                        Our vision at SmartChill Solutions is to be the leading provider of innovative rental management solutions,
+                        empowering businesses with smart technology that simplifies operations and enhances customer experiences.
+                    </p>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <h3 class="display-4 fw-bold text-primary">99%</h3>
-                    <p class="text-muted">Uptime Guarantee</p>
+                <div class="virsion-item">
+                    <h2>Mission:</h2>
+                    <p>
+                        At SmartChill Solutions, our mission is to deliver cutting-edge rental management software
+                        that streamlines operations, improves efficiency, and drives growth for businesses in the rental industry.
+                    </p>
+                </div>
+                <div class="virsion-item">
+                    <h2>Objectives:</h2>
+                    <p>
+                        Our objective at SmartChill Solutions is to provide accessible, user-friendly rental management tools,
+                        promote operational excellence, support business growth, and uphold innovation through continuous development.
+                    </p>
+                </div>
+                <div class="virsion-item">
+                    <h2>Core Values</h2>
+                    <p>
+                        At SmartChill Solutions, we uphold integrity, innovation, excellence, and customer focus
+                        in every aspect of our service. These values guide our commitment to delivering trusted and
+                        effective solutions for rental businesses.
+                    </p>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Call to Action -->
-<section class="cta-section bg-primary text-white py-5">
-    <div class="container text-center">
-        <h2 class="display-5 fw-bold mb-3">Ready to Transform Your Fridge Management?</h2>
-        <p class="lead mb-4">Join hundreds of businesses using our comprehensive fridge management system</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-           @*  <a href="@Url.Action("Contact", "Home")" class="btn btn-light btn-lg px-4">
-                <i class="fas fa-phone me-2"></i>Contact Us Today
-            </a>
-            <a href="@Url.Action("OurServices", "Home")" class="btn btn-outline-light btn-lg px-4">
-                <i class="fas fa-concierge-bell me-2"></i>View Our Services
-            </a> *@
+    <section id="services">
+        <div class="services container">
+            <div class="services-header">
+                <h1 class="section-title">Our <span>Services</span></h1>
+            </div>
+            <div class="all-services">
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Fridge Inventory Management</h2>
+                        <p>
+                            Complete tracking and management of your fridge inventory with real-time status updates and allocation history.
+
+                            Real-time inventory tracking
+                            Automated allocation to customers
+                            Condition and status monitoring
+                            Purchase and warranty tracking
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPage/Inventory2.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Inventory Tracking</h2>
+                        <p>Our advanced inventory tracking system allows you to monitor fridge availability, maintenance schedules, and rental history in real-time, ensuring optimal asset utilization.</p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPage/Tracking.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Payment Processing</h2>
+                        <p>
+                            Scheduled maintenance programs to ensure optimal fridge performance and prevent unexpected breakdowns.
+
+                            Automated service scheduling
+                            Maintenance history tracking
+                            Service interval management
+                            Technician dispatch automation.
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPage/Payment.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Fault Reporting & Resolution</h2>
+                        <p>
+                            Streamlined fault reporting system with automatic technician assignment and real-time status updates.
+
+                            Customer self-service portal
+                            Automatic technician dispatch
+                            Real-time fault status tracking
+                            Resolution time analytics
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPage/ReportResolution.jpg" alt="img">
+                    </div>
+                </div>
+                <div class="service-item">
+                    <div class="service-info">
+                        <h2>Procurement Management</h2>
+                        <p>
+                            Complete procurement workflow from purchase requests to supplier management and delivery tracking.
+
+                            Automated purchase requests
+                            Supplier relationship management
+                            Quotation and order processing
+                            Delivery and inventory integration
+                        </p>
+                    </div>
+                    <div class="service-img">
+                        <img src="~/Images/LandingPage/Procument.jpg" alt="img">
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+    <!-- End Projects Section -->
+    
+    <!-- About Section -->
+    <section id="about">
+        <div class="about container">
+            <div class="col-left">
+                <div class="about-img">
+                    <img src="~/Images/LandingPage/PlatForm.jpg" alt="img">
+                </div>
+            </div>
+            <div class="col-right">
+                <h1 class="section-title">Our <span>Platform</span></h1>
+                <p>
+                    SmartChill Solutions is built on a modern, fully responsive platform designed to provide
+                    a seamless experience for all our users. Our system features intuitive dashboards, comprehensive
+                    reporting tools, and secure payment processing to ensure you have the best tools for managing
+                    your fridge rental business. Accessible from any device, our platform makes rental management
+                    hassle-free and efficient.
+                </p>
+            </div>
+        </div>
+    </section>
+    <!-- End About Section -->
+    
+ 
+    
+    <!-- End Contact Section -->
+    
+    <!-- Enhanced Footer -->
+    <footer class="enhanced-footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About Us</h3>
+                    <p>SmartChill Solutions provides innovative rental management software to simplify property management, tenant relationships, and payment processing.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#hero"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#virsions"><i class="fas fa-chevron-right"></i> About</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right"></i> Services</a></li>
+                        <li><a href="#about"><i class="fas fa-chevron-right"></i> Platform</a></li>
+                        <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Rental Street, Property City, PC 10001</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> smartchillsolutions3@gmail.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 9AM-5PM</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter to get updates on our latest features and special offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Your email address">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+           
+        </div>
+    </footer>
+    
+    <script src="./app.js"></script>
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', function (e) {
+            e.preventDefault(); 
+            const icon = this.querySelector('.login-icon');
 
-@section Styles {
-    <style>
-        .hero-section {
-            background: linear-gradient(135deg, #008cba 0%, #008cba 100%);
-        }
+            icon.classList.add('flipped');
 
-        .hover-shadow {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+            setTimeout(() => {
+                this.closest('form').submit();
+            }, 600); 
+        });
 
-            .hover-shadow:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-            }
+        const hamburger = document.querySelector('.hamburger');
+        const navList = document.querySelector('.nav-list ul');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navList.classList.toggle('active');
+        });
 
-        .feature-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover .feature-icon {
-            transform: scale(1.1);
-        }
-
-        .stat-item {
-            padding: 20px 0;
-        }
-    </style>
-}
+        document.querySelectorAll('.nav-list ul li a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navList.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

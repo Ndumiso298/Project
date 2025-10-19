@@ -8,7 +8,6 @@
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-            <!-- Page Header -->
             <div class="card-header bg-primary text-light py-4">
                 <div class="row align-items-center">
                     <div class="col-12 text-center">
@@ -18,10 +17,8 @@
                 </div>
             </div>
 
-            <!-- Body -->
             <div class="card-body p-4 p-md-5">
 
-                <!-- Search -->
                 <div class="row mb-4 justify-content-center">
                     <div class="col-md-6">
                         <div class="input-group">
@@ -35,22 +32,18 @@
                     </div>
                 </div>
 
-                <!-- Requests -->
                 <div id="requestsContainer">
                     @if (Model != null && Model.Any())
                     {
                         @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
                         {
-                            <!-- Record Header -->
                             <div class="bg-primary text-white rounded-top-4 px-4 py-3 shadow-sm">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="fw-bold mb-0">
                                         <i class="bi bi-person-circle me-2"></i>
                                         @item.Customer.ApplicationUser?.FirstName @item.Customer.ApplicationUser?.LastName
                                     </h5>
-                                    <span class="small text-light opacity-75">
-                                        Request ID: @item.RequestHeaderId
-                                    </span>
+                                 
                                 </div>
                             </div>
 
@@ -63,7 +56,7 @@
                                     <div class="col-md-8">
                                         <p class="text-muted small mb-0">
                                             <i class="bi bi-envelope"></i> @item.Customer.ApplicationUser?.Email &nbsp; | &nbsp;
-                                            <i class="bi bi-telephone"></i> @item.Customer.ApplicationUser?.PhoneNumber
+                                            <i class="bi bi-telephone"></i> @item.Customer.ApplicationUser?.CellNumber
                                         </p>
                                     </div>
                                     <div class="col-md-4 text-md-end text-muted small">
@@ -103,7 +96,7 @@
                                     }
                                 </div>
 
-                                <!-- Service Status -->
+                                <!-- Service Status with Customer Confirmation -->
                                 <div class="bg-light rounded-4 p-3 mb-3 mx-3">
                                     <h6 class="fw-semibold text-dark mb-3">
                                         <i class="bi bi-calendar-check me-2"></i>Service Status
@@ -113,24 +106,47 @@
                                         var upcomingVisits = item.FridgeVisits.Where(v => v.VisitDate >= DateTime.Now).OrderBy(v => v.VisitDate).ToList();
                                         var pastVisits = item.FridgeVisits.Where(v => v.VisitDate < DateTime.Now).ToList();
 
-                                        if (upcomingVisits.Any())
+                                        foreach (var visit in upcomingVisits)
                                         {
-                                            var nextVisit = upcomingVisits.First();
-                                            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
-                                                <span class="badge bg-success rounded-pill px-3 py-2 me-md-3 mb-2 mb-md-0">
-                                                    <i class="bi bi-calendar-event me-1"></i>Upcoming Visit
-                                                </span>
-                                                <span class="text-dark">@nextVisit.VisitDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</span>
-                                            </div>
-                                            <div class="mt-2 small text-muted">
-                                                <i class="bi bi-person-fill text-primary me-1"></i>@nextVisit.TechnicianName
-                                                @if (!string.IsNullOrEmpty(nextVisit.Notes))
-                                                {
-                                                    <div><i class="bi bi-journal-text me-1"></i>@nextVisit.Notes</div>
-                                                }
+                                            <div class="mb-3 p-2 border rounded-3">
+                                                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                                    <span class="badge bg-success rounded-pill px-3 py-2 me-md-3 mb-2 mb-md-0">
+                                                        <i class="bi bi-calendar-event me-1"></i>Upcoming Visit
+                                                    </span>
+                                                    <span class="text-dark">@visit.VisitDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</span>
+                                                </div>
+                                                <div class="mt-1 small text-muted">
+                                                    <i class="bi bi-person-fill text-primary me-1"></i>@visit.TechnicianName
+                                                    @if (!string.IsNullOrEmpty(visit.Notes))
+                                                    {
+                                                        <div><i class="bi bi-journal-text me-1"></i>@visit.Notes</div>
+                                                    }
+                                                </div>
+
+                                                <!-- Customer Confirmation -->
+                                                @* <div class="mt-2">
+                                                    <strong>Customer Status:</strong> @visit.CustomerApproval
+                                                    @if (visit.CustomerApproval == SD.Pending)
+                                                    {
+                                                        <form asp-action="ApproveVisit" method="post" style="display:inline">
+                                                            <input type="hidden" name="visitId" value="@visit.VisitId" />
+                                                            <button type="submit" class="btn btn-success btn-sm ms-2">Approve</button>
+                                                        </form>
+
+                                                        <form asp-action="DeclineVisit" method="post" style="display:inline">
+                                                            <input type="hidden" name="visitId" value="@visit.VisitId" />
+                                                            <button type="submit" class="btn btn-danger btn-sm ms-1">Decline</button>
+                                                        </form>
+                                                    }
+                                                </div> *@
+
+                                                 <div class="mt-1">
+                                                    <strong>Awaiting Confirmation:</strong> @visit.CustomerApproval
+                                                </div> 
                                             </div>
                                         }
-                                        else if (pastVisits.Any())
+
+                                        if (!upcomingVisits.Any() && pastVisits.Any())
                                         {
                                             <span class="badge bg-secondary rounded-pill px-3 py-2">
                                                 <i class="bi bi-check-circle me-1"></i>Service Completed (@pastVisits.Count)
@@ -155,14 +171,7 @@
                                        class="btn btn-outline-success rounded-pill px-4">
                                         <i class="bi bi-calendar-plus"></i> Book Visit
                                     </a>
-                                    @if (item.FridgeVisits != null && item.FridgeVisits.Any())
-                                    {
-                                        <button type="button"
-                                                class="btn btn-outline-info rounded-pill px-4 view-visits-btn"
-                                                data-request-id="@item.RequestHeaderId">
-                                            <i class="bi bi-eye"></i> View Visits
-                                        </button>
-                                    }
+                                   
                                 </div>
                             </div>
                         }
@@ -176,10 +185,6 @@
                     }
                 </div>
             </div>
-
-            <!-- Footer -->
-           
-
         </div>
     </div>
 </form>
@@ -227,13 +232,13 @@
                 const customerName = requestCard.querySelector('h5').textContent;
 
                 modalBody.innerHTML = `
-                            <div class="text-center py-5">
-                                <i class="bi bi-calendar2-week fs-1 text-primary mb-3"></i>
-                                <h5 class="fw-bold mb-2">Visit History for ${customerName}</h5>
-                                <p class="text-muted mb-0">Visit details would be loaded here via AJAX</p>
-                                <p class="small text-muted mt-1">Request ID: ${requestId}</p>
-                            </div>
-                        `;
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-calendar2-week fs-1 text-primary mb-3"></i>
+                                        <h5 class="fw-bold mb-2">Visit History for ${customerName}</h5>
+                                        <p class="text-muted mb-0">Visit details would be loaded here via AJAX</p>
+                                        <p class="small text-muted mt-1">Request ID: ${requestId}</p>
+                                    </div>
+                                `;
                 visitsModal.show();
             }
         });
