@@ -33,7 +33,7 @@ namespace Project.Models
         [Display(Name = "Completion Date")]
         public DateTime? Completion { get; set; }
         [Display(Name = "Customer Booking Status")]
-        public string CustomerBookingStatus { get; set; } = SD.Pending; // New field
+        public string CustomerBookingStatus { get; set; } = SD.Pending;
 
 
         public int VisitId { get; set; }
