@@ -23,5 +23,7 @@ namespace Project.Models
 
         [NotMapped]
         public double Price { get; set; }
+
+        public string RejectReason { get; set; }
     }
 }

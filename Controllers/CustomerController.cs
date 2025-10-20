@@ -21,7 +21,6 @@ namespace Project.Controllers
         public IActionResult Index()
         {
             IEnumerable<Fridge> fridgesList = _db.tblFridges.ToList();
-
             return View(fridgesList);
         }
         public IActionResult Details(int id)

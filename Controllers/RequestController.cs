@@ -60,6 +60,15 @@ namespace Project.Controllers
                                .ToList()
             };
 
+           
+            ViewBag.CarrierList = new List<string>
+    {
+        "DHL",
+        "Local Delivery",
+        "Customer Pickup",
+        "Amazon Logistics"
+    };
+
             return View(RequestVM);
         }
 
