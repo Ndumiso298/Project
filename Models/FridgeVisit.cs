@@ -26,6 +26,8 @@ namespace Project.Models
         [ForeignKey("RequestHeaderId")]
         [ValidateNever]
         public RequestHeader RequestHeader { get; set; }
+       
+
 
         public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
     }

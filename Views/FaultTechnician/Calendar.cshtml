@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<Project.Models.FaultTechnician>
 @{
     Layout = "_CustomerLayout";
+    ViewData["Title"] = "Repair Schedule Calendar";
 }
+
 <style>
     :root {
         --primary-color: #2c3e50;
@@ -255,6 +257,22 @@
             animation: spin 0.75s linear infinite;
         }
 
+    .no-data {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+    .action-buttons {
+        margin-bottom: 1.5rem;
+    }
+
     @@keyframes spin {
         from {
             transform: rotate(0deg);
@@ -280,26 +298,29 @@
     </div>
 </div>
 
-<div class="container">
+
+
+    <!-- Statistics -->
     <div class="stats-container">
         <div class="stat-card">
-            <div class="stat-number">@Model.Count()</div>
-            <div class="stat-label">Total repairs</div>
+            <div class="stat-number">@(Model?.Count() ?? 0)</div>
+            <div class="stat-label">Total Repairs</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">@Model.Count(v => v.Bookingate.HasValue && v.Bookingate.Value.Date == DateTime.Today)</div>
+            <div class="stat-number">@(Model?.Count(v => v.Bookingate.HasValue && v.Bookingate.Value.Date == DateTime.Today) ?? 0)</div>
             <div class="stat-label">Repairs Today</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">@Model.Count(v => v.Bookingate.HasValue && v.Bookingate.Value.Date > DateTime.Today)</div>
+            <div class="stat-number">@(Model?.Count(v => v.Bookingate.HasValue && v.Bookingate.Value.Date > DateTime.Today) ?? 0)</div>
             <div class="stat-label">Upcoming Repairs</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">@Model.Where(v => !string.IsNullOrEmpty(v.TechnicianAssigned)).Select(v => v.TechnicianAssigned).Distinct().Count()</div>
+            <div class="stat-number">@(Model?.Where(v => !string.IsNullOrEmpty(v.TechnicianAssigned))?.Select(v => v.TechnicianAssigned)?.Distinct()?.Count() ?? 0)</div>
             <div class="stat-label">Technicians</div>
         </div>
     </div>
 
+    <!-- Calendar -->
     <div class="calendar-container">
         <div class="calendar-header">
             <button class="calendar-nav-btn" id="prevMonth">
@@ -335,25 +356,38 @@
         </div>
     </div>
 
+    <!-- Display message if no data -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="no-data">
+            <i class="fas fa-calendar-times"></i>
+            <h4>No Repair Schedules Found</h4>
+            <p>There are no repair visits scheduled yet.</p>
+            <a href="@Url.Action("Index")" class="btn btn-primary">
+                <i class="fas fa-list me-2"></i>View Failed Visits to Book Repairs
+            </a>
+        </div>
+    }
+
     <!-- Event Legend -->
     <div class="legend">
         <h5 class="mb-3">Event Legend</h5>
         <div class="d-flex flex-wrap gap-3">
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #3498db;"></span>
-                <span class="ms-2">Installation Visits</span>
+                <span class="ms-2">Scheduled Repairs</span>
             </div>
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #2ecc71;"></span>
-                <span class="ms-2">Maintenance Visits</span>
+                <span class="ms-2">Completed Repairs</span>
             </div>
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #e74c3c;"></span>
-                <span class="ms-2">Repair Visits</span>
+                <span class="ms-2">Urgent Repairs</span>
             </div>
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #f39c12;"></span>
-                <span class="ms-2">Inspection Visits</span>
+                <span class="ms-2">In Progress</span>
             </div>
         </div>
     </div>
@@ -364,7 +398,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Visit Details</h5>
+                <h5 class="modal-title">Repair Visit Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="eventDetails">
@@ -393,27 +427,48 @@
             let currentDate = new Date();
             let currentView = 'month';
 
-            // Fridge visits data
+            // Fridge visits data with proper null checking
             const fridgeVisits = [
-        @foreach (var visit in Model.Where(v => v.Bookingate.HasValue))
+        @if (Model != null && Model.Any())
         {
-            <text>
-                    {
-                        id: @visit.FaultId,
-                        requestHeaderId: @visit.FridgeVisit,
-                        date: new Date('@visit.Bookingate.Value.ToString("yyyy-MM-ddTHH:mm:ss")'),
-                        technician: '@Html.Raw(visit.TechnicianAssigned?.Replace("'", "\\'") ?? "Unassigned")',
-                        faultDescription: '@Html.Raw(visit.FaultDescription?.Replace("'", "\\'") ?? "No description")',
-                        repairStatus: '@visit.RepairStatus',
-                        resolutionNotes: '@Html.Raw(visit.ResolutionNotes?.Replace("'", "\\'") ?? "No resolution notes")',
-                        completionDate: '@(visit.Completion.HasValue ? visit.Completion.Value.ToString("yyyy-MM-ddTHH:mm:ss") : "")'
-                    },
-            </text>
+            foreach (var visit in Model.Where(v => v.Bookingate.HasValue))
+            {
+                var status = visit.RepairStatus ?? "Not Started";
+                var technician = visit.TechnicianAssigned ?? "Unassigned";
+                var notes = visit.ResolutionNotes ?? "No notes available";
+               
+
+                <text>
+                        {
+                            id: @visit.FaultId,
+                            visitId: @visit.VisitId,
+                            date: new Date('@visit.Bookingate.Value.ToString("yyyy-MM-dd")'),
+                            technician: '@Html.Raw(technician.Replace("'", "\\'"))',
+                            status: '@Html.Raw(status.Replace("'", "\\'"))',
+                            notes: '@Html.Raw(notes.Replace("'", "\\'"))',
+                          
+                            customerName: '@Html.Raw(visit.FridgeVisit?.RequestHeader?.Customer?.ApplicationUser?.UserName?.Replace("'", "\\'") ?? "Unknown Customer")',
+                            fridgeModel: '@Html.Raw(visit.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model?.Replace("'", "\\'") ?? "Unknown Fridge")'
+                        },
+                </text>
+            }
         }
                     ];
 
-            // Initialize the calendar
-            renderCalendar();
+            console.log('Loaded visits:', fridgeVisits.length);
+
+            // Initialize the calendar only if we have data
+            if (fridgeVisits.length > 0) {
+                renderCalendar();
+            } else {
+                calendarDays.innerHTML = `
+                            <div class="col-12 text-center p-5">
+                                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                <h5>No Repair Schedules</h5>
+                                <p class="text-muted">No repair visits have been scheduled yet.</p>
+                            </div>
+                        `;
+            }
 
             // Event listeners
             prevMonthBtn.addEventListener('click', () => {
@@ -436,186 +491,262 @@
             });
 
             function renderCalendar() {
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth();
+                try {
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth();
 
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
-                const prevLastDay = new Date(year, month, 0);
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+                    const prevLastDay = new Date(year, month, 0);
 
-                const firstDayIndex = firstDay.getDay();
-                const lastDayIndex = lastDay.getDay();
-                const nextDays = 7 - lastDayIndex - 1;
+                    const firstDayIndex = firstDay.getDay();
+                    const lastDayIndex = lastDay.getDay();
+                    const nextDays = 7 - lastDayIndex - 1;
 
-                const options = { month: 'long', year: 'numeric' };
-                monthTitle.textContent = currentDate.toLocaleDateString('en-US', options);
+                    const options = { month: 'long', year: 'numeric' };
+                    monthTitle.textContent = currentDate.toLocaleDateString('en-US', options);
 
-                let days = "";
+                    let days = "";
 
-                // Previous month days
-                for (let x = firstDayIndex; x > 0; x--) {
-                    const dayNum = prevLastDay.getDate() - x + 1;
-                    const dateStr = `${prevLastDay.getFullYear()}-${(prevLastDay.getMonth() + 1).toString().padStart(2, '0')}-${dayNum.toString().padStart(2, '0')}`;
+                    // Previous month days
+                    for (let x = firstDayIndex; x > 0; x--) {
+                        const dayNum = prevLastDay.getDate() - x + 1;
+                        const dateStr = `${prevLastDay.getFullYear()}-${(prevLastDay.getMonth() + 1).toString().padStart(2, '0')}-${dayNum.toString().padStart(2, '0')}`;
 
-                    days += `<div class="day other-month"><div class="day-number">${dayNum}</div>`;
-                    days += renderEventsForDate(dateStr);
-                    days += `</div>`;
-                }
+                        days += `<div class="day other-month"><div class="day-number">${dayNum}</div>`;
+                        days += renderEventsForDate(dateStr);
+                        days += `</div>`;
+                    }
 
-                // Current month days
-                const today = new Date();
-                for (let i = 1; i <= lastDay.getDate(); i++) {
-                    const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
-                    const isToday = today.getDate() === i && today.getMonth() === month && today.getFullYear() === year;
+                    // Current month days
+                    const today = new Date();
+                    for (let i = 1; i <= lastDay.getDate(); i++) {
+                        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+                        const isToday = today.getDate() === i && today.getMonth() === month && today.getFullYear() === year;
 
-                    days += `<div class="day ${isToday ? 'today' : ''}"><div class="day-number">${i}</div>`;
-                    days += renderEventsForDate(dateStr);
-                    days += `</div>`;
-                }
+                        days += `<div class="day ${isToday ? 'today' : ''}"><div class="day-number">${i}</div>`;
+                        days += renderEventsForDate(dateStr);
+                        days += `</div>`;
+                    }
 
-                // Next month days
-                const nextMonth = new Date(year, month + 1, 1);
-                for (let j = 1; j <= nextDays; j++) {
-                    const dateStr = `${nextMonth.getFullYear()}-${(nextMonth.getMonth() + 1).toString().padStart(2, '0')}-${j.toString().padStart(2, '0')}`;
+                    // Next month days
+                    const nextMonth = new Date(year, month + 1, 1);
+                    for (let j = 1; j <= nextDays; j++) {
+                        const dateStr = `${nextMonth.getFullYear()}-${(nextMonth.getMonth() + 1).toString().padStart(2, '0')}-${j.toString().padStart(2, '0')}`;
 
-                    days += `<div class="day other-month"><div class="day-number">${j}</div>`;
-                    days += renderEventsForDate(dateStr);
-                    days += `</div>`;
-                }
+                        days += `<div class="day other-month"><div class="day-number">${j}</div>`;
+                        days += renderEventsForDate(dateStr);
+                        days += `</div>`;
+                    }
 
-                calendarDays.innerHTML = days;
+                    calendarDays.innerHTML = days;
 
-                // Add event listeners to events
-                document.querySelectorAll('.event').forEach(event => {
-                    event.addEventListener('click', function () {
-                        const visitId = this.getAttribute('data-id');
-                        showEventDetails(visitId);
+                    // Add event listeners to events
+                    document.querySelectorAll('.event').forEach(event => {
+                        event.addEventListener('click', function () {
+                            const visitId = this.getAttribute('data-id');
+                            showEventDetails(visitId);
+                        });
                     });
-                });
 
-                // Add click listener for "more events"
-                document.querySelectorAll('.more-events').forEach(moreEvents => {
-                    moreEvents.addEventListener('click', function () {
-                        const dateStr = this.getAttribute('data-date');
-                        showAllEventsForDate(dateStr);
+                    // Add click listener for "more events"
+                    document.querySelectorAll('.more-events').forEach(moreEvents => {
+                        moreEvents.addEventListener('click', function () {
+                            const dateStr = this.getAttribute('data-date');
+                            showAllEventsForDate(dateStr);
+                        });
                     });
-                });
+                } catch (error) {
+                    console.error('Error rendering calendar:', error);
+                    calendarDays.innerHTML = `
+                                <div class="col-12 text-center p-4">
+                                    <i class="fas fa-exclamation-triangle text-warning fa-2x mb-2"></i>
+                                    <p>Error loading calendar. Please refresh the page.</p>
+                                    <button class="btn btn-primary" onclick="location.reload()">
+                                        <i class="fas fa-redo me-2"></i>Refresh Page
+                                    </button>
+                                </div>
+                            `;
+                }
             }
 
             function renderEventsForDate(dateStr) {
-                const visits = fridgeVisits.filter(visit => {
-                    const visitDateStr = visit.date.toISOString().split('T')[0];
-                    return visitDateStr === dateStr;
-                });
+                try {
+                    const visits = fridgeVisits.filter(visit => {
+                        if (!visit.date) return false;
+                        const visitDateStr = visit.date.toISOString().split('T')[0];
+                        return visitDateStr === dateStr;
+                    });
 
-                let eventsHtml = '';
-                const maxEvents = 2;
+                    let eventsHtml = '';
+                    const maxEvents = 2;
 
-                if (visits.length > 0) {
-                    for (let i = 0; i < Math.min(visits.length, maxEvents); i++) {
-                        const visit = visits[i];
-                        const eventType = `event-type-${(i % 4) + 1}`;
+                    if (visits.length > 0) {
+                        for (let i = 0; i < Math.min(visits.length, maxEvents); i++) {
+                            const visit = visits[i];
+                            // Determine event type based on status
+                            let eventType = 'event-type-1'; // Default blue
+                            if (visit.status === 'Completed') eventType = 'event-type-2'; // Green
+                            if (visit.status === 'In Progress') eventType = 'event-type-4'; // Orange
+                            if (visit.status === 'Scrapped') eventType = 'event-type-3'; // Red
 
-                        eventsHtml += `
-                                    <div class="event ${eventType}" data-id="${visit.id}">
-                                        <span class="event-dot"></span>
-                                        ${visit.technician} - ${visit.repairStatus}
-                                    </div>
-                                `;
+                            eventsHtml += `
+                                        <div class="event ${eventType}" data-id="${visit.id}" title="${visit.technician} - ${visit.status}">
+                                            <span class="event-dot"></span>
+                                            ${visit.technician} - ${visit.status}
+                                        </div>
+                                    `;
+                        }
+
+                        if (visits.length > maxEvents) {
+                            eventsHtml += `<div class="more-events" data-date="${dateStr}" title="Show all ${visits.length} events">+${visits.length - maxEvents} more</div>`;
+                        }
                     }
 
-                    if (visits.length > maxEvents) {
-                        eventsHtml += `<div class="more-events" data-date="${dateStr}">+${visits.length - maxEvents} more</div>`;
-                    }
+                    return eventsHtml;
+                } catch (error) {
+                    console.error('Error rendering events:', error);
+                    return '';
                 }
-
-                return eventsHtml;
             }
 
             function showEventDetails(visitId) {
-                const visit = fridgeVisits.find(v => v.id == visitId);
+                try {
+                    const visit = fridgeVisits.find(v => v.id == visitId);
 
-                if (visit) {
-                    const eventDetails = document.getElementById('eventDetails');
-                    eventDetails.innerHTML = `
-                                <div class="mb-3">
-                                    <h6>Visit Details</h6>
-                                    <p><strong>Technician:</strong> ${visit.technician}</p>
-                                    <p><strong>Fault Description:</strong> ${visit.faultDescription}</p>
-                                    <p><strong>Repair Status:</strong> ${visit.repairStatus}</p>
-                                    <p><strong>Date:</strong> ${visit.date.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    })}</p>
-                                    ${visit.resolutionNotes ? `<p><strong>Resolution Notes:</strong> ${visit.resolutionNotes}</p>` : ''}
-                                    ${visit.completionDate ? `<p><strong>Completion Date:</strong> ${new Date(visit.completionDate).toLocaleDateString()}</p>` : ''}
-                                </div>
-                            `;
+                    if (visit) {
+                        const eventDetails = document.getElementById('eventDetails');
+                        eventDetails.innerHTML = `
+                                    <div class="mb-3">
+                                        <h6>Repair Visit Details</h6>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <p><strong>Technician:</strong></p>
+                                                <p><strong>Status:</strong></p>
+                                                <p><strong>Customer:</strong></p>
+                                                <p><strong>Fridge Model:</strong></p>
+                                                <p><strong>Date:</strong></p>
+                                            </div>
+                                            <div class="col-6">
+                                                <p>${visit.technician}</p>
+                                                <p><span class="badge ${getStatusBadgeClass(visit.status)}">${visit.status}</span></p>
+                                                <p>${visit.customerName}</p>
+                                                <p>${visit.fridgeModel}</p>
+                                                <p>${visit.date.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}</p>
+                                            </div>
+                                        </div>
+                                        ${visit.notes && visit.notes !== 'No notes available' ? `
+                                            <p><strong>Notes:</strong></p>
+                                            <p class="border p-2 rounded bg-light">${visit.notes}</p>
+                                        ` : ''}
+                                        ${visit.partsUsed && visit.partsUsed !== 'No parts listed' ? `
+                                            <p><strong>Parts Used:</strong></p>
+                                            <p>${visit.partsUsed}</p>
+                                        ` : ''}
+                                        ${visit.repairCost !== "0.00" ? `
+                                            <p><strong>Repair Cost:</strong> $${visit.repairCost}</p>
+                                        ` : ''}
+                                    </div>
+                                `;
 
-                    // Configure the edit link
-                    const editLink = document.getElementById('editVisitLink');
-                    editLink.style.display = 'block';
-                    editLink.href = '@Url.Action("Edit", "FaultTechnician")' + `?id=${visit.id}`;
+                        // Configure the edit link
+                        const editLink = document.getElementById('editVisitLink');
+                        editLink.style.display = 'block';
+                        editLink.href = '@Url.Action("BookFaultVisit", "FaultTechnician")' + `?RequestedFaultId=${visit.visitId}&visitId=${visit.id}`;
 
-                    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                    modal.show();
+                        const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                        modal.show();
+                    } else {
+                        alert('Visit details not found.');
+                    }
+                } catch (error) {
+                    console.error('Error showing event details:', error);
+                    alert('Error loading visit details.');
                 }
             }
 
             function showAllEventsForDate(dateStr) {
-                const visits = fridgeVisits.filter(visit => {
-                    const visitDateStr = visit.date.toISOString().split('T')[0];
-                    return visitDateStr === dateStr;
-                });
-
-                const eventDetails = document.getElementById('eventDetails');
-                let eventsHtml = '<h6>All Visits on ' + new Date(dateStr).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                }) + '</h6>';
-
-                visits.forEach((visit, index) => {
-                    const eventType = `event-type-${(index % 4) + 1}`;
-                    eventsHtml += `
-                                <div class="border-bottom pb-2 mb-2">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <strong>${visit.technician}</strong><br>
-                                            <small class="text-muted">${visit.faultDescription} • ${visit.repairStatus}</small>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary view-visit-btn" data-id="${visit.id}">
-                                            View
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                });
-
-                eventDetails.innerHTML = eventsHtml;
-
-                // Add event listeners to view buttons
-                document.querySelectorAll('.view-visit-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        const visitId = this.getAttribute('data-id');
-                        showEventDetails(visitId);
+                try {
+                    const visits = fridgeVisits.filter(visit => {
+                        if (!visit.date) return false;
+                        const visitDateStr = visit.date.toISOString().split('T')[0];
+                        return visitDateStr === dateStr;
                     });
-                });
 
-                const editLink = document.getElementById('editVisitLink');
-                editLink.style.display = 'none';
+                    const eventDetails = document.getElementById('eventDetails');
+                    let eventsHtml = '<h6>All Repair Visits on ' + new Date(dateStr).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }) + '</h6>';
 
-                const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                modal.show();
+                    if (visits.length === 0) {
+                        eventsHtml += '<p class="text-muted">No visits scheduled for this date.</p>';
+                    } else {
+                        visits.forEach((visit, index) => {
+                            eventsHtml += `
+                                        <div class="border-bottom pb-2 mb-2">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong>${visit.technician}</strong><br>
+                                                    <small class="text-muted">${visit.customerName} • ${visit.fridgeModel}</small><br>
+                                                    <span class="badge ${getStatusBadgeClass(visit.status)}">${visit.status}</span>
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-primary view-visit-btn" data-id="${visit.id}">
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
+                        });
+                    }
+
+                    eventDetails.innerHTML = eventsHtml;
+
+                    // Add event listeners to view buttons
+                    document.querySelectorAll('.view-visit-btn').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            const visitId = this.getAttribute('data-id');
+                            showEventDetails(visitId);
+                        });
+                    });
+
+                    const editLink = document.getElementById('editVisitLink');
+                    editLink.style.display = 'none';
+
+                    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                    modal.show();
+                } catch (error) {
+                    console.error('Error showing all events:', error);
+                    alert('Error loading events for this date.');
+                }
+            }
+
+            function getStatusBadgeClass(status) {
+                switch (status) {
+                    case 'Completed': return 'bg-success';
+                    case 'In Progress': return 'bg-warning';
+                    case 'Scrapped': return 'bg-danger';
+                    case 'Not Started': return 'bg-secondary';
+                    default: return 'bg-info';
+                }
             }
 
             // Reset edit link when modal is hidden
             document.getElementById('eventModal').addEventListener('hidden.bs.modal', function () {
                 document.getElementById('editVisitLink').style.display = 'none';
             });
+
+            // Handle page refresh after booking
+            if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === 'reload') {
+                console.log('Page was reloaded');
+            }
         });
     </script>
 }

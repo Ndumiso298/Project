@@ -53,7 +53,7 @@
             }
 
             <!-- Booking Form -->
-            <form asp-action="BookVisit" method="post" class="needs-validation" novalidate>
+            <form asp-action="BookFaultVisit" method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="FaultId" />
                 <input type="hidden" asp-for="VisitId" />
