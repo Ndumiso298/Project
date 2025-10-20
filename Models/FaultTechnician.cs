@@ -17,7 +17,7 @@ namespace Project.Models
         public string FaultDescription { get; set; }
 
         [Display(Name = "Repair Status")]
-        public string RepairStatus { get; set; } = SD.Pending;
+        public string? RepairStatus { get; set; } = SD.NotStarted;
 
         [Display(Name = "Technician Assigned")]
         public string? TechnicianAssigned { get; set; }
@@ -40,6 +40,8 @@ namespace Project.Models
         [ForeignKey("VisitId")]
         [ValidateNever]
         public FridgeVisit FridgeVisit { get; set; }
+
+       
 
     }
 }
