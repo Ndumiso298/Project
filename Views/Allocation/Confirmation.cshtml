@@ -1,55 +1,327 @@
-﻿@{
-    Layout = "_CustomerLayout";
+﻿@model int
+@{
     ViewData["Title"] = "Order Confirmation";
+    Layout = "_CustomerLayout";
 }
 
-<div class="container py-5">
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-
-        <!-- Header -->
-        <div class="card-header bg-success text-white text-center py-4">
-            <h2 class="fw-bold mb-1">Request Successfully Placed</h2>
-            <p class="mb-0">Thank you for choosing our services</p>
-        </div>
-
-        <!-- Body -->
-        <div class="card-body p-5">
-            <div class="row text-center mb-4">
-                <div class="col-12">
-                    <i class="bi bi-check-circle-fill text-success display-3 mb-3"></i>
-                    <h4 class="fw-semibold">Your fridge request has been successfully placed!</h4>
-                    <p class="text-muted">We have received your order and our team is processing it.</p>
-                </div>
-            </div>
-
-            <!-- Payment Details -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-md-8">
-                    <div class="card border-0 shadow-sm rounded-3">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Payment Details</h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-2"><strong>Bank Name:</strong> Standard Bank</p>
-                            <p class="mb-2"><strong>Account Number:</strong> 123 456 789</p>
-                            <p class="mb-2"><strong>Branch Code:</strong> 051001</p>
-                            <p class="mb-2"><strong>Reference:</strong> Your Request ID</p>
-                            
-                        </div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-gradient-success text-white py-4 rounded-top-3">
+                    <div class="text-center">
+                        <i class="fas fa-check-circle fa-3x mb-3 text-white-50"></i>
+                        <h2 class="h3 mb-0 fw-bold">Order Confirmed Successfully!</h2>
+                        <p class="mb-0 opacity-75">Thank you for choosing our service</p>
                     </div>
                 </div>
-            </div>
+                <div class="card-body p-5">
+                    <!-- Order Summary Card -->
+                    <div class="card border-success mb-4">
+                        <div class="card-header bg-light-success py-3">
+                            <h5 class="mb-0 text-success fw-bold">
+                                <i class="fas fa-receipt me-2"></i>Order Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-hashtag text-primary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Order Number</small>
+                                            <strong class="text-dark fs-5">#@Model</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-calendar text-info fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Order Date</small>
+                                            <strong class="text-dark fs-5">@DateTime.Now.ToString("dd MMM yyyy")</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-clock text-warning fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Current Status</small>
+                                            <span class="badge bg-warning text-dark fs-6 py-2 px-3">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-sync text-secondary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Next Steps</small>
+                                            <strong class="text-dark">Under Review</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Follow-up Info -->
-            <div class="row text-center">
-                <div class="col-12">
-                    <h5 class="fw-semibold">What’s Next?</h5>
-                    <p class="text-muted mb-4">One of our consultants will give you a call within <strong>24 hours</strong> to confirm delivery and finalize details.</p>
-                    <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-primary rounded-pill px-5 py-2">
-                        <i class="bi bi-house-door me-2"></i> Back to Home
-                    </a>
+                    <!-- Process Timeline -->
+                    <div class="card border-0 bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="fas fa-list-ol me-2"></i>Order Process
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-3">
+                                    <div class="bg-success rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-check text-white fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-success">Order Placed</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-warning rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-clock text-white fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-warning">Pending Review</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-secondary bg-opacity-25 rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user-cog text-secondary fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-muted">Processing</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-secondary bg-opacity-25 rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-truck text-secondary fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-muted">Delivery</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Information Message -->
+                    <div class="alert alert-info border-0 rounded-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle fa-2x text-info me-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-2">What happens next?</h6>
+                                <p class="mb-0">
+                                    Your order is currently <strong>pending review</strong>. Our team will contact you within 24-48 hours to confirm 
+                                    delivery details and schedule your installation. Please keep your phone handy for our call.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-5">
+                        <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                            <a asp-controller="Customer" asp-action="ViewRequestStatus" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-list me-2"></i> Track My Orders
+                            </a>
+                            <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="fas fa-plus me-2"></i> New Order
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    
+    .bg-light-success {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        border-color: rgba(40, 167, 69, 0.2) !important;
+    }
+    
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .rounded-top-3 {
+        border-top-left-radius: 0.75rem !important;
+        border-top-right-radius: 0.75rem !important;
+    }
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-gradient-success text-white py-4 rounded-top-3">
+                    <div class="text-center">
+                        <i class="fas fa-check-circle fa-3x mb-3 text-white-50"></i>
+                        <h2 class="h3 mb-0 fw-bold">Order Confirmed Successfully!</h2>
+                        <p class="mb-0 opacity-75">Thank you for choosing our service</p>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Order Summary Card -->
+                    <div class="card border-success mb-4">
+                        <div class="card-header bg-light-success py-3">
+                            <h5 class="mb-0 text-success fw-bold">
+                                <i class="fas fa-receipt me-2"></i>Order Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-hashtag text-primary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Order Number</small>
+                                            <strong class="text-dark fs-5">#@Model</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-info bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-calendar text-info fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Order Date</small>
+                                            <strong class="text-dark fs-5">@DateTime.Now.ToString("dd MMM yyyy")</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-clock text-warning fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Current Status</small>
+                                            <span class="badge bg-warning text-dark fs-6 py-2 px-3">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-10 rounded p-2 me-3">
+                                            <i class="fas fa-sync text-secondary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Next Steps</small>
+                                            <strong class="text-dark">Under Review</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process Timeline -->
+                    <div class="card border-0 bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="fas fa-list-ol me-2"></i>Order Process
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-3">
+                                    <div class="bg-success rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-check text-white fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-success">Order Placed</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-warning rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-clock text-white fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-warning">Pending Review</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-secondary bg-opacity-25 rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user-cog text-secondary fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-muted">Processing</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="bg-secondary bg-opacity-25 rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-truck text-secondary fa-lg"></i>
+                                    </div>
+                                    <small class="fw-bold text-muted">Delivery</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Information Message -->
+                    <div class="alert alert-info border-0 rounded-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle fa-2x text-info me-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-2">What happens next?</h6>
+                                <p class="mb-0">
+                                    Your order is currently <strong>pending review</strong>. Our team will contact you within 24-48 hours to confirm 
+                                    delivery details and schedule your installation. Please keep your phone handy for our call.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-5">
+                        <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                            <a asp-controller="Customer" asp-action="ViewRequestStatus" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-list me-2"></i> Track My Orders
+                            </a>
+                            <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-secondary btn-lg px-5">
+                                <i class="fas fa-plus me-2"></i> New Order
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    
+    .bg-light-success {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        border-color: rgba(40, 167, 69, 0.2) !important;
+    }
+    
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .rounded-top-3 {
+        border-top-left-radius: 0.75rem !important;
+        border-top-right-radius: 0.75rem !important;
+    }
+</style>

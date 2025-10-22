@@ -43,7 +43,7 @@ namespace Project.Controllers
             }
             catch (Exception ex)
             {
-                
+
                 return View(new List<FaultTechnician>());
             }
         }
@@ -56,7 +56,7 @@ namespace Project.Controllers
                 .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .Where(u => u.Status ==SD.Approved) 
+                .Where(u => u.Status == SD.Approved)
                 .ToList();
 
             var requestIds = allocatedRequests
@@ -76,13 +76,13 @@ namespace Project.Controllers
         }
         public IActionResult CustomerBookings()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var requests = _db.tblRequestHeaders
                 .Include(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestFridges)
                 .ThenInclude(u => u.Fridge)
-                .Include(u => u.FridgeVisits) 
+                .Include(u => u.FridgeVisits)
                 .Where(u => u.Customer.ApplicationUserId == userId && u.Status == SD.Approved)
                 .ToList();
 
@@ -110,14 +110,14 @@ namespace Project.Controllers
             return View();
         }
 
-        public  IActionResult Completed()
+        public IActionResult Completed()
         {
-            var visits =  _db.tblFridgeVisits
+            var visits = _db.tblFridgeVisits
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestHeader)
                 .ThenInclude(u => u.RequestFridges)
-                .ThenInclude(u => u.Fridge)      
+                .ThenInclude(u => u.Fridge)
                 .ToList();
 
             return View(visits);
@@ -194,7 +194,7 @@ namespace Project.Controllers
                new SelectListItem { Text = "In Progress", Value = "In Progress" },
             };
 
-            
+
             return View(visit);
         }
         [HttpPost]
@@ -233,5 +233,3 @@ namespace Project.Controllers
 
     }
 }
-
-

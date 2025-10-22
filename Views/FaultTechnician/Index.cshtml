@@ -1,340 +1,144 @@
-﻿@model IEnumerable<Project.Models.FridgeVisit>
+﻿@model IEnumerable<Project.Models.ViewModel.FaultViewModel>
 @{
-    ViewData["Title"] = "Failed Fridge Visits & Upcoming Bookings";
-    Layout = "_CustomerLayout";
+    ViewData["Title"] = "All Faults - Maintenance & Customer Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<style>
-    .status-badge {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
-
-    .upcoming-booking {
-        background-color: #e8f5e8;
-        border-left: 4px solid #28a745;
-    }
-
-    .failed-visit {
-        background-color: #f8f9fa;
-    }
-
-    .booking-highlight {
-        animation: pulse 2s infinite;
-    }
-
-    @@keyframes pulse {
-        0% {
-            background-color: #e8f5e8;
-        }
-
-        50% {
-            background-color: #d4edda;
-        }
-
-        100% {
-            background-color: #e8f5e8;
-        }
-    }
-</style>
-
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-primary">Failed Fridge Visits & Upcoming Bookings</h2>
-            <p class="text-muted">Manage failed visits and track upcoming repair bookings</p>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="btn-group" role="group">
-                <a href="@Url.Action("Dashboard")" class="btn btn-info">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">All Faults</h1>
+        <div>
+            <a href="@Url.Action("Dashboard")" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <div class="btn-group">
+                <a href="@Url.Action("ViewMaintenanceFaults")" class="btn btn-info">
+                    <i class="fas fa-tools"></i> Maintenance
                 </a>
-                <a href="@Url.Action("Calendar")" class="btn btn-secondary">
-                    <i class="fas fa-calendar-alt"></i> View Calendar
-                </a>
-                <a href="@Url.Action("Index")" class="btn btn-primary">
-                    <i class="fas fa-list"></i> Failed Visits & Bookings
+                <a href="@Url.Action("ViewCustomerFaults")" class="btn btn-warning">
+                    <i class="fas fa-user"></i> Customer
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Failed Visits</h4>
-                            <h2>@Model.Count()</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-exclamation-triangle fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Pending Repairs</h4>
-                            <h2>@Model.Count(v => v.FaultTechnicians != null && v.FaultTechnicians.Any(ft => ft.RepairStatus == "Not Started" || ft.RepairStatus == "In Progress"))</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-clock fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Completed Repairs</h4>
-                            <h2>@Model.Count(v => v.FaultTechnicians != null && v.FaultTechnicians.Any(ft => ft.RepairStatus == "Completed"))</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-check-circle fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Upcoming Bookings</h4>
-                            <h2>@Model.Count(v => v.FaultTechnicians != null && v.FaultTechnicians.Any(ft => ft.Bookingate.HasValue && ft.Bookingate.Value >= DateTime.Today))</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-calendar-check fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 
-    <!-- Upcoming Bookings Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-calendar-check me-2"></i>Upcoming Repair Bookings
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @{
-                        var upcomingBookings = Model
-                        .Where(v => v.FaultTechnicians != null && v.FaultTechnicians.Any())
-                        .SelectMany(v => v.FaultTechnicians
-                        .Where(ft => ft.Bookingate.HasValue && ft.Bookingate.Value >= DateTime.Today)
-                        .Select(ft => new { Visit = v, FaultTechnician = ft }))
-                        .OrderBy(x => x.FaultTechnician.Bookingate)
-                        .ToList();
-                    }
-
-                    @if (upcomingBookings.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Booking Date</th>
-                                        <th>Visit ID</th>
-                                        <th>Customer</th>
-                                        <th>Fridge Model</th>
-                                        <th>Technician</th>
-                                        <th>Repair Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var booking in upcomingBookings)
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Faults from Maintenance & Customer Reports</h6>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+                <button type="button" class="btn btn-outline-info" data-filter="maintenance">Maintenance</button>
+                <button type="button" class="btn btn-outline-warning" data-filter="customer">Customer</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Source</th>
+                            <th>Reported Date</th>
+                            <th>Customer</th>
+                            <th>Fridge Model</th>
+                            <th>Description</th>
+                            <th>Type/Priority</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var fault in Model)
+                        {
+                            <tr class="fault-row" data-source="@fault.Source?.ToLower().Replace(" ", "-")">
+                                <td>
+                                    <span class="badge @(fault.Source == "Maintenance" ? "bg-info" : "bg-warning")">
+                                        @fault.Source
+                                    </span>
+                                </td>
+                                <td>@fault.ReportedDate.ToString()</td>
+                                <td>@fault.CustomerName</td>
+                                <td>@fault.FridgeModel</td>
+                                <td>
+                                    <div class="fault-description">
+                                        <strong>@fault.Description</strong>
+                                        @if (!string.IsNullOrEmpty(fault.AdditionalNotes))
+                                        {
+                                            <br>
+                                            <small class="text-muted">@fault.AdditionalNotes</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (fault.Source == "Customer Report")
                                     {
-                                        var isToday = booking.FaultTechnician.Bookingate?.Date == DateTime.Today;
-                                        <tr class="@(isToday ? "booking-highlight" : "upcoming-booking")">
-                                            <td>
-                                                <strong>@booking.FaultTechnician.Bookingate?.ToString("MM/dd/yyyy")</strong>
-                                                @if (isToday)
-                                                {
-                                                    <span class="badge bg-danger status-badge">Today</span>
-                                                }
-                                                else if (booking.FaultTechnician.Bookingate?.Date == DateTime.Today.AddDays(1))
-                                                {
-                                                    <span class="badge bg-warning status-badge">Tomorrow</span>
-                                                }
-                                            </td>
-                                            <td>@booking.Visit.VisitId</td>
-                                            <td>@booking.Visit.RequestHeader?.Customer?.ApplicationUser?.UserName</td>
-                                            <td>
-                                                @if (booking.Visit.RequestHeader?.RequestFridges != null && booking.Visit.RequestHeader.RequestFridges.Any())
-                                                {
-                                                    @string.Join(", ", booking.Visit.RequestHeader.RequestFridges.Select(rf => rf.Fridge?.Model))
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(booking.FaultTechnician.TechnicianAssigned))
-                                                {
-                                                    <span class="badge bg-info status-badge">@booking.FaultTechnician.TechnicianAssigned</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-secondary status-badge">Unassigned</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                <span class="badge @GetStatusBadgeClass(booking.FaultTechnician.RepairStatus) status-badge">
-                                                    @booking.FaultTechnician.RepairStatus
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="@Url.Action("BookFaultVisit", new { RequestedFaultId = booking.Visit.VisitId, visitId = booking.FaultTechnician.FaultId })"
-                                                       class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit
-                                                    </a>
-                                                    <button class="btn btn-info btn-sm view-booking-details"
-                                                            data-booking-id="@booking.FaultTechnician.FaultId"
-                                                            data-visit-id="@booking.Visit.VisitId">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <span class="badge bg-secondary">@fault.FaultType</span>
+                                        <br>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                            <h5>No Upcoming Bookings</h5>
-                            <p class="text-muted">There are no upcoming repair bookings scheduled.</p>
-                        </div>
-                    }
-                </div>
+                                    <span class="badge @GetPriorityBadgeClass(fault.Priority) mt-1">@fault.Priority</span>
+                                </td>
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(fault.Status)">@fault.Status</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        @if (fault.Source == "Maintenance")
+                                        {
+                                            <a href="@Url.Action("BookMaintenanceFault", new { visitId = fault.Id })"
+                                               class="btn btn-primary btn-sm" title="Assign Technician">
+                                                <i class="fas fa-user-plus"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("BookCustomerFault", new { faultReportId = fault.Id })"
+                                               class="btn btn-primary btn-sm" title="Assign Technician">
+                                                <i class="fas fa-user-plus"></i>
+                                            </a>
+                                        }
+                                        <button class="btn btn-info btn-sm" title="View Details"
+                                                onclick="showFaultDetails(@fault.Id, '@fault.Source')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
 
-    <!-- Failed Visits Section -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Failed Fridge Visits
-                    </h5>
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4>No Faults Found</h4>
+                    <p class="text-muted">There are no active faults requiring attention.</p>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="failedVisitsTable">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Visit ID</th>
-                                    <th>Customer</th>
-                                    <th>Fridges</th>
-                                    <th>Visit Date</th>
-                                    <th>Checkup Status</th>
-                                    <th>Repair Bookings</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var visit in Model)
-                                {
-                                    <tr class="failed-visit">
-                                        <td>@visit.VisitId</td>
-                                        <td>@visit.RequestHeader?.Customer?.ApplicationUser?.UserName</td>
-                                        <td>
-                                            @if (visit.RequestHeader?.RequestFridges != null && visit.RequestHeader.RequestFridges.Any())
-                                            {
-                                                @string.Join(", ", visit.RequestHeader.RequestFridges.Select(rf => rf.Fridge?.Model))
-                                            }
-                                        </td>
-                                        <td>@visit.VisitDate.ToString("MM/dd/yyyy")</td>
-                                        <td>
-                                            <span class="badge bg-danger status-badge">@visit.CheckupStatus</span>
-                                        </td>
-                                        <td>
-                                            @if (visit.FaultTechnicians != null && visit.FaultTechnicians.Any())
-                                            {
-                                                var completed = visit.FaultTechnicians.Count(ft => ft.RepairStatus == "Completed");
-                                                var inProgress = visit.FaultTechnicians.Count(ft => ft.RepairStatus == "In Progress");
-                                                var notStarted = visit.FaultTechnicians.Count(ft => ft.RepairStatus == "Not Started");
-
-                                                <div>
-                                                    <span class="badge bg-info status-badge" title="Total Bookings">@visit.FaultTechnicians.Count</span>
-                                                    @if (completed > 0)
-                                                    {
-                                                        <span class="badge bg-success status-badge" title="Completed">@completed</span>
-                                                    }
-                                                    @if (inProgress > 0)
-                                                    {
-                                                        <span class="badge bg-warning status-badge" title="In Progress">@inProgress</span>
-                                                    }
-                                                    @if (notStarted > 0)
-                                                    {
-                                                        <span class="badge bg-secondary status-badge" title="Not Started">@notStarted</span>
-                                                    }
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning status-badge">No Bookings</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="@Url.Action("BookFaultVisit", new { RequestedFaultId = visit.VisitId })"
-                                                   class="btn btn-success btn-sm">
-                                                    <i class="fas fa-tools"></i> Book Repair
-                                                </a>
-                                                @if (visit.FaultTechnicians != null && visit.FaultTechnicians.Any())
-                                                {
-                                                    <a href="@Url.Action("BookFaultVisit", new { RequestedFaultId = visit.VisitId, visitId = visit.FaultTechnicians.First().FaultId })"
-                                                       class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit Booking
-                                                    </a>
-                                                }
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>
 
-<!-- Booking Details Modal -->
-<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
+<!-- Fault Details Modal -->
+<div class="modal fade" id="faultDetailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Booking Details</h5>
+                <h5 class="modal-title">Fault Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="bookingDetailsContent">
-                <!-- Content will be loaded via JavaScript -->
+            <div class="modal-body" id="faultDetailsContent">
+                <!-- Details will be loaded here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -344,99 +148,69 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Initialize DataTable for failed visits
-            $('#failedVisitsTable').DataTable({
-                "pageLength": 10,
-                "order": [[3, 'desc']] // Sort by visit date descending
+        // Filter faults by source
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('[data-filter]');
+            const faultRows = document.querySelectorAll('.fault-row');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Filter rows
+                    faultRows.forEach(row => {
+                        if (filter === 'all' || row.getAttribute('data-source') === filter) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
             });
-
-            // Handle booking details view
-            $('.view-booking-details').click(function () {
-                const bookingId = $(this).data('booking-id');
-                const visitId = $(this).data('visit-id');
-
-                // Show loading state
-                $('#bookingDetailsContent').html(`
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Loading booking details...</p>
-                            </div>
-                        `);
-
-                // In a real application, you would make an AJAX call here
-                // For now, we'll simulate with the data we have
-                const row = $(this).closest('tr');
-                const bookingDate = row.find('td:eq(0)').text().trim();
-                const customer = row.find('td:eq(2)').text().trim();
-                const fridgeModel = row.find('td:eq(3)').text().trim();
-                const technician = row.find('td:eq(4)').text().trim();
-                const status = row.find('td:eq(5)').text().trim();
-
-                $('#bookingDetailsContent').html(`
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Booking Information</h6>
-                                    <p><strong>Booking ID:</strong> ${bookingId}</p>
-                                    <p><strong>Visit ID:</strong> ${visitId}</p>
-                                    <p><strong>Booking Date:</strong> ${bookingDate}</p>
-                                    <p><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(status)}">${status}</span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Customer & Equipment</h6>
-                                    <p><strong>Customer:</strong> ${customer}</p>
-                                    <p><strong>Fridge Model:</strong> ${fridgeModel}</p>
-                                    <p><strong>Technician:</strong> ${technician}</p>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <a href="@Url.Action("BookFaultVisit")?RequestedFaultId=${visitId}&visitId=${bookingId}" class="btn btn-primary">
-                                    <i class="fas fa-edit me-1"></i> Edit Booking
-                                </a>
-                                <a href="@Url.Action("Calendar")" class="btn btn-info">
-                                    <i class="fas fa-calendar me-1"></i> View in Calendar
-                                </a>
-                            </div>
-                        `);
-
-                $('#bookingDetailsModal').modal('show');
-            });
-
-            // Auto-refresh the page every 5 minutes to update upcoming bookings
-            setInterval(function () {
-                console.log('Auto-refreshing page to update booking data...');
-                location.reload();
-            }, 300000); // 5 minutes
-
-            function getStatusBadgeClass(status) {
-                switch (status.toLowerCase()) {
-                    case 'completed': return 'bg-success';
-                    case 'in progress': return 'bg-warning';
-                    case 'not started': return 'bg-secondary';
-                    case 'scrapped': return 'bg-danger';
-                    default: return 'bg-info';
-                }
-            }
         });
+
+        function showFaultDetails(id, source) {
+            // You can implement AJAX call to get detailed fault information
+            const content = `
+                <div class="text-center">
+                    <i class="fas fa-info-circle fa-3x text-primary mb-3"></i>
+                    <h5>Fault Details</h5>
+                    <p>Detailed view for ${source} fault #${id}</p>
+                    <p class="text-muted">This would show complete fault information including customer details, history, and notes.</p>
+                </div>
+            `;
+            document.getElementById('faultDetailsContent').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('faultDetailsModal')).show();
+        }
     </script>
 }
 
 @functions {
     public string GetStatusBadgeClass(string status)
     {
-        if (string.IsNullOrEmpty(status)) return "bg-secondary";
-
-        switch (status.ToLower())
+        return status?.ToLower() switch
         {
-            case "completed": return "bg-success";
-            case "in progress": return "bg-warning";
-            case "not started": return "bg-secondary";
-            case "scrapped": return "bg-danger";
-            default: return "bg-info";
-        }
+            "completed" or "resolved" => "bg-success",
+            "in progress" => "bg-info",
+            "reported" or "failed checkup" => "bg-warning",
+            "cancelled" or "scrapped" => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" or "high" => "bg-danger",
+            "medium" => "bg-warning",
+            "low" => "bg-info",
+            _ => "bg-secondary"
+        };
     }
 }

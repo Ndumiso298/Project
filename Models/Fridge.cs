@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project.Models
 {
+
     public class Fridge
     {
         [Key]

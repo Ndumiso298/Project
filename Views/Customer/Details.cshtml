@@ -1,161 +1,88 @@
-﻿@model Allocation
+﻿@model Project.Models.ViewModel.AddToCartVM
 @{
-    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Fridge Details";
 }
 
-<form method="post">
-    <input asp-for="AllocationId" type="hidden" />
-    <input asp-for="FridgeId" type="hidden" />
-    <input asp-for="CustomerID" type="hidden" />
-<div class="container py-5">
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-        <div class="card-header bg-primary text-light py-4 position-relative">
-            <div class="row align-items-center">
-                <div class="col-12 text-center">
-                    <h2 class="text-white fw-bold mb-1">@Model.Fridge.Brand Professional Series</h2>
-                    <p class="text-light mb-0 opacity-75">Model: @Model.Fridge.Model | Designed for commercial excellence</p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Fridge Details</h6>
                 </div>
-            </div>
-        </div>
-
-        <!-- Body -->
-        <div class="card-body p-4 p-md-5">
-            <!-- Back Button -->
-            <div class="row mb-4">
-                <div class="col-12 col-md-3">
-                    <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill">
-                        <i class="bi bi-arrow-left me-1"></i> Back to Catalog
-                    </a>
-                </div>
-            </div>
-
-            <div class="row g-5">
-                <!-- Image & Availability -->
-                <div class="col-12 col-lg-5 text-center">
-                    <img src="@Model.Fridge.ImageUrl" class="fridge-image img-fluid rounded-3 shadow-sm"
-                         alt="@Model.Fridge.Brand @Model.Fridge.Model commercial refrigerator">
-                    <div class="mt-3">
-                        @if (Model.Fridge.AvailabilityStatus == "Available")
-                        {
-                            <span class="badge bg-success px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
-                        }
-                        else if (Model.Fridge.AvailabilityStatus == "Unavailable")
-                        {
-                            <span class="badge bg-danger px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
-                            <div class="alert alert-warning mt-3">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <strong>Currently Unavailable</strong>
-                                <p class="mb-0 mt-1">This fridge is currently out of stock. Please check back later or browse other available models.</p>
-                            </div>
-                        }
-                        else if (Model.Fridge.AvailabilityStatus == "Maintenance")
-                        {
-                            <span class="badge bg-warning text-dark px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
-                            <div class="alert alert-info mt-3">
-                                <i class="bi bi-tools me-2"></i>
-                                <strong>Under Maintenance</strong>
-                                <p class="mb-0 mt-1">This fridge is currently undergoing maintenance and will be available soon.</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
-                        }
-                    </div>
-                </div>
-
-                <!-- Details -->
-                <div class="col-12 col-lg-7">
-                    <h3 class="section-title mb-3 text-primary fw-bold">Specification Details</h3>
-
-                    <div class="specs-container mb-4">
-                        <div class="spec-item d-flex align-items-center mb-3">
-                            <i class="bi bi-grid-3x3 fs-4 text-primary me-3"></i>
-                            <div><strong>Type:</strong> @Model.Fridge.Type</div>
-                        </div>
-
-                        <div class="spec-item d-flex align-items-center mb-3">
-                            <i class="bi bi-arrows-fullscreen fs-4 text-primary me-3"></i>
-                            <div><strong>Capacity:</strong> @Model.Fridge.CapacityLiters Liters</div>
-                        </div>
-
-                        @if (Model.Fridge.AvailabilityStatus == "Available")
-                        {
-                            <div class="row pl-2 mb-3">
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label asp-for="Count" class="form-label fw-semibold text-dark">Quantity</label>
-                                        <input asp-for="Count" type="number" min="1" class="form-control text-end" />
-                                        <span asp-validation-for="Count" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <h3 class="section-title mb-3 text-primary fw-bold">Description</h3>
-                    <p class="text-secondary mb-4 lh-lg">@Model.Fridge.Description</p>
-
-                    <!-- Pricing -->
-                    <div class="price-tag bg-light p-4 rounded-3 shadow-sm mb-4">
-                        <div class="fs-6 text-muted">Monthly Rental Fee</div>
-                        <div class="fs-1 fw-bold text-primary mt-1">@Model.Fridge.RentalPricePerMonth.ToString("c")</div>
-                        <div class="small text-muted mt-2">Plus applicable taxes & delivery fee</div>
-                    </div>
-                   
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            @if (Model.Fridge.AvailabilityStatus == "Available")
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
                             {
-                                <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
-                                    <i class="bi bi-check-circle me-2"></i> Add To Cart
-                                </button>
+                                <img src="@Model.ImageUrl" class="img-fluid rounded mb-3" alt="@Model.Model" style="max-height: 300px;">
                             }
                             else
                             {
-                                <button type="button" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow" disabled>
-                                    <i class="bi bi-x-circle me-2"></i> Currently Unavailable
-                                </button>
-                                
+                                <div class="text-center mb-3">
+                                    <i class="fas fa-refrigerator fa-5x text-gray-300"></i>
+                                </div>
                             }
+
+                            <h4 class="text-primary">@Model.Brand @Model.Model</h4>
+                            <p class="text-muted">@Model.Description</p>
+                            <div class="mb-3">
+                                <p><i class="fas fa-arrows-alt-v text-primary"></i> <strong>Capacity:</strong> @Model.CapacityLiters Liters</p>
+                                <p><i class="fas fa-tag text-primary"></i> <strong>Type:</strong> @Model.Type</p>
+                                <p>
+                                    <i class="fas fa-money-bill-wave text-success"></i> <strong>Monthly Rental:</strong>
+                                    @if (Model.RentalPricePerMonth.HasValue)
+                                    {
+                                        <text>R @Model.RentalPricePerMonth.Value.ToString("F2")</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Price not available</text>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-cart-plus"></i> Add to Cart</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form asp-action="Details" method="post">
+                                        <input type="hidden" asp-for="FridgeId" />
+
+                                        <div class="form-group">
+                                            <label asp-for="Count" class="control-label font-weight-bold">Quantity</label>
+                                            <select asp-for="Count" class="form-control">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="Count" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group mt-4">
+                                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                                <i class="fas fa-cart-plus"></i> Add to Cart
+                                            </button>
+                                            <a asp-action="Index" class="btn btn-outline-secondary btn-block">
+                                                <i class="fas fa-arrow-left"></i> Back to Fridge List
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                   
                 </div>
             </div>
         </div>
     </div>
 </div>
-</form>
 
-<style>
-    .fridge-image {
-        max-height: 400px;
-        object-fit: cover;
-        width: 100%;
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    
-    .section-title {
-        border-bottom: 2px solid #e9ecef;
-        padding-bottom: 0.5rem;
-    }
-    
-    .specs-container {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 10px;
-    }
-    
-    .spec-item {
-        padding: 0.5rem 0;
-    }
-    
-    .price-tag {
-        border-left: 4px solid #0d6efd;
-    }
-    
-    .btn:disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-</style>
+}

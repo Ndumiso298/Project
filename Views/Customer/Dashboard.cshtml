@@ -1,0 +1,307 @@
+﻿@model Project.Models.ViewModel.CustomerDashboardVM
+@{
+    ViewData["Title"] = "Customer Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Welcome, @Model.Customer?.ApplicationUser?.FirstName!</h1>
+            <p class="text-muted mb-0">Your appliance management dashboard</p>
+        </div>
+        <div class="btn-group">
+            <a href="@Url.Action("CreateFault")" class="btn btn-primary">
+                <i class="fas fa-exclamation-triangle me-2"></i>Report Fault
+            </a>
+            <a href="@Url.Action("CreateFridgeRequest")" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Request Fridge
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Active Fridges
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ActiveFridges.Count</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-refrigerator fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Recent Faults
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.RecentFaults.Count</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Pending Requests
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Service Status
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Active</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Active Fridges -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Your Active Fridges</h6>
+                    <a href="@Url.Action("CreateFridgeRequest")" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>Request New
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.ActiveFridges.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var fridge in Model.ActiveFridges)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">@fridge.Fridge?.Brand @fridge.Fridge?.Model</h6>
+                                        <small class="text-muted">Capacity: @fridge.Fridge?.CapacityLiters L • Type: @fridge.Fridge?.Type</small>
+                                        <br>
+                                        <small class="text-success">
+                                            <i class="fas fa-circle me-1"></i>Allocated & Active
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-primary">@fridge.Fridge?.RentalPricePerMonth.ToString("C")/month</span>
+                                        <div class="mt-2">
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    onclick="reportFaultForFridge(@fridge.FridgeInStockId, '@fridge.Fridge.Brand @fridge.Fridge.Model')">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>Report Issue
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-refrigerator fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Active Fridges</h5>
+                            <p class="text-muted">You don't have any allocated fridges yet.</p>
+                            <a href="@Url.Action("CreateFridgeRequest")" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Request Your First Fridge
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Fault Reports -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-warning">Recent Fault Reports</h6>
+                    <a href="@Url.Action("ViewFaultStatus")" class="btn btn-sm btn-warning">
+                        <i class="fas fa-list me-1"></i>View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentFaults.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var fault in Model.RecentFaults)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@fault.FaultType</h6>
+                                        <span class="badge bg-@GetStatusBadgeClass(fault.Status)">@fault.Status</span>
+                                    </div>
+                                    <p class="mb-1">@fault.Description</p>
+                                    <small class="text-muted">
+                                        Reported on @fault.ReportedDate.ToString("MMM dd, yyyy")
+                                        @if (!string.IsNullOrEmpty(fault.Priority))
+                                        {
+                                            <span class="badge bg-@GetPriorityBadgeClass(fault.Priority) ms-2">@fault.Priority Priority</span>
+                                        }
+                                    </small>
+                                    <div class="mt-2">
+                                        <a href="@Url.Action("FaultDetails", new { id = fault.FaultReportId })"
+                                           class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h5 class="text-muted">No Recent Faults</h5>
+                            <p class="text-muted">All your appliances are working perfectly!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("CreateFault")" class="btn btn-outline-warning w-100 h-100 py-3">
+                                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                                <br>
+                                <strong>Report Fault</strong>
+                                <br>
+                                <small class="text-muted">Report appliance issues</small>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("CreateFridgeRequest")" class="btn btn-outline-success w-100 h-100 py-3">
+                                <i class="fas fa-plus fa-2x mb-2"></i>
+                                <br>
+                                <strong>Request Fridge</strong>
+                                <br>
+                                <small class="text-muted">Request new appliance</small>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("ViewFaultStatus")" class="btn btn-outline-info w-100 h-100 py-3">
+                                <i class="fas fa-tools fa-2x mb-2"></i>
+                                <br>
+                                <strong>Fault Status</strong>
+                                <br>
+                                <small class="text-muted">Track repair progress</small>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("ViewRequestStatus")" class="btn btn-outline-primary w-100 h-100 py-3">
+                                <i class="fas fa-list fa-2x mb-2"></i>
+                                <br>
+                                <strong>Request Status</strong>
+                                <br>
+                                <small class="text-muted">View request history</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Fault Modal -->
+<div class="modal fade" id="reportFaultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Report Fault</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Report fault for: <strong id="selectedFridgeName"></strong></p>
+                <a href="#" class="btn btn-warning w-100" id="reportFaultLink">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Continue to Fault Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function reportFaultForFridge(fridgeInStockId, fridgeName) {
+            document.getElementById('selectedFridgeName').textContent = fridgeName;
+            const link = document.getElementById('reportFaultLink');
+            link.href = '@Url.Action("CreateFault")' + '?fridgeInStockId=' + fridgeInStockId;
+            new bootstrap.Modal(document.getElementById('reportFaultModal')).show();
+        }
+    </script>
+}
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" or "resolved" => "success",
+            "in progress" => "info",
+            "reported" => "warning",
+            "declined" => "danger",
+            _ => "secondary"
+        };
+    }
+
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" or "critical" => "danger",
+            "medium" => "warning",
+            "low" => "info",
+            _ => "secondary"
+        };
+    }
+}

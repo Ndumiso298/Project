@@ -1,0 +1,124 @@
+﻿@model Project.Models.ViewModel.AllocationVM
+@{
+    ViewData["Title"] = "Checkout";
+    // Calculate total using Fridge.RentalPricePerMonth with null handling
+    double totalMonthly = Model.AllocationList.Sum(a => a.Count * (a.Fridge?.RentalPricePerMonth ?? 0));
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Checkout</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="text-primary">Order Summary</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Fridge</th>
+                                            <th>Brand</th>
+                                            <th>Model</th>
+                                            <th>Quantity</th>
+                                            <th>Monthly Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.AllocationList)
+                                        {
+                                            // Use Fridge.RentalPricePerMonth with null handling
+                                            var itemPrice = item.Fridge?.RentalPricePerMonth ?? 0;
+                                            var itemTotal = item.Count * itemPrice;
+                                            <tr>
+                                                <td>@item.Fridge?.Type</td>
+                                                <td>@item.Fridge?.Brand</td>
+                                                <td>@item.Fridge?.Model</td>
+                                                <td>@item.Count</td>
+                                                <td>R @itemPrice.ToString("F2")</td>
+                                                <td>R @itemTotal.ToString("F2")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot class="font-weight-bold">
+                                        <tr>
+                                            <td colspan="5" class="text-right">Total Monthly Rental:</td>
+                                            <td>R @totalMonthly.ToString("F2")</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="text-primary">Delivery Information</h5>
+                            <form asp-action="Checkout" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.FirstName" class="control-label"></label>
+                                    <input asp-for="RequestHeader.FirstName" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.FirstName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.LastName" class="control-label"></label>
+                                    <input asp-for="RequestHeader.LastName" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.LastName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.CellNumber" class="control-label"></label>
+                                    <input asp-for="RequestHeader.CellNumber" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.CellNumber" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.StreetAddress" class="control-label"></label>
+                                    <input asp-for="RequestHeader.StreetAddress" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.StreetAddress" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.City" class="control-label"></label>
+                                    <input asp-for="RequestHeader.City" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.City" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.State" class="control-label"></label>
+                                    <input asp-for="RequestHeader.State" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.State" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="RequestHeader.PostalCode" class="control-label"></label>
+                                    <input asp-for="RequestHeader.PostalCode" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.PostalCode" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mt-4">
+                                    <button type="submit" class="btn btn-success btn-lg btn-block">
+                                        <i class="fas fa-check"></i> Place Order
+                                    </button>
+                                    <a asp-action="Cart" class="btn btn-secondary btn-block">
+                                        <i class="fas fa-arrow-left"></i> Back to Cart
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

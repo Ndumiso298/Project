@@ -1,0 +1,245 @@
+﻿@model Project.Models.FaultTechnician
+@{
+    ViewData["Title"] = "Book Fault Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+        <a href="@Url.Action("Index")" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Faults
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Fault Assignment Details</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="BookFault" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @if (Model.FaultId > 0)
+                        {
+                            <input type="hidden" asp-for="FaultId" />
+                        }
+
+                        <!-- Fault Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Fault Information</h6>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        @if (Model.FridgeVisit != null)
+                                        {
+                                            <p class="mb-1">
+                                                <strong>Customer:</strong>
+                                                @Model.FridgeVisit.RequestHeader?.FirstName @Model.FridgeVisit.RequestHeader?.LastName
+                                            </p>
+                                            <p class="mb-1">
+                                                <strong>Fridge Model:</strong>
+                                                @Model.FridgeVisit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model
+                                            </p>
+                                            <p class="mb-0">
+                                                <strong>Visit Date:</strong>
+                                                @Model.FridgeVisit.VisitDate.ToString("MMM dd, yyyy")
+                                            </p>
+                                        }
+                                        else if (Model.FaultReport != null)
+                                        {
+                                            <p class="mb-1">
+                                                <strong>Customer:</strong>
+                                                @Model.FaultReport.Customer?.ApplicationUser?.UserName
+                                            </p>
+                                            <p class="mb-1">
+                                                <strong>Fridge Model:</strong>
+                                                @Model.FaultReport.FridgeInStock?.Fridge?.Model
+                                            </p>
+                                            <p class="mb-0">
+                                                <strong>Reported:</strong>
+                                                @Model.FaultReport.ReportedDate.ToString("MMM dd, yyyy")
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Assignment Details</h6>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="mb-1">
+                                            <strong>Source:</strong>
+                                            <span class="badge @(ViewBag.Source == "Maintenance" ? "bg-info" : "bg-warning")">
+                                                @ViewBag.Source
+                                            </span>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Current Status:</strong>
+                                            <span class="badge bg-warning">@Model.RepairStatus</span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <strong>Priority:</strong>
+                                            <span class="badge bg-@GetPriorityBadgeClass(Model.Priority)">@Model.Priority</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="FaultDescription" class="form-label">Fault Description *</label>
+                                    <textarea asp-for="FaultDescription" class="form-control" rows="3"
+                                              placeholder="Describe the fault in detail..." required></textarea>
+                                    <span asp-validation-for="FaultDescription" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="TechnicianAssigned" class="form-label">Technician Assigned</label>
+                                    <input asp-for="TechnicianAssigned" class="form-control"
+                                           placeholder="Enter technician name...">
+                                    <span asp-validation-for="TechnicianAssigned" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Bookingate" class="form-label">Scheduled Date *</label>
+                                    <input asp-for="Bookingate" class="form-control" type="datetime-local" required>
+                                    <span asp-validation-for="Bookingate" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="RepairStatus" class="form-label">Repair Status</label>
+                                    <select asp-for="RepairStatus" class="form-control" asp-items="ViewBag.RepairStatusList">
+                                        <option value="">Select Status</option>
+                                    </select>
+                                    <span asp-validation-for="RepairStatus" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Priority" class="form-label">Priority</label>
+                                    <select asp-for="Priority" class="form-control">
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                    <span asp-validation-for="Priority" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="EstimatedRepairTime" class="form-label">Estimated Repair Time (hours)</label>
+                                    <input asp-for="EstimatedRepairTime" class="form-control" type="number" min="1" max="24"
+                                           placeholder="Estimated hours required...">
+                                    <span asp-validation-for="EstimatedRepairTime" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ResolutionNotes" class="form-label">Resolution Notes</label>
+                            <textarea asp-for="ResolutionNotes" class="form-control" rows="2"
+                                      placeholder="Any preliminary notes or observations..."></textarea>
+                            <span asp-validation-for="ResolutionNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Information -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("ProcessFault", new { id = Model.FaultId })"
+                           class="btn btn-success @(Model.FaultId == 0 ? "disabled" : "")">
+                            <i class="fas fa-tools"></i> Process This Fault
+                        </a>
+                        <a href="@Url.Action("ViewFaults")" class="btn btn-info">
+                            <i class="fas fa-list-ol"></i> View All Assignments
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Guide -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Status Guide</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span class="badge bg-warning">Not Started</span>
+                        <small class="text-muted">- New assignment</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge bg-info">In Progress</span>
+                        <small class="text-muted">- Repair work started</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge bg-success">Resolved/Completed</span>
+                        <small class="text-muted">- Fault fixed</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">Scrapped</span>
+                        <small class="text-muted">- Beyond repair</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Set min date to today for booking date
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookingDateInput = document.getElementById('Bookingate');
+            if (bookingDateInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                bookingDateInput.min = now.toISOString().slice(0, 16);
+
+                // Set default value if not already set
+                if (!bookingDateInput.value) {
+                    const tomorrow = new Date(now);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(9, 0, 0, 0); // Set to 9 AM tomorrow
+                    bookingDateInput.value = tomorrow.toISOString().slice(0, 16);
+                }
+            }
+        });
+    </script>
+}
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" or "high" => "danger",
+            "medium" => "warning",
+            "low" => "info",
+            _ => "secondary"
+        };
+    }
+}

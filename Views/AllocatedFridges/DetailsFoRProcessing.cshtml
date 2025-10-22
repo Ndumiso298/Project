@@ -1,64 +1,129 @@
-﻿@model Project.Models.RequestHeader
+﻿@model RequestHeader
 @{
-    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Request Details";
 }
 
-<div class="container py-4">
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-primary text-light py-4 text-center">
-            <h2 class="fw-bold mb-1">Allocated Fridges Details</h2>
-            <p class="mb-0 opacity-75">Fridge allocation summary for this customer</p>
-        </div>
-
-        <div class="card-body p-4 p-md-5">
-            <div class="row g-5">
-                <!-- Customer Info -->
-                <div class="col-12 col-lg-6">
-                    <h4 class="text-primary mb-3">
-                        <i class="bi bi-person-circle me-2"></i> Customer Details
-                    </h4>
-                    <ul class="list-group mb-4">
-                        <li class="list-group-item"><strong>Name:</strong> @Model.Customer.ApplicationUser?.FirstName</li>
-                        <li class="list-group-item"><strong>Surname:</strong> @Model.Customer.ApplicationUser?.LastName</li>
-                        <li class="list-group-item"><strong>Email:</strong> @Model.Customer.ApplicationUser?.Email</li>
-                        <li class="list-group-item"><strong>Request Date:</strong> @Model.RequestDate.ToString("yyyy-MM-dd")</li>
-                        <li class="list-group-item"><strong>Status:</strong> @Model.Status</li>
-                    </ul>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Request Details - #@Model.RequestHeaderId</h6>
+                    <div>
+                        <a asp-action="BookVisit" asp-route-requestId="@Model.RequestHeaderId"
+                           class="btn btn-primary btn-sm">
+                            <i class="fas fa-calendar-plus"></i> Schedule Visit
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary btn-sm">Back to List</a>
+                    </div>
                 </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Customer Information</h6>
+                            <p><strong>Name:</strong> @Model.Customer?.ApplicationUser?.FirstName @Model.Customer?.ApplicationUser?.LastName</p>
+                            <p><strong>Contact:</strong> @Model.CellNumber</p>
+                            <p><strong>Email:</strong> @Model.Customer?.ApplicationUser?.Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Request Information</h6>
+                            <p><strong>Request Date:</strong> @Model.RequestDate.ToString("MMM dd, yyyy")</p>
+                            <p><strong>Status:</strong> <span class="badge badge-success">@Model.Status</span></p>
+                            <p><strong>Total Amount:</strong> <span class="h5 text-success">R @Model.RequestTotal.ToString("F2")</span></p>
+                        </div>
+                    </div>
 
-                <!-- Allocated Fridges -->
-                <div class="col-12 col-lg-6">
-                    <h4 class="text-primary mb-3">
-                        <i class="bi bi-refrigerator me-2"></i> Allocated Fridges
-                    </h4>
-                    <ul class="list-group mb-3 shadow-sm rounded-3 overflow-hidden">
-                        @foreach (var item in Model.RequestFridges)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="fw-semibold mb-1">@item.Fridge.Brand - @item.Fridge.Model</h6>
-                                    <h6 class="fw-semibold mb-1">@item.Fridge.Type</h6>
-
-                                    <small class="text-muted">Quantity: @item.Count</small><br />
-                                    <small class="text-muted">Price per month: @item.Price.ToString("c")</small>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary">Delivery Address</h6>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="mb-1">@Model.StreetAddress</p>
+                                    <p class="mb-1">@Model.City, @Model.State</p>
+                                    <p class="mb-0">@Model.PostalCode</p>
                                 </div>
-                                <span class="fw-bold text-primary">@((item.Count * item.Price).ToString("c"))</span>
-                            </li>
-                        }
-                        <li class="list-group-item d-flex justify-content-between bg-light">
-                            <small class="text-muted">Total</small>
-                            <strong class="text-primary fs-5">@Model.RequestTotal.ToString("c")</strong>
-                        </li>
-                    </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary">Requested Fridges</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Fridge Model</th>
+                                            <th>Brand</th>
+                                            <th>Type</th>
+                                            <th>Capacity</th>
+                                            <th>Quantity</th>
+                                            <th>Monthly Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var fridgeDetail in Model.RequestFridges)
+                                        {
+                                            <tr>
+                                                <td>@fridgeDetail.Fridge.Model</td>
+                                                <td>@fridgeDetail.Fridge.Brand</td>
+                                                <td>@fridgeDetail.Fridge.Type</td>
+                                                <td>@fridgeDetail.Fridge.CapacityLiters L</td>
+                                                <td>@fridgeDetail.Count</td>
+                                                <td>R @fridgeDetail.Fridge.RentalPricePerMonth.ToString("F2")</td>
+                                                <td>R @((fridgeDetail.Count * fridgeDetail.Fridge.RentalPricePerMonth).ToString("F2"))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.FridgeVisits.Any())
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-primary">Maintenance History</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Visit Date</th>
+                                                <th>Technician</th>
+                                                <th>Status</th>
+                                                <th>Customer Approval</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var visit in Model.FridgeVisits)
+                                            {
+                                                <tr>
+                                                    <td>@visit.VisitDate.ToString("MMM dd, yyyy HH:mm")</td>
+                                                    <td>@visit.TechnicianName</td>
+                                                    <td>
+                                                        <span class="badge badge-@(visit.CheckupStatus == "Passed" ? "success" : visit.CheckupStatus == "Failed" ? "danger" : "warning")">
+                                                            @visit.CheckupStatus
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-@(visit.CustomerApproval == SD.Approved ? "success" : visit.CustomerApproval == SD.Declined ? "danger" : "warning")">
+                                                            @visit.CustomerApproval
+                                                        </span>
+                                                    </td>
+                                                    <td>@visit.Notes</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-
-        <div class="card-footer bg-white border-0 text-center">
-            <a asp-action="Index" class="btn btn-outline-primary rounded-pill px-5 py-2">
-                <i class="bi bi-arrow-left me-2"></i> Back to Allocated Requests
-            </a>
-        </div>
     </div>
 </div>
- 

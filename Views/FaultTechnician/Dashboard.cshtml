@@ -1,126 +1,253 @@
 ﻿@{
-    Layout = "_CustomerLayout";
-    ViewData["Title"] = "Fault Technician Dashboard";
+    ViewData["Title"] = "Technician Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid py-4">
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Technician Dashboard</h1>
+        <div class="d-none d-sm-inline-block">
+            <a href="@Url.Action("Calendar")" class="btn btn-primary">
+                <i class="fas fa-calendar-alt"></i> View Calendar
+            </a>
+            <a href="@Url.Action("Index")" class="btn btn-success">
+                <i class="fas fa-list"></i> All Faults
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
     <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title mb-0">
-                        <i class="bi bi-speedometer2 me-2"></i>Fault Technician Dashboard
-                    </h3>
-                </div>
+        <!-- Total Faults Card -->
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.TotalFaults</h4>
-                                            <p class="mb-0">Total Faults</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-tools fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Faults
                             </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalFaults</div>
                         </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.PendingFaults</h4>
-                                            <p class="mb-0">Pending</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-clock-history fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-warning text-dark">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.InProgress</h4>
-                                            <p class="mb-0">In Progress</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-gear fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-info text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.Completed</h4>
-                                            <p class="mb-0">Completed</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-check-circle fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Quick Actions</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-grid gap-2">
-                                        <a asp-action="Index" class="btn btn-primary btn-lg">
-                                            <i class="bi bi-list-check me-2"></i>View All Faults
-                                        </a>
-                                        <a asp-action="Calendar" class="btn btn-success btn-lg">
-                                            <i class="bi bi-calendar-week me-2"></i>View Calendar
-                                        </a>
-                                        <a asp-action="MaintenanceBookings" class="btn btn-info btn-lg">
-                                            <i class="bi bi-tools me-2"></i>Maintenance Bookings
-                                        </a>
-                                    </div>
-                                </div>
+        <!-- Maintenance Faults Card -->
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Maintenance Faults
                             </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MaintenanceFaults</div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Recent Activities</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="list-group list-group-flush">
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">New fault reported</h6>
-                                                <small>2 hours ago</small>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Faults Card -->
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Customer Reports
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.CustomerFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Faults Card -->
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Pending Assignment
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.PendingFaults</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress Card -->
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                In Progress
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.InProgress</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Card -->
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Completed
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.Completed</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+                        <button type="button" class="btn btn-outline-info" data-filter="maintenance">Maintenance</button>
+                        <button type="button" class="btn btn-outline-warning" data-filter="customer">Customer</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.RecentActivities != null && ViewBag.RecentActivities.Count > 0)
+                    {
+                        <div class="list-group list-group-flush" id="activitiesList">
+                            @foreach (var activity in ViewBag.RecentActivities)
+                            {
+                                <div class="list-group-item d-flex align-items-center activity-item" data-source="@activity.Source?.ToLower()">
+                                    <div class="flex-shrink-0">
+                                        @if (activity.Type.Contains("completed"))
+                                        {
+                                            <div class="bg-success rounded-circle p-2">
+                                                <i class="fas fa-check text-white"></i>
                                             </div>
-                                            <p class="mb-1">Fridge Model: XYZ-123</p>
-                                        </div>
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">Maintenance completed</h6>
-                                                <small>5 hours ago</small>
+                                        }
+                                        else if (activity.Type.Contains("started"))
+                                        {
+                                            <div class="bg-warning rounded-circle p-2">
+                                                <i class="fas fa-tools text-white"></i>
                                             </div>
-                                            <p class="mb-1">Customer: John Doe</p>
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-info rounded-circle p-2">
+                                                <i class="fas fa-plus text-white"></i>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="fw-bold">@activity.Type</div>
+                                            <span class="badge @(activity.Source == "Maintenance" ? "bg-info" : "bg-warning")">
+                                                @activity.Source
+                                            </span>
                                         </div>
+                                        <div class="text-muted">@activity.FridgeModel - @activity.CustomerName</div>
+                                        <small class="text-muted">@activity.TimeAgo?.ToString("MMM dd, yyyy hh:mm tt")</small>
                                     </div>
                                 </div>
-                            </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No recent activities found</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Statistics -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("Index")" class="btn btn-warning btn-block">
+                            <i class="fas fa-exclamation-circle"></i> View All Faults
+                        </a>
+                        <a href="@Url.Action("ViewMaintenanceFaults")" class="btn btn-info btn-block">
+                            <i class="fas fa-tools"></i> Maintenance Faults
+                        </a>
+                        <a href="@Url.Action("ViewCustomerFaults")" class="btn btn-warning btn-block">
+                            <i class="fas fa-user"></i> Customer Reports
+                        </a>
+                        <a href="@Url.Action("Calendar")" class="btn btn-success btn-block">
+                            <i class="fas fa-calendar-alt"></i> Schedule Calendar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Summary -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Today's Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="text-primary fw-bold">@ViewBag.TodaysBookings</div>
+                            <small class="text-muted">Today's Bookings</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="text-success fw-bold">@ViewBag.UpcomingBookings</div>
+                            <small class="text-muted">Upcoming</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Maintenance Faults:</span>
+                            <span class="fw-bold">@ViewBag.MaintenanceFaults</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Customer Reports:</span>
+                            <span class="fw-bold">@ViewBag.CustomerFaults</span>
                         </div>
                     </div>
                 </div>
@@ -128,3 +255,32 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Filter activities by source
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('[data-filter]');
+            const activityItems = document.querySelectorAll('.activity-item');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Filter items
+                    activityItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-source') === filter) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

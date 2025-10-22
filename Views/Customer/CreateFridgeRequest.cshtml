@@ -1,0 +1,107 @@
+﻿@model RequestHeader
+@{
+    ViewData["Title"] = "Request Fridge";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">New Fridge Request</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateFridgeRequest" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="FirstName" class="control-label">First Name</label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="LastName" class="control-label">Last Name</label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CellNumber" class="control-label">Cell Number</label>
+                                    <input asp-for="CellNumber" class="form-control" />
+                                    <span asp-validation-for="CellNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="StreetAddress" class="control-label">Street Address</label>
+                                    <input asp-for="StreetAddress" class="form-control" />
+                                    <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="City" class="control-label">City</label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="State" class="control-label">State/Province</label>
+                                    <input asp-for="State" class="form-control" />
+                                    <span asp-validation-for="State" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label asp-for="PostalCode" class="control-label">Postal Code</label>
+                                    <input asp-for="PostalCode" class="form-control" />
+                                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Preferred Fridge Type (Optional)</label>
+                            <select class="form-control" name="preferredType">
+                                <option value="">-- Any Type --</option>
+                                <option value="Single Door">Single Door</option>
+                                <option value="Double Door">Double Door</option>
+                                <option value="Top Freezer">Top Freezer</option>
+                                <option value="Bottom Freezer">Bottom Freezer</option>
+                                <option value="Side by Side">Side by Side</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Additional Notes</label>
+                            <textarea name="notes" class="form-control" rows="3" placeholder="Any special requirements or preferences..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Request
+                            </button>
+                            <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

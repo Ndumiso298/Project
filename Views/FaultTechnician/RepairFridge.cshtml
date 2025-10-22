@@ -1,0 +1,75 @@
+﻿@model FaultTechnician
+@{
+    ViewData["Title"] = "Assign Repair";
+    var faultReport = ViewBag.FaultReport as FaultReport;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-4">@ViewData["Title"]</h1>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title">Repair Assignment Details</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="RepairFridge" method="post">
+                        <input type="hidden" asp-for="FaultReportId" value="@(faultReport?.FaultReportId ?? 0)" />
+
+                        <!-- Fault Information -->
+                        <div class="alert alert-info">
+                            <h6>Fault Information</h6>
+                            <strong>Fridge:</strong> @faultReport?.FridgeInStock?.Fridge?.Model<br>
+                            <strong>Reported:</strong> @faultReport?.ReportedDate.ToString("MMM dd, yyyy")<br>
+                            <strong>Description:</strong> @faultReport?.Description
+                        </div>
+
+                        <!-- Technician Assignment -->
+                        <div class="form-group">
+                            <label asp-for="TechnicianAssigned">Technician Assigned</label>
+                            <input asp-for="TechnicianAssigned" class="form-control" />
+                            <span asp-validation-for="TechnicianAssigned" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="FaultDescription">Fault Description</label>
+                            <textarea asp-for="FaultDescription" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="FaultDescription" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="EstimatedRepairTime">Estimated Repair Time (hours)</label>
+                            <input asp-for="EstimatedRepairTime" class="form-control" type="number" step="0.5" min="0" />
+                            <span asp-validation-for="EstimatedRepairTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="RepairStatus">Initial Repair Status</label>
+                            <select asp-for="RepairStatus" class="form-control">
+                                @foreach (var status in ViewBag.RepairStatusList as List<SelectListItem> ?? new List<SelectListItem>())
+                                {
+                                    <option value="@status.Value">@status.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="RepairStatus" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Create Repair Assignment</button>
+                            <a asp-action="ViewFaults" asp-controller="FaultTechnician" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

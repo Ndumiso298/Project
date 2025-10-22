@@ -1,0 +1,128 @@
+﻿@model Project.Models.RequestHeader
+@{
+    ViewData["Title"] = "Request Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-primary">Request Details #@Model.RequestHeaderId</h2>
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Request Information</h4>
+            <dl class="row">
+                <dt class="col-sm-4">Request Date:</dt>
+                <dd class="col-sm-8">@Model.RequestDate.ToString("MMM dd, yyyy hh:mm tt")</dd>
+
+                <dt class="col-sm-4">Status:</dt>
+                <dd class="col-sm-8">
+                    <span class="badge @GetStatusBadgeClass(Model.Status)">@Model.Status</span>
+                </dd>
+
+                <dt class="col-sm-4">Total Amount:</dt>
+                <dd class="col-sm-8">R @Model.RequestTotal.ToString("F2")</dd>
+
+                <dt class="col-sm-4">Payment Due:</dt>
+                <dd class="col-sm-8">@Model.PaymentDueDate.ToString()</dd>
+            </dl>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Delivery Information</h4>
+            <dl class="row">
+                <dt class="col-sm-4">Name:</dt>
+                <dd class="col-sm-8">@Model.FirstName @Model.LastName</dd>
+
+                <dt class="col-sm-4">Address:</dt>
+                <dd class="col-sm-8">@Model.StreetAddress, @Model.City, @Model.State @Model.PostalCode</dd>
+
+                <dt class="col-sm-4">Phone:</dt>
+                <dd class="col-sm-8">@Model.CellNumber</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <h4>Fridges Requested</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fridge</th>
+                            <th>Brand</th>
+                            <th>Model</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in Model.RequestFridges)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(detail.Fridge?.ImageUrl))
+                                    {
+                                        <img src="@detail.Fridge.ImageUrl" alt="@detail.Fridge.Brand"
+                                             style="width: 60px; height: 60px; object-fit: cover;" />
+                                    }
+                                </td>
+                                <td>@detail.Fridge?.Brand</td>
+                                <td>@detail.Fridge?.Model</td>
+                                <td>@detail.Count</td>
+                                <td>R @detail.Price.ToString("F2")</td>
+                                <td>R @((detail.Count * detail.Price).ToString("F2"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>R @Model.RequestTotal.ToString("F2")</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <a href="@Url.Action("ViewRequestStatus", "Customer")" class="btn btn-secondary">Back to Requests</a>
+            <a href="@Url.Action("Dashboard", "Customer")" class="btn btn-primary">Dashboard</a>
+
+            @if (Model.Status == "Pending")
+            {
+                <form method="post" action="@Url.Action("CancelRequest", "Customer")" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.RequestHeaderId" />
+                    <button type="submit" class="btn btn-warning"
+                            onclick="return confirm('Are you sure you want to cancel this request?')">
+                        Cancel Request
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Approved" => "badge-success",
+            "Pending" => "badge-warning",
+            "Rejected" => "badge-danger",
+            "Cancelled" => "badge-secondary",
+            "Completed" => "badge-info",
+            _ => "badge-secondary"
+        };
+    }
+}

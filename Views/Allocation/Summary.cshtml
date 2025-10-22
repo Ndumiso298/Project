@@ -1,126 +1,289 @@
-﻿ @model AllocationVM
+﻿@model Project.Models.ViewModel.AllocationVM
 @{
+    ViewData["Title"] = "Order Summary";
     Layout = "_CustomerLayout";
 }
 
-<form method="post">
-    <input asp-for="RequestHeader.RequestHeaderId" type="hidden" />
-    <input asp-for="RequestHeader.CustomerID" type="hidden" />
-
-    <div class="container py-5">
-        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-
-            <!-- Header -->
-            <div class="card-header bg-primary text-light py-4 position-relative">
-                <div class="row align-items-center">
-                    <div class="col-12 text-center">
-                        <h2 class="text-white fw-bold mb-1">Order Summary</h2>
-                        <p class="text-light mb-0 opacity-75">Review your shipping details & order before checkout</p>
-                    </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Order Summary</h6>
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back to Cart
+                    </a>
                 </div>
-            </div>
+                <div class="card-body">
+                    <form method="post" id="orderForm">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="RequestHeader.RequestHeaderId" type="hidden" />
+                        <input asp-for="RequestHeader.CustomerID" type="hidden" />
 
-            <div class="card-body p-4 p-md-5">
-                <!-- Back Button -->
-                <div class="row mb-4">
-                    <div class="col-12 col-md-3">
-                        <a asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill">
-                            <i class="bi bi-arrow-left me-1"></i> Back to Cart
-                        </a>
-                    </div>
-                </div>
+                        <div class="row">
+                            <!-- Shipping Information -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-shipping-fast"></i> Shipping Information
+                                </h5>
 
-                <div class="row g-5">
-                    <!-- Shipping Details -->
-                    <div class="col-12 col-lg-6">
-                        <h3 class="section-title mb-3 text-primary fw-bold">
-                            <i class="bi bi-truck me-2"></i> Shipping Details
-                        </h3>
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.FirstName" class="control-label">First Name</label>
+                                    <input asp-for="RequestHeader.FirstName" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.FirstName" class="text-danger"></span>
+                                </div>
 
-                        <div class="specs-container mb-4">
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.FirstName" class="form-label fw-semibold text-dark">Name</label>
-                                <input asp-for="RequestHeader.FirstName" class="form-control" />
-                                <span asp-validation-for="RequestHeader.FirstName" class="text-danger"></span>
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.LastName" class="control-label">Last Name</label>
+                                    <input asp-for="RequestHeader.LastName" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.LastName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.CellNumber" class="control-label">Phone Number</label>
+                                    <input asp-for="RequestHeader.CellNumber" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.CellNumber" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.StreetAddress" class="control-label">Street Address</label>
+                                    <input asp-for="RequestHeader.StreetAddress" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.StreetAddress" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.City" class="control-label">City</label>
+                                    <input asp-for="RequestHeader.City" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.City" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.State" class="control-label">State/Province</label>
+                                    <input asp-for="RequestHeader.State" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.State" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="RequestHeader.PostalCode" class="control-label">Postal Code</label>
+                                    <input asp-for="RequestHeader.PostalCode" class="form-control" />
+                                    <span asp-validation-for="RequestHeader.PostalCode" class="text-danger"></span>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.LastName" class="form-label fw-semibold text-dark">Surname</label>
-                                <input asp-for="RequestHeader.LastName" class="form-control" />
-                                <span asp-validation-for="RequestHeader.LastName" class="text-danger"></span>
-                            </div>
+                            <!-- Order Summary -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-receipt"></i> Order Summary
+                                </h5>
 
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.CellNumber" class="form-label fw-semibold text-dark">Phone</label>
-                                <input asp-for="RequestHeader.CellNumber" class="form-control" />
-                                <span asp-validation-for="RequestHeader.CellNumber" class="text-danger"></span>
-                            </div>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-bordered">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Fridge</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.AllocationList)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <strong>@item.Fridge?.Brand @item.Fridge?.Model</strong><br>
+                                                        <small class="text-muted">@item.Fridge?.Type</small>
+                                                    </td>
+                                                    <td>@item.Count</td>
+                                                    <td>R @item.Price.ToString()</td>
+                                                    <td>R @((item.Price * item.Count).ToString())</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot class="font-weight-bold">
+                                            <tr>
+                                                <td colspan="3" class="text-right">Total:</td>
+                                                <td>R @Model.RequestHeader.RequestTotal.ToString("F2")</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
 
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.StreetAddress" class="form-label fw-semibold text-dark">Street Address</label>
-                                <input asp-for="RequestHeader.StreetAddress" class="form-control" />
-                                <span asp-validation-for="RequestHeader.StreetAddress" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.City" class="form-label fw-semibold text-dark">City</label>
-                                <input asp-for="RequestHeader.City" class="form-control" />
-                                <span asp-validation-for="RequestHeader.City" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.State" class="form-label fw-semibold text-dark">State</label>
-                                <input asp-for="RequestHeader.State" class="form-control" />
-                                <span asp-validation-for="RequestHeader.State" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequestHeader.PostalCode" class="form-label fw-semibold text-dark">Postal Code</label>
-                                <input asp-for="RequestHeader.PostalCode" class="form-control" />
-                                <span asp-validation-for="RequestHeader.PostalCode" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order Summary -->
-                    <div class="col-12 col-lg-6">
-                        <h3 class="section-title mb-3 text-primary fw-bold">
-                            <i class="bi bi-receipt me-2"></i> Order Summary
-                        </h3>
-
-                        <ul class="list-group mb-4 shadow-sm rounded-3 overflow-hidden">
-                            @foreach (var details in Model.AllocationList)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="fw-semibold mb-1">@details.Fridge.Brand</h6>
-                                        <small class="text-muted">Quantity: @details.Count</small>
+                                <!-- Delivery Information -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle"></i> Delivery Information</h6>
                                     </div>
-                                    <span class="fw-bold text-primary">@((details.Price * details.Count).ToString("c"))</span>
-                                </li>
-                            }
+                                    <div class="card-body">
+                                        <p class="mb-2"><strong>Estimated Delivery:</strong> @DateTime.Now.AddDays(7).ToString("dd MMM yyyy") - @DateTime.Now.AddDays(14).ToString("dd MMM yyyy")</p>
+                                        <p class="mb-2"><strong>Delivery Time:</strong> 7-14 business days</p>
+                                        <p class="mb-0"><strong>Note:</strong> Our team will contact you to confirm delivery details.</p>
+                                    </div>
+                                </div>
 
-                            <li class="list-group-item d-flex justify-content-between bg-light">
-                                <small class="text-muted">Total</small>
-                                <strong class="text-primary fs-5">@Model.RequestHeader.RequestTotal.ToString("c")</strong>
-                            </li>
-                        </ul>
+                                <!-- Terms and Conditions Section -->
+                                <div class="card border-warning mb-4">
+                                    <div class="card-header bg-warning bg-opacity-10">
+                                        <h6 class="mb-0 text-warning">
+                                            <i class="fas fa-exclamation-circle me-2"></i>Terms & Conditions
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" asp-for="AcceptTerms" id="termsCheckbox">
+                                            <label class="form-check-label fw-bold" for="termsCheckbox">
+                                                I have read and agree to the
+                                                <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                                    Terms and Conditions
+                                                </a>
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <span asp-validation-for="AcceptTerms" class="text-danger d-block mt-1"></span>
+                                            <div class="invalid-feedback d-flex align-items-center mt-2">
+                                                <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                                                You must agree to the terms and conditions to place your order.
+                                            </div>
+                                        </div>
 
-                        <div class="bg-light p-3 rounded-3 shadow-sm mb-3">
-                            <p class="mb-0 small text-muted">
-                                <i class="bi bi-calendar-event me-2"></i>
-                                Estimate Arrival: <strong>@DateTime.Now.AddDays(7).ToShortDateString()</strong> - <strong>@DateTime.Now.AddDays(14).ToShortDateString()</strong>
-                            </p>
+                                        <div class="mt-3 p-3 bg-light rounded">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                By proceeding, you acknowledge that you have read, understood, and agree to be bound
+                                                by our terms of service, privacy policy, and cancellation policy.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg py-3" id="submitOrder">
+                                        <i class="fas fa-lock me-2"></i>Place Order
+                                    </button>
+                                    <small class="text-center text-muted mt-2">
+                                        <i class="fas fa-shield-alt me-1"></i>Your information is secure and encrypted
+                                    </small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </div>
-
-            <div class="card-footer bg-white border-0 p-4">
-                <button type="submit" value="Place Order" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
-                    <i class="bi bi-check-circle me-2"></i> Place Order
-                </button>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Order Acceptance</h6>
+                <p>By placing an order, you agree to our terms and conditions. All orders are subject to availability and confirmation of the order price.</p>
+
+                <h6>2. Delivery</h6>
+                <p>Delivery timelines are estimates and may vary based on location and availability. We will contact you to confirm delivery details.</p>
+
+                <h6>3. Cancellation Policy</h6>
+                <p>Orders can be cancelled within 24 hours without penalty. After 24 hours, cancellation fees may apply.</p>
+
+                <h6>4. Rental Agreement</h6>
+                <p>All fridge rentals are subject to our standard rental agreement terms including maintenance responsibilities and usage guidelines.</p>
+
+                <h6>5. Payment Terms</h6>
+                <p>Payment is due as per the agreed schedule. Late payments may result in service interruption.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Display server-side validation errors -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3">
+        <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderForm = document.getElementById('orderForm');
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const submitButton = document.getElementById('submitOrder');
+
+            console.log('DOM loaded - form validation initialized');
+
+            // Client-side validation
+            if (orderForm) {
+                orderForm.addEventListener('submit', function(e) {
+                    console.log('Form submitted, checkbox checked:', termsCheckbox.checked);
+
+                    if (!termsCheckbox.checked) {
+                        e.preventDefault();
+                        console.log('Validation failed - terms not accepted');
+
+                        // Add visual feedback
+                        termsCheckbox.classList.add('is-invalid');
+
+                        // Show alert
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Terms Required',
+                                text: 'Please accept the terms and conditions to proceed with your order.',
+                                confirmButtonColor: '#3085d6',
+                            });
+                        } else {
+                            alert('Please accept the terms and conditions to proceed with your order.');
+                        }
+
+                        // Scroll to terms
+                        termsCheckbox.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    } else {
+                        console.log('Validation passed - proceeding with form submission');
+                        // Change button to loading state
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                        submitButton.disabled = true;
+                    }
+                });
+
+                // Remove invalid state when checkbox is checked
+                termsCheckbox.addEventListener('change', function() {
+                    console.log('Checkbox changed:', this.checked);
+                    if (this.checked) {
+                        this.classList.remove('is-invalid');
+                        submitButton.disabled = false;
+                        submitButton.classList.remove('btn-secondary');
+                        submitButton.classList.add('btn-primary');
+                    } else {
+                        submitButton.disabled = true;
+                        submitButton.classList.remove('btn-primary');
+                        submitButton.classList.add('btn-secondary');
+                    }
+                });
+            }
+
+            // Initialize button state
+            if (termsCheckbox && submitButton) {
+                submitButton.disabled = !termsCheckbox.checked;
+                if (!termsCheckbox.checked) {
+                    submitButton.classList.remove('btn-primary');
+                    submitButton.classList.add('btn-secondary');
+                }
+            }
+        });
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}

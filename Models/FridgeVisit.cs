@@ -6,6 +6,7 @@ using Project.Controllers;
 
 namespace Project.Models
 {
+
     public class FridgeVisit
 
     {

@@ -25,19 +25,74 @@ namespace Project.Data
         public DbSet<FridgeVisit> tblFridgeVisits { get; set; }
         public DbSet<CustomerFridge> tblCustomerFridge { get; set; }
         public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
+        public DbSet<FaultReport> tblFaultReports { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<FridgeInStock>()
-                .HasOne(fis => fis.Fridge)
-                .WithMany(f => f.FridgeInstances)
-                .HasForeignKey(fis => fis.FridgeId)
-                .OnDelete(DeleteBehavior.Restrict);
 
-            // Seed Admin User
-            var hasher = new PasswordHasher<ApplicationUser>();
+
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                // Ensure base Identity configuration is applied first
+                base.OnModelCreating(modelBuilder);
+
+                // Explicitly configure primary keys for Identity entities to ensure no keyless entity errors
+                modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
+                {
+                    entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+                });
+
+                modelBuilder.Entity<IdentityUserRole<string>>(entity =>
+                {
+                    entity.HasKey(e => new { e.UserId, e.RoleId });
+                });
+
+                modelBuilder.Entity<IdentityUserClaim<string>>(entity =>
+                {
+                    entity.HasKey(e => e.Id);
+                });
+
+                modelBuilder.Entity<IdentityRoleClaim<string>>(entity =>
+                {
+                    entity.HasKey(e => e.Id);
+                });
+
+                modelBuilder.Entity<IdentityUserToken<string>>(entity =>
+                {
+                    entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+                });
+
+                // Configure entity relationships using the provided format
+                modelBuilder.Entity<FridgeInStock>()
+                    .HasOne(fis => fis.Fridge)
+                    .WithMany(f => f.FridgeInstances)
+                    .HasForeignKey(fis => fis.FridgeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<FaultReport>()
+                    .HasOne(fr => fr.Customer)
+                    .WithMany() // Customer can have many fault reports (no navigation property needed)
+                    .HasForeignKey(fr => fr.CustomerId)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                modelBuilder.Entity<FaultReport>()
+                    .HasOne(fr => fr.FridgeInStock)
+                    .WithMany() // FridgeInStock can have many fault reports (no navigation property needed)
+                    .HasForeignKey(fr => fr.FridgeInStockId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+              
+
+                modelBuilder.Entity<FaultReport>()
+                    .HasMany(fr => fr.FaultTechnicians) // One FaultReport to many FaultTechnicians
+                    .WithOne(ft => ft.FaultReport)     // FaultTechnician has a FaultReport
+                    .HasForeignKey(ft => ft.FaultReportId) // Foreign key is FaultReportId on FaultTechnician
+                   .OnDelete(DeleteBehavior.Restrict);
+            
+        
+    
+
+    // Seed Admin User
+    var hasher = new PasswordHasher<ApplicationUser>();
             var adminUser = new ApplicationUser
             {
                 Id = "admin-id-123",

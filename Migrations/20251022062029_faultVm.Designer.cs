@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251022062029_faultVm")]
+    partial class faultVm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -444,13 +447,10 @@ namespace Project.Migrations
                     b.Property<string>("AdditionalNotes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("DeclineReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("FaultDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -458,16 +458,10 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FridgeInStockId")
+                    b.Property<int?>("FridgeInStockId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsRelaunched")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("OriginalFaultReportId")
+                    b.Property<int?>("FridgeVisitId")
                         .HasColumnType("int");
 
                     b.Property<string>("Priority")
@@ -476,9 +470,6 @@ namespace Project.Migrations
 
                     b.Property<DateTime>("ReportedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("RequestReplacement")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ResolvedDate")
                         .HasColumnType("datetime2");
@@ -492,6 +483,8 @@ namespace Project.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("FridgeInStockId");
+
+                    b.HasIndex("FridgeVisitId");
 
                     b.ToTable("tblFaultReports");
                 });
@@ -1523,15 +1516,15 @@ namespace Project.Migrations
                         {
                             Id = "admin-id-123",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bc55720f-8601-4a09-bd19-8bb1b5c278f4",
+                            ConcurrencyStamp = "9e9de03a-b48c-4929-961f-1ca3a2e09f5b",
                             Email = "admin@fridgesystem.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
                             NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHDdnbq9gAMnc5/5ThoI5BbamV/MijYictIYbKRm2KFms24WuBbKEMwf1GCzN3S5ZQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOlUSPjYdyl0gQ+RQyayHZVyUu2j0hWuhC3B4IAwSBsjVOjcfCoAAteFTb9QO5a+QQ==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "0d73d822-60e6-4310-8bd6-83fa0ce685a1",
+                            SecurityStamp = "eb9bfddc-6b38-4ced-9c7c-533b9fa63ae8",
                             TwoFactorEnabled = false,
                             UserName = "admin@fridgesystem.com",
                             CellNumber = "+27123456789",
@@ -1670,18 +1663,23 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Project.Models.FridgeInStock", "FridgeInStock")
                         .WithMany()
                         .HasForeignKey("FridgeInStockId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
+                        .WithMany()
+                        .HasForeignKey("FridgeVisitId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Customer");
 
                     b.Navigation("FridgeInStock");
+
+                    b.Navigation("FridgeVisit");
                 });
 
             modelBuilder.Entity("Project.Models.FaultTechnician", b =>

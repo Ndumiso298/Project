@@ -5,12 +5,10 @@ namespace Project.Models.ViewModel
 {
     public class AllocationVM
     {
+        public IEnumerable<Allocation> AllocationList { get; set; } = new List<Allocation>();
+        public RequestHeader RequestHeader { get; set; } = new RequestHeader();
 
-
-     
-        public IEnumerable<Allocation> AllocationList { get; set; }
-        public RequestHeader RequestHeader { get; set; }
-        //[ValidateNever]
-        //public IEnumerable<SelectListItem> FridgeList { get; set; }
+        public bool AcceptTerms { get; set; }
     }
+
 }
