@@ -17,237 +17,416 @@
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row">
-        <!-- Total Faults Card -->
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Faults
+    <!-- Dashboard Tabs -->
+    <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                <i class="fas fa-tachometer-alt me-2"></i>Overview
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                <i class="fas fa-chart-bar me-2"></i>Reports & Analytics
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="dashboardTabsContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+            <!-- Statistics Cards -->
+            <div class="row">
+                <!-- Total Faults Card -->
+                <div class="col-xl-2 col-md-4 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Faults
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalFaults</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                                </div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalFaults</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+
+                <!-- Maintenance Faults Card -->
+                <div class="col-xl-2 col-md-4 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Maintenance Faults
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MaintenanceFaults</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tools fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Faults Card -->
+                <div class="col-xl-2 col-md-4 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Customer Reports
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.CustomerFaults</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-user fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Faults Card -->
+                <div class="col-xl-2 col-md-4 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Pending Assignment
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.PendingFaults</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Card -->
+                <div class="col-xl-2 col-md-4 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        In Progress
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.InProgress</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Card -->
+                <div class="col-xl-2 col-md-4 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Completed
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.Completed</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Maintenance Faults Card -->
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Maintenance Faults
+            <div class="row">
+                <!-- Recent Activities -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+                                <button type="button" class="btn btn-outline-info" data-filter="maintenance">Maintenance</button>
+                                <button type="button" class="btn btn-outline-warning" data-filter="customer">Customer</button>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MaintenanceFaults</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-tools fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Customer Faults Card -->
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Customer Reports
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.CustomerFaults</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Faults Card -->
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                Pending Assignment
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.PendingFaults</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- In Progress Card -->
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                In Progress
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.InProgress</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-tasks fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Completed Card -->
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Completed
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.Completed</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Recent Activities -->
-        <div class="col-lg-8 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
-                        <button type="button" class="btn btn-outline-info" data-filter="maintenance">Maintenance</button>
-                        <button type="button" class="btn btn-outline-warning" data-filter="customer">Customer</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.RecentActivities != null && ViewBag.RecentActivities.Count > 0)
-                    {
-                        <div class="list-group list-group-flush" id="activitiesList">
-                            @foreach (var activity in ViewBag.RecentActivities)
+                        <div class="card-body">
+                            @if (ViewBag.RecentActivities != null && ViewBag.RecentActivities.Count > 0)
                             {
-                                <div class="list-group-item d-flex align-items-center activity-item" data-source="@activity.Source?.ToLower()">
-                                    <div class="flex-shrink-0">
-                                        @if (activity.Type.Contains("completed"))
-                                        {
-                                            <div class="bg-success rounded-circle p-2">
-                                                <i class="fas fa-check text-white"></i>
+                                <div class="list-group list-group-flush" id="activitiesList">
+                                    @foreach (var activity in ViewBag.RecentActivities)
+                                    {
+                                        <div class="list-group-item d-flex align-items-center activity-item" data-source="@activity.Source?.ToLower()">
+                                            <div class="flex-shrink-0">
+                                                @if (activity.Type.Contains("completed"))
+                                                {
+                                                    <div class="bg-success rounded-circle p-2">
+                                                        <i class="fas fa-check text-white"></i>
+                                                    </div>
+                                                }
+                                                else if (activity.Type.Contains("started"))
+                                                {
+                                                    <div class="bg-warning rounded-circle p-2">
+                                                        <i class="fas fa-tools text-white"></i>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-info rounded-circle p-2">
+                                                        <i class="fas fa-plus text-white"></i>
+                                                    </div>
+                                                }
                                             </div>
-                                        }
-                                        else if (activity.Type.Contains("started"))
-                                        {
-                                            <div class="bg-warning rounded-circle p-2">
-                                                <i class="fas fa-tools text-white"></i>
+                                            <div class="flex-grow-1 ms-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="fw-bold">@activity.Type</div>
+                                                    <span class="badge @(activity.Source == "Maintenance" ? "bg-info" : "bg-warning")">
+                                                        @activity.Source
+                                                    </span>
+                                                </div>
+                                                <div class="text-muted">@activity.FridgeModel - @activity.CustomerName</div>
+                                                <small class="text-muted">@activity.TimeAgo?.ToString("MMM dd, yyyy hh:mm tt")</small>
                                             </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="bg-info rounded-circle p-2">
-                                                <i class="fas fa-plus text-white"></i>
-                                            </div>
-                                        }
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="d-flex justify-content-between">
-                                            <div class="fw-bold">@activity.Type</div>
-                                            <span class="badge @(activity.Source == "Maintenance" ? "bg-info" : "bg-warning")">
-                                                @activity.Source
-                                            </span>
                                         </div>
-                                        <div class="text-muted">@activity.FridgeModel - @activity.CustomerName</div>
-                                        <small class="text-muted">@activity.TimeAgo?.ToString("MMM dd, yyyy hh:mm tt")</small>
-                                    </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No recent activities found</p>
                                 </div>
                             }
                         </div>
-                    }
-                    else
-                    {
-                        <div class="text-center text-muted py-4">
-                            <i class="fas fa-inbox fa-3x mb-3"></i>
-                            <p>No recent activities found</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions & Statistics -->
+                <div class="col-lg-4 mb-4">
+                    <!-- Quick Actions -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
                         </div>
-                    }
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="@Url.Action("Index")" class="btn btn-warning btn-block">
+                                    <i class="fas fa-exclamation-circle"></i> View All Faults
+                                </a>
+                                <a href="@Url.Action("ViewMaintenanceFaults")" class="btn btn-info btn-block">
+                                    <i class="fas fa-tools"></i> Maintenance Faults
+                                </a>
+                                <a href="@Url.Action("ViewCustomerFaults")" class="btn btn-warning btn-block">
+                                    <i class="fas fa-user"></i> Customer Reports
+                                </a>
+                                <a href="@Url.Action("Calendar")" class="btn btn-success btn-block">
+                                    <i class="fas fa-calendar-alt"></i> Schedule Calendar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Summary -->
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Today's Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <div class="text-primary fw-bold">@ViewBag.TodaysBookings</div>
+                                    <small class="text-muted">Today's Bookings</small>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-success fw-bold">@ViewBag.UpcomingBookings</div>
+                                    <small class="text-muted">Upcoming</small>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="small">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Maintenance Faults:</span>
+                                    <span class="fw-bold">@ViewBag.MaintenanceFaults</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Customer Reports:</span>
+                                    <span class="fw-bold">@ViewBag.CustomerFaults</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions & Statistics -->
-        <div class="col-lg-4 mb-4">
-            <!-- Quick Actions -->
+        <!-- Reports & Analytics Tab -->
+        <div class="tab-pane fade" id="reports" role="tabpanel">
+            <!-- Report Filters -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Report Filters</h6>
                 </div>
                 <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="@Url.Action("Index")" class="btn btn-warning btn-block">
-                            <i class="fas fa-exclamation-circle"></i> View All Faults
-                        </a>
-                        <a href="@Url.Action("ViewMaintenanceFaults")" class="btn btn-info btn-block">
-                            <i class="fas fa-tools"></i> Maintenance Faults
-                        </a>
-                        <a href="@Url.Action("ViewCustomerFaults")" class="btn btn-warning btn-block">
-                            <i class="fas fa-user"></i> Customer Reports
-                        </a>
-                        <a href="@Url.Action("Calendar")" class="btn btn-success btn-block">
-                            <i class="fas fa-calendar-alt"></i> Schedule Calendar
-                        </a>
+                    <form id="reportFilters" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Report Type</label>
+                            <select class="form-select" id="reportType" name="reportType" required>
+                                <option value="">Select Report Type</option>
+                                @if (ViewBag.ReportTypes != null)
+                                {
+                                    foreach (var reportType in ViewBag.ReportTypes)
+                                    {
+                                        <option value="@reportType.Value">@reportType.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date Range</label>
+                            <select class="form-select" id="dateRange" name="dateRange">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="quarter">This Quarter</option>
+                                <option value="year">This Year</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 custom-date-range" style="display: none;">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate">
+                        </div>
+                        <div class="col-md-3 custom-date-range" style="display: none;">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Statuses</option>
+                                @if (ViewBag.Statuses != null)
+                                {
+                                    foreach (var status in ViewBag.Statuses)
+                                    {
+                                        <option value="@status.Value">@status.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Technician</label>
+                            <select class="form-select" id="technician" name="technician">
+                                <option value="">All Technicians</option>
+                                @if (ViewBag.Technicians != null)
+                                {
+                                    foreach (var tech in ViewBag.Technicians)
+                                    {
+                                        <option value="@tech.Value">@tech.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-chart-bar"></i> Generate Report
+                            </button>
+                            <button type="button" id="resetFilters" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Report Summary Cards -->
+            <div class="row" id="reportSummary" style="display: none;">
+                <!-- Summary cards will be dynamically loaded here -->
+            </div>
+
+            <!-- Report Results -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary" id="reportTitle">Report Results</h6>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="viewOptions" data-bs-toggle="dropdown">
+                            <i class="fas fa-table"></i> View Options
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item view-option" data-view="table" href="#"><i class="fas fa-table"></i> Table View</a></li>
+                            <li><a class="dropdown-item view-option" data-view="chart" href="#"><i class="fas fa-chart-bar"></i> Chart View</a></li>
+                            <li><a class="dropdown-item view-option" data-view="both" href="#"><i class="fas fa-columns"></i> Both</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" class="text-center" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Generating report...</p>
+                    </div>
+
+                    <!-- Table View -->
+                    <div id="tableView" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="reportTable" width="100%" cellspacing="0">
+                                <thead id="tableHeader">
+                                    <!-- Table headers will be dynamically loaded here -->
+                                </thead>
+                                <tbody id="tableBody">
+                                    <!-- Table data will be dynamically loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Chart View -->
+                    <div id="chartView" style="display: none;">
+                        <div class="row">
+                            <div class="col-12">
+                                <canvas id="reportChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResults" class="text-center" style="display: none;">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Data Available</h5>
+                        <p class="text-muted">Try adjusting your filters or select a different report type.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Today's Summary -->
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Today's Summary</h6>
-                </div>
+            <!-- Report Metadata -->
+            <div class="card shadow" id="reportMetadata" style="display: none;">
                 <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6 mb-3">
-                            <div class="text-primary fw-bold">@ViewBag.TodaysBookings</div>
-                            <small class="text-muted">Today's Bookings</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <strong>Generated:</strong> <span id="generatedTime"></span>
+                            </small>
                         </div>
-                        <div class="col-6 mb-3">
-                            <div class="text-success fw-bold">@ViewBag.UpcomingBookings</div>
-                            <small class="text-muted">Upcoming</small>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="small">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Maintenance Faults:</span>
-                            <span class="fw-bold">@ViewBag.MaintenanceFaults</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Customer Reports:</span>
-                            <span class="fw-bold">@ViewBag.CustomerFaults</span>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                <strong>Records:</strong> <span id="recordCount"></span>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -257,9 +436,11 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Filter activities by source
         document.addEventListener('DOMContentLoaded', function() {
+            // Activities filter
             const filterButtons = document.querySelectorAll('[data-filter]');
             const activityItems = document.querySelectorAll('.activity-item');
 
@@ -281,6 +462,321 @@
                     });
                 });
             });
+
+            // Reports functionality
+            let currentChart = null;
+
+            // Date range toggle
+            const dateRange = document.getElementById('dateRange');
+            const customDateRange = document.querySelectorAll('.custom-date-range');
+
+            dateRange.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customDateRange.forEach(el => el.style.display = 'block');
+                } else {
+                    customDateRange.forEach(el => el.style.display = 'none');
+                }
+            });
+
+            // Form submission
+            const reportForm = document.getElementById('reportFilters');
+            if (reportForm) {
+                reportForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    generateReport();
+                });
+            }
+
+            // Reset filters
+            const resetFilters = document.getElementById('resetFilters');
+            if (resetFilters) {
+                resetFilters.addEventListener('click', function() {
+                    document.getElementById('reportFilters').reset();
+                    customDateRange.forEach(el => el.style.display = 'none');
+                    hideReportResults();
+                });
+            }
+
+            // View options
+            document.querySelectorAll('.view-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const view = this.getAttribute('data-view');
+                    setViewMode(view);
+                });
+            });
+
+            // Export buttons
+            const exportPdf = document.getElementById('exportPdf');
+            const exportExcel = document.getElementById('exportExcel');
+
+            if (exportPdf) exportPdf.addEventListener('click', exportToPdf);
+            if (exportExcel) exportExcel.addEventListener('click', exportToExcel);
+
+            // Initialize today's date for custom date range
+            const today = new Date().toISOString().split('T')[0];
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+
+            if (startDateInput) startDateInput.value = today;
+            if (endDateInput) endDateInput.value = today;
         });
+
+        function generateReport() {
+            const formData = new FormData(document.getElementById('reportFilters'));
+            const filters = Object.fromEntries(formData);
+
+            showLoading();
+            hideReportResults();
+
+            // Simulate API call - replace with actual endpoint
+            setTimeout(() => {
+                hideLoading();
+                // This would be replaced with actual API response
+                const mockReport = generateMockReportData(filters);
+                displayReport(mockReport);
+            }, 1500);
+        }
+
+        function generateMockReportData(filters) {
+            // Mock data generation - replace with actual API response
+            return {
+                success: true,
+                report: {
+                    title: `Fault Report - ${filters.reportType || 'Summary'}`,
+                    summary: [
+                        { title: 'Total Faults', value: '45', color: 'primary', icon: 'fa-exclamation-triangle', trend: '+12%' },
+                        { title: 'Completed', value: '32', color: 'success', icon: 'fa-check-circle', trend: '+5%' },
+                        { title: 'In Progress', value: '8', color: 'info', icon: 'fa-tasks', trend: '-2%' },
+                        { title: 'Pending', value: '5', color: 'warning', icon: 'fa-clock', trend: '+3%' },
+                        { title: 'Avg. Resolution', value: '2.3d', color: 'primary', icon: 'fa-calendar', trend: '-0.5d' },
+                        { title: 'Satisfaction', value: '94%', color: 'success', icon: 'fa-star', trend: '+2%' }
+                    ],
+                    columns: [
+                        { field: 'id', title: 'ID', type: 'text' },
+                        { field: 'customer', title: 'Customer', type: 'text' },
+                        { field: 'fridgeModel', title: 'Fridge Model', type: 'text' },
+                        { field: 'reportedDate', title: 'Reported Date', type: 'date' },
+                        { field: 'status', title: 'Status', type: 'text' },
+                        { field: 'technician', title: 'Technician', type: 'text' }
+                    ],
+                    data: [
+                        { id: 'F001', customer: 'ABC Restaurant', fridgeModel: 'CoolMaster X1', reportedDate: '2024-01-15', status: 'Completed', technician: 'John Doe' },
+                        { id: 'F002', customer: 'XYZ Hotel', fridgeModel: 'FreezePro 2000', reportedDate: '2024-01-16', status: 'In Progress', technician: 'Jane Smith' },
+                        { id: 'F003', customer: 'Quick Bites', fridgeModel: 'CoolMaster X2', reportedDate: '2024-01-17', status: 'Pending', technician: 'Mike Johnson' }
+                    ],
+                    chartData: {
+                        type: 'bar',
+                        title: 'Faults by Status',
+                        labels: ['Completed', 'In Progress', 'Pending'],
+                        datasets: [{
+                            label: 'Number of Faults',
+                            data: [32, 8, 5],
+                            backgroundColor: ['#28a745', '#17a2b8', '#ffc107']
+                        }]
+                    }
+                }
+            };
+        }
+
+        function displayReport(report) {
+            // Update report title
+            document.getElementById('reportTitle').textContent = report.title;
+
+            // Display summary cards
+            displaySummaryCards(report.summary);
+
+            // Display table data
+            displayTableData(report.data, report.columns);
+
+            // Display chart
+            if (report.chartData) {
+                displayChart(report.chartData);
+            }
+
+            // Update metadata
+            document.getElementById('generatedTime').textContent = new Date().toLocaleString();
+            document.getElementById('recordCount').textContent = report.data.length.toLocaleString();
+
+            // Show results
+            document.getElementById('reportSummary').style.display = 'block';
+            document.getElementById('reportMetadata').style.display = 'block';
+            setViewMode('both');
+        }
+
+        function displaySummaryCards(summary) {
+            const container = document.getElementById('reportSummary');
+            container.innerHTML = '';
+
+            if (!summary || summary.length === 0) return;
+
+            summary.forEach(item => {
+                const col = document.createElement('div');
+                col.className = 'col-xl-2 col-md-4 mb-4';
+
+                col.innerHTML = `
+                    <div class="card border-left-${item.color || 'primary'} shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-${item.color || 'primary'} text-uppercase mb-1">
+                                        ${item.title}
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">${item.value}</div>
+                                    ${item.trend ? `
+                                    <div class="mt-2 mb-0 text-muted text-xs">
+                                        <span class="${item.trend.includes('+') ? 'text-success' : item.trend.includes('-') ? 'text-danger' : 'text-muted'}">
+                                            <i class="fas ${item.trend.includes('+') ? 'fa-arrow-up' : item.trend.includes('-') ? 'fa-arrow-down' : 'fa-minus'}"></i>
+                                            ${item.trend}
+                                        </span> from previous period
+                                    </div>` : ''}
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas ${item.icon || 'fa-chart-bar'} fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(col);
+            });
+        }
+
+        function displayTableData(data, columns) {
+            const header = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+
+            header.innerHTML = '';
+            body.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+                return;
+            }
+
+            // Create table header
+            const headerRow = document.createElement('tr');
+            columns.forEach(column => {
+                const th = document.createElement('th');
+                th.textContent = column.title;
+                headerRow.appendChild(th);
+            });
+            header.appendChild(headerRow);
+
+            // Create table rows
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                columns.forEach(column => {
+                    const td = document.createElement('td');
+                    const value = row[column.field] || '';
+
+                    // Format based on column type
+                    if (column.type === 'date' && value) {
+                        td.textContent = new Date(value).toLocaleDateString();
+                    } else if (column.type === 'currency' && value) {
+                        td.textContent = '$' + parseFloat(value).toFixed(2);
+                    } else if (column.type === 'number' && value) {
+                        td.textContent = parseInt(value).toLocaleString();
+                    } else {
+                        td.textContent = value;
+                    }
+
+                    tr.appendChild(td);
+                });
+                body.appendChild(tr);
+            });
+        }
+
+        function displayChart(chartData) {
+            const ctx = document.getElementById('reportChart').getContext('2d');
+
+            // Destroy previous chart
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            currentChart = new Chart(ctx, {
+                type: chartData.type || 'bar',
+                data: {
+                    labels: chartData.labels || [],
+                    datasets: chartData.datasets || []
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: chartData.title || 'Chart'
+                        },
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function setViewMode(mode) {
+            document.getElementById('tableView').style.display = 'none';
+            document.getElementById('chartView').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+
+            const hasData = document.getElementById('tableBody').children.length > 0;
+
+            if (!hasData) {
+                document.getElementById('noResults').style.display = 'block';
+                return;
+            }
+
+            switch (mode) {
+                case 'table':
+                    document.getElementById('tableView').style.display = 'block';
+                    break;
+                case 'chart':
+                    document.getElementById('chartView').style.display = 'block';
+                    break;
+                case 'both':
+                    document.getElementById('tableView').style.display = 'block';
+                    document.getElementById('chartView').style.display = 'block';
+                    break;
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function hideReportResults() {
+            document.getElementById('reportSummary').style.display = 'none';
+            document.getElementById('tableView').style.display = 'none';
+            document.getElementById('chartView').style.display = 'none';
+            document.getElementById('reportMetadata').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        function showError(message) {
+            // You can implement a toast or alert notification here
+            alert('Error: ' + message);
+        }
+
+        function exportToPdf() {
+            // Implement PDF export logic
+            alert('PDF export functionality would be implemented here');
+        }
+
+        function exportToExcel() {
+            // Implement Excel export logic
+            alert('Excel export functionality would be implemented here');
+        }
     </script>
 }

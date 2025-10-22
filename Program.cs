@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
+using Project.Services.Interfaces;
 using Project.Utility;
+using Project.Services;
+using Project.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -24,9 +27,11 @@ builder.Services.ConfigureApplicationCookie(option =>
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IUserNumberService, UserNumberService>();
-
-builder.Services.AddHostedService<UserCleanupService>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ITechnicianService, TechnicianService>();
+builder.Services.AddHostedService<UserCleanupService>();
+
 
 var app = builder.Build();
 

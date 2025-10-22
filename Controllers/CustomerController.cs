@@ -615,6 +615,7 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Dashboard));
             }
 
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["CurrentFilter"] = searchString;
             ViewData["DateSortParm"] = string.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
             ViewData["FaultTypeSortParm"] = sortOrder == "faulttype" ? "faulttype_desc" : "faulttype";
@@ -647,7 +648,9 @@ namespace Project.Controllers
 
             int pageSize = 10;
             int pageNumber = page ?? 1;
-            var paginatedFaults = await PaginatedList<FaultReport>.CreateAsync(faults.AsNoTracking(), pageNumber, pageSize);
+
+            // Use the Project.Utility.PaginatedList
+            var paginatedFaults = await Project.Utility.PaginatedList<FaultReport>.CreateAsync(faults.AsNoTracking(), pageNumber, pageSize);
 
             ViewBag.CurrentPage = pageNumber;
             ViewBag.TotalPages = paginatedFaults.TotalPages;
@@ -658,12 +661,30 @@ namespace Project.Controllers
         // CREATE FRIDGE REQUEST - GET
         public IActionResult CreateFridgeRequest()
         {
-            var availableFridges = _db.tblFridges
-                .Where(f => f.AvailabilityStatus == "Available")
-                .ToList();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .FirstOrDefault(c => c.ApplicationUserId == userId);
 
-            ViewBag.AvailableFridges = availableFridges;
-            return View();
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            // Pre-populate with customer data
+            var model = new RequestHeader
+            {
+                FirstName = customer.ApplicationUser.FirstName,
+                LastName = customer.ApplicationUser.LastName,
+                CellNumber = customer.ApplicationUser.CellNumber ?? "",
+                StreetAddress = customer.ApplicationUser.StreetAddress ?? "",
+                City = customer.ApplicationUser.City ?? "",
+                State = customer.ApplicationUser.State ?? "",
+                PostalCode = customer.ApplicationUser.PostalCode ?? ""
+            };
+
+            return View(model);
         }
 
         // CREATE FRIDGE REQUEST - POST
@@ -685,29 +706,39 @@ namespace Project.Controllers
             {
                 try
                 {
+                    // Set additional properties
                     requestHeader.CustomerID = customer.CustomerID;
                     requestHeader.RequestDate = DateTime.Now;
                     requestHeader.Status = SD.Pending;
                     requestHeader.PaymentDueDate = DateTime.Now.AddDays(7);
+                    requestHeader.RequestTotal = 0; // Since no specific fridge is selected
 
                     _db.tblRequestHeaders.Add(requestHeader);
                     await _db.SaveChangesAsync();
 
-                    TempData[SD.Success] = "Fridge request submitted successfully! We'll process it shortly.";
+                    TempData[SD.Success] = "Fridge request submitted successfully! We'll contact you shortly to discuss available options.";
                     return RedirectToAction(nameof(ViewRequestStatus));
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error creating fridge request: {ex.Message}");
                     TempData[SD.Error] = "Error submitting request. Please try again.";
+
+                    // Log the error for debugging
+                    ModelState.AddModelError("", "An error occurred while submitting your request.");
                 }
             }
+            else
+            {
+                // Log model state errors for debugging
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
+                }
+                TempData[SD.Error] = "Please correct the errors in the form.";
+            }
 
-            var availableFridges = _db.tblFridges
-                .Where(f => f.AvailabilityStatus == "Available")
-                .ToList();
-
-            ViewBag.AvailableFridges = availableFridges;
             return View(requestHeader);
         }
 
@@ -856,7 +887,7 @@ namespace Project.Controllers
         private async Task CreateReplacementRequest(FaultReport faultReport, int customerId)
         {
             // Create replacement request logic here
-            // This would depend on your ReplacementRequest model
+            // This would depend on ReplacementRequest model
             // For now, we'll just log it
             Console.WriteLine($"Replacement requested for fault report {faultReport.FaultReportId}");
             await Task.CompletedTask;
@@ -871,30 +902,6 @@ namespace Project.Controllers
                 .ToListAsync();
 
             viewModel.AvailableFridges = customerFridges;
-        }
-
-        // PAGINATION HELPER CLASS
-        public class PaginatedList<T> : List<T>
-        {
-            public int PageIndex { get; private set; }
-            public int TotalPages { get; private set; }
-
-            public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
-            {
-                PageIndex = pageIndex;
-                TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-                AddRange(items);
-            }
-
-            public bool HasPreviousPage => PageIndex > 1;
-            public bool HasNextPage => PageIndex < TotalPages;
-
-            public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
-            {
-                var count = await source.CountAsync();
-                var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
-                return new PaginatedList<T>(items, count, pageIndex, pageSize);
-            }
         }
     }
 }

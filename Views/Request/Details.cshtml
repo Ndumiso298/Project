@@ -317,7 +317,69 @@
         background-color: #e9ecef;
         opacity: 1;
     }
+            [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RelaunchFault(int faultReportId, string additionalInfo)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
 
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            try
+            {
+                // Get the original fault report
+                var originalFault = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId && fr.CustomerId == customer.CustomerID);
+
+                if (originalFault == null)
+                {
+                    TempData[SD.Error] = "Fault report not found.";
+                    return RedirectToAction(nameof(ViewFaultStatus));
+                }
+
+                if (originalFault.Status != "Declined")
+                {
+                    TempData[SD.Error] = "Only declined requests can be relaunched.";
+                    return RedirectToAction(nameof(ViewFaultStatus));
+                }
+
+                // Create new fault report based on the original
+                var newFaultReport = new FaultReport
+                {
+                    CustomerId = customer.CustomerID,
+                    FridgeInStockId = originalFault.FridgeInStockId,
+                    FaultType = originalFault.FaultType,
+                    Description = originalFault.Description +
+                                 (string.IsNullOrEmpty(additionalInfo) ? "" : $"\n\nAdditional Info: {additionalInfo}"),
+                    ReportedDate = DateTime.Now,
+                    Status = "Reported",
+                    Priority = originalFault.Priority,
+                    ImageUrl = originalFault.ImageUrl, // Reuse original images
+                    RequestReplacement = originalFault.RequestReplacement,
+                    DeclineReason = null,
+                    IsRelaunched = true,
+                    OriginalFaultReportId = faultReportId
+                };
+
+                _db.tblFaultReports.Add(newFaultReport);
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Fault request relaunched successfully!";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error relaunching fault report: {ex.Message}");
+                TempData[SD.Error] = "Error relaunching fault request. Please try again.";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+        }
     .btn {
         transition: all 0.3s ease;
     }

@@ -35,7 +35,7 @@ namespace Project.Models
         public bool IsRelaunched { get; set; } = false;
 
         public int? OriginalFaultReportId { get; set; }
-
+        public DateTime? ReportDate { get; set; }   
         public DateTime? ResolvedDate { get; set; }
 
         public string? AdditionalNotes { get; set; }

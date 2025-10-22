@@ -61,14 +61,17 @@ namespace Project.Data
                     entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
                 });
 
-                // Configure entity relationships using the provided format
-                modelBuilder.Entity<FridgeInStock>()
-                    .HasOne(fis => fis.Fridge)
-                    .WithMany(f => f.FridgeInstances)
-                    .HasForeignKey(fis => fis.FridgeId)
-                    .OnDelete(DeleteBehavior.Restrict);
+            // Configure entity relationships using the provided format
+            modelBuilder.Entity<FridgeInStock>()
+                .HasOne(fis => fis.Fridge)
+                .WithMany(f => f.FridgeInstances)
+                .HasForeignKey(fis => fis.FridgeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-                modelBuilder.Entity<FaultReport>()
+            modelBuilder.Entity<FaultTechnician>()
+                .HasKey(ft => ft.FaultId);
+
+            modelBuilder.Entity<FaultReport>()
                     .HasOne(fr => fr.Customer)
                     .WithMany() // Customer can have many fault reports (no navigation property needed)
                     .HasForeignKey(fr => fr.CustomerId)
