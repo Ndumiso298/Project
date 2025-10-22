@@ -29,5 +29,7 @@ namespace Project.Models
         [Required(ErrorMessage = "Status is required.")]
         [Display(Name = "Status")]
         public AllocationStatus Status { get; set; }
+
+        public string RejectReason { get; set; }
     }
 }

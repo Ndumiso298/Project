@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
@@ -25,7 +26,9 @@ namespace Project.Controllers
         }
         public  IActionResult CustomerList()
         {
-            var customers =  _db.tblCustomer.ToList();
+            var customers = _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .ToList();
             return View(customers);
         }
         public IActionResult EmployeeList()

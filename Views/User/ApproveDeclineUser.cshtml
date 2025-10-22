@@ -217,24 +217,26 @@
                 </div>
 
                 <!-- Approval Actions Card -->
-                <div class="card shadow-sm border-0 mt-2">
-                    <div class="card-body text-center py-4">
-                        <h5 class="card-title text-dark mb-4">Account Decision</h5>
-                        <p class="text-muted mb-4">Please review all user information and documentation before making your decision.</p>
+                @if (Model.Role != null && Model.Role.Contains("Customer"))
+                {
+                    <div class="card shadow-sm border-0 mt-2">
+                        <div class="card-body text-center py-4">
+                            <h5 class="card-title text-dark mb-4">Account Decision</h5>
+                            <p class="text-muted mb-4">Please review all user information and documentation before making your decision.</p>
 
-                        <div class="row justify-content-center">
-                            <!-- Approve Button -->
-                            <div class="col-md-4 mb-3">
-                                <form asp-action="ApproveUser" method="post" class="d-grid" id="approveForm">
-                                    <input type="hidden" name="userId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-success btn-lg py-3" id="approveBtn">
-                                        <i class="bi bi-check-circle-fill me-2"></i> Approve User
-                                    </button>
-                                    <small class="form-text text-muted mt-2">
-                                        User will gain full system access and be marked as approved.
-                                    </small>
-                                </form>
-                            </div>
+                            <div class="row justify-content-center">
+                                <!-- Approve Button -->
+                                <div class="col-md-4 mb-3">
+                                    <form asp-action="ApproveUser" method="post" class="d-grid" id="approveForm">
+                                        <input type="hidden" name="userId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-success btn-lg py-3" id="approveBtn">
+                                            <i class="bi bi-check-circle-fill me-2"></i> Approve User
+                                        </button>
+                                        <small class="form-text text-muted mt-2">
+                                            User will gain full system access and be marked as approved.
+                                        </small>
+                                    </form>
+                                </div>
 
                             <!-- Decline Button -->
                             <div class="col-md-4 mb-3">
@@ -583,10 +585,12 @@
             const approveForm = document.getElementById('approveForm');
             const approveBtn = document.getElementById('approveBtn');
 
-            approveForm.addEventListener('submit', function () {
-                approveBtn.disabled = true;
-                approveBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2 spin"></i> Processing...';
-            });
+            if (approveForm && approveBtn) {
+                approveForm.addEventListener('submit', function () {
+                    approveBtn.disabled = true;
+                    approveBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2 spin"></i> Processing...';
+                });
+            }
 
             // Auto-hide alerts
             setTimeout(function () {
@@ -597,13 +601,7 @@
             }, 5000);
         });
 
-        // Spinner animation
-        const style = document.createElement('style');
-        style.innerHTML = `
-                    .spin { animation: spin 1s linear infinite; }
-        keyframes spin { 100% { transform: rotate(360deg); } }
-                `;
-        document.head.appendChild(style);
+        
     </script>
 }
  *@

@@ -2,6 +2,14 @@
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Premium Fridge Rentals";
+
+    
+    var sortOptions = new List<(string Key, string DisplayText)>
+    {
+        ("price-low", "Price: Low to High"),
+        ("price-high", "Price: High to Low"),
+        ("capacity", "Capacity")
+    };
 }
 
 <div class="container-fluid py-4">
@@ -14,20 +22,17 @@
                     <p class="text-muted">Find the perfect refrigeration solution for your needs</p>
                 </div>
                 <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <span class="badge bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-check-circle-fill me-1"></i> @Model.Count() Available Units
-                        </span>
+                    
                     </div>
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-filter me-1"></i> Sort By
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                            <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
-                            <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
-                            <li><a class="dropdown-item" href="#">Capacity</a></li>
-                            <li><a class="dropdown-item" href="#">Newest First</a></li>
+                            @foreach (var option in sortOptions)
+                            {
+                                <li><a class="dropdown-item" href="#" data-sort="@option.Key">@option.DisplayText</a></li>
+                            }
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
@@ -133,59 +138,31 @@
                 </div>
             </div>
 
-            <!-- Special Offers Card -->
-            <div class="card border-0 shadow-sm mb-4 bg-warning bg-opacity-10">
-                <div class="card-body text-center py-4">
-                    <i class="bi bi-percent display-6 text-warning mb-3"></i>
-                    <h5 class="card-title">Special Offer</h5>
-                    <p class="card-text small">Get 15% off your first 3 months when you rent today!</p>
-                    <button class="btn btn-warning btn-sm">Learn More</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Grid -->
-        <div class="col-lg-9 col-md-8">
-            <!-- Promotional Banner -->
-            <div class="alert alert-info d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <i class="bi bi-truck me-2"></i>
-                    <strong>Free Delivery</strong> on orders over R500 |
-                    <span class="ms-2"><i class="bi bi-shield-check me-1"></i>5-Year Warranty Included</span>
-                </div>
-                <div>
-                    <a href="#" class="text-decoration-none">View Terms <i class="bi bi-chevron-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Fridge Cards -->
-            <div class="row g-4" id="productGrid">
-                @foreach (var fridge in Model)
-                {
-                    <div class="col-xl-4 col-lg-6 col-md-6">
-                        <div class="card h-100 border-0 shadow-sm rental-card position-relative">
-                            <!-- Promotional Badges -->
-                            @if (fridge.Status == "Available")
-                            {
-                                <span class="badge bg-success position-absolute top-0 start-0 m-2 z-2">
-                                    <i class="bi bi-check-circle me-1"></i> In Stock
-                                </span>
-                                <span class="badge bg-warning position-absolute top-0 end-0 m-2 z-2">
-                                    <i class="bi bi-lightning me-1"></i> Special
-                                </span>
-                            }
-                            else if (fridge.Status == "Unavailable")
-                            {
-                                <span class="badge bg-danger position-absolute top-0 start-0 m-2">
-                                    <i class="bi bi-x-circle me-1"></i> Out of Stock
-                                </span>
-                            }
-                            else if (fridge.Status == "Maintenance")
-                            {
-                                <span class="badge bg-secondary position-absolute top-0 start-0 m-2">
-                                    <i class="bi bi-tools me-1"></i> Maintenance
-                                </span>
-                            }
+    <!-- Fridge Cards -->
+    <div class="row g-4" id="fridgeContainer">
+        @foreach (var fridge in Model)
+        {
+            <div class="col-xl-3 col-lg-4 col-md-6" data-price="@fridge.RentalPricePerMonth" data-capacity="@fridge.CapacityLiters">
+                <div class="card h-100 border-0 shadow-sm rental-card">
+                    <!-- Status Badge -->
+                    @if (fridge.AvailabilityStatus == "Available")
+                    {
+                        <span class="badge bg-success position-absolute top-0 end-0 m-2">
+                            <i class="bi bi-check-circle me-1"></i> Available
+                        </span>
+                    }
+                    else if (fridge.AvailabilityStatus == "Unavailable")
+                    {
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                            <i class="bi bi-x-circle me-1"></i> Unavailable
+                        </span>
+                    }
+                    else if (fridge.AvailabilityStatus == "Maintenance")
+                    {
+                        <span class="badge bg-warning position-absolute top-0 end-0 m-2">
+                            <i class="bi bi-tools me-1"></i> Maintenance
+                        </span>
+                    }
 
                     <!-- Fridge Image -->
                     <div class="rental-image-container">
@@ -221,13 +198,6 @@
                                 <div>
                                     <span class="h5 mb-0 text-primary">@fridge.RentalPricePerMonth.ToString("C")</span>
                                     <span class="text-muted small d-block">per month</span>
-                                </div>
-                                <div class="text-warning">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-half"></i>
                                 </div>
                             </div>
 
@@ -275,6 +245,9 @@
         </div>
     }
 </div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
 <style>
     .rental-card {
@@ -334,10 +307,6 @@
             transform: translateY(-1px);
         }
 
-    .text-warning {
-        font-size: 0.9rem;
-    }
-
     /* Responsive adjustments */
     @@media (max-width: 768px) {
         .d-flex.justify-content-between.align-items-center {
@@ -352,37 +321,67 @@
     }
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Add click animation to cards
-        const cards = document.querySelectorAll('.rental-card');
-
-        cards.forEach(card => {
-            card.addEventListener('click', function (e) {
-                // Only trigger if not clicking a button or link
-                if (!e.target.closest('a') && !e.target.closest('button')) {
-                    const link = this.querySelector('a');
-                    if (link) {
-                        link.style.transform = 'scale(0.98)';
-                        setTimeout(() => {
-                            link.style.transform = '';
-                        }, 150);
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add click animation to cards
+            const cards = document.querySelectorAll('.rental-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function (e) {
+                    // Only trigger if not clicking a button or link
+                    if (!e.target.closest('a') && !e.target.closest('button')) {
+                        const link = this.querySelector('a');
+                        if (link) {
+                            link.style.transform = 'scale(0.98)';
+                            setTimeout(() => {
+                                link.style.transform = '';
+                            }, 150);
+                        }
                     }
-                }
+                });
             });
-        });
 
-        // Sort functionality (placeholder)
-        const sortItems = document.querySelectorAll('.dropdown-item');
-        sortItems.forEach(item => {
-            item.addEventListener('click', function (e) {
-                e.preventDefault();
-                const sortText = this.textContent;
-                const dropdownButton = document.getElementById('sortDropdown');
-                dropdownButton.innerHTML = '<i class="bi bi-filter me-1"></i> ' + sortText;
-                // Add actual sorting logic here
-                console.log('Sorting by:', sortText);
+            // Sort functionality
+            const sortItems = document.querySelectorAll('.dropdown-item');
+            const fridgeContainer = document.getElementById('fridgeContainer');
+            const fridges = Array.from(fridgeContainer.children);
+
+            sortItems.forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sortType = this.getAttribute('data-sort');
+                    const sortText = this.textContent;
+                    const dropdownButton = document.getElementById('sortDropdown');
+                    dropdownButton.innerHTML = '<i class="bi bi-filter me-1"></i> ' + sortText;
+
+                    // Sort fridges based on sortType
+                    let sortedFridges = [...fridges];
+
+                    if (sortType === 'price-low') {
+                        sortedFridges.sort((a, b) => {
+                            const priceA = parseFloat(a.getAttribute('data-price') || 0);
+                            const priceB = parseFloat(b.getAttribute('data-price') || 0);
+                            return priceA - priceB;
+                        });
+                    } else if (sortType === 'price-high') {
+                        sortedFridges.sort((a, b) => {
+                            const priceA = parseFloat(a.getAttribute('data-price') || 0);
+                            const priceB = parseFloat(b.getAttribute('data-price') || 0);
+                            return priceB - priceA;
+                        });
+                    } else if (sortType === 'capacity') {
+                        sortedFridges.sort((a, b) => {
+                            const capacityA = parseFloat(a.getAttribute('data-capacity') || 0);
+                            const capacityB = parseFloat(b.getAttribute('data-capacity') || 0);
+                            return capacityB - capacityA; // Descending order (larger capacity first)
+                        });
+                    }
+
+                    // Clear and re-append sorted fridges
+                    fridgeContainer.innerHTML = '';
+                    sortedFridges.forEach(fridge => fridgeContainer.appendChild(fridge));
+                });
             });
         });
-    });
-</script>
+    </script>
+}
