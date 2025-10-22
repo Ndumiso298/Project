@@ -1,4 +1,4 @@
-﻿ @model Allocation
+﻿@model Allocation
 @{
     Layout = "_CustomerLayout";
 }
@@ -9,7 +9,7 @@
     <input asp-for="CustomerID" type="hidden" />
 <div class="container py-5">
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-,        <div class="card-header bg-primary text-light py-4 position-relative">
+        <div class="card-header bg-primary text-light py-4 position-relative">
             <div class="row align-items-center">
                 <div class="col-12 text-center">
                     <h2 class="text-white fw-bold mb-1">@Model.Fridge.Brand Professional Series</h2>
@@ -41,13 +41,21 @@
                         }
                         else if (Model.Fridge.AvailabilityStatus == "Unavailable")
                         {
-                            <p class="text-center text-danger small mt-3">
-                                By requesting, you agree to our rental terms. A representative will contact you within 24 hours to confirm details.
-                            </p>
+                            <span class="badge bg-danger px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
+                            <div class="alert alert-warning mt-3">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Currently Unavailable</strong>
+                                <p class="mb-0 mt-1">This fridge is currently out of stock. Please check back later or browse other available models.</p>
+                            </div>
                         }
                         else if (Model.Fridge.AvailabilityStatus == "Maintenance")
                         {
                             <span class="badge bg-warning text-dark px-4 py-2 fs-6">@Model.Fridge.AvailabilityStatus</span>
+                            <div class="alert alert-info mt-3">
+                                <i class="bi bi-tools me-2"></i>
+                                <strong>Under Maintenance</strong>
+                                <p class="mb-0 mt-1">This fridge is currently undergoing maintenance and will be available soon.</p>
+                            </div>
                         }
                         else
                         {
@@ -61,11 +69,6 @@
                     <h3 class="section-title mb-3 text-primary fw-bold">Specification Details</h3>
 
                     <div class="specs-container mb-4">
-                      @*   <div class="spec-item d-flex align-items-center mb-3">
-                            <i class="bi bi-tag fs-4 text-primary me-3"></i>
-                            <div><strong>Fridge Number:</strong> @Model.Fridge.FridgeNo</div>
-                        </div> *@
-
                         <div class="spec-item d-flex align-items-center mb-3">
                             <i class="bi bi-grid-3x3 fs-4 text-primary me-3"></i>
                             <div><strong>Type:</strong> @Model.Fridge.Type</div>
@@ -76,16 +79,18 @@
                             <div><strong>Capacity:</strong> @Model.Fridge.CapacityLiters Liters</div>
                         </div>
 
-                        <div class="row pl-2 mb-3">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label asp-for="Count" class="form-label fw-semibold text-dark">Quantity</label>
-                                    <input asp-for="Count" type="number" min="1" class="form-control text-end" />
-                                    <span asp-validation-for="Count" class="text-danger"></span>
+                        @if (Model.Fridge.AvailabilityStatus == "Available")
+                        {
+                            <div class="row pl-2 mb-3">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label asp-for="Count" class="form-label fw-semibold text-dark">Quantity</label>
+                                        <input asp-for="Count" type="number" min="1" class="form-control text-end" />
+                                        <span asp-validation-for="Count" class="text-danger"></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
+                        }
                     </div>
 
                     <h3 class="section-title mb-3 text-primary fw-bold">Description</h3>
@@ -100,10 +105,19 @@
                    
                     <div class="row mt-4">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
-                                <i class="bi bi-check-circle me-2"></i> Add To Cart
-                            </button>
-                          
+                            @if (Model.Fridge.AvailabilityStatus == "Available")
+                            {
+                                <button type="submit" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow">
+                                    <i class="bi bi-check-circle me-2"></i> Add To Cart
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-primary w-100 py-3 fs-5 fw-semibold rounded-pill shadow" disabled>
+                                    <i class="bi bi-x-circle me-2"></i> Currently Unavailable
+                                </button>
+                                
+                            }
                         </div>
                     </div>
                    
@@ -112,6 +126,36 @@
         </div>
     </div>
 </div>
-
-
 </form>
+
+<style>
+    .fridge-image {
+        max-height: 400px;
+        object-fit: cover;
+        width: 100%;
+    }
+    
+    .section-title {
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+    
+    .specs-container {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+    }
+    
+    .spec-item {
+        padding: 0.5rem 0;
+    }
+    
+    .price-tag {
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+</style>

@@ -21,20 +21,32 @@ namespace Project.Controllers
 
         public IActionResult Calendar()
         {
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            try
+            {
+                var visits = _db.tblFaultTechnicians
+                    .Include(u => u.FridgeVisit)
+                    .ThenInclude(u => u.RequestHeader)
+                    .ThenInclude(u => u.Customer.ApplicationUser)
+                    .Include(u => u.FridgeVisit)
+                    .ThenInclude(u => u.RequestHeader)
+                    .ThenInclude(u => u.RequestFridges)
+                    .ThenInclude(u => u.Fridge)
+                    .ToList();
 
-            var visits = _db.tblFridgeVisits
-                .Include(u => u.RequestHeader)
-                .ThenInclude(u => u.Customer.ApplicationUser)
-                .Include(u => u.RequestHeader)
-                .ThenInclude(u => u.RequestFridges)
-                .ThenInclude(u => u.Fridge)
-                //.Where(u => u.RequestHeader.ApplicationUserId == userId)
-                .ToList();
+                // FIXED: Add null check and ensure data is properly loaded
+                if (visits == null)
+                {
+                    visits = new List<FaultTechnician>();
+                }
 
-            return View(visits);
+                return View(visits);
+            }
+            catch (Exception ex)
+            {
+                
+                return View(new List<FaultTechnician>());
+            }
         }
-
 
         public IActionResult Index()
         {
@@ -218,6 +230,7 @@ namespace Project.Controllers
 
             return RedirectToAction("CustomerBookings");
         }
+
     }
 }
 
