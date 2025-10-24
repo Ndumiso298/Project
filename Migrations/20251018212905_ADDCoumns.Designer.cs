@@ -340,7 +340,7 @@ namespace Project.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("tblCustomer");
+                    b.ToTable("tblCustomers");
                 });
 
             modelBuilder.Entity("Project.Models.CustomerFridge", b =>
@@ -374,7 +374,7 @@ namespace Project.Migrations
 
                     b.HasIndex("FridgeInStockId");
 
-                    b.ToTable("tblCustomerFridge");
+                    b.ToTable("tblCustomersFridge");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
@@ -1289,7 +1289,7 @@ namespace Project.Migrations
 
                     b.HasIndex("RequestHeaderId");
 
-                    b.ToTable("tblRequestDetais");
+                    b.ToTable("tblRequestDetails");
                 });
 
             modelBuilder.Entity("Project.Models.RequestHeader", b =>

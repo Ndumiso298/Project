@@ -26,14 +26,14 @@ namespace Project.Controllers
         }
         public  IActionResult CustomerList()
         {
-            var customers = _db.tblCustomer
+            var customers = _db.tblCustomers
                 .Include(c => c.ApplicationUser)
                 .ToList();
             return View(customers);
         }
         public IActionResult EmployeeList()
         {
-            var customers = _db.tblEmployee.ToList();
+            var customers = _db.tblEmployees.ToList();
             return View(customers);
         }
 
@@ -233,7 +233,7 @@ namespace Project.Controllers
 
             if (role.Contains(SD.CustomerRole))
             {
-                var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var customer = _db.tblCustomers.FirstOrDefault(c => c.ApplicationUserId == userId);
                 if (customer != null)
                 {
                     vm.CustomerNumber = customer.CustomerNumber;
@@ -247,7 +247,7 @@ namespace Project.Controllers
 
             else if (role.Contains(SD.CustomerSupport) || role.Contains(SD.AdminRole) || role.Contains(SD.StockController) || role.Contains(SD.MaintenanceTechnician) || role.Contains(SD.FaultTechnician))
             {
-                var employee = _db.tblEmployee.FirstOrDefault(e => e.ApplicationUserId == userId);
+                var employee = _db.tblEmployees.FirstOrDefault(e => e.ApplicationUserId == userId);
                 if (employee != null)
                 {
                     vm.EmployeeNumber = employee.EmployeeNumber;

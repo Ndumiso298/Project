@@ -13,18 +13,18 @@ namespace Project.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblFridgeInStocks_FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropTable(
                 name: "tblRequestFridgeAssignments");
 
             migrationBuilder.DropIndex(
                 name: "IX_tblRequestDetais_FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropColumn(
                 name: "FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.CreateTable(
                 name: "tblFridgeAllocation",
@@ -86,7 +86,7 @@ namespace Project.Migrations
 
             migrationBuilder.AddColumn<int>(
                 name: "FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 type: "int",
                 nullable: true);
 
@@ -119,14 +119,14 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblRequestFridgeAssignments_tblRequestDetais_RequestDetailId",
                         column: x => x.RequestDetailId,
-                        principalTable: "tblRequestDetais",
+                        principalTable: "tblRequestDetails",
                         principalColumn: "RequestDetailId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeInStockId");
 
             migrationBuilder.CreateIndex(
@@ -146,7 +146,7 @@ namespace Project.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblFridgeInStocks_FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeInStockId",
                 principalTable: "tblFridgeInStocks",
                 principalColumn: "FridgeInStockId");

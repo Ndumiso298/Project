@@ -78,12 +78,12 @@ namespace Project.Models
         // ADD THIS: Maintenance visits at this location
         [ValidateNever]
         [Display(Name = "Maintenance Visits")]
-        public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; } = new List<MaintenanceVisit>();
+        public virtual ICollection<FridgeVisit> MaintenanceVisits { get; set; } = new List<FridgeVisit>();
 
         // ADD THIS: Fault reports at this location
         [ValidateNever]
         [Display(Name = "Fault Reports")]
-        public virtual ICollection<Fault> FaultReports { get; set; } = new List<Fault>();
+        public virtual ICollection<FaultTechnician> FaultReports { get; set; } = new List<FaultTechnician>();
 
         // Computed properties
         [NotMapped]

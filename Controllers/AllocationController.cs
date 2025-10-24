@@ -57,7 +57,7 @@ namespace Project.Controllers
 
 
            
-            AllocationVM.RequestHeader.Customer = _db.tblCustomer.Include(u => u.ApplicationUser)
+            AllocationVM.RequestHeader.Customer = _db.tblCustomers.Include(u => u.ApplicationUser)
              .FirstOrDefault(u => u.ApplicationUserId == userId);
 
             AllocationVM.RequestHeader.FirstName = AllocationVM.RequestHeader.Customer.ApplicationUser.FirstName;
@@ -93,7 +93,7 @@ namespace Project.Controllers
                      .Where(a => a.Customer.ApplicationUserId == userId)
                      .ToList();
 
-            Customer Customer = _db.tblCustomer.
+            Customer Customer = _db.tblCustomers.
                 Include(u => u.ApplicationUser).
                 FirstOrDefault(u => u.ApplicationUserId == userId);
 
@@ -123,7 +123,7 @@ namespace Project.Controllers
                     Price = allocation.Price,
                     Count = allocation.Count,
                 };
-                _db.tblRequestDetais.Add(requestDetail);
+                _db.tblRequestDetails.Add(requestDetail);
               
                 _db.SaveChanges();
 

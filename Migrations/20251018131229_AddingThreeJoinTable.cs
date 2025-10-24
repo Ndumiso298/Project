@@ -12,7 +12,7 @@ namespace Project.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "tblCustomerFridge",
+                name: "tblCustomersFridge",
                 columns: table => new
                 {
                     CustomerFridgeId = table.Column<int>(type: "int", nullable: false)
@@ -25,21 +25,21 @@ namespace Project.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblCustomerFridge", x => x.CustomerFridgeId);
+                    table.PrimaryKey("PK_tblCustomersFridge", x => x.CustomerFridgeId);
                     table.ForeignKey(
-                        name: "FK_tblCustomerFridge_tblCustomer_CustomerID",
+                        name: "FK_tblCustomersFridge_tblCustomers_CustomerID",
                         column: x => x.CustomerID,
-                        principalTable: "tblCustomer",
+                        principalTable: "tblCustomers",
                         principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tblCustomerFridge_tblFridgeInStocks_FridgeInStockId",
+                        name: "FK_tblCustomersFridge_tblFridgeInStocks_FridgeInStockId",
                         column: x => x.FridgeInStockId,
                         principalTable: "tblFridgeInStocks",
                         principalColumn: "FridgeInStockId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tblCustomerFridge_tblFridges_FridgeId",
+                        name: "FK_tblCustomersFridge_tblFridges_FridgeId",
                         column: x => x.FridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
@@ -47,18 +47,18 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblCustomerFridge_CustomerID",
-                table: "tblCustomerFridge",
+                name: "IX_tblCustomersFridge_CustomerID",
+                table: "tblCustomersFridge",
                 column: "CustomerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblCustomerFridge_FridgeId",
-                table: "tblCustomerFridge",
+                name: "IX_tblCustomersFridge_FridgeId",
+                table: "tblCustomersFridge",
                 column: "FridgeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblCustomerFridge_FridgeInStockId",
-                table: "tblCustomerFridge",
+                name: "IX_tblCustomersFridge_FridgeInStockId",
+                table: "tblCustomersFridge",
                 column: "FridgeInStockId");
         }
 
@@ -66,7 +66,7 @@ namespace Project.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "tblCustomerFridge");
+                name: "tblCustomersFridge");
         }
     }
 }

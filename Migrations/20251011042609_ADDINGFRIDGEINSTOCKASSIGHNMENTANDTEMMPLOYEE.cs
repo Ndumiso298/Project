@@ -40,7 +40,7 @@ namespace Project.Migrations
                     table.ForeignKey(
                         name: "FK_tblRequestFridgeAssignments_tblRequestDetais_RequestDetailId",
                         column: x => x.RequestDetailId,
-                        principalTable: "tblRequestDetais",
+                        principalTable: "tblRequestDetails",
                         principalColumn: "RequestDetailId",
                         onDelete: ReferentialAction.Restrict);
                 });

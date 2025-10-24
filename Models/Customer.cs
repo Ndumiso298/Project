@@ -36,11 +36,7 @@ namespace Project.Models
 
         // Navigation properties
         public virtual ICollection<Fridge> Fridges { get; set; } 
-        public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; }
-        public ICollection<Fault> Faults { get; set; }
-        public ICollection<FridgeRequest> Requests { get; set; }
-        
-        
-
+        public virtual ICollection<FridgeVisit> MaintenanceVisits { get; set; }
+        public ICollection<FaultTechnician> Faults { get; set; }
     }
 }

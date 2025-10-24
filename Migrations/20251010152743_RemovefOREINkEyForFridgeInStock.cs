@@ -12,15 +12,15 @@ namespace Project.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblFridgeInStocks_FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropIndex(
                 name: "IX_tblRequestDetais_FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropColumn(
                 name: "FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
         }
 
         /// <inheritdoc />
@@ -28,18 +28,18 @@ namespace Project.Migrations
         {
             migrationBuilder.AddColumn<int>(
                 name: "FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 type: "int",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeInStockId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblFridgeInStocks_FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeInStockId",
                 principalTable: "tblFridgeInStocks",
                 principalColumn: "FridgeInStockId");

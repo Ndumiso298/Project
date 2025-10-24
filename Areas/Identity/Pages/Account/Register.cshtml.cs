@@ -201,7 +201,7 @@ namespace Project.Areas.Identity.Pages.Account
                     BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
                     BusinessDocumentData = documentData
                 };
-                _db.tblCustomer.Add(customer);
+                _db.tblCustomers.Add(customer);
                 await _db.SaveChangesAsync();
 
                 var userId = await _userManager.GetUserIdAsync(user);
@@ -239,7 +239,7 @@ namespace Project.Areas.Identity.Pages.Account
                     ApplicationUserId = user.Id,
                     EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + $"_0{count++}"
                 };
-                _db.tblEmployee.Add(employee);
+                _db.tblEmployees.Add(employee);
                 await _db.SaveChangesAsync();
 
                 await _signInManager.SignInAsync(user, isPersistent: false);

@@ -35,7 +35,7 @@ namespace Project.Migrations
                 table: "AspNetUserTokens");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_tblAllocations_tblCustomer_CustomerID",
+                name: "FK_tblAllocations_tblCustomers_CustomerID",
                 table: "tblAllocations");
 
             migrationBuilder.DropForeignKey(
@@ -43,8 +43,8 @@ namespace Project.Migrations
                 table: "tblAllocations");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_tblCustomer_AspNetUsers_ApplicationUserId",
-                table: "tblCustomer");
+                name: "FK_tblCustomers_AspNetUsers_ApplicationUserId",
+                table: "tblCustomers");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblEmployee_AspNetUsers_ApplicationUserId",
@@ -56,11 +56,11 @@ namespace Project.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblFridges_FridgeId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestFridgeAssignments_tblEmployee_EmployeeID",
@@ -75,18 +75,18 @@ namespace Project.Migrations
                 table: "tblRequestFridgeAssignments");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_tblRequestHeaders_tblCustomer_CustomerID",
+                name: "FK_tblRequestHeaders_tblCustomers_CustomerID",
                 table: "tblRequestHeaders");
 
             migrationBuilder.AddColumn<int>(
                 name: "FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 type: "int",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeInStockId");
 
             migrationBuilder.AddForeignKey(
@@ -138,10 +138,10 @@ namespace Project.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_tblAllocations_tblCustomer_CustomerID",
+                name: "FK_tblAllocations_tblCustomers_CustomerID",
                 table: "tblAllocations",
                 column: "CustomerID",
-                principalTable: "tblCustomer",
+                principalTable: "tblCustomers",
                 principalColumn: "CustomerID",
                 onDelete: ReferentialAction.Restrict);
 
@@ -154,8 +154,8 @@ namespace Project.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_tblCustomer_AspNetUsers_ApplicationUserId",
-                table: "tblCustomer",
+                name: "FK_tblCustomers_AspNetUsers_ApplicationUserId",
+                table: "tblCustomers",
                 column: "ApplicationUserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
@@ -179,14 +179,14 @@ namespace Project.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblFridgeInStocks_FridgeInStockId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeInStockId",
                 principalTable: "tblFridgeInStocks",
                 principalColumn: "FridgeInStockId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblFridges_FridgeId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeId",
                 principalTable: "tblFridges",
                 principalColumn: "FridgeId",
@@ -194,7 +194,7 @@ namespace Project.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "RequestHeaderId",
                 principalTable: "tblRequestHeaders",
                 principalColumn: "RequestHeaderId",
@@ -220,15 +220,15 @@ namespace Project.Migrations
                 name: "FK_tblRequestFridgeAssignments_tblRequestDetais_RequestDetailId",
                 table: "tblRequestFridgeAssignments",
                 column: "RequestDetailId",
-                principalTable: "tblRequestDetais",
+                principalTable: "tblRequestDetails",
                 principalColumn: "RequestDetailId",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_tblRequestHeaders_tblCustomer_CustomerID",
+                name: "FK_tblRequestHeaders_tblCustomers_CustomerID",
                 table: "tblRequestHeaders",
                 column: "CustomerID",
-                principalTable: "tblCustomer",
+                principalTable: "tblCustomers",
                 principalColumn: "CustomerID",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -261,7 +261,7 @@ namespace Project.Migrations
                 table: "AspNetUserTokens");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_tblAllocations_tblCustomer_CustomerID",
+                name: "FK_tblAllocations_tblCustomers_CustomerID",
                 table: "tblAllocations");
 
             migrationBuilder.DropForeignKey(
@@ -269,8 +269,8 @@ namespace Project.Migrations
                 table: "tblAllocations");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_tblCustomer_AspNetUsers_ApplicationUserId",
-                table: "tblCustomer");
+                name: "FK_tblCustomers_AspNetUsers_ApplicationUserId",
+                table: "tblCustomers");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblEmployee_AspNetUsers_ApplicationUserId",
@@ -282,15 +282,15 @@ namespace Project.Migrations
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblFridgeInStocks_FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblFridges_FridgeId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_tblRequestFridgeAssignments_tblEmployee_EmployeeID",
@@ -305,16 +305,16 @@ namespace Project.Migrations
                 table: "tblRequestFridgeAssignments");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_tblRequestHeaders_tblCustomer_CustomerID",
+                name: "FK_tblRequestHeaders_tblCustomers_CustomerID",
                 table: "tblRequestHeaders");
 
             migrationBuilder.DropIndex(
                 name: "IX_tblRequestDetais_FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.DropColumn(
                 name: "FridgeInStockId",
-                table: "tblRequestDetais");
+                table: "tblRequestDetails");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
@@ -365,10 +365,10 @@ namespace Project.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_tblAllocations_tblCustomer_CustomerID",
+                name: "FK_tblAllocations_tblCustomers_CustomerID",
                 table: "tblAllocations",
                 column: "CustomerID",
-                principalTable: "tblCustomer",
+                principalTable: "tblCustomers",
                 principalColumn: "CustomerID",
                 onDelete: ReferentialAction.Restrict);
 
@@ -381,8 +381,8 @@ namespace Project.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_tblCustomer_AspNetUsers_ApplicationUserId",
-                table: "tblCustomer",
+                name: "FK_tblCustomers_AspNetUsers_ApplicationUserId",
+                table: "tblCustomers",
                 column: "ApplicationUserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
@@ -406,7 +406,7 @@ namespace Project.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblFridges_FridgeId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeId",
                 principalTable: "tblFridges",
                 principalColumn: "FridgeId",
@@ -414,7 +414,7 @@ namespace Project.Migrations
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tblRequestDetais_tblRequestHeaders_RequestHeaderId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "RequestHeaderId",
                 principalTable: "tblRequestHeaders",
                 principalColumn: "RequestHeaderId",
@@ -440,15 +440,15 @@ namespace Project.Migrations
                 name: "FK_tblRequestFridgeAssignments_tblRequestDetais_RequestDetailId",
                 table: "tblRequestFridgeAssignments",
                 column: "RequestDetailId",
-                principalTable: "tblRequestDetais",
+                principalTable: "tblRequestDetails",
                 principalColumn: "RequestDetailId",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_tblRequestHeaders_tblCustomer_CustomerID",
+                name: "FK_tblRequestHeaders_tblCustomers_CustomerID",
                 table: "tblRequestHeaders",
                 column: "CustomerID",
-                principalTable: "tblCustomer",
+                principalTable: "tblCustomers",
                 principalColumn: "CustomerID",
                 onDelete: ReferentialAction.Restrict);
         }
