@@ -37,6 +37,9 @@ namespace Project.Models
 
         public string? Location { get; set; }
 
+        [Display(Name = "IsActive")]
+        public bool IsActive { get; set; } = true;
+
         [ValidateNever]
         public virtual ICollection<FridgeInStock> FridgeInstances { get; set; }
 

@@ -54,7 +54,7 @@ namespace Project.Controllers
                                .Include(a => a.Customer.ApplicationUser)
                                .FirstOrDefault(o => o.RequestHeaderId == id),
 
-                RequstDetail = _db.tblRequestDetais
+                RequstDetail = _db.tblRequestDetails
                                .Include(d => d.Fridge)
                                .Where(d => d.RequestHeaderId == id)
                                .ToList()

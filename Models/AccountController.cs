@@ -130,7 +130,7 @@ namespace Project.Controllers
                     BusinessDocumentPath = "/uploads/businessDocs/" + fileName,
                     BusinessDocumentData = await System.IO.File.ReadAllBytesAsync(filePath)
                 };
-                _db.tblCustomer.Add(customer);
+                _db.tblCustomers.Add(customer);
             }
             else
             {
@@ -139,7 +139,7 @@ namespace Project.Controllers
                     ApplicationUserId = user.Id,
                     EmployeeNumber = "EMP-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss")
                 };
-                _db.tblEmployee.Add(employee);
+                _db.tblEmployees.Add(employee);
             }
 
             await _db.SaveChangesAsync();

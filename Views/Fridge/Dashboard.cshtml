@@ -1,4 +1,5 @@
 ﻿@model DashboardVM
+
 @{
     ViewData["Title"] = "Fridge Dashboard";
     Layout = "_CustomerLayout";
@@ -17,7 +18,8 @@
                 <div class="d-flex gap-2">
                     <!-- Search Box -->
                     <div class="position-relative">
-                        <input type="text" id="searchInput" class="form-control rounded-pill ps-4" placeholder="Search fridge models..." style="width: 280px;">
+                        <input type="text" id="searchInput" class="form-control rounded-pill ps-4"
+                               placeholder="Search fridge models..." style="width: 280px;">
                         <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
                     </div>
                     <button class="btn btn-outline-primary rounded-pill">
@@ -95,25 +97,40 @@
     <div class="row g-4" id="fridgeGrid">
         @foreach (var stock in Model.FridgeStock)
         {
-            var availablePercent = stock.TotalInstances > 0 ? (double)stock.AvailableInstances / stock.TotalInstances * 100 : 0;
-            var rentedPercent = stock.TotalInstances > 0 ? (double)stock.RentedInstances / stock.TotalInstances * 100 : 0;
+            var availablePercent = stock.TotalInstances > 0
+            ? (double)stock.AvailableInstances / stock.TotalInstances * 100
+            : 0;
+            var rentedPercent = stock.TotalInstances > 0
+            ? (double)stock.RentedInstances / stock.TotalInstances * 100
+            : 0;
 
-            <div class="col-xl-3 col-lg-4 col-md-6 fridge-item" data-search="@stock.FridgeModel.Brand.ToLower() @stock.FridgeModel.Model.ToLower()">
+            <div class="col-xl-3 col-lg-4 col-md-6 fridge-item"
+                 data-search="@stock.FridgeModel.Brand.ToLower() @stock.FridgeModel.Model.ToLower()">
                 <div class="card border-0 shadow-sm rental-card h-100">
                     <div class="rental-image-container">
-                        <img src="@stock.FridgeModel.ImageUrl" class="card-img-top rental-image" alt="@stock.FridgeModel.Brand @stock.FridgeModel.Model" />
+                        <img src="@stock.FridgeModel.ImageUrl"
+                             class="card-img-top rental-image"
+                             alt="@stock.FridgeModel.Brand @stock.FridgeModel.Model" />
                         <div class="image-overlay"></div>
                     </div>
 
                     <div class="card-body d-flex flex-column">
                         <div class="mb-2 d-flex justify-content-between align-items-center">
-                            <h5 class="card-title text-dark mb-0">@stock.FridgeModel.Brand @stock.FridgeModel.Model</h5>
+                            <h5 class="card-title text-dark mb-0">
+                                @stock.FridgeModel.Brand @stock.FridgeModel.Model
+                            </h5>
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary border-0" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary border-0" type="button"
+                                        data-bs-toggle="dropdown">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="@Url.Action("Manage", "FridgeInStock", new { id = stock.FridgeModel.FridgeId })">Manage Stock</a></li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="@Url.Action("Manage", "FridgeInStock", new { id = stock.FridgeModel.FridgeId })">
+                                            Manage Stock
+                                        </a>
+                                    </li>
                                     <li><a class="dropdown-item" href="#">View Details</a></li>
                                     <li><a class="dropdown-item" href="#">Edit Model</a></li>
                                 </ul>
@@ -121,10 +138,15 @@
                         </div>
 
                         <div class="mb-2">
-                            <span class="badge bg-primary bg-opacity-10 text-primary">@stock.FridgeModel.Type</span>
-                            <span class="badge bg-light text-dark ms-1">@stock.FridgeModel.CapacityLiters L</span>
+                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                @stock.FridgeModel.Type
+                            </span>
+                            <span class="badge bg-light text-dark ms-1">
+                                @stock.FridgeModel.CapacityLiters L
+                            </span>
                         </div>
-                    <div class="card-body">
+
+                        <!-- Model Details -->
                         <div class="row mb-3">
                             <div class="col-6">
                                 <small class="text-muted">Capacity</small>
@@ -151,33 +173,34 @@
                                 </div>
                             </div>
 
-                        <!-- Quick Stats -->
-                        <div class="row text-center">
-                            <div class="col-4">
-                                <div class="border-end">
-                                    <h6 class="mb-0 fw-bold">@stock.TotalInstances</h6>
-                                    <small class="text-muted">Total</small>
+                            <!-- Quick Stats -->
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="border-end">
+                                        <h6 class="mb-0 fw-bold">@stock.TotalInstances</h6>
+                                        <small class="text-muted">Total</small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="border-end">
-                                    <h6 class="mb-0 fw-bold text-success">@stock.AvailableInstances</h6>
-                                    <small class="text-muted">Available</small>
+                                <div class="col-4">
+                                    <div class="border-end">
+                                        <h6 class="mb-0 fw-bold text-success">@stock.AvailableInstances</h6>
+                                        <small class="text-muted">Available</small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-4">
-                                <h6 class="mb-0 fw-bold text-warning">@stock.RentedInstances</h6>
-                                <small class="text-muted">Rented</small>
+                                <div class="col-4">
+                                    <h6 class="mb-0 fw-bold text-warning">@stock.RentedInstances</h6>
+                                    <small class="text-muted">Rented</small>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="card-footer bg-transparent border-0 pt-0">
-                            <div class="d-grid">
-                                <a href="@Url.Action("Manage", "FridgeInStock", new { id = stock.FridgeModel.FridgeId })"
-                                   class="btn btn-outline-primary rounded-pill">
-                                    <i class="bi bi-box-arrow-up-right me-2"></i> Manage Stock
-                                </a>
-                            </div>
+                        <div class="d-grid">
+                            <a href="@Url.Action("Manage", "FridgeInStock", new { id = stock.FridgeModel.FridgeId })"
+                               class="btn btn-outline-primary rounded-pill">
+                                <i class="bi bi-box-arrow-up-right me-2"></i> Manage Stock
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -214,8 +237,12 @@
 
             // Hover animation for cards
             $('.rental-card').hover(
-                function () { $(this).addClass('shadow-lg').css('transform', 'translateY(-5px)'); },
-                function () { $(this).removeClass('shadow-lg').css('transform', 'translateY(0)'); }
+                function () {
+                    $(this).addClass('shadow-lg').css('transform', 'translateY(-5px)');
+                },
+                function () {
+                    $(this).removeClass('shadow-lg').css('transform', 'translateY(0)');
+                }
             );
         });
     </script>
@@ -226,51 +253,66 @@
             border-radius: 12px;
             overflow: hidden;
         }
+
         .rental-image-container {
             position: relative;
             height: 180px;
             overflow: hidden;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
+
         .rental-image {
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
+
         .rental-card:hover .rental-image {
             transform: scale(1.05);
         }
+
         .image-overlay {
             position: absolute;
             inset: 0;
             background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.1));
         }
+
         .badge {
             font-size: 0.75rem;
             font-weight: 500;
         }
+
         .btn-outline-primary {
             font-weight: 500;
             transition: all 0.3s ease;
         }
-        .btn-outline-primary:hover {
-            transform: translateY(-2px);
-        }
+
+            .btn-outline-primary:hover {
+                transform: translateY(-2px);
+            }
+
         #searchInput {
             border: 1px solid #dee2e6;
             transition: all 0.2s ease;
         }
 
-        #searchInput:focus {
-            border-color: #4361ee;
-            box-shadow: 0 0 0 0.15rem rgba(67, 97, 238, 0.25);
-        }
+            #searchInput:focus {
+                border-color: #4361ee;
+                box-shadow: 0 0 0 0.15rem rgba(67, 97, 238, 0.25);
+            }
+
         .progress {
             border-radius: 6px;
             background-color: #f1f3f5;
         }
+
         media (max-width: 768px) {
-            .rental-image-container { height: 150px; }
+            .rental-image-container
+
+        {
+            height: 150px;
+        }
+
         }
     </style>
 }

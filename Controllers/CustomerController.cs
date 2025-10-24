@@ -53,7 +53,7 @@ namespace Project.Controllers
                 else
                 {
     
-                    var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
+                    var customer = _db.tblCustomers.FirstOrDefault(c => c.ApplicationUserId == userId);
                     if (customer != null)
                     {
                         allocation.CustomerID = customer.CustomerID; 

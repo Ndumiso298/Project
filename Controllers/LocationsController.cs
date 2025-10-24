@@ -84,8 +84,8 @@ namespace Project.Controllers
                     AvailableFridges = l.Fridges.Count(f => f.IsActive && f.AvailabilityStatus == "Available"),
                     TotalCustomers = l.Customers.Count(c => c.IsActive),
                     TotalEmployees = l.Employees.Count(e => e.IsActive),
-                    PendingMaintenance = l.MaintenanceVisits.Count(m => m.ScheduledDate >= DateTime.Now && m.Status == "Scheduled"),
-                    OpenFaults = l.FaultReports.Count(f => f.Status == "Acknowledged" || f.Status == "In Progress")
+                    PendingMaintenance = l.MaintenanceVisits.Count(m => m.VisitDate >= DateTime.Now && m.CheckupStatus == "Scheduled"),
+                    OpenFaults = l.FaultReports.Count(f => f.RepairStatus == "Acknowledged" || f.RepairStatus == "In Progress")
                 }).ToList();
 
                 ViewBag.SearchString = searchString;
@@ -118,8 +118,8 @@ namespace Project.Controllers
                     .Include(l => l.Customers).ThenInclude(c => c.ApplicationUser)
                     .Include(l => l.Fridges).ThenInclude(f => f.Model)
                     .Include(l => l.FridgeAllocations).ThenInclude(a => a.Fridge)
-                    .Include(l => l.MaintenanceVisits).ThenInclude(m => m.Technician)
-                    .Include(l => l.FaultReports).ThenInclude(f => f.ResolvedByTechnician)
+                    .Include(l => l.MaintenanceVisits).ThenInclude(m => m.TechnicianName)
+                    .Include(l => l.FaultReports).ThenInclude(f => f.TechnicianAssigned)
                     .FirstOrDefaultAsync(l => l.Id == id);
 
                 if (location == null || !location.IsActive)
@@ -136,8 +136,8 @@ namespace Project.Controllers
                     FridgeCount = location.Fridges.Count(f => f.IsActive),
                     AvailableFridges = location.Fridges.Count(f => f.IsActive && f.AvailabilityStatus == "Available"),
                     ActiveAllocations = location.FridgeAllocations.Count(a => a.Status == AllocationStatus.Active),
-                    PendingMaintenance = location.MaintenanceVisits.Count(m => m.Status == "Scheduled"),
-                    OpenFaults = location.FaultReports.Count(f => f.Status == "Acknowledged" || f.Status == "In Progress")
+                    PendingMaintenance = location.MaintenanceVisits.Count(m => m.CheckupStatus == "Scheduled"),
+                    OpenFaults = location.FaultReports.Count(f => f.RepairStatus == "Acknowledged" || f.RepairStatus == "In Progress")
                 };
 
                 ViewBag.Stats = stats;
@@ -567,8 +567,8 @@ namespace Project.Controllers
                     AvailableFridges = l.Fridges.Count(f => f.IsActive && f.AvailabilityStatus == "Available"),
                     TotalCustomers = l.Customers.Count(c => c.IsActive),
                     TotalEmployees = l.Employees.Count(e => e.IsActive),
-                    PendingMaintenance = l.MaintenanceVisits.Count(m => m.Status == "Scheduled"),
-                    OpenFaults = l.FaultReports.Count(f => f.Status == "Acknowledged"|| f.Status == "In Progress")
+                    PendingMaintenance = l.MaintenanceVisits.Count(m => m.CheckupStatus == "Scheduled"),
+                    OpenFaults = l.FaultReports.Count(f => f.RepairStatus == "Acknowledged"|| f.RepairStatus == "In Progress")
                 })
                 .FirstOrDefaultAsync();
 

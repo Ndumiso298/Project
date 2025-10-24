@@ -283,7 +283,7 @@ namespace Project.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("tblCustomer");
+                    b.ToTable("tblCustomers");
                 });
 
             modelBuilder.Entity("Project.Models.Employee", b =>
@@ -1155,7 +1155,7 @@ namespace Project.Migrations
 
                     b.HasIndex("RequestHeaderId");
 
-                    b.ToTable("tblRequestDetais");
+                    b.ToTable("tblRequestDetails");
                 });
 
             modelBuilder.Entity("Project.Models.RequestFridgeAssignment", b =>

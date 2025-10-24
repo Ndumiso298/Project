@@ -192,7 +192,7 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblCustomer",
+                name: "tblCustomers",
                 columns: table => new
                 {
                     CustomerID = table.Column<int>(type: "int", nullable: false)
@@ -204,9 +204,9 @@ namespace Project.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblCustomer", x => x.CustomerID);
+                    table.PrimaryKey("PK_tblCustomers", x => x.CustomerID);
                     table.ForeignKey(
-                        name: "FK_tblCustomer_AspNetUsers_ApplicationUserId",
+                        name: "FK_tblCustomers_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -271,9 +271,9 @@ namespace Project.Migrations
                 {
                     table.PrimaryKey("PK_tblAllocations", x => x.AllocationId);
                     table.ForeignKey(
-                        name: "FK_tblAllocations_tblCustomer_CustomerID",
+                        name: "FK_tblAllocations_tblCustomers_CustomerID",
                         column: x => x.CustomerID,
-                        principalTable: "tblCustomer",
+                        principalTable: "tblCustomers",
                         principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -310,9 +310,9 @@ namespace Project.Migrations
                 {
                     table.PrimaryKey("PK_tblRequestHeaders", x => x.RequestHeaderId);
                     table.ForeignKey(
-                        name: "FK_tblRequestHeaders_tblCustomer_CustomerID",
+                        name: "FK_tblRequestHeaders_tblCustomers_CustomerID",
                         column: x => x.CustomerID,
-                        principalTable: "tblCustomer",
+                        principalTable: "tblCustomers",
                         principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -346,7 +346,7 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblRequestDetais",
+                name: "tblRequestDetails",
                 columns: table => new
                 {
                     RequestDetailId = table.Column<int>(type: "int", nullable: false)
@@ -497,8 +497,8 @@ namespace Project.Migrations
                 column: "FridgeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblCustomer_ApplicationUserId",
-                table: "tblCustomer",
+                name: "IX_tblCustomers_ApplicationUserId",
+                table: "tblCustomers",
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
@@ -518,12 +518,12 @@ namespace Project.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_FridgeId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "FridgeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblRequestDetais_RequestHeaderId",
-                table: "tblRequestDetais",
+                table: "tblRequestDetails",
                 column: "RequestHeaderId");
 
             migrationBuilder.CreateIndex(
@@ -565,7 +565,7 @@ namespace Project.Migrations
                 name: "tblFridgeVisits");
 
             migrationBuilder.DropTable(
-                name: "tblRequestDetais");
+                name: "tblRequestDetails");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -577,7 +577,7 @@ namespace Project.Migrations
                 name: "tblRequestHeaders");
 
             migrationBuilder.DropTable(
-                name: "tblCustomer");
+                name: "tblCustomers");
 
             migrationBuilder.DropTable(
                 name: "tblEmployee");
