@@ -27,9 +27,10 @@ namespace Project.Models
         [ForeignKey("RequestHeaderId")]
         [ValidateNever]
         public RequestHeader RequestHeader { get; set; }
-       
 
 
+        // Navigation property for faults reported during this visit
+        public virtual ICollection<FaultReport> FaultReports { get; set; } = new List<FaultReport>();
         public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
     }
 }

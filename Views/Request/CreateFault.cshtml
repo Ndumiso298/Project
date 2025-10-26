@@ -1,0 +1,204 @@
+﻿@model Project.Models.ViewModel.FaultReportVM
+
+@{
+    ViewData["Title"] = "Report Fridge Fault";
+    var selectedFridge = Model.AvailableFridges.FirstOrDefault(f => f.FridgeInStockId == Model.FridgeInStockId);
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-12">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">@ViewData["Title"]</h1>
+                    <p class="text-muted mb-0">Report technical issues with your fridge</p>
+                </div>
+                <a asp-action="CreateFaultSelection" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left fa-sm"></i> Back to Fridge Selection
+                </a>
+            </div>
+
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="m-0 font-weight-bold">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Fault Report Form
+                            </h5>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge badge-light text-primary">Customer: @Model.CustomerName</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    @if (selectedFridge != null)
+                    {
+                        <!-- Selected Fridge Information -->
+                        <div class="alert alert-success border-left-success mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-refrigerator fa-2x text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="alert-heading font-weight-bold mb-1">Reporting Fault For:</h6>
+                                    <p class="mb-0">
+                                        <strong>@selectedFridge.FridgeInStock.Fridge.Brand @selectedFridge.FridgeInStock.Fridge.Model</strong>
+                                        | Serial: @selectedFridge.FridgeInStock.FridgeNo
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form asp-action="CreateFault" method="post" enctype="multipart/form-data" id="faultForm">
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden" asp-for="FridgeInStockId" />
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <!-- Fault Type -->
+                                    <div class="form-group mb-4">
+                                        <label asp-for="FaultType" class="form-label fw-bold">Fault Type *</label>
+                                        <select asp-for="FaultType" class="form-select" required>
+                                            <option value="">-- Select the main issue --</option>
+                                            <option value="Not Cooling">❄️ Not Cooling Properly</option>
+                                            <option value="Over Cooling">🥶 Over Cooling/Freezing</option>
+                                            <option value="Water Leakage">💧 Water Leakage</option>
+                                            <option value="Strange Noises">🔊 Unusual Noises</option>
+                                            <option value="Not Defrosting">🧊 Not Defrosting</option>
+                                            <option value="Door Issues">🚪 Door Not Closing Properly</option>
+                                            <option value="Display Problems">📱 Display Not Working</option>
+                                            <option value="Ice Maker Problems">🧊 Ice Maker Issues</option>
+                                            <option value="Electrical Issues">⚡ Electrical Problems</option>
+                                            <option value="Other">🔧 Other Issue</option>
+                                        </select>
+                                        <span asp-validation-for="FaultType" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Priority Level -->
+                                    <div class="form-group mb-4">
+                                        <label asp-for="Priority" class="form-label fw-bold">Urgency Level *</label>
+                                        <select asp-for="Priority" class="form-select" required>
+                                            <option value="">-- How urgent is this? --</option>
+                                            <option value="Low">🟢 Low - Minor issue, still usable</option>
+                                            <option value="Medium">🟡 Medium - Affecting performance</option>
+                                            <option value="High">🔴 High - Critical, food safety at risk</option>
+                                        </select>
+                                        <span asp-validation-for="Priority" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Replacement Request -->
+                                    <div class="form-group mb-4">
+                                        <div class="form-check form-switch">
+                                            <input asp-for="RequestReplacement" class="form-check-input" id="requestReplacement" />
+                                            <label asp-for="RequestReplacement" class="form-check-label fw-bold" for="requestReplacement">
+                                                🔄 Request Temporary Replacement Fridge
+                                            </label>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Check if you need a temporary fridge during repairs
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <!-- Image Upload -->
+                                    <div class="form-group mb-4">
+                                        <label asp-for="FaultImages" class="form-label fw-bold">Upload Photos</label>
+                                        <input asp-for="FaultImages" type="file" multiple class="form-control" accept="image/*" />
+                                        <span asp-validation-for="FaultImages" class="text-danger small"></span>
+                                        <small class="form-text text-muted">
+                                            Upload clear photos showing the issue (max 5 images)
+                                        </small>
+                                    </div>
+
+                                    <!-- Quick Tips -->
+                                    <div class="alert alert-info">
+                                        <h6 class="fw-bold">💡 Quick Tips:</h6>
+                                        <ul class="mb-0 small">
+                                            <li>Take photos of error messages or damage</li>
+                                            <li>Include photos from different angles</li>
+                                            <li>Show any leaking water or unusual signs</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Description -->
+                            <div class="form-group mb-4">
+                                <label asp-for="Description" class="form-label fw-bold">Fault Description *</label>
+                                <textarea asp-for="Description" class="form-control" rows="5"
+                                          placeholder="Please describe the issue in detail. For example:
+    • When did you first notice the problem?
+    • What specific symptoms are you seeing?
+    • Have you tried any troubleshooting?
+    • Any error messages or unusual sounds?
+    • How is this affecting your daily use?" required></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="form-text text-muted">
+                                        Detailed descriptions help us fix issues faster
+                                    </small>
+                                    <span class="badge bg-light text-dark" id="charCount">0 characters</span>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-flex justify-content-between align-items-center mt-5">
+                                <a asp-action="CreateFaultSelection" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left mr-2"></i>Back to Fridge Selection
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn">
+                                    <i class="fas fa-paper-plane mr-2"></i>
+                                    <span class="submit-text">Submit Fault Report</span>
+                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status"></div>
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger text-center">
+                            <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                            <h4>Fridge Not Found</h4>
+                            <p>Please go back and select a valid fridge to report a fault.</p>
+                            <a asp-action="CreateFaultSelection" class="btn btn-primary">Back to Fridge Selection</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Character counter
+            $('#Description').on('input', function () {
+                $('#charCount').text($(this).val().length + ' characters');
+            }).trigger('input');
+
+            // Handle form submission with loading feedback
+            $('#faultForm').on('submit', function (e) {
+                const form = $(this);
+
+                // Let ASP.NET built-in validation run first
+                if (!form.valid()) {
+                    console.warn('Form validation failed.');
+                    e.preventDefault();
+                    return;
+                }
+
+                // If valid, show spinner and disable button
+                $('#submitBtn').prop('disabled', true);
+                $('.submit-text').text('Submitting...');
+                $('.spinner-border').removeClass('d-none');
+            });
+        });
+    </script>
+}

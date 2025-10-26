@@ -1,169 +1,109 @@
-﻿@model IEnumerable<Project.Models.ViewModel.FaultViewModel>
+﻿@model dynamic
 @{
-    ViewData["Title"] = ViewBag.Source + " Faults";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    var source = ViewBag.Source as string ?? "Faults";
+    var isMaintenance = source == "Maintenance";
+    ViewData["Title"] = $"{source} - Fault Management";
 }
 
 <div class="container-fluid">
-    <!-- Page Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">@ViewBag.Source Faults</h1>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">@source</h1>
         <div>
             <a href="@Url.Action("Dashboard")" class="btn btn-secondary">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
-            <a href="@Url.Action("Index")" class="btn btn-primary">
-                <i class="fas fa-list"></i> All Faults
-            </a>
+            @if (isMaintenance)
+            {
+                <a href="@Url.Action("ViewCustomerFaults")" class="btn btn-outline-success">
+                    <i class="fas fa-users"></i> View Customer Faults
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("ViewMaintenanceFaults")" class="btn btn-outline-warning">
+                    <i class="fas fa-tools"></i> View Maintenance Faults
+                </a>
+            }
         </div>
     </div>
 
-    <!-- Statistics -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total @ViewBag.Source Faults
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-list fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(f => f.Status == "Reported" || f.Status == "Failed Checkup")</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                High Priority
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(f => f.Priority == "High" || f.Priority == "Critical")</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Avg Resolution Time
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">-</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Faults Table -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">@ViewBag.Source Fault Details</h6>
+            <h6 class="m-0 font-weight-bold text-primary">@source List</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                    <thead class="table-light">
+                <table class="table table-bordered table-hover" id="faultsTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
                         <tr>
-                            <th>Reported Date</th>
                             <th>Customer</th>
                             <th>Fridge Model</th>
-                            <th>Description</th>
-                            @if (ViewBag.Source == "Customer Reports")
+                            @if (!isMaintenance)
                             {
                                 <th>Fault Type</th>
                             }
-                            <th>Priority</th>
+                            <th>Description</th>
+                            <th>@(isMaintenance ? "Visit Date" : "Reported Date")</th>
                             <th>Status</th>
+                            <th>Priority</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var fault in Model)
+                        @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@fault.ReportedDate.ToString()</td>
-                                <td>@fault.CustomerName</td>
-                                <td>@fault.FridgeModel</td>
-                                <td>
-                                    <div class="fault-description">
-                                        <strong>@fault.Description</strong>
-                                        @if (!string.IsNullOrEmpty(fault.AdditionalNotes))
-                                        {
-                                            <br>
-                                            <small class="text-muted">@fault.AdditionalNotes</small>
-                                        }
-                                    </div>
-                                </td>
-                                @if (ViewBag.Source == "Customer Reports")
+                                <td>@item.CustomerName</td>
+                                <td>@item.FridgeModel</td>
+
+                                @if (!isMaintenance)
                                 {
-                                    <td>
-                                        <span class="badge bg-secondary">@fault.FaultType</span>
-                                    </td>
+                                    <td>@item.FaultType</td>
                                 }
+
+                                <td>@item.Description</td>
+                                <td>@(isMaintenance? item.VisitDate?.ToString("MMM dd, yyyy") : item.ReportedDate?.ToString("MMM dd, yyyy"))</td>
                                 <td>
-                                    <span class="badge @GetPriorityBadgeClass(fault.Priority)">@fault.Priority</span>
+                                    <span class="badge @GetStatusBadgeClass(item.Status)">@item.Status</span>
                                 </td>
                                 <td>
-                                    <span class="badge @GetStatusBadgeClass(fault.Status)">@fault.Status</span>
+                                    <span class="badge @GetPriorityBadgeClass(item.Priority)">@item.Priority</span>
                                 </td>
                                 <td>
-                                    <div class="btn-group" role="group">
-                                        @if (fault.Source == "Maintenance")
+                                    <div class="btn-group btn-group-sm">
+                                        @if (isMaintenance)
                                         {
-                                            <a href="@Url.Action("BookMaintenanceFault", new { visitId = fault.Id })"
-                                               class="btn btn-primary btn-sm" title="Assign Technician">
-                                                <i class="fas fa-user-plus"></i>
+                                            @if (!item.HasReportedFault)
+                                            {
+                                                <a href="@Url.Action("ReportFaultFromVisit", new { visitId = item.VisitId })"
+                                                   class="btn btn-warning" title="Report Fault">
+                                                    <i class="fas fa-flag"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success p-2" title="Fault Already Reported">
+                                                    <i class="fas fa-check"></i> Reported
+                                                </span>
+                                            }
+                                            <a href="@Url.Action("BookMaintenanceFault", new { visitId = item.VisitId })"
+                                               class="btn btn-info" title="Book Repair">
+                                                <i class="fas fa-calendar-plus"></i>
                                             </a>
                                         }
                                         else
                                         {
-                                            <a href="@Url.Action("BookCustomerFault", new { faultReportId = fault.Id })"
-                                               class="btn btn-primary btn-sm" title="Assign Technician">
-                                                <i class="fas fa-user-plus"></i>
+                                            <a href="@Url.Action("BookCustomerFault", new { faultReportId = item.FaultReportId })"
+                                               class="btn btn-primary" title="Book Repair">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </a>
+                                            <a href="@Url.Action("ProcessFault", new { id = item.FaultReportId })"
+                                               class="btn btn-success" title="Process Fault">
+                                                <i class="fas fa-cogs"></i>
                                             </a>
                                         }
-                                        <a href="@Url.Action("FaultDetails", new { id = fault.Id, source = fault.Source.ToLower().Replace(" ", "") })"
-                                           class="btn btn-info btn-sm" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -171,43 +111,46 @@
                     </tbody>
                 </table>
             </div>
-
-            @if (!Model.Any())
-            {
-                <div class="text-center py-5">
-                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
-                    <h4>No @ViewBag.Source Found</h4>
-                    <p class="text-muted">There are no @ViewBag.Source.ToLower() at the moment.</p>
-                    <a href="@Url.Action("Index")" class="btn btn-primary">
-                        <i class="fas fa-arrow-left"></i> Back to All Faults
-                    </a>
-                </div>
-            }
         </div>
     </div>
 </div>
 
 @functions {
-    public string GetStatusBadgeClass(string status)
-    {
-        return status?.ToLower() switch
-        {
-            "completed" or "resolved" => "bg-success",
-            "in progress" => "bg-info",
-            "reported" or "failed checkup" => "bg-warning",
-            "cancelled" or "scrapped" => "bg-secondary",
-            _ => "bg-secondary"
-        };
-    }
-
     public string GetPriorityBadgeClass(string priority)
     {
         return priority?.ToLower() switch
         {
-            "critical" or "high" => "bg-danger",
-            "medium" => "bg-warning",
-            "low" => "bg-info",
-            _ => "bg-secondary"
+            "high" => "badge-danger",
+            "medium" => "badge-warning",
+            "low" => "badge-info",
+            _ => "badge-secondary"
         };
     }
+
+    public string GetStatusBadgeClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "reported" => "badge-primary",
+            "in progress" => "badge-warning",
+            "resolved" => "badge-success",
+            "declined" => "badge-danger",
+            "failed checkup" => "badge-danger",
+            _ => "badge-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#faultsTable').DataTable({
+                "order": [[4, "desc"]],
+                "pageLength": 10,
+                "language": {
+                    "emptyTable": "No @source.ToLower() found"
+                }
+            });
+        });
+    </script>
 }

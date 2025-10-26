@@ -1,0 +1,349 @@
+﻿@model Project.Models.ViewModel.FaultReportVM
+
+@{
+    ViewData["Title"] = "Select Fridge to Report Fault";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-12">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800 font-weight-bold">@ViewData["Title"]</h1>
+                    <p class="text-muted mb-0">Select which fridge has the problem</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left fa-sm"></i> Back to Requests
+                </a>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Fridges
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AvailableFridges.Count</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-refrigerator fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="m-0 font-weight-bold">
+                                <i class="fas fa-refrigerator mr-2"></i>Your Allocated Fridges
+                            </h5>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge badge-light text-primary">@Model.CustomerName</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.AvailableFridges.Any())
+                    {
+                        <div class="row">
+                            @foreach (var fridge in Model.AvailableFridges)
+                            {
+                                var fridgeInfo = fridge.FridgeInStock?.Fridge;
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100 border-left-success shadow-sm fridge-card">
+                                        <div class="card-header bg-light py-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-hashtag mr-1"></i>Serial: @fridge.FridgeInStock?.FridgeNo
+                                            </small>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <!-- Fridge Image -->
+                                            <div class="fridge-image-container mb-3">
+                                                @if (!string.IsNullOrEmpty(fridgeInfo?.ImageUrl))
+                                                {
+                                                    <img src="@fridgeInfo.ImageUrl"
+                                                         alt="@fridgeInfo.Brand @fridgeInfo.Model"
+                                                         class="fridge-image img-fluid rounded">
+                                                }
+                                                else
+                                                {
+                                                    <div class="fridge-placeholder">
+                                                        <i class="fas fa-refrigerator fa-4x text-primary"></i>
+                                                        <div class="mt-2 small text-muted">No Image Available</div>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <!-- Fridge Brand and Model -->
+                                            <h5 class="card-title text-dark font-weight-bold">@fridgeInfo?.Brand</h5>
+                                            <h6 class="card-subtitle mb-2 text-primary">@fridgeInfo?.Model</h6>
+
+                                            <!-- Fridge Specifications -->
+                                            <div class="fridge-specs text-left small text-muted mb-3">
+                                                @if (!string.IsNullOrEmpty(fridgeInfo.Description))
+                                                {
+                                                    <div class="spec-item mb-1">
+                                                        <i class="fas fa-arrows-alt-v mr-2"></i>
+                                                        <strong>Capacity:</strong> @fridgeInfo.CapacityLiters
+                                                    </div>
+                                                }
+                                                @if (!string.IsNullOrEmpty(fridgeInfo?.Type))
+                                                {
+                                                    <div class="spec-item mb-1">
+                                                        <i class="fas fa-tag mr-2"></i>
+                                                        <strong>Type:</strong> @fridgeInfo.Type
+                                                    </div>
+                                                }
+                                                @if (fridgeInfo?.RentalPricePerMonth > 0)
+                                                {
+                                                    <div class="spec-item mb-1">
+                                                        <i class="fas fa-money-bill-wave mr-2"></i>
+                                                        <strong>Monthly:</strong> R @fridgeInfo.RentalPricePerMonth.ToString("N2")
+                                                    </div>
+                                                }
+                                               
+                                            </div>
+
+                                            <!-- Status Badge -->
+                                            <div class="mb-3">
+                                                <span class="badge badge-success">
+                                                    <i class="fas fa-check-circle mr-1"></i>Allocated
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-transparent text-center">
+                                            <a asp-action="CreateFault" asp-route-id="@fridge.FridgeInStockId"
+                                               class="btn btn-primary btn-block btn-report-fault">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i>Report Fault
+                                            </a>
+                                            <small class="text-muted d-block mt-2">
+                                                Click to report an issue with this fridge
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Help Section -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info border-left-info">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-info-circle fa-2x text-info"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="alert-heading font-weight-bold mb-2">Need Help?</h6>
+                                            <p class="mb-2">Select the fridge that's experiencing issues. Common problems include:</p>
+                                            <ul class="mb-0 small">
+                                                <li>❄️ Not cooling properly</li>
+                                                <li>💧 Water leakage</li>
+                                                <li>🔊 Unusual noises</li>
+                                                <li>🚪 Door not sealing correctly</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="fas fa-refrigerator fa-5x text-muted mb-4"></i>
+                                <h3 class="text-muted mb-3">No Fridges Allocated</h3>
+                                <p class="text-muted mb-4">You don't have any allocated fridges to report faults for.</p>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-6">
+                                        <div class="card border-left-warning">
+                                            <div class="card-body">
+                                                <h6 class="font-weight-bold text-warning mb-2">
+                                                    <i class="fas fa-lightbulb mr-2"></i>What to do next?
+                                                </h6>
+                                                <p class="small text-muted mb-0">
+                                                    Contact support to get fridges allocated to your account, or check your rental requests status.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <a asp-action="Index" class="btn btn-primary mr-3">
+                                        <i class="fas fa-list mr-2"></i>View Requests
+                                    </a>
+                                    <a href="/Support/Contact" class="btn btn-outline-primary">
+                                        <i class="fas fa-headset mr-2"></i>Contact Support
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .fridge-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #1cc88a !important;
+        }
+
+            .fridge-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+            }
+
+        .fridge-image-container {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .fridge-image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .fridge-card:hover .fridge-image {
+            transform: scale(1.05);
+        }
+
+        .fridge-placeholder {
+            color: #b7b9cc;
+            padding: 20px;
+        }
+
+        .fridge-specs {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-report-fault {
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+            .btn-report-fault:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        }
+
+        .border-left-primary {
+            border-left-color: #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left-color: #1cc88a !important;
+        }
+
+        .border-left-warning {
+            border-left-color: #f6c23e !important;
+        }
+
+        .border-left-info {
+            border-left-color: #36b9cc !important;
+        }
+
+        .empty-state {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .fridge-image-container {
+                height: 100px;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Add hover effects
+            $('.fridge-card').hover(
+                function() {
+                    $(this).addClass('shadow-lg');
+                },
+                function() {
+                    $(this).removeClass('shadow-lg');
+                }
+            );
+
+            // Add click animation to report buttons
+            $('.btn-report-fault').on('click', function() {
+                const $btn = $(this);
+                const originalText = $btn.html();
+
+                $btn.prop('disabled', true).html(`
+                    <div class="spinner-border spinner-border-sm mr-2" role="status"></div>
+                    Loading...
+                `);
+
+                // Re-enable after 2 seconds if still on page (fallback)
+                setTimeout(() => {
+                    if ($btn.is(':visible')) {
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                }, 2000);
+            });
+
+            // Add smooth scrolling for any anchor links
+            $('a[href^="#"]').on('click', function(event) {
+                const target = $(this.getAttribute('href'));
+                if (target.length) {
+                    event.preventDefault();
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top - 80
+                    }, 1000);
+                }
+            });
+
+            // Fixed console log - convert count to string properly
+            console.log('Fridge selection page loaded successfully');
+            console.log('Available fridges: ' + @Model.AvailableFridges.Count);
+        });
+    </script>
+}

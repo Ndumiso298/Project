@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026130354_fault")]
+    partial class fault
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -411,6 +414,10 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FaultReportId"));
 
+                    b.Property<string>("AdditionalNotes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
@@ -491,9 +498,6 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("Completion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerBookingStatus")
@@ -1552,15 +1556,15 @@ namespace Project.Migrations
                         {
                             Id = "admin-id-123",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cbf42ee3-a721-4760-8c0f-3b096e91c9da",
+                            ConcurrencyStamp = "b9d27436-7a20-4e9a-a3ec-d82faf55e091",
                             Email = "admin@fridgesystem.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
                             NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENW2KXEsmMrB0Urp5iNrQVwII32wMOPrMMTQX24fG2QFTca17lec6vP6qFT9FudbNA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECDwLw8HxF8QZ6vtyc3YQMqYGOMGQRFC4Ljfh68WGx5njpvPIz824zMjqtfyTwvecA==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "0e88c37b-3498-452d-98f1-fe85d2159af5",
+                            SecurityStamp = "2e6f1725-c253-41e4-930f-6bf25b6f2ae2",
                             TwoFactorEnabled = false,
                             UserName = "admin@fridgesystem.com",
                             CellNumber = "+27123456789",

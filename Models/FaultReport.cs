@@ -35,8 +35,7 @@ namespace Project.Models
 
         public bool RequestReplacement { get; set; }
         public DateTime ResolvedDate { get; set; }
-        public string AdditionalNotes { get; set; } 
-
+        
         public string? DeclineReason { get; set; }
 
         public bool IsRelaunched { get; set; } = false;
@@ -45,7 +44,13 @@ namespace Project.Models
         [ForeignKey("OriginalFaultReportId")]
         [ValidateNever]
         public FaultReport? OriginalFaultReport { get; set; }
+        public string? ReportedBy { get; set; } // "Customer" or "Maintenance"
+        public int? VisitId { get; set; } // Reference to maintenance visit
+        public bool IsMaintenanceReported => !string.IsNullOrEmpty(ReportedBy) && ReportedBy == "Maintenance";
 
+        // Navigation property
+        public virtual FridgeVisit? FridgeVisit { get; set; }
+        
         public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
     }
 }

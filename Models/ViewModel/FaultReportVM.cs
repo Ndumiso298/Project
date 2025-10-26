@@ -3,8 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Project.Models.ViewModel
 {
+    // Existing FaultReportVM
     public class FaultReportVM
     {
+        public int CustomerID { get; set; }
+
         [Required(ErrorMessage = "Please select a fridge")]
         [Display(Name = "Select Fridge")]
         public int FridgeInStockId { get; set; }

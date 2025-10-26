@@ -8,6 +8,7 @@ using Project.Utility;
 using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Project.Controllers
 {
@@ -15,10 +16,12 @@ namespace Project.Controllers
     public class RequestController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public RequestController(ApplicationDbContext db)
+        public RequestController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // ====================== SHARED ACTIONS ======================
@@ -188,6 +191,331 @@ namespace Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ====================== FAULT REPORTING ACTIONS ======================
+
+        // FRIDGE SELECTION PAGE
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> CreateFaultSelection()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var customerFridges = await _db.tblCustomerFridge
+                .Where(cf => cf.CustomerID == customer.CustomerID)
+                .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
+                .ToListAsync();
+
+            if (!customerFridges.Any())
+            {
+                TempData[SD.Error] = "You don't have any allocated fridges to report faults for.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new FaultReportVM
+            {
+                CustomerID = customer.CustomerID,
+                AvailableFridges = customerFridges,
+                CustomerName = $"{customer.ApplicationUser.FirstName} {customer.ApplicationUser.LastName}"
+            };
+
+            return View(viewModel);
+        }
+
+        // CREATE FAULT REPORT - GET (for specific fridge)
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> CreateFault(int? id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var customerFridges = await _db.tblCustomerFridge
+                .Where(cf => cf.CustomerID == customer.CustomerID)
+                .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
+                .ToListAsync();
+
+            if (!customerFridges.Any())
+            {
+                TempData[SD.Error] = "You don't have any allocated fridges to report faults for.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new FaultReportVM
+            {
+                CustomerID = customer.CustomerID,
+                AvailableFridges = customerFridges,
+                CustomerName = $"{customer.ApplicationUser.FirstName} {customer.ApplicationUser.LastName}"
+            };
+
+            // Pre-select fridge if id is passed
+            if (id.HasValue)
+            {
+                viewModel.FridgeInStockId = id.Value;
+            }
+
+            return View(viewModel);
+        }
+
+        // CREATE FAULT REPORT - POST
+        [Authorize(Roles = SD.CustomerRole)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateFault(FaultReportVM faultReportVM)
+        {
+            Console.WriteLine(">>> Entered POST CreateFault action <<<");
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Reload dropdown data if validation fails
+            faultReportVM.AvailableFridges = await _db.tblCustomerFridge
+                .Where(cf => cf.CustomerID == customer.CustomerID)
+                .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
+                .ToListAsync();
+            faultReportVM.CustomerName = $"{customer.ApplicationUser.FirstName} {customer.ApplicationUser.LastName}";
+
+            if (!ModelState.IsValid)
+            {
+                TempData[SD.Error] = "Please fill in all required fields.";
+                return View(faultReportVM);
+            }
+
+            // Check fridge allocation
+            bool isAllocated = await _db.tblCustomerFridge
+                .AnyAsync(cf => cf.CustomerID == customer.CustomerID &&
+                                cf.FridgeInStockId == faultReportVM.FridgeInStockId);
+
+            if (!isAllocated)
+            {
+                TempData[SD.Error] = "You can only report faults for your allocated fridges.";
+                return View(faultReportVM);
+            }
+
+            // Handle image upload
+            string? imageUrls = null;
+            if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
+            {
+                imageUrls = await SaveFaultImages(faultReportVM.FaultImages);
+            }
+
+            // Save Fault Report
+            var fault = new FaultReport
+            {
+                CustomerId = customer.CustomerID,
+                FridgeInStockId = faultReportVM.FridgeInStockId,
+                FaultType = faultReportVM.FaultType,
+                Description = faultReportVM.Description,
+                Priority = faultReportVM.Priority,
+                Status = "Reported",
+                ReportedDate = DateTime.Now,
+                ImageUrl = imageUrls,
+                RequestReplacement = faultReportVM.RequestReplacement
+            };
+
+            _db.tblFaultReports.Add(fault);
+            await _db.SaveChangesAsync();
+
+            // Create fault technician record
+            var technicianRecord = new FaultTechnician
+            {
+                FaultReportId = fault.FaultReportId,
+                FaultDescription = $"{fault.FaultType}: {fault.Description}",
+                Priority = fault.Priority,
+                CustomerBookingStatus = "Pending",
+                CreatedDate = DateTime.Now
+            };
+
+            _db.tblFaultTechnicians.Add(technicianRecord);
+            await _db.SaveChangesAsync();
+
+            TempData[SD.Success] = "Fault reported successfully!";
+            return RedirectToAction(nameof(ViewFaultStatus));
+        }
+
+        // VIEW FAULT STATUS - FIXED WITH EXPLICIT VIEW PATH
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> ViewFaultStatus(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["DateSortParm"] = string.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
+            ViewData["FaultTypeSortParm"] = sortOrder == "faulttype" ? "faulttype_desc" : "faulttype";
+            ViewData["PrioritySortParm"] = sortOrder == "priority" ? "priority_desc" : "priority";
+            ViewData["StatusSortParm"] = sortOrder == "status" ? "status_desc" : "status";
+
+            var faults = _db.tblFaultReports
+                .Where(fr => fr.CustomerId == customer.CustomerID)
+                .Include(fr => fr.FaultTechnicians)
+                .Include(fr => fr.FridgeInStock)
+                    .ThenInclude(fis => fis.Fridge)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                faults = faults.Where(fr => fr.FaultType.Contains(searchString) || fr.Status.Contains(searchString));
+            }
+
+            faults = sortOrder switch
+            {
+                "date_desc" => faults.OrderByDescending(fr => fr.ReportedDate),
+                "faulttype" => faults.OrderBy(fr => fr.FaultType),
+                "faulttype_desc" => faults.OrderByDescending(fr => fr.FaultType),
+                "priority" => faults.OrderBy(fr => fr.Priority),
+                "priority_desc" => faults.OrderByDescending(fr => fr.Priority),
+                "status" => faults.OrderBy(fr => fr.Status),
+                "status_desc" => faults.OrderByDescending(fr => fr.Status),
+                _ => faults.OrderByDescending(fr => fr.ReportedDate)
+            };
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+
+            var paginatedFaults = await PaginatedList<FaultReport>.CreateAsync(faults.AsNoTracking(), pageNumber, pageSize);
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = paginatedFaults.TotalPages;
+
+            // EXPLICITLY SPECIFY THE VIEW PATH
+            return View("~/Views/Request/ViewFaultStatus.cshtml", paginatedFaults);
+        }
+
+        // VIEW FAULT DETAILS
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> FaultDetails(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+
+            var fault = await _db.tblFaultReports
+                .Include(fr => fr.FaultTechnicians)
+                .Include(fr => fr.FridgeInStock)
+                    .ThenInclude(fis => fis.Fridge)
+                .FirstOrDefaultAsync(fr => fr.FaultReportId == id && fr.CustomerId == customer.CustomerID);
+
+            if (fault == null)
+            {
+                TempData[SD.Error] = "Fault report not found.";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+
+            return View(fault);
+        }
+
+        // RELAUNCH DECLINED FAULT REQUEST
+        [Authorize(Roles = SD.CustomerRole)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RelaunchFault(int faultReportId, string additionalInfo)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer
+                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+
+            try
+            {
+                var originalFault = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId && fr.CustomerId == customer.CustomerID);
+
+                if (originalFault == null)
+                {
+                    TempData[SD.Error] = "Fault report not found.";
+                    return RedirectToAction(nameof(ViewFaultStatus));
+                }
+
+                if (originalFault.Status != "Declined")
+                {
+                    TempData[SD.Error] = "Only declined requests can be relaunched.";
+                    return RedirectToAction(nameof(ViewFaultStatus));
+                }
+
+                var newFaultReport = new FaultReport
+                {
+                    CustomerId = customer.CustomerID,
+                    FridgeInStockId = originalFault.FridgeInStockId,
+                    FaultType = originalFault.FaultType,
+                    Description = originalFault.Description +
+                                 (string.IsNullOrEmpty(additionalInfo) ? "" : $"\n\nAdditional Info: {additionalInfo}"),
+                    ReportedDate = DateTime.Now,
+                    Status = "Reported",
+                    Priority = originalFault.Priority,
+                    ImageUrl = originalFault.ImageUrl,
+                    RequestReplacement = originalFault.RequestReplacement,
+                    DeclineReason = null,
+                    IsRelaunched = true,
+                    OriginalFaultReportId = faultReportId
+                };
+
+                _db.tblFaultReports.Add(newFaultReport);
+                await _db.SaveChangesAsync();
+
+                var newFaultTechnician = new FaultTechnician
+                {
+                    FaultDescription = $"{newFaultReport.FaultType}: {newFaultReport.Description}",
+                    FaultReportId = newFaultReport.FaultReportId,
+                    CustomerBookingStatus = "Pending",
+                    Priority = newFaultReport.Priority,
+                    CreatedDate = DateTime.Now
+                };
+                _db.tblFaultTechnicians.Add(newFaultTechnician);
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Fault request relaunched successfully!";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error relaunching fault report: {ex.Message}");
+                TempData[SD.Error] = "Error relaunching fault request. Please try again.";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+        }
+
         // ====================== SUPPORT ACTIONS ======================
 
         [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
@@ -300,6 +628,70 @@ namespace Project.Controllers
             return View("SupportDashboard", allRequests);
         }
 
+        // SUPPORT: VIEW ALL FAULT REPORTS
+        [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
+        public async Task<IActionResult> AllFaults(string statusFilter = null, string priorityFilter = null)
+        {
+            var query = _db.tblFaultReports
+                .Include(fr => fr.Customer).ThenInclude(c => c.ApplicationUser)
+                .Include(fr => fr.FridgeInStock).ThenInclude(fis => fis.Fridge)
+                .Include(fr => fr.FaultTechnicians)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                query = query.Where(fr => fr.Status == statusFilter);
+            }
+
+            if (!string.IsNullOrEmpty(priorityFilter))
+            {
+                query = query.Where(fr => fr.Priority == priorityFilter);
+            }
+
+            var faults = await query.OrderByDescending(fr => fr.ReportedDate).ToListAsync();
+
+            ViewBag.StatusFilter = statusFilter;
+            ViewBag.PriorityFilter = priorityFilter;
+            ViewBag.TotalReported = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Reported");
+            ViewBag.TotalInProgress = await _db.tblFaultReports.CountAsync(fr => fr.Status == "In Progress");
+            ViewBag.TotalResolved = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Resolved");
+
+            return View(faults);
+        }
+
+        // SUPPORT: UPDATE FAULT STATUS
+        [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateFaultStatus(int id, string status, string technicianNotes = null)
+        {
+            var fault = await _db.tblFaultReports
+                .Include(fr => fr.FaultTechnicians)
+                .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
+
+            if (fault == null)
+            {
+                return NotFound();
+            }
+
+            fault.Status = status;
+
+            if (!string.IsNullOrEmpty(technicianNotes))
+            {
+                var faultTechnician = fault.FaultTechnicians.FirstOrDefault();
+                if (faultTechnician != null)
+                {
+                    faultTechnician.ResolutionNotes = technicianNotes;
+                    faultTechnician.Completion = DateTime.Now;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+
+            TempData[SD.Success] = $"Fault status updated to {status} successfully.";
+            return RedirectToAction(nameof(AllFaults));
+        }
+
         // ====================== PRIVATE METHODS ======================
 
         private async Task ReserveApprovedFridges(RequestHeader requestHeader)
@@ -358,6 +750,33 @@ namespace Project.Controllers
             return result;
         }
 
+        private async Task<string?> SaveFaultImages(List<IFormFile> faultImages)
+        {
+            var imageUrls = new List<string>();
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "faults");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            foreach (var image in faultImages)
+            {
+                if (image.Length > 0 && image.Length < 5 * 1024 * 1024)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    imageUrls.Add($"/images/faults/{fileName}");
+                }
+            }
+
+            return imageUrls.Count > 0 ? string.Join(",", imageUrls) : null;
+        }
+
         // Helper method to get stock information for display
         [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
         public async Task<JsonResult> GetStockInfo(int requestId)
@@ -397,6 +816,6 @@ namespace Project.Controllers
     public class StockCheckResult
     {
         public bool IsAvailable { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,303 @@
+﻿@model Project.Models.FaultReport
+
+@{
+    ViewData["Title"] = "Fault Report Details";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">Fault Report Details</h1>
+                <a href="@Url.Action("ViewFaultStatus")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Fault Information -->
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">Fault Information</h6>
+                            <div>
+                                <span class="badge @GetStatusBadgeClass(Model.Status)">@Model.Status</span>
+                                <span class="badge @GetPriorityBadgeClass(Model.Priority)">@Model.Priority</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Fridge:</dt>
+                                        <dd class="col-sm-8">@Model.FridgeInStock?.Fridge?.Brand @Model.FridgeInStock?.Fridge?.Model</dd>
+
+                                        <dt class="col-sm-4">Fault Type:</dt>
+                                        <dd class="col-sm-8">@Model.FaultType</dd>
+
+                                        <dt class="col-sm-4">Reported Date:</dt>
+                                        <dd class="col-sm-8">@Model.ReportedDate.ToString("MMM dd, yyyy hh:mm tt")</dd>
+
+                                        <dt class="col-sm-4">Replacement Request:</dt>
+                                        <dd class="col-sm-8">
+                                            @if (Model.RequestReplacement)
+                                            {
+                                                <span class="badge badge-warning">Yes</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">No</span>
+                                            }
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Reported By:</dt>
+                                        <dd class="col-sm-8">You</dd>
+
+                                        <!-- Check if ResolvedDate is not default (not set) -->
+                                        @if (Model.ResolvedDate != default(DateTime))
+                                        {
+                                            <dt class="col-sm-4">Resolved Date:</dt>
+                                            <dd class="col-sm-8">@Model.ResolvedDate.ToString("MMM dd, yyyy")</dd>
+                                        }
+
+                                        @if (!string.IsNullOrEmpty(Model.DeclineReason))
+                                        {
+                                            <dt class="col-sm-4">Decline Reason:</dt>
+                                            <dd class="col-sm-8 text-danger">@Model.DeclineReason</dd>
+                                        }
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <!-- Fault Description -->
+                            <div class="mt-4">
+                                <h6 class="font-weight-bold text-dark">Fault Description</h6>
+                                <div class="border rounded p-3 bg-light">
+                                    @Model.Description
+                                </div>
+                            </div>
+
+                            <!-- Images -->
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="mt-4">
+                                    <h6 class="font-weight-bold text-dark">Fault Images</h6>
+                                    <div class="row">
+                                        @foreach (var imageUrl in Model.ImageUrl.Split(','))
+                                        {
+                                            <div class="col-md-4 mb-3">
+                                                <a href="@imageUrl" data-toggle="lightbox" data-gallery="fault-gallery">
+                                                    <img src="@imageUrl" class="img-fluid rounded shadow-sm" alt="Fault Image">
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technician Information & Actions -->
+                <div class="col-lg-4">
+                    <!-- Technician Assignment -->
+                    @if (Model.FaultTechnicians.Any())
+                    {
+                        var technician = Model.FaultTechnicians.First();
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Assigned Technician</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-cog fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="font-weight-bold">@technician.TechnicianAssigned</h5>
+                                <p class="text-muted">Fault Technician</p>
+
+                                <div class="border-top pt-3">
+                                    <div class="row text-left">
+                                        <div class="col-12 mb-2">
+                                            <strong>Repair Status:</strong>
+                                            <span class="badge @GetRepairStatusBadgeClass(technician.RepairStatus) float-right">
+                                                @technician.RepairStatus
+                                            </span>
+                                        </div>
+                                        @if (technician.Bookingate.HasValue)
+                                        {
+                                            <div class="col-12 mb-2">
+                                                <strong>Scheduled:</strong>
+                                                <span class="float-right">@technician.Bookingate.Value.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                        }
+                                        @if (technician.Completion.HasValue)
+                                        {
+                                            <div class="col-12 mb-2">
+                                                <strong>Completed:</strong>
+                                                <span class="float-right">@technician.Completion.Value.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resolution Notes -->
+                        @if (!string.IsNullOrEmpty(technician.ResolutionNotes))
+                        {
+                            <div class="card shadow mb-4 border-left-success">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-success">Technician Notes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="border rounded p-3 bg-light">
+                                        @technician.ResolutionNotes
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="card shadow mb-4">
+                            <div class="card-body text-center py-4">
+                                <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                                <h5 class="font-weight-bold text-warning">Awaiting Technician</h5>
+                                <p class="text-muted">Your fault report is in queue and will be assigned to a technician soon.</p>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Actions -->
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.Status == "Declined")
+                            {
+                                <button type="button" class="btn btn-warning btn-block mb-2"
+                                        data-toggle="modal" data-target="#relaunchModal">
+                                    <i class="fas fa-redo"></i> Relaunch Request
+                                </button>
+                            }
+
+                            <a href="@Url.Action("ViewFaultStatus")" class="btn btn-secondary btn-block">
+                                <i class="fas fa-list"></i> View All Reports
+                            </a>
+
+                            @if (Model.FaultTechnicians.Any() && !string.IsNullOrEmpty(Model.FaultTechnicians.First().TechnicianAssigned))
+                            {
+                                <div class="mt-3 p-3 bg-light rounded">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        Need to contact your technician? Visit the support page or call our helpline.
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Relaunch Modal -->
+@if (Model.Status == "Declined")
+{
+    <div class="modal fade" id="relaunchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Relaunch Fault Report</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form asp-action="RelaunchFault" method="post">
+                    <input type="hidden" name="faultReportId" value="@Model.FaultReportId" />
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Additional Information</label>
+                            <textarea name="additionalInfo" class="form-control" rows="4"
+                                  placeholder="Please provide any additional information or clarification that might help..."></textarea>
+                            <small class="form-text text-muted">
+                                Explain why you're relaunching this request or provide new information
+                            </small>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.DeclineReason))
+                        {
+                            <div class="alert alert-warning">
+                                <strong>Previous Decline Reason:</strong><br>
+                                @Model.DeclineReason
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-redo"></i> Relaunch Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "reported" => "badge-primary",
+            "in progress" => "badge-warning",
+            "resolved" => "badge-success",
+            "declined" => "badge-danger",
+            _ => "badge-secondary"
+        };
+    }
+
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "badge-danger",
+            "medium" => "badge-warning",
+            "low" => "badge-info",
+            _ => "badge-secondary"
+        };
+    }
+
+    public string GetRepairStatusBadgeClass(string repairStatus)
+    {
+        return repairStatus?.ToLower() switch
+        {
+            "not started" => "badge-secondary",
+            "in progress" => "badge-warning",
+            "completed" => "badge-success",
+            "resolved" => "badge-primary",
+            _ => "badge-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css">
+
+    <script>
+        $(document).ready(function () {
+            // Initialize lightbox for images
+            $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+        });
+    </script>
+}

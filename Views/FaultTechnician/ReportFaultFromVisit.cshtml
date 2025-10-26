@@ -1,0 +1,172 @@
+﻿@model Project.Models.ViewModel.MaintenanceFaultReportVM
+
+@{
+    ViewData["Title"] = "Report Fault from Maintenance Visit";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">@ViewData["Title"]</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Visit Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Visit Information
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-4">
+                                                    <strong>Customer:</strong> @Model.CustomerName
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <strong>Visit Date:</strong> @Model.Visit?.VisitDate.ToString("MMM dd, yyyy")
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <strong>Technician:</strong> @Model.TechnicianName
+                                                </div>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(Model.Visit?.Notes))
+                                            {
+                                                <div class="row mt-2">
+                                                    <div class="col-12">
+                                                        <strong>Notes:</strong> @Model.Visit.Notes
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="ReportFaultFromVisit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="VisitId" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Fridge Selection -->
+                                <div class="form-group">
+                                    <label asp-for="FridgeInStockId" class="font-weight-bold text-dark"></label>
+                                    <select asp-for="FridgeInStockId" class="form-control select2" required
+                                            asp-items="@(new SelectList(Model.AvailableFridges, "FridgeInStockId", "FridgeInStock.Fridge.Model"))">
+                                        <option value="">-- Select Fridge --</option>
+                                    </select>
+                                    <span asp-validation-for="FridgeInStockId" class="text-danger small"></span>
+                                    <div class="invalid-feedback">Please select a fridge.</div>
+                                </div>
+
+                                <!-- Fault Type -->
+                                <div class="form-group">
+                                    <label asp-for="FaultType" class="font-weight-bold text-dark"></label>
+                                    <input asp-for="FaultType" class="form-control" placeholder="Enter fault type" required />
+                                    <span asp-validation-for="FaultType" class="text-danger small"></span>
+                                    <div class="invalid-feedback">Please enter a fault type.</div>
+                                </div>
+
+                                <!-- Priority -->
+                                <div class="form-group">
+                                    <label asp-for="Priority" class="font-weight-bold text-dark"></label>
+                                    <select asp-for="Priority" class="form-control" required>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                    <span asp-validation-for="Priority" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Description -->
+                                <div class="form-group">
+                                    <label asp-for="Description" class="font-weight-bold text-dark"></label>
+                                    <textarea asp-for="Description" class="form-control" rows="5"
+                                              placeholder="Provide detailed description of the fault..." required></textarea>
+                                    <span asp-validation-for="Description" class="text-danger small"></span>
+                                    <div class="invalid-feedback">Please provide a fault description.</div>
+                                </div>
+
+                                <!-- Request Replacement -->
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input asp-for="RequestReplacement" class="custom-control-input" />
+                                        <label asp-for="RequestReplacement" class="custom-control-label font-weight-bold text-dark"></label>
+                                    </div>
+                                </div>
+
+                                <!-- Image Upload -->
+                                <div class="form-group">
+                                    <label asp-for="FaultImages" class="font-weight-bold text-dark"></label>
+                                    <div class="custom-file">
+                                        <input asp-for="FaultImages" type="file" multiple class="custom-file-input" id="customFile">
+                                        <label class="custom-file-label" for="customFile">Choose fault images...</label>
+                                    </div>
+                                    <small class="form-text text-muted">You can select multiple images (JPEG, PNG, GIF)</small>
+                                    <span asp-validation-for="FaultImages" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="ViewMaintenanceFaults" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Back to List
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-flag"></i> Report Fault
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // File input label update
+            $('.custom-file-input').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').addClass("selected").html(fileName || 'Choose fault images...');
+            });
+
+            // Bootstrap validation
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var forms = document.getElementsByClassName('needs-validation');
+                    var validation = Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        });
+    </script>
+}

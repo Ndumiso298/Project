@@ -6,16 +6,22 @@ namespace Project.Utility
     {
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }
+        public int TotalCount { get; private set; }
+        public int PageSize { get; private set; }
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            TotalCount = count;
+            PageSize = pageSize;
             AddRange(items);
         }
 
         public bool HasPreviousPage => PageIndex > 1;
         public bool HasNextPage => PageIndex < TotalPages;
+        public int FirstItemIndex => (PageIndex - 1) * PageSize + 1;
+        public int LastItemIndex => Math.Min(PageIndex * PageSize, TotalCount);
 
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
         {

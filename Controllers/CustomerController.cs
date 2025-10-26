@@ -45,7 +45,7 @@ namespace Project.Controllers
                     .ToListAsync(),
                 RecentFaults = await _db.tblFaultReports
                     .Where(fr => fr.CustomerId == customer.CustomerID)
-                    .OrderByDescending(fr => fr.ReportedDate) 
+                    .OrderByDescending(fr => fr.ReportedDate)
                     .Take(5)
                     .ToListAsync(),
                 PendingRequests = await _db.tblRequestHeaders
@@ -376,7 +376,7 @@ namespace Project.Controllers
                         Count = allocation.Count,
                         Price = allocation.Fridge.RentalPricePerMonth
                     };
-                    _db.tblRequestDetais.Add(requestDetail); 
+                    _db.tblRequestDetais.Add(requestDetail);
                     allocation.Status = "Submitted";
                 }
 
@@ -393,192 +393,7 @@ namespace Project.Controllers
             }
         }
 
-        // CREATE FAULT REPORT - GET
-        public async Task<IActionResult> CreateFault()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer
-                .Include(c => c.ApplicationUser)
-                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Dashboard));
-            }
-
-            var customerFridges = await _db.tblCustomerFridge
-                .Where(cf => cf.CustomerID == customer.CustomerID)
-                .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
-                .ToListAsync();
-
-            var viewModel = new FaultReportVM
-            {
-                AvailableFridges = customerFridges,
-                CustomerName = $"{customer.ApplicationUser.FirstName} {customer.ApplicationUser.LastName}"
-            };
-
-            return View(viewModel);
-        }
-
-        // CREATE FAULT REPORT - POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFault(FaultReportVM faultReportVM)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer
-                .Include(c => c.ApplicationUser)
-                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Dashboard));
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
-                return View(faultReportVM);
-            }
-
-            try
-            {
-                // Verify fridge allocation
-                var allocated = await _db.tblCustomerFridge
-                    .AnyAsync(cf => cf.CustomerID == customer.CustomerID && cf.FridgeInStockId == faultReportVM.FridgeInStockId);
-
-                if (!allocated)
-                {
-                    TempData[SD.Error] = "You can only report faults for your allocated fridges.";
-                    await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
-                    return View(faultReportVM);
-                }
-
-                // Handle image upload
-                string? imageUrl = null;
-                if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
-                {
-                    imageUrl = await SaveFaultImages(faultReportVM.FaultImages);
-                }
-
-                // Create the fault report entity
-                var faultReport = new FaultReport
-                {
-                    CustomerId = customer.CustomerID,
-                    FridgeInStockId = faultReportVM.FridgeInStockId,
-                    FaultType = faultReportVM.FaultType,
-                    Description = faultReportVM.Description,
-                    ReportedDate = DateTime.Now,
-                    Status = "Reported",
-                    Priority = faultReportVM.Priority,
-                    ImageUrl = imageUrl,
-                    RequestReplacement = faultReportVM.RequestReplacement,
-                    DeclineReason = null
-                };
-
-                _db.tblFaultReports.Add(faultReport);
-                await _db.SaveChangesAsync();
-
-                // Create FaultTechnician record
-                var faultTechnician = new FaultTechnician
-                {
-                    FaultDescription = $"{faultReportVM.FaultType}: {faultReportVM.Description}",
-                    FaultReportId = faultReport.FaultReportId,
-                    CustomerBookingStatus = "Pending",
-                    Priority = faultReportVM.Priority
-                };
-                _db.tblFaultTechnicians.Add(faultTechnician);
-
-                
-
-                await _db.SaveChangesAsync();
-
-                TempData[SD.Success] = "Fault reported successfully! Our team will contact you soon.";
-                return RedirectToAction(nameof(ViewFaultStatus));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating fault report: {ex.Message}");
-                TempData[SD.Error] = "Error reporting fault. Please try again.";
-                await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
-                return View(faultReportVM);
-            }
-        }
-
-        // RELAUNCH DECLINED FAULT REQUEST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RelaunchFault(int faultReportId, string additionalInfo)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer
-                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Dashboard));
-            }
-
-            try
-            {
-                var originalFault = await _db.tblFaultReports
-                    .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId && fr.CustomerId == customer.CustomerID);
-
-                if (originalFault == null)
-                {
-                    TempData[SD.Error] = "Fault report not found.";
-                    return RedirectToAction(nameof(ViewFaultStatus));
-                }
-
-                if (originalFault.Status != "Declined")
-                {
-                    TempData[SD.Error] = "Only declined requests can be relaunched.";
-                    return RedirectToAction(nameof(ViewFaultStatus));
-                }
-
-                var newFaultReport = new FaultReport
-                {
-                    CustomerId = customer.CustomerID,
-                    FridgeInStockId = originalFault.FridgeInStockId,
-                    FaultType = originalFault.FaultType,
-                    Description = originalFault.Description +
-                                 (string.IsNullOrEmpty(additionalInfo) ? "" : $"\n\nAdditional Info: {additionalInfo}"),
-                    ReportedDate = DateTime.Now,
-                    Status = "Reported",
-                    Priority = originalFault.Priority,
-                    ImageUrl = originalFault.ImageUrl,
-                    RequestReplacement = originalFault.RequestReplacement,
-                    DeclineReason = null,
-                    IsRelaunched = true,
-                    OriginalFaultReportId = faultReportId
-                };
-
-                _db.tblFaultReports.Add(newFaultReport);
-                await _db.SaveChangesAsync();
-
-                var newFaultTechnician = new FaultTechnician
-                {
-                    FaultDescription = $"{newFaultReport.FaultType}: {newFaultReport.Description}",
-                    FaultReportId = newFaultReport.FaultReportId,
-                    CustomerBookingStatus = "Pending",
-                    Priority = newFaultReport.Priority
-                };
-                _db.tblFaultTechnicians.Add(newFaultTechnician);
-                await _db.SaveChangesAsync();
-
-                TempData[SD.Success] = "Fault request relaunched successfully!";
-                return RedirectToAction(nameof(ViewFaultStatus));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error relaunching fault report: {ex.Message}");
-                TempData[SD.Error] = "Error relaunching fault request. Please try again.";
-                return RedirectToAction(nameof(ViewFaultStatus));
-            }
-        }
+     
 
         // VIEW REQUEST DETAILS
         public async Task<IActionResult> RequestDetails(int id)
@@ -631,6 +446,7 @@ namespace Project.Controllers
         }
 
         // VIEW FAULT STATUS
+        [Route("Request/ViewFaultStatus")]
         public async Task<IActionResult> ViewFaultStatus(string sortOrder, string currentFilter, string searchString, int? page)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -685,9 +501,8 @@ namespace Project.Controllers
             return View(paginatedFaults);
         }
 
-        // CREATE FRIDGE REQUEST - GET
-       
         // VIEW FAULT DETAILS
+        [Route("Request/FaultDetails/{id}")]
         public async Task<IActionResult> FaultDetails(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -825,8 +640,6 @@ namespace Project.Controllers
 
             return imageUrls.Count > 0 ? string.Join(",", imageUrls) : null;
         }
-
-       
 
         private async Task ReloadFaultReportVM(FaultReportVM viewModel, int customerId)
         {

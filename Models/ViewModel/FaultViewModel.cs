@@ -12,5 +12,8 @@
         public string Priority { get; set; } = string.Empty;
         public string? FaultType { get; set; }
         public string? AdditionalNotes { get; set; }
+
+        // Add this property
+        public bool HasReportedFault { get; set; }
     }
 }

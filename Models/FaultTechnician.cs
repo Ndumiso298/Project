@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MimeKit.Cryptography;
 
 namespace Project.Models
 {
@@ -29,7 +30,7 @@ namespace Project.Models
         public int? EstimatedRepairTime { get; set; }
 
         public int? ActualRepairTime { get; set; }
-
+        public DateTime CreatedDate { get; set; }
         public decimal? RepairCost { get; set; }
 
         public int? VisitId { get; set; }

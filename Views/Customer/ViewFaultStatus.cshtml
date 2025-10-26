@@ -1,289 +1,285 @@
-﻿@model Project.Utility.PaginatedList<Project.Models.FaultReport>
+﻿@model PaginatedList<FaultReport>
+
 @{
-    ViewData["Title"] = "Fault Status";
+    ViewData["Title"] = "My Fault Reports";
 }
 
-<!-- Your view content here -->
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800 font-weight-bold">@ViewData["Title"]</h1>
+                <a asp-action="CreateFaultSelection" class="btn btn-primary">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Report New Fault
+                </a>
+            </div>
 
-<div class="container-fluid">
-    <!-- Page Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">My Fault Reports</h1>
-            <p class="text-muted mb-0">Track and manage your appliance repair requests</p>
-        </div>
-        <div class="btn-group">
-            <a href="@Url.Action("Dashboard")" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Dashboard
-            </a>
-            <a href="@Url.Action("CreateFault")" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>New Report
-            </a>
-        </div>
-    </div>
+            <!-- Search and Filter Section -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Search & Filter</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ViewFaultStatus" method="get" class="form-inline">
+                        <div class="form-group mr-2 mb-2">
+                            <input type="text" class="form-control" name="searchString" value="@ViewData["CurrentFilter"]"
+                                   placeholder="Search by fault type or status...">
+                        </div>
+                        <div class="form-group mr-2 mb-2">
+                            <select name="sortOrder" class="form-control" onchange="this.form.submit()">
+                                <option value="">Sort by...</option>
+                                <option value="date_desc" selected>Newest First</option>
+                                <option value="">Oldest First</option>
+                                <option value="faulttype">Fault Type A-Z</option>
+                                <option value="faulttype_desc">Fault Type Z-A</option>
+                                <option value="priority">Priority Low-High</option>
+                                <option value="priority_desc">Priority High-Low</option>
+                                <option value="status">Status A-Z</option>
+                                <option value="status_desc">Status Z-A</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-2">
+                            <i class="fas fa-search mr-1"></i> Search
+                        </button>
+                        <a asp-action="ViewFaultStatus" class="btn btn-outline-secondary mb-2 ml-2">Clear</a>
+                    </form>
+                </div>
+            </div>
 
-    <!-- Search and Filter -->
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-6">
-                    <input type="text" name="searchString" class="form-control" 
-                           placeholder="Search by fault type or status..." 
-                           value="@ViewData["CurrentFilter"]" />
+            <!-- Fault Reports Table -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Fault Reports</h6>
                 </div>
-                <div class="col-md-3">
-                    <select name="sortOrder" class="form-select" onchange="this.form.submit()">
-                        <option value="">Sort by...</option>
-                        <option value="date_desc" selected>Newest First</option>
-                        <option value="date">Oldest First</option>
-                        <option value="priority">Priority (Low to High)</option>
-                        <option value="priority_desc">Priority (High to Low)</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Fault Reports -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Fault Report History</h6>
-            <span class="badge bg-primary">@Model.Count Total Reports</span>
-        </div>
-        <div class="card-body">
-            @if (Model.Any())
-            {
-                <div class="list-group list-group-flush">
-                    @foreach (var fault in Model)
+                <div class="card-body">
+                    @if (Model.Any())
                     {
-                        <div class="list-group-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <div class="d-flex w-100 justify-content-between mb-2">
-                                        <h6 class="mb-0">@fault.FaultType</h6>
-                                        <div>
-                                            <span class="badge bg-@GetStatusBadgeClass(fault.Status) me-2">@fault.Status</span>
-                                            @if (!string.IsNullOrEmpty(fault.Priority))
-                                            {
-                                                <span class="badge bg-@GetPriorityBadgeClass(fault.Priority)">@fault.Priority Priority</span>
-                                            }
-                                        </div>
-                                    </div>
-                                    <p class="mb-2 text-muted">@fault.Description</p>
-                                    <div class="small text-muted">
-                                        <i class="fas fa-calendar me-1"></i>
-                                        Reported: @fault.ReportedDate.ToString("MMM dd, yyyy at hh:mm tt")
-                                        @if (fault.FridgeInStock?.Fridge != null)
-                                        {
-                                            <span class="ms-3">
-                                                <i class="fas fa-refrigerator me-1"></i>
-                                                @fault.FridgeInStock.Fridge.Brand @fault.FridgeInStock.Fridge.Model
-                                            </span>
-                                        }
-                                    </div>
-
-                                    <!-- Technician Assignment -->
-                                    @if (fault.FaultTechnicians?.Any() == true)
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Fridge</th>
+                                        <th>Fault Type</th>
+                                        <th>Description</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Reported Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var fault in Model)
                                     {
-                                        var technician = fault.FaultTechnicians.First();
-                                        <div class="mt-2">
-                                            <small class="text-info">
-                                                <i class="fas fa-user-cog me-1"></i>
-                                                Assigned Technician: @technician.TechnicianAssigned
-                                                @if (technician.Bookingate.HasValue)
+                                        <tr>
+                                            <td>
+                                                @if (fault.FridgeInStock?.Fridge != null)
                                                 {
-                                                    <span class="ms-2">
-                                                        <i class="fas fa-clock me-1"></i>
-                                                        Scheduled: @technician.Bookingate.Value.ToString("MMM dd, yyyy")
-                                                    </span>
+                                                    <strong>@fault.FridgeInStock.Fridge.Brand</strong>
+                                        
+                                                    <br>
+                                                    <small class="text-muted">@fault.FridgeInStock.Fridge.Model</small>
                                                 }
-                                            </small>
-                                        </div>
-                                    }
+                                                else
+                                                {
+                                                    <span class="text-muted">N/A</span>
+                                                }
+                                            </td>
+                                            <td>@fault.FaultType</td>
+                                            <td>
+                                                @if (fault.Description.Length > 50)
+                                                {
+                                                    @fault.Description.Substring(0, 50)
+                                        
+                                                    <text>...</text>
+                                                }
+                                                else
+                                                {
+                                                    @fault.Description
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (fault.Priority)
+                                                {
+                                                    case "High":
+                                                        <span class="badge badge-danger">@fault.Priority</span>
+                                                        break;
+                                                    case "Medium":
+                                                        <span class="badge badge-warning">@fault.Priority</span>
+                                                        break;
+                                                    case "Low":
+                                                        <span class="badge badge-success">@fault.Priority</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge badge-secondary">@fault.Priority</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (fault.Status)
+                                                {
+                                                    case "Reported":
+                                                        <span class="badge badge-info">@fault.Status</span>
+                                                        break;
+                                                    case "In Progress":
+                                                        <span class="badge badge-warning">@fault.Status</span>
+                                                        break;
+                                                    case "Resolved":
+                                                        <span class="badge badge-success">@fault.Status</span>
+                                                        break;
+                                                    case "Declined":
+                                                        <span class="badge badge-danger">@fault.Status</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge badge-secondary">@fault.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>@fault.ReportedDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <a asp-action="FaultDetails" asp-route-id="@fault.FaultReportId"
+                                                   class="btn btn-info btn-sm" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (fault.Status == "Declined")
+                                                {
+                                                    <button type="button" class="btn btn-warning btn-sm"
+                                                            data-toggle="modal" data-target="#relaunchModal@(fault.FaultReportId)"
+                                                            title="Relaunch Request">
+                                                        <i class="fas fa-redo"></i>
+                                                    </button>
 
-                                    <!-- Decline Reason and Relaunch Option -->
-                                    @if (fault.Status == "Declined" && !string.IsNullOrEmpty(fault.DeclineReason))
-                                    {
-                                        <div class="alert alert-warning mt-2 mb-0">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <strong><i class="fas fa-exclamation-triangle me-2"></i>Request Declined</strong>
-                                                    <p class="mb-1 mt-1">Reason: @fault.DeclineReason</p>
-                                                    <small>You can relaunch this request with additional information.</small>
-                                                </div>
-                                                <button class="btn btn-sm btn-warning" 
-                                                        onclick="relaunchFaultRequest(@fault.FaultReportId)">
-                                                    <i class="fas fa-redo me-1"></i>Relaunch
-                                                </button>
-                                            </div>
-                                        </div>
+                                                    <!-- Relaunch Modal -->
+                                                    <div class="modal fade" id="relaunchModal@(fault.FaultReportId)" tabindex="-1" role="dialog">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Relaunch Fault Report</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal">
+                                                                        <span>&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <form asp-action="RelaunchFault" method="post">
+                                                                    <input type="hidden" name="faultReportId" value="@fault.FaultReportId" />
+                                                                    <div class="modal-body">
+                                                                        <div class="form-group">
+                                                                            <label>Additional Information (Optional):</label>
+                                                                            <textarea name="additionalInfo" class="form-control" rows="4"
+                                                                          placeholder="Add any additional information or corrections..."></textarea>
+                                                                        </div>
+                                                                        <div class="alert alert-info">
+                                                                            <i class="fas fa-info-circle"></i>
+                                                                            This will create a new fault report based on the original declined request.
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-warning">Relaunch Report</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
                                     }
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <div class="btn-group-vertical btn-group-sm">
-                                        <a href="@Url.Action("FaultDetails", new { id = fault.FaultReportId })" 
-                                           class="btn btn-outline-primary mb-1">
-                                            <i class="fas fa-eye me-1"></i>View Details
-                                        </a>
-                                        @if (fault.Status == "Declined")
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <p class="text-muted">
+                                    Showing @((Model.PageIndex - 1) * Model.PageSize + 1) to
+                                    @((Model.PageIndex - 1) * Model.PageSize + Model.Count) of
+                                    @Model.TotalCount entries
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <nav>
+                                    <ul class="pagination justify-content-end">
+                                        <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                            <a class="page-link" asp-action="ViewFaultStatus"
+                                               asp-route-sortOrder="@ViewData["CurrentSort"]"
+                                               asp-route-pageNumber="@(Model.PageIndex - 1)"
+                                               asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                                                Previous
+                                            </a>
+                                        </li>
+                                        @for (int i = 1; i <= Model.TotalPages; i++)
                                         {
-                                            <button class="btn btn-outline-warning" 
-                                                    onclick="relaunchFaultRequest(@fault.FaultReportId)">
-                                                <i class="fas fa-redo me-1"></i>Relaunch
-                                            </button>
+                                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                                <a class="page-link" asp-action="ViewFaultStatus"
+                                                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                                                   asp-route-pageNumber="@i"
+                                                   asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                                                    @i
+                                                </a>
+                                            </li>
                                         }
-                                        @if (fault.Status == "Reported" || fault.Status == "In Progress")
-                                        {
-                                            <button class="btn btn-outline-info" onclick="contactSupport(@fault.FaultReportId)">
-                                                <i class="fas fa-headset me-1"></i>Contact Support
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
+                                        <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                            <a class="page-link" asp-action="ViewFaultStatus"
+                                               asp-route-sortOrder="@ViewData["CurrentSort"]"
+                                               asp-route-pageNumber="@(Model.PageIndex + 1)"
+                                               asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                                                Next
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
                     }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Fault Reports Found</h4>
+                            <p class="text-muted mb-4">You haven't reported any faults yet.</p>
+                            <a asp-action="CreateFaultSelection" class="btn btn-primary btn-lg">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>Report Your First Fault
+                            </a>
+                        </div>
+                    }
                 </div>
-
-                <!-- Pagination -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center">
-                                @if (Model.HasPreviousPage)
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link" href="@Url.Action("ViewFaultStatus", new { page = Model.PageIndex - 1, sortOrder = ViewData["CurrentSort"], currentFilter = ViewData["CurrentFilter"] })">
-                                            Previous
-                                        </a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="page-item disabled">
-                                        <span class="page-link">Previous</span>
-                                    </li>
-                                }
-
-                                @for (int i = 1; i <= Model.TotalPages; i++)
-                                {
-                                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                        <a class="page-link" href="@Url.Action("ViewFaultStatus", new { page = i, sortOrder = ViewData["CurrentSort"], currentFilter = ViewData["CurrentFilter"] })">
-                                            @i
-                                        </a>
-                                    </li>
-                                }
-
-                                @if (Model.HasNextPage)
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link" href="@Url.Action("ViewFaultStatus", new { page = Model.PageIndex + 1, sortOrder = ViewData["CurrentSort"], currentFilter = ViewData["CurrentFilter"] })">
-                                            Next
-                                        </a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="page-item disabled">
-                                        <span class="page-link">Next</span>
-                                    </li>
-                                }
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
-                    <h4 class="text-muted">No Fault Reports</h4>
-                    <p class="text-muted mb-4">You haven't reported any faults yet.</p>
-                    <a href="@Url.Action("CreateFault")" class="btn btn-primary btn-lg">
-                        <i class="fas fa-plus me-2"></i>Report Your First Fault
-                    </a>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-<!-- Relaunch Modal -->
-<div class="modal fade" id="relaunchModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Relaunch Fault Request</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>You are about to relaunch a previously declined fault request. This will create a new request with the same appliance information.</p>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Tip:</strong> You can add additional information or photos to help us process your request faster.
-                </div>
-                <form id="relaunchForm" method="post" action="@Url.Action("RelaunchFault")">
-                    <input type="hidden" id="relaunchFaultId" name="faultReportId" />
-                    <div class="form-group mb-3">
-                        <label class="form-label">Additional Information (Optional)</label>
-                        <textarea class="form-control" name="additionalInfo" rows="3" 
-                                  placeholder="Add any additional details or updates about the fault..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-warning" onclick="submitRelaunch()">
-                    <i class="fas fa-redo me-2"></i>Relaunch Request
-                </button>
             </div>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        .table th {
+            border-top: none;
+            font-weight: 600;
+        }
+
+        .badge {
+            font-size: 0.75em;
+        }
+
+        .btn-sm {
+            margin-right: 5px;
+        }
+    </style>
+}
 
 @section Scripts {
     <script>
-        function relaunchFaultRequest(faultReportId) {
-            document.getElementById('relaunchFaultId').value = faultReportId;
-            new bootstrap.Modal(document.getElementById('relaunchModal')).show();
-        }
+        $(document).ready(function () {
+            // Auto-submit sort order when changed
+            $('select[name="sortOrder"]').on('change', function() {
+                $(this).closest('form').submit();
+            });
 
-        function submitRelaunch() {
-            document.getElementById('relaunchForm').submit();
-        }
+            // Initialize tooltips
+            $('[title]').tooltip();
 
-        function contactSupport(faultReportId) {
-            window.location.href = 'tel:1-800-HELP-NOW';
-        }
+            // Auto-focus search input
+            $('input[name="searchString"]').focus();
+
+            console.log('Fault status page loaded successfully');
+        });
     </script>
-}
-
-@functions {
-    public string GetStatusBadgeClass(string status)
-    {
-        return status?.ToLower() switch
-        {
-            "completed" or "resolved" => "success",
-            "in progress" => "info",
-            "reported" => "warning",
-            "declined" => "danger",
-            _ => "secondary"
-        };
-    }
-
-    public string GetPriorityBadgeClass(string priority)
-    {
-        return priority?.ToLower() switch
-        {
-            "high" or "critical" => "danger",
-            "medium" => "warning",
-            "low" => "info",
-            _ => "secondary"
-        };
-    }
 }
