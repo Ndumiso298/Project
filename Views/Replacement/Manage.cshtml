@@ -1,0 +1,172 @@
+﻿@* @model IEnumerable<Project.Models.ReplacementRequest>
+@using Project.Utility
+
+@{
+    ViewData["Title"] = "Manage Replacement Requests";
+}
+
+<h2 class="text-primary mb-4">Manage Replacement Requests</h2>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Fridge Serial</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Customer Reason</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.ReplacementRequestId</td>
+                <td>@r.Customer.ApplicationUser.FirstName @r.Customer.ApplicationUser.LastName</td>
+                <td>@r.FridgeInStock?.FridgeNo</td>
+                <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <span class="badge
+                            @(r.Status == SD.Approved ? "bg-success" :
+                                                    r.Status == SD.Rejected ? "bg-danger" :
+                                                    "bg-secondary")">@r.Status</span>
+            </td>
+            <td>@r.Reason</td>
+            <td>
+                @if (r.Status == SD.Pending)
+                    {
+                        <form asp-action="Approve" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@r.ReplacementRequestId" />
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#declineModal" data-id="@r.ReplacementRequestId">Decline</button>
+                    }
+                    else if (r.Status == SD.Rejected)
+                    {
+                        <small class="text-danger">@r.Reason</small>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Decline Modal -->
+<div class="modal fade" id="declineModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-action="Decline" method="post">
+            <input type="hidden" id="declineRequestId" name="id" />
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Decline Replacement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Reason for Decline</label>
+                    <textarea name="declineReason" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Decline</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const declineModal = document.getElementById('declineModal');
+        declineModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            document.getElementById('declineRequestId').value = button.getAttribute('data-id');
+        });
+    </script>
+}
+
+
+<h2 class="text-primary mb-4">Manage Replacement Requests</h2>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Fridge Serial</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Customer Reason</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.ReplacementRequestId</td>
+                <td>@r.Customer.ApplicationUser.FirstName @r.Customer.ApplicationUser.LastName</td>
+                <td>@r.FridgeInStock?.FridgeNo</td>
+                <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <span class="badge 
+                        @(r.Status == SD.Approved ? "bg-success" :
+                          r.Status == SD.Rejected ? "bg-danger" :
+                          "bg-secondary")">@r.Status</span>
+                </td>
+                <td>@r.Reason</td>
+                <td>
+                    @if (r.Status == SD.Pending)
+                    {
+                        <form asp-action="Approve" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@r.ReplacementRequestId" />
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#declineModal" data-id="@r.ReplacementRequestId">Decline</button>
+                    }
+                    else if (r.Status == SD.Rejected)
+                    {
+                        <small class="text-danger">@r.Reason</small>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Decline Modal -->
+<div class="modal fade" id="declineModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-action="Decline" method="post">
+            <input type="hidden" id="declineRequestId" name="id" />
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Decline Replacement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Reason for Decline</label>
+                    <textarea name="declineReason" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Decline</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const declineModal = document.getElementById('declineModal');
+        declineModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            document.getElementById('declineRequestId').value = button.getAttribute('data-id');
+        });
+    </script>
+}
+ *@

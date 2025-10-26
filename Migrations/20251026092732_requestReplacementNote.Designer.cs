@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026092732_requestReplacementNote")]
+    partial class requestReplacementNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1434,9 +1437,6 @@ namespace Project.Migrations
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("RequestHeaderId1")
-                        .HasColumnType("int");
-
                     b.Property<double>("RequestTotal")
                         .HasColumnType("float");
 
@@ -1461,8 +1461,6 @@ namespace Project.Migrations
                     b.HasIndex("EmployeeID");
 
                     b.HasIndex("OriginalRequestHeaderId");
-
-                    b.HasIndex("RequestHeaderId1");
 
                     b.ToTable("tblRequestHeaders");
                 });
@@ -1581,15 +1579,15 @@ namespace Project.Migrations
                         {
                             Id = "admin-id-123",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a25085bc-d5f2-4ac7-99b0-6cc073975fcb",
+                            ConcurrencyStamp = "037ed668-3784-47fc-a016-64ee2fee22f7",
                             Email = "admin@fridgesystem.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
                             NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEl3Xx/Htb22X4Ax1uEunmLTjJ4HUZy8Nu9/DqiOBP3Z2ZG/o1CKl6bksxbXzaPdQA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECfgmz3+HWGSmBjnVyjjXf4L8fXQZcRQpn3z1fwtQn8QfqDUud9gp3JvxaUfCw3jzA==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "dc4179d6-b1c5-4be3-9ff3-62ba4f7d99c9",
+                            SecurityStamp = "5587d397-742c-4170-9b82-6f027224a631",
                             TwoFactorEnabled = false,
                             UserName = "admin@fridgesystem.com",
                             CellNumber = "+27123456789",
@@ -1777,10 +1775,6 @@ namespace Project.Migrations
                         .HasForeignKey("OriginalRequestHeaderId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Project.Models.RequestHeader", null)
-                        .WithMany("RelaunchedRequests")
-                        .HasForeignKey("RequestHeaderId1");
-
                     b.Navigation("Customer");
 
                     b.Navigation("Employee");
@@ -1844,8 +1838,6 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.RequestHeader", b =>
                 {
                     b.Navigation("FridgeVisits");
-
-                    b.Navigation("RelaunchedRequests");
 
                     b.Navigation("RequestFridges");
                 });

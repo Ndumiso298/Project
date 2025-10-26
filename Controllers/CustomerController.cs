@@ -45,7 +45,7 @@ namespace Project.Controllers
                     .ToListAsync(),
                 RecentFaults = await _db.tblFaultReports
                     .Where(fr => fr.CustomerId == customer.CustomerID)
-                    .OrderByDescending(fr => fr.ReportedDate)
+                    .OrderByDescending(fr => fr.ReportedDate) 
                     .Take(5)
                     .ToListAsync(),
                 PendingRequests = await _db.tblRequestHeaders
@@ -374,9 +374,9 @@ namespace Project.Controllers
                         RequestHeaderId = requestHeader.RequestHeaderId,
                         FridgeId = allocation.FridgeId,
                         Count = allocation.Count,
-                        Price = allocation.Fridge.RentalPricePerMonth,
+                        Price = allocation.Fridge.RentalPricePerMonth
                     };
-                    _db.tblRequestDetais.Add(requestDetail);
+                    _db.tblRequestDetais.Add(requestDetail); 
                     allocation.Status = "Submitted";
                 }
 
@@ -409,8 +409,7 @@ namespace Project.Controllers
 
             var customerFridges = await _db.tblCustomerFridge
                 .Where(cf => cf.CustomerID == customer.CustomerID)
-                .Include(cf => cf.FridgeInStock)
-                .Include(cf => cf.Fridge)
+                .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
                 .ToListAsync();
 
             var viewModel = new FaultReportVM
@@ -429,6 +428,7 @@ namespace Project.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var customer = await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
                 .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
 
             if (customer == null)
@@ -437,54 +437,78 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Dashboard));
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    // Handle image upload
-                    string imageUrl = null;
-                    if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
-                    {
-                        imageUrl = await SaveFaultImages(faultReportVM.FaultImages);
-                    }
-
-                    // Create the fault report entity from ViewModel
-                    var faultReport = new FaultReport
-                    {
-                        CustomerId = customer.CustomerID,
-                        FridgeInStockId = faultReportVM.FridgeInStockId,
-                        FaultType = faultReportVM.FaultType,
-                        Description = faultReportVM.Description,
-                        ReportedDate = DateTime.Now,
-                        Status = "Reported",
-                        Priority = faultReportVM.Priority,
-                        ImageUrl = imageUrl,
-                        RequestReplacement = faultReportVM.RequestReplacement,
-                        DeclineReason = null // initially null
-                    };
-
-                    _db.tblFaultReports.Add(faultReport);
-                    await _db.SaveChangesAsync();
-
-                    // If replacement is requested, create a replacement request
-                    if (faultReportVM.RequestReplacement)
-                    {
-                        await CreateReplacementRequest(faultReport, customer.CustomerID);
-                    }
-
-                    TempData[SD.Success] = "Fault reported successfully! Our team will contact you soon.";
-                    return RedirectToAction(nameof(ViewFaultStatus));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error creating fault report: {ex.Message}");
-                    TempData[SD.Error] = "Error reporting fault. Please try again.";
-                }
+                await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
+                return View(faultReportVM);
             }
 
-            // Reload customer fridges if validation fails
-            await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
-            return View(faultReportVM);
+            try
+            {
+                // Verify fridge allocation
+                var allocated = await _db.tblCustomerFridge
+                    .AnyAsync(cf => cf.CustomerID == customer.CustomerID && cf.FridgeInStockId == faultReportVM.FridgeInStockId);
+
+                if (!allocated)
+                {
+                    TempData[SD.Error] = "You can only report faults for your allocated fridges.";
+                    await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
+                    return View(faultReportVM);
+                }
+
+                // Handle image upload
+                string? imageUrl = null;
+                if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
+                {
+                    imageUrl = await SaveFaultImages(faultReportVM.FaultImages);
+                }
+
+                // Create the fault report entity
+                var faultReport = new FaultReport
+                {
+                    CustomerId = customer.CustomerID,
+                    FridgeInStockId = faultReportVM.FridgeInStockId,
+                    FaultType = faultReportVM.FaultType,
+                    Description = faultReportVM.Description,
+                    ReportedDate = DateTime.Now,
+                    Status = "Reported",
+                    Priority = faultReportVM.Priority,
+                    ImageUrl = imageUrl,
+                    RequestReplacement = faultReportVM.RequestReplacement,
+                    DeclineReason = null
+                };
+
+                _db.tblFaultReports.Add(faultReport);
+                await _db.SaveChangesAsync();
+
+                // Create FaultTechnician record
+                var faultTechnician = new FaultTechnician
+                {
+                    FaultDescription = $"{faultReportVM.FaultType}: {faultReportVM.Description}",
+                    FaultReportId = faultReport.FaultReportId,
+                    CustomerBookingStatus = "Pending",
+                    Priority = faultReportVM.Priority
+                };
+                _db.tblFaultTechnicians.Add(faultTechnician);
+
+                // Create replacement request if needed
+                if (faultReportVM.RequestReplacement)
+                {
+                    await CreateReplacementRequest(faultReport, customer.CustomerID);
+                }
+
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Fault reported successfully! Our team will contact you soon.";
+                return RedirectToAction(nameof(ViewFaultStatus));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating fault report: {ex.Message}");
+                TempData[SD.Error] = "Error reporting fault. Please try again.";
+                await ReloadFaultReportVM(faultReportVM, customer.CustomerID);
+                return View(faultReportVM);
+            }
         }
 
         // RELAUNCH DECLINED FAULT REQUEST
@@ -504,7 +528,6 @@ namespace Project.Controllers
 
             try
             {
-                // Get the original fault report
                 var originalFault = await _db.tblFaultReports
                     .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId && fr.CustomerId == customer.CustomerID);
 
@@ -520,7 +543,6 @@ namespace Project.Controllers
                     return RedirectToAction(nameof(ViewFaultStatus));
                 }
 
-                // Create new fault report based on the original
                 var newFaultReport = new FaultReport
                 {
                     CustomerId = customer.CustomerID,
@@ -531,7 +553,7 @@ namespace Project.Controllers
                     ReportedDate = DateTime.Now,
                     Status = "Reported",
                     Priority = originalFault.Priority,
-                    ImageUrl = originalFault.ImageUrl, // Reuse original images
+                    ImageUrl = originalFault.ImageUrl,
                     RequestReplacement = originalFault.RequestReplacement,
                     DeclineReason = null,
                     IsRelaunched = true,
@@ -539,6 +561,16 @@ namespace Project.Controllers
                 };
 
                 _db.tblFaultReports.Add(newFaultReport);
+                await _db.SaveChangesAsync();
+
+                var newFaultTechnician = new FaultTechnician
+                {
+                    FaultDescription = $"{newFaultReport.FaultType}: {newFaultReport.Description}",
+                    FaultReportId = newFaultReport.FaultReportId,
+                    CustomerBookingStatus = "Pending",
+                    Priority = newFaultReport.Priority
+                };
+                _db.tblFaultTechnicians.Add(newFaultTechnician);
                 await _db.SaveChangesAsync();
 
                 TempData[SD.Success] = "Fault request relaunched successfully!";
@@ -649,7 +681,6 @@ namespace Project.Controllers
             int pageSize = 10;
             int pageNumber = page ?? 1;
 
-            // Use the Project.Utility.PaginatedList
             var paginatedFaults = await Project.Utility.PaginatedList<FaultReport>.CreateAsync(faults.AsNoTracking(), pageNumber, pageSize);
 
             ViewBag.CurrentPage = pageNumber;
@@ -672,7 +703,6 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Dashboard));
             }
 
-            // Pre-populate with customer data
             var model = new RequestHeader
             {
                 FirstName = customer.ApplicationUser.FirstName,
@@ -706,12 +736,11 @@ namespace Project.Controllers
             {
                 try
                 {
-                    // Set additional properties
                     requestHeader.CustomerID = customer.CustomerID;
                     requestHeader.RequestDate = DateTime.Now;
                     requestHeader.Status = SD.Pending;
                     requestHeader.PaymentDueDate = DateTime.Now.AddDays(7);
-                    requestHeader.RequestTotal = 0; // Since no specific fridge is selected
+                    requestHeader.RequestTotal = 0;
 
                     _db.tblRequestHeaders.Add(requestHeader);
                     await _db.SaveChangesAsync();
@@ -723,14 +752,11 @@ namespace Project.Controllers
                 {
                     Console.WriteLine($"Error creating fridge request: {ex.Message}");
                     TempData[SD.Error] = "Error submitting request. Please try again.";
-
-                    // Log the error for debugging
                     ModelState.AddModelError("", "An error occurred while submitting your request.");
                 }
             }
             else
             {
-                // Log model state errors for debugging
                 var errors = ModelState.Values.SelectMany(v => v.Errors);
                 foreach (var error in errors)
                 {
@@ -852,7 +878,7 @@ namespace Project.Controllers
 
         // ========== HELPER METHODS ==========
 
-        private async Task<string> SaveFaultImages(List<IFormFile> faultImages)
+        private async Task<string?> SaveFaultImages(List<IFormFile> faultImages)
         {
             var imageUrls = new List<string>();
 
@@ -860,18 +886,15 @@ namespace Project.Controllers
             {
                 if (image.Length > 0)
                 {
-                    // Create unique file name
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
                     var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "faults", fileName);
 
-                    // Ensure directory exists
                     var directory = Path.GetDirectoryName(filePath);
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
                     }
 
-                    // Save the file
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);
@@ -886,22 +909,35 @@ namespace Project.Controllers
 
         private async Task CreateReplacementRequest(FaultReport faultReport, int customerId)
         {
-            // Create replacement request logic here
-            // This would depend on ReplacementRequest model
-            // For now, we'll just log it
-            Console.WriteLine($"Replacement requested for fault report {faultReport.FaultReportId}");
-            await Task.CompletedTask;
+            var replacementRequest = new ReplacementRequest
+            {
+                CustomerId = customerId,
+                FridgeInStockId = faultReport.FridgeInStockId,
+                FaultReportId = faultReport.FaultReportId,
+                RequestDate = DateTime.Now,
+                Status = SD.Pending
+            };
+
+            _db.tblReplacementRequests.Add(replacementRequest);
+            await _db.SaveChangesAsync();
         }
 
         private async Task ReloadFaultReportVM(FaultReportVM viewModel, int customerId)
         {
             var customerFridges = await _db.tblCustomerFridge
                 .Where(cf => cf.CustomerID == customerId)
-                .Include(cf => cf.FridgeInStock)
-                .Include(cf => cf.Fridge)
+                .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
                 .ToListAsync();
 
             viewModel.AvailableFridges = customerFridges;
+            viewModel.CustomerName = (await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .FirstOrDefaultAsync(c => c.CustomerID == customerId))
+                ?.ApplicationUser.FirstName + " " +
+                (await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .FirstOrDefaultAsync(c => c.CustomerID == customerId))
+                ?.ApplicationUser.LastName;
         }
     }
 }

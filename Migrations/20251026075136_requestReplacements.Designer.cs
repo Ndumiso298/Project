@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026075136_requestReplacements")]
+    partial class requestReplacements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,17 +31,25 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
 
                     b.HasData(
                         new
@@ -64,11 +75,14 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoleClaims");
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -80,6 +94,7 @@ namespace Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discriminator")
@@ -88,7 +103,8 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -100,10 +116,12 @@ namespace Project.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -121,11 +139,20 @@ namespace Project.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasDiscriminator().HasValue("IdentityUser");
 
@@ -147,11 +174,14 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserClaims");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -166,11 +196,14 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.ToTable("UserLogins");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -183,7 +216,9 @@ namespace Project.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.ToTable("UserRoles");
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
 
                     b.HasData(
                         new
@@ -209,7 +244,7 @@ namespace Project.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Project.Models.Allocation", b =>
@@ -332,8 +367,7 @@ namespace Project.Migrations
 
                     b.HasKey("CustomerID");
 
-                    b.HasIndex("ApplicationUserId")
-                        .IsUnique();
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("tblCustomer");
                 });
@@ -389,8 +423,7 @@ namespace Project.Migrations
 
                     b.HasKey("EmployeeID");
 
-                    b.HasIndex("ApplicationUserId")
-                        .IsUnique();
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("tblEmployee");
 
@@ -412,7 +445,6 @@ namespace Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FaultReportId"));
 
                     b.Property<string>("AdditionalNotes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CustomerId")
@@ -445,13 +477,16 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("ReportDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("ReportedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("RequestReplacement")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("ResolvedDate")
+                    b.Property<DateTime?>("ResolvedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
@@ -463,8 +498,6 @@ namespace Project.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("FridgeInStockId");
-
-                    b.HasIndex("OriginalFaultReportId");
 
                     b.ToTable("tblFaultReports");
                 });
@@ -500,9 +533,6 @@ namespace Project.Migrations
                     b.Property<int?>("FaultReportId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FridgeVisitVisitId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -526,8 +556,6 @@ namespace Project.Migrations
                     b.HasKey("FaultId");
 
                     b.HasIndex("FaultReportId");
-
-                    b.HasIndex("FridgeVisitVisitId");
 
                     b.HasIndex("VisitId");
 
@@ -1356,6 +1384,47 @@ namespace Project.Migrations
                     b.ToTable("tblFridgeVisits");
                 });
 
+            modelBuilder.Entity("Project.Models.ReplacementRequest", b =>
+                {
+                    b.Property<int>("ReplacementRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReplacementRequestId"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FaultReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FridgeInStockId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("ReplacementRequestId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("FaultReportId");
+
+                    b.HasIndex("FridgeInStockId");
+
+                    b.ToTable("tblReplacementRequests");
+                });
+
             modelBuilder.Entity("Project.Models.RequestDetails", b =>
                 {
                     b.Property<int>("RequestDetailId")
@@ -1414,15 +1483,9 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsRelaunched")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OriginalRequestHeaderId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("PaymentDueDate")
                         .HasColumnType("datetime2");
@@ -1433,9 +1496,6 @@ namespace Project.Migrations
 
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("RequestHeaderId1")
-                        .HasColumnType("int");
 
                     b.Property<double>("RequestTotal")
                         .HasColumnType("float");
@@ -1460,10 +1520,6 @@ namespace Project.Migrations
 
                     b.HasIndex("EmployeeID");
 
-                    b.HasIndex("OriginalRequestHeaderId");
-
-                    b.HasIndex("RequestHeaderId1");
-
                     b.ToTable("tblRequestHeaders");
                 });
 
@@ -1479,11 +1535,14 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NoteContent")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("NoteType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("RequestHeaderId")
                         .HasColumnType("int");
@@ -1493,45 +1552,6 @@ namespace Project.Migrations
                     b.HasIndex("RequestHeaderId");
 
                     b.ToTable("tblRequestNotes");
-                });
-
-            modelBuilder.Entity("ReplacementRequest", b =>
-                {
-                    b.Property<int>("ReplacementRequestId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReplacementRequestId"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FaultReportId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FridgeInStockId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ReplacementRequestId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("FaultReportId");
-
-                    b.HasIndex("FridgeInStockId");
-
-                    b.ToTable("tblReplacementRequests");
                 });
 
             modelBuilder.Entity("Project.Models.ApplicationUser", b =>
@@ -1581,15 +1601,15 @@ namespace Project.Migrations
                         {
                             Id = "admin-id-123",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a25085bc-d5f2-4ac7-99b0-6cc073975fcb",
+                            ConcurrencyStamp = "aa7f9214-7f9b-473d-aa5d-588f254ce033",
                             Email = "admin@fridgesystem.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
                             NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEl3Xx/Htb22X4Ax1uEunmLTjJ4HUZy8Nu9/DqiOBP3Z2ZG/o1CKl6bksxbXzaPdQA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPC9ubwhVux3pvx1oY5FKC30KsfqNUxzslJBsl5vJAxVPDOMGeIy+s6F3AjENP2SLw==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "dc4179d6-b1c5-4be3-9ff3-62ba4f7d99c9",
+                            SecurityStamp = "0462e97c-2259-466b-8252-f7c70098a326",
                             TwoFactorEnabled = false,
                             UserName = "admin@fridgesystem.com",
                             CellNumber = "+27123456789",
@@ -1602,6 +1622,57 @@ namespace Project.Migrations
                             Status = "Approved",
                             StreetAddress = "123 Admin Street"
                         });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Project.Models.Allocation", b =>
@@ -1626,8 +1697,8 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Customer", b =>
                 {
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne()
-                        .HasForeignKey("Project.Models.Customer", "ApplicationUserId")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1639,19 +1710,19 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.FridgeInStock", "FridgeInStock")
                         .WithMany()
                         .HasForeignKey("FridgeInStockId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -1664,8 +1735,8 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.Employee", b =>
                 {
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne()
-                        .HasForeignKey("Project.Models.Employee", "ApplicationUserId")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1686,15 +1757,9 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.FaultReport", "OriginalFaultReport")
-                        .WithMany()
-                        .HasForeignKey("OriginalFaultReportId");
-
                     b.Navigation("Customer");
 
                     b.Navigation("FridgeInStock");
-
-                    b.Navigation("OriginalFaultReport");
                 });
 
             modelBuilder.Entity("Project.Models.FaultTechnician", b =>
@@ -1704,14 +1769,9 @@ namespace Project.Migrations
                         .HasForeignKey("FaultReportId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Project.Models.FridgeVisit", null)
-                        .WithMany("FaultTechnicians")
-                        .HasForeignKey("FridgeVisitVisitId");
-
                     b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
-                        .WithMany()
-                        .HasForeignKey("VisitId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany("FaultTechnicians")
+                        .HasForeignKey("VisitId");
 
                     b.Navigation("FaultReport");
 
@@ -1740,66 +1800,7 @@ namespace Project.Migrations
                     b.Navigation("RequestHeader");
                 });
 
-            modelBuilder.Entity("Project.Models.RequestDetails", b =>
-                {
-                    b.HasOne("Project.Models.Fridge", "Fridge")
-                        .WithMany()
-                        .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
-                        .WithMany("RequestFridges")
-                        .HasForeignKey("RequestHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fridge");
-
-                    b.Navigation("RequestHeader");
-                });
-
-            modelBuilder.Entity("Project.Models.RequestHeader", b =>
-                {
-                    b.HasOne("Project.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Project.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Project.Models.RequestHeader", "OriginalRequest")
-                        .WithMany()
-                        .HasForeignKey("OriginalRequestHeaderId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Project.Models.RequestHeader", null)
-                        .WithMany("RelaunchedRequests")
-                        .HasForeignKey("RequestHeaderId1");
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("OriginalRequest");
-                });
-
-            modelBuilder.Entity("Project.Models.RequestNote", b =>
-                {
-                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
-                        .WithMany()
-                        .HasForeignKey("RequestHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RequestHeader");
-                });
-
-            modelBuilder.Entity("ReplacementRequest", b =>
+            modelBuilder.Entity("Project.Models.ReplacementRequest", b =>
                 {
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
@@ -1826,6 +1827,53 @@ namespace Project.Migrations
                     b.Navigation("FridgeInStock");
                 });
 
+            modelBuilder.Entity("Project.Models.RequestDetails", b =>
+                {
+                    b.HasOne("Project.Models.Fridge", "Fridge")
+                        .WithMany()
+                        .HasForeignKey("FridgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
+                        .WithMany("RequestFridges")
+                        .HasForeignKey("RequestHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fridge");
+
+                    b.Navigation("RequestHeader");
+                });
+
+            modelBuilder.Entity("Project.Models.RequestHeader", b =>
+                {
+                    b.HasOne("Project.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeID");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Project.Models.RequestNote", b =>
+                {
+                    b.HasOne("Project.Models.RequestHeader", "RequestHeader")
+                        .WithMany()
+                        .HasForeignKey("RequestHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RequestHeader");
+                });
+
             modelBuilder.Entity("Project.Models.FaultReport", b =>
                 {
                     b.Navigation("FaultTechnicians");
@@ -1844,8 +1892,6 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.RequestHeader", b =>
                 {
                     b.Navigation("FridgeVisits");
-
-                    b.Navigation("RelaunchedRequests");
 
                     b.Navigation("RequestFridges");
                 });

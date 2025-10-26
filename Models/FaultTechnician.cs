@@ -32,16 +32,12 @@ namespace Project.Models
 
         public decimal? RepairCost { get; set; }
 
-        // Foreign key for FridgeVisit (maintenance faults)
         public int? VisitId { get; set; }
-
         [ForeignKey("VisitId")]
         [ValidateNever]
         public virtual FridgeVisit? FridgeVisit { get; set; }
 
-        // Foreign key for FaultReport (customer faults)
         public int? FaultReportId { get; set; }
-
         [ForeignKey("FaultReportId")]
         [ValidateNever]
         public virtual FaultReport? FaultReport { get; set; }

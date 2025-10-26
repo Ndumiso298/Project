@@ -1,164 +1,169 @@
 ﻿@model IEnumerable<Project.Models.RequestHeader>
-@using Project.Utility
-
 @{
-    ViewData["Title"] = "Customer Support Dashboard";
+    ViewData["Title"] = "Support Dashboard";
 }
 
-<h2 class="text-primary mb-4">Customer Support Dashboard</h2>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800">
+                <i class="fas fa-tachometer-alt me-2"></i>@ViewData["Title"]
+            </h1>
+            <p class="mb-0">Manage and monitor all fridge requests</p>
+        </div>
+    </div>
 
-<!-- Summary Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-primary border-4">
-            <div class="card-body">
-                <h6 class="text-muted">Pending</h6>
-                <h3 class="fw-bold">@ViewBag.TotalPending</h3>
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Requests</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalPending</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalApproved</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalRejected</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Relaunched</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalRelaunched</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-redo fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-success border-4">
-            <div class="card-body">
-                <h6 class="text-muted">Approved</h6>
-                <h3 class="fw-bold">@ViewBag.TotalApproved</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-danger border-4">
-            <div class="card-body">
-                <h6 class="text-muted">Declined</h6>
-                <h3 class="fw-bold">@ViewBag.TotalDeclined</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm border-start border-warning border-4">
-            <div class="card-body">
-                <h6 class="text-muted">Relaunched</h6>
-                <h3 class="fw-bold">@ViewBag.TotalRelaunched</h3>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Filter -->
-<form asp-action="Dashboard" method="get" class="mb-3">
-    <div class="input-group">
-        <select name="statusFilter" class="form-select">
-            <option value="">All Statuses</option>
-            <option value="@SD.Pending" selected="@(ViewBag.SelectedStatus == SD.Pending)">Pending</option>
-            <option value="@SD.Approved" selected="@(ViewBag.SelectedStatus == SD.Approved)">Approved</option>
-            <option value="@SD.Rejected" selected="@(ViewBag.SelectedStatus == SD.Rejected)">Declined</option>
-            <option value="@SD.Relaunched" selected="@(ViewBag.SelectedStatus == SD.Relaunched)">Relaunched</option>
-        </select>
-        <button type="submit" class="btn btn-outline-primary">Filter</button>
-    </div>
-</form>
-
-<!-- Requests Table -->
-<div class="card shadow-sm">
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>Request #</th>
-                    <th>Customer</th>
-                    <th>Submitted</th>
-                    <th>Status</th>
-                    <th>Total (R)</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var r in Model)
-                {
-                    <tr>
-                        <td>@r.RequestHeaderId</td>
-                        <td>@(r.Customer?.ApplicationUser?.FirstName) @(r.Customer?.ApplicationUser?.LastName)</td>
-                        <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            <span class="badge
-                                    @(r.Status == SD.Approved ? "bg-success" :
-                                                                    r.Status == SD.Rejected ? "bg-danger" :
-                                                                    r.Status == SD.Pending ? "bg-secondary" :
-                                                                    "bg-warning text-dark")">@r.Status</span>
-                    </td>
-                    <td>@r.RequestTotal.ToString("N2")</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@r.RequestHeaderId" class="btn btn-sm btn-outline-primary">View</a>
-
-                        @if (r.Status == SD.Pending)
+    <!-- Requests Table -->
+    <div class="card shadow">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-list me-2"></i>All Requests
+            </h6>
+            <form method="get" class="d-flex">
+                <select name="statusFilter" class="form-select form-select-sm me-2" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="@SD.Pending" selected="@(ViewBag.SelectedStatus == SD.Pending)">Pending</option>
+                    <option value="@SD.Approved" selected="@(ViewBag.SelectedStatus == SD.Approved)">Approved</option>
+                    <option value="@SD.Rejected" selected="@(ViewBag.SelectedStatus == SD.Rejected)">Rejected</option>
+                </select>
+            </form>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-gray-300 mb-3"></i>
+                    <h5 class="text-gray-500">No requests found</h5>
+                    <p class="text-gray-400">There are no requests matching your criteria.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model)
                             {
-                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal" data-id="@r.RequestHeaderId">Approve</button>
-                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#declineModal" data-id="@r.RequestHeaderId">Decline</button>
+                                <tr>
+                                    <td>
+                                        <strong>#@request.RequestHeaderId</strong>
+                                        @if (request.IsRelaunched)
+                                        {
+                                            <span class="badge bg-warning ms-1" title="Relaunched request">
+                                                <i class="fas fa-redo"></i>
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>@request.FirstName @request.LastName</td>
+                                    <td>@request.RequestDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@request.RequestFridges.Sum(d => d.Count) items</td>
+                                    <td>@request.RequestTotal.ToString("C")</td>
+                                    <td>
+                                        @{
+                                            var statusClass = request.Status switch
+                                            {
+                                                SD.Pending => "status-pending",
+                                                SD.Approved => "status-approved",
+                                                SD.Rejected => "status-rejected",
+                                                _ => "status-pending"
+                                            };
+                                        }
+                                        <span class="status-badge @statusClass">
+                                            @request.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", new { id = request.RequestHeaderId })"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
                             }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     </div>
 </div>
-
-<!-- Approve Modal -->
-<div class="modal fade" id="approveModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form asp-action="Approve" method="post">
-            <input type="hidden" id="approveRequestId" name="id" />
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Approve Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Confirm approval for this request?
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Approve</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Decline Modal -->
-<div class="modal fade" id="declineModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form asp-action="Decline" method="post">
-            <input type="hidden" id="declineRequestId" name="id" />
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Decline Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <label class="form-label">Reason for Declining</label>
-                    <textarea name="declineReason" class="form-control" rows="3" required></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger">Decline</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        const approveModal = document.getElementById('approveModal');
-        approveModal.addEventListener('show.bs.modal', event => {
-            const button = event.relatedTarget;
-            document.getElementById('approveRequestId').value = button.getAttribute('data-id');
-        });
-
-        const declineModal = document.getElementById('declineModal');
-        declineModal.addEventListener('show.bs.modal', event => {
-            const button = event.relatedTarget;
-            document.getElementById('declineRequestId').value = button.getAttribute('data-id');
-        });
-    </script>
-}

@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Project.Models
 {
@@ -8,22 +6,11 @@ namespace Project.Models
     {
         [Key]
         public int RequestNoteId { get; set; }
-
-        [Required]
-        [ForeignKey("RequestHeader")]
         public int RequestHeaderId { get; set; }
+        public string NoteType { get; set; } = string.Empty;
+        public string? NoteContent { get; set; } // Nullable to avoid non-nullable error
+        public DateTime CreatedDate { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string NoteType { get; set; } = "DeclineReason";
-
-        [Required]
-        [StringLength(500)]
-        public string NoteContent { get; set; } = string.Empty;
-
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-
-        // navigation
-        public RequestHeader? RequestHeader { get; set; }
+        public RequestHeader RequestHeader { get; set; }
     }
 }

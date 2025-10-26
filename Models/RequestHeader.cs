@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Project.Utility;
 
 namespace Project.Models
@@ -23,7 +22,8 @@ namespace Project.Models
 
         public DateTime RequestDate { get; set; }
         public double RequestTotal { get; set; }
-       [Required]
+
+        [Required]
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
@@ -38,15 +38,21 @@ namespace Project.Models
         [Required]
         public string CellNumber { get; set; }
         public string? Carrier { get; set; }
-        public string? Status { get; set; } =SD.WaitingForPayment;
+        public string? Status { get; set; } = SD.Pending; 
         public DateTime? ShippingDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
 
+        public bool IsRelaunched { get; set; } = false;
+        public int? OriginalRequestHeaderId { get; set; }
+        [ForeignKey("OriginalRequestHeaderId")]
+        [ValidateNever]
+        public RequestHeader? OriginalRequest { get; set; }
 
+        // Navigation property for relaunched requests 
+        [ValidateNever]
+        public ICollection<RequestHeader> RelaunchedRequests { get; set; } = new List<RequestHeader>();
 
         public ICollection<RequestDetails> RequestFridges { get; set; }
         public ICollection<FridgeVisit> FridgeVisits { get; set; } = new List<FridgeVisit>();
-
-
     }
 }

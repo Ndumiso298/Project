@@ -1,87 +1,465 @@
 ﻿@model Project.Models.ViewModel.RequestVM
 @using Project.Utility
-
 @{
     ViewData["Title"] = "Request Details";
-    var header = Model.RequstHeader;
+    var isSupport = ViewBag.IsSupport ?? false;
+    var canRelaunch = ViewBag.CanRelaunch ?? false;
     var declineReason = ViewBag.DeclineReason as string;
+    var hasAllocatedFridges = ViewBag.HasAllocatedFridges ?? false;
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Request Details - #@header.RequestHeaderId</h2>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Customer Information</h5>
-            <p><strong>@header.Customer?.ApplicationUser?.FirstName @header.Customer?.ApplicationUser?.LastName</strong></p>
-            <p>@header.StreetAddress, @header.City, @header.State, @header.PostalCode</p>
-            <p><strong>Cell:</strong> @header.CellNumber</p>
-            <p>
-                <strong>Status:</strong>
-                <span class="badge @(header.Status == SD.Approved ? "bg-success" :
-                                                            header.Status == SD.Rejected ? "bg-danger" :
-                                                            header.Status == SD.Relaunched ? "bg-warning text-dark" :
-                                                            "bg-secondary")">@header.Status</span>
-            </p>
-
-            @if (!string.IsNullOrEmpty(declineReason))
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div class="mb-3 mb-md-0">
+            <h1 class="h3 fw-bold text-gray-800 mb-1">
+                <i class="fas fa-file-alt text-primary me-2"></i>Request #@Model.RequstHeader.RequestHeaderId
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index")" class="text-decoration-none">Requests</a></li>
+                    <li class="breadcrumb-item active text-gray-600">Details</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+            @if (!isSupport && hasAllocatedFridges && Model.RequstHeader.Status == SD.Approved)
             {
-                <div class="alert alert-danger mt-3">
-                    <strong>Decline Reason:</strong>
-                    <p>@declineReason</p>
-                </div>
+                <a href="@Url.Action("CreateReplacement", new { id = Model.RequstHeader.RequestHeaderId })"
+                   class="btn btn-warning">
+                    <i class="fas fa-exchange-alt me-2"></i>Replacement Request
+                </a>
             }
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">Requested Fridges</h5>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Fridge</th>
-                        <th>Model</th>
-                        <th>Qty</th>
-                        <th>Price/Month</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var d in Model.RequstDetail)
+    <!-- Status Alert -->
+    @if (Model.RequstHeader.Status == SD.Rejected && !string.IsNullOrEmpty(declineReason))
+    {
+        <div class="alert alert-danger border-start-4 border-start-danger shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger me-3"></i>
+                <div class="flex-grow-1">
+                    <h5 class="alert-heading fw-bold mb-2">Request Declined</h5>
+                    <p class="mb-3"><strong>Reason Provided by Support:</strong> @declineReason</p>
+                    @if (canRelaunch)
                     {
-                        <tr>
-                            <td>@d.Fridge.Brand</td>
-                            <td>@d.Fridge.Model</td>
-                            <td>@d.Count</td>
-                            <td>R @d.Price.ToString("N2")</td>
-                        </tr>
+                        <div class="d-flex align-items-center">
+                            <span class="me-3">Would you like to update and resubmit this request?</span>
+                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#relaunchModal">
+                                <i class="fas fa-redo me-2"></i>Relaunch Request
+                            </button>
+                        </div>
                     }
-                </tbody>
-            </table>
-
-            <div class="mt-3 d-flex flex-wrap gap-2">
-                @if (User.IsInRole(SD.CustomerRole) && header.Status == SD.Rejected)
-                {
-                    <form asp-action="Relaunch" method="post">
-                        <input type="hidden" name="id" value="@header.RequestHeaderId" />
-                        <button type="submit" class="btn btn-warning w-100">Relaunch Request</button>
-                    </form>
-                }
-
-                @if (User.IsInRole(SD.CustomerRole) && header.Status == SD.Approved)
-                {
-                    <a asp-controller="Fault" asp-action="CreateFault"
-                       asp-route-requestHeaderId="@header.RequestHeaderId"
-                       class="btn btn-danger w-100">Report Fault</a>
-
-                    <a asp-controller="Request" asp-action="CreateReplacement"
-                       asp-route-fridgeId="@Model.RequstDetail.FirstOrDefault()?.FridgeId"
-                       class="btn btn-info w-100">Request Replacement</a>
-
-                }
-
-                <a asp-action="Index" class="btn btn-outline-dark w-100">Back to List</a>
+                </div>
             </div>
+        </div>
+    }
+
+    @if (Model.RequstHeader.Status == SD.Approved && !isSupport)
+    {
+        <div class="alert alert-success border-start-4 border-start-success shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle fa-2x text-success me-3"></i>
+                <div class="flex-grow-1">
+                    <h5 class="alert-heading fw-bold mb-2">Request Approved</h5>
+                    <p class="mb-0">Your request has been approved. You can now create replacement requests or report faults for allocated fridges.</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Requested Items -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h6 class="m-0 fw-semibold text-gray-800">
+                        <i class="fas fa-shopping-cart text-primary me-2"></i>Requested Fridge Items
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="fw-semibold text-muted text-uppercase small">Fridge Details</th>
+                                    <th class="fw-semibold text-muted text-uppercase small text-center">Quantity</th>
+                                    <th class="fw-semibold text-muted text-uppercase small text-end">Unit Price</th>
+                                    <th class="fw-semibold text-muted text-uppercase small text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.RequstDetail)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-refrigerator fa-2x text-gray-300 me-3"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <strong class="text-gray-800">@detail.Fridge?.Brand @detail.Fridge?.Brand</strong>
+                                                    <br>
+                                                    <small class="text-muted">@detail.Fridge?.Description</small>
+                                                    <br>
+                                                    
+                                                    
+                                                        <small class="text-info">
+                                                            <i class="fas fa-tag me-1"></i>Capacity: @detail.Fridge?.CapacityLiters
+                                                        </small>
+                                              
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="badge bg-primary rounded-pill fs-6">@detail.Count</span>
+                                        </td>
+                                        <td class="text-end align-middle fw-semibold text-gray-800">
+                                            @detail.Price.ToString("C")
+                                        </td>
+                                        <td class="text-end align-middle fw-bold text-gray-800">
+                                            @((detail.Count * detail.Price).ToString("C"))
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="bg-light">
+                                <tr>
+                                    <th colspan="3" class="text-end fw-bold text-uppercase text-muted">Grand Total:</th>
+                                    <th class="text-end fw-bold text-gray-800 fs-5">@Model.RequstHeader.RequestTotal.ToString("C")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request History Section -->
+            @if (Model.RequstHeader.IsRelaunched || Model.RequstHeader.OriginalRequestHeaderId != null)
+            {
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-transparent border-bottom-0 py-3">
+                        <h6 class="m-0 fw-semibold text-gray-800">
+                            <i class="fas fa-history text-primary me-2"></i>Request History
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.RequstHeader.OriginalRequestHeaderId != null)
+                        {
+                            <div class="alert alert-info border-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-redo text-info me-3"></i>
+                                    <div>
+                                        <strong>This is a relaunched request</strong>
+                                        <br>
+                                        <small>Originally submitted as Request #@Model.RequstHeader.OriginalRequestHeaderId</small>
+                                        @if (canRelaunch)
+                                        {
+                                            <br>
+                                            <small class="text-muted">You can relaunch this request to make corrections.</small>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.RequstHeader.IsRelaunched)
+                        {
+                            <div class="alert alert-warning border-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle text-warning me-3"></i>
+                                    <div>
+                                        <strong>Relaunched Request</strong>
+                                        <br>
+                                        <small>This request was resubmitted with updates based on previous feedback.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Request Summary -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h6 class="m-0 fw-semibold text-gray-800">
+                        <i class="fas fa-info-circle text-primary me-2"></i>Request Summary
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <span class="fw-semibold text-muted">Status:</span>
+                        @{
+                            var statusConfig = Model.RequstHeader.Status switch
+                            {
+                                SD.Pending => new { bgClass = "bg-warning", icon = "fa-clock", text = "Pending Review" },
+                                SD.Approved => new { bgClass = "bg-success", icon = "fa-check-circle", text = "Approved" },
+                                SD.Rejected => new { bgClass = "bg-danger", icon = "fa-times-circle", text = "Declined" },
+                                _ => new { bgClass = "bg-secondary", icon = "fa-question", text = Model.RequstHeader.Status }
+                            };
+                        }
+                        <span class="badge @statusConfig.bgClass text-white rounded-pill d-inline-flex align-items-center">
+                            <i class="fas @statusConfig.icon me-1"></i>
+                            @statusConfig.text
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold text-muted">Request Date:</span>
+                        <span class="text-gray-800">@Model.RequstHeader.RequestDate.ToString("MMM dd, yyyy")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold text-muted">Payment Due:</span>
+                        <span class="text-gray-800">@(Model.RequstHeader.PaymentDueDate?.ToString("MMM dd, yyyy") ?? "Not set")</span>
+                    </div>
+
+                    @if (Model.RequstHeader.IsRelaunched)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-semibold text-muted">Request Type:</span>
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-redo me-1"></i>Relaunched
+                            </span>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold text-muted">Total Items:</span>
+                        <span class="badge bg-primary rounded-pill">
+                            @Model.RequstDetail.Sum(d => d.Count) item@(Model.RequstDetail.Sum(d => d.Count) > 1 ? "s" : "")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h6 class="m-0 fw-semibold text-gray-800">
+                        <i class="fas fa-user text-primary me-2"></i>Customer Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="fas fa-user-circle text-muted mt-1 me-3"></i>
+                        <div>
+                            <div class="fw-semibold text-gray-800">@Model.RequstHeader.FirstName @Model.RequstHeader.LastName</div>
+                            <small class="text-muted">Primary Contact</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="fas fa-phone text-muted mt-1 me-3"></i>
+                        <div>
+                            <div class="text-gray-800">@Model.RequstHeader.CellNumber</div>
+                            <small class="text-muted">Contact Number</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-map-marker-alt text-muted mt-1 me-3"></i>
+                        <div>
+                            <div class="text-gray-800">@Model.RequstHeader.StreetAddress</div>
+                            <div class="text-gray-800">@Model.RequstHeader.City, @Model.RequstHeader.State @Model.RequstHeader.PostalCode</div>
+                            <small class="text-muted">Delivery Address</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Actions -->
+            @if (isSupport && Model.RequstHeader.Status == SD.Pending)
+            {
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-transparent border-bottom-0 py-3">
+                        <h6 class="m-0 fw-semibold text-gray-800">
+                            <i class="fas fa-cogs text-primary me-2"></i>Support Actions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <form method="post" action="@Url.Action("Approve", new { id = Model.RequstHeader.RequestHeaderId })">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success w-100 mb-2">
+                                    <i class="fas fa-check-circle me-2"></i>Approve Request
+                                </button>
+                            </form>
+
+                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                                <i class="fas fa-times-circle me-2"></i>Reject Request
+                            </button>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Rejecting requires providing a reason to the customer
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Customer Actions -->
+            @if (!isSupport)
+            {
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-transparent border-bottom-0 py-3">
+                        <h6 class="m-0 fw-semibold text-gray-800">
+                            <i class="fas fa-tools text-primary me-2"></i>Available Actions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            @if (Model.RequstHeader.Status == SD.Approved && hasAllocatedFridges)
+                            {
+                                <a href="@Url.Action("CreateReplacement", new { id = Model.RequstHeader.RequestHeaderId })"
+                                   class="btn btn-warning mb-2">
+                                    <i class="fas fa-exchange-alt me-2"></i>Replacement Request
+                                </a>
+                                <a href="@Url.Action("CreateFault", new { id = Model.RequstHeader.RequestHeaderId })"
+                                   class="btn btn-outline-danger mb-2">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Report Fault
+                                </a>
+                            }
+
+                            @if (Model.RequstHeader.Status == SD.Rejected)
+                            {
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#relaunchModal">
+                                    <i class="fas fa-redo me-2"></i>Relaunch Request
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+<!-- Reject Modal -->
+@if (isSupport)
+{
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-gray-800" id="rejectModalLabel">
+                        <i class="fas fa-times-circle text-danger me-2"></i>Reject Request
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="@Url.Action("Reject", new { id = Model.RequstHeader.RequestHeaderId })">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <div class="alert alert-warning border-0">
+                            <div class="d-flex">
+                                <i class="fas fa-exclamation-triangle text-warning me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="alert-heading fw-bold mb-2">Important Notice</h6>
+                                    <p class="mb-0">The customer will be notified of this rejection and the reason provided. They will have the option to relaunch the request with corrections.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rejectReason" class="form-label fw-semibold">Reason for Rejection</label>
+                            <textarea class="form-control" id="rejectReason" name="rejectReason" rows="5"
+                                  placeholder="Please provide a clear and constructive reason for rejecting this request. This will help the customer understand what needs to be corrected..."
+                                  required></textarea>
+                            <div class="form-text">Be specific about what needs to be corrected or why the request cannot be approved.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-times-circle me-2"></i>Reject Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Relaunch Modal -->
+@if (canRelaunch)
+{
+    <div class="modal fade" id="relaunchModal" tabindex="-1" aria-labelledby="relaunchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-gray-800" id="relaunchModalLabel">
+                        <i class="fas fa-redo text-warning me-2"></i>Relaunch Request
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="@Url.Action("Relaunch", new { id = Model.RequstHeader.RequestHeaderId })">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <div class="alert alert-info border-0">
+                            <div class="d-flex">
+                                <i class="fas fa-info-circle text-info me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="alert-heading fw-bold mb-2">Relaunch Process</h6>
+                                    <p class="mb-0">You are creating a new request based on your declined request. Please review and update any information as needed.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="additionalInfo" class="form-label fw-semibold">Additional Information & Corrections</label>
+                            <textarea class="form-control" id="additionalInfo" name="additionalInfo" rows="4"
+                                  placeholder="Please describe any changes you've made or provide additional context for the support team..."></textarea>
+                            <div class="form-text">This information will help our support team review your updated request more efficiently.</div>
+                        </div>
+
+                        <div class="bg-light p-3 rounded">
+                            <h6 class="fw-semibold mb-2">Original Request Details:</h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li><strong>Items:</strong> @Model.RequstDetail.Sum(d => d.Count) fridge(s)</li>
+                                <li><strong>Total:</strong> @Model.RequstHeader.RequestTotal.ToString("C")</li>
+                                <li><strong>Decline Reason:</strong> @declineReason</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Relaunched Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    <style>
+        .border-start-4 {
+            border-left-width: 4px !important;
+        }
+
+        .card {
+            border: 1px solid #e3e6f0;
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem 0.75rem;
+        }
+
+        .btn {
+            border-radius: 0.375rem;
+        }
+    </style>
+}

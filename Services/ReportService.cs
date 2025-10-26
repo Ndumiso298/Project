@@ -61,7 +61,7 @@ namespace Project.Services
             {
                 var customerName = fault.FaultReport?.Customer.ApplicationUser.FirstName ?? fault.FridgeVisit?.CustomerApproval?? "Unknown";
                 //var fridgeModel = fault.FaultReport?.FridgeInStock.FridgeId ?? fault.FridgeVisit?.RequestHeader. ?? "Unknown";
-                var reportedDate = fault.Bookingate ?? fault.FaultReport?.ReportDate ?? fault.FridgeVisit?.VisitDate ?? DateTime.MinValue;
+                var reportedDate = fault.Bookingate ?? fault.FaultReport?.ReportedDate ?? fault.FridgeVisit?.VisitDate ?? DateTime.MinValue;
 
                 faultData.Add(new Dictionary<string, object>
                 {
@@ -221,7 +221,7 @@ namespace Project.Services
                 ["id"] = ft.FaultId,
                 ["customerName"] = ft.FaultReport?.Customer.ApplicationUser.FirstName ?? "Unknown",
                
-                ["reportedDate"] = ft.FaultReport?.ReportDate,
+                ["reportedDate"] = ft.FaultReport?.ReportedDate,
                 ["status"] = ft.RepairStatus,
                 ["technician"] = ft.TechnicianAssigned ?? "Unassigned",
                 ["priority"] = ft.Priority,
@@ -257,14 +257,14 @@ namespace Project.Services
 
             var responseData = await _context.tblFaultTechnicians
                 .Include(ft => ft.FaultReport)
-                .Where(ft => ft.Bookingate.HasValue && ft.FaultReportId != null && ft.FaultReport.ReportDate != null)
+                .Where(ft => ft.Bookingate.HasValue && ft.FaultReportId != null && ft.FaultReport.ReportedDate != null)
                 .Select(ft => new
                 {
                     ft.FaultId,
-                    ReportedDate = ft.FaultReport.ReportDate,
+                    ReportedDate = ft.FaultReport.ReportedDate,
                     ft.Bookingate,
                     // Fix: Access Value property for nullable TimeSpan
-                    ResponseTime = ft.Bookingate.Value - ft.FaultReport.ReportDate.Value
+                    ResponseTime = ft.Bookingate.Value - ft.FaultReport.ReportedDate
                 })
                 .ToListAsync();
 
@@ -322,7 +322,7 @@ namespace Project.Services
             var dateRange = GetDateRange(filters);
             query = query.Where(ft =>
                 (ft.Bookingate >= dateRange.Start && ft.Bookingate <= dateRange.End) ||
-                (ft.FaultReport != null && ft.FaultReport.ReportDate >= dateRange.Start && ft.FaultReport.ReportDate <= dateRange.End) ||
+                (ft.FaultReport != null && ft.FaultReport.ReportedDate >= dateRange.Start && ft.FaultReport.ReportedDate <= dateRange.End) ||
                 (ft.FridgeVisit != null && ft.FridgeVisit.VisitDate >= dateRange.Start && ft.FridgeVisit.VisitDate <= dateRange.End)
             );
 
