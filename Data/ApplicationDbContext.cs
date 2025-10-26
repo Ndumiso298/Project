@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Project.Models;
 using Project.Utility;
 
@@ -26,11 +27,12 @@ namespace Project.Data
         public DbSet<CustomerFridge> tblCustomerFridge { get; set; }
         public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
         public DbSet<FaultReport> tblFaultReports { get; set; }
+        public DbSet<RequestNote> tblRequestNotes { get; set; }
 
 
 
 
-            protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 // Ensure base Identity configuration is applied first
                 base.OnModelCreating(modelBuilder);

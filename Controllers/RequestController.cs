@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
@@ -8,242 +9,246 @@ using System.Security.Claims;
 
 namespace Project.Controllers
 {
+    [Authorize]
     public class RequestController : Controller
     {
         private readonly ApplicationDbContext _db;
-        [BindProperty]
-        public RequestVM RequestVM { get; set; }
+
         public RequestController(ApplicationDbContext db)
         {
             _db = db;
         }
 
-       
-        public IActionResult Index(string status)
+        // ====================== CUSTOMER & SUPPORT ======================
+
+        // LIST REQUESTS
+        public async Task<IActionResult> Index()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            IEnumerable<RequestHeader> objRequestHeaders;
+            IQueryable<RequestHeader> query = _db.tblRequestHeaders
+                .Include(r => r.Customer)
+                    .ThenInclude(c => c.ApplicationUser)
+                .Include(r => r.RequestFridges)
+                    .ThenInclude(d => d.Fridge);
 
-
-            if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
+            if (User.IsInRole(SD.CustomerRole))
             {
-                objRequestHeaders = _db.tblRequestHeaders.Include(a=>a.Customer.ApplicationUser).ToList();
-            }
-            else
-            {
-
-                var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-                objRequestHeaders = _db.tblRequestHeaders
-                    .Include(u => u.Customer.ApplicationUser)
-                    .Where(r => r.Customer.ApplicationUserId == userId)
-                    .ToList();
-
+                query = query.Where(r => r.Customer.ApplicationUserId == userId);
             }
 
-            return View(objRequestHeaders);
+            var requests = await query.OrderByDescending(r => r.RequestDate).ToListAsync();
+            return View(requests);
         }
 
-
-        public IActionResult Details(int id)
+        // VIEW DETAILS
+        public async Task<IActionResult> Details(int id)
         {
-            RequestVM = new()
-            {
-                RequstHeader = _db.tblRequestHeaders
-                               .Include(a => a.Customer.ApplicationUser)
-                               .FirstOrDefault(o => o.RequestHeaderId == id),
+            var request = await _db.tblRequestHeaders
+                .Include(r => r.Customer).ThenInclude(c => c.ApplicationUser)
+                .Include(r => r.RequestFridges).ThenInclude(d => d.Fridge)
+                .FirstOrDefaultAsync(r => r.RequestHeaderId == id);
 
-                RequstDetail = _db.tblRequestDetais
-                               .Include(d => d.Fridge)
-                               .Where(d => d.RequestHeaderId == id)
-                               .ToList()
+            if (request == null)
+                return NotFound();
+
+            var notes = await _db.tblRequestNotes
+                .Where(n => n.RequestHeaderId == id)
+                .ToListAsync();
+
+            var vm = new RequestVM
+            {
+                RequstHeader = request,
+                RequstDetail = request.RequestFridges,
             };
 
-           
-            ViewBag.CarrierList = new List<string>
-    {
-        "DHL",
-        "Local Delivery",
-        "Customer Pickup",
-        "Amazon Logistics"
-    };
-
-            return View(RequestVM);
+            ViewBag.DeclineReason = notes.FirstOrDefault(n => n.NoteType == "DeclineReason")?.NoteContent;
+            return View(vm);
         }
 
+
+        // ====================== CUSTOMER SUPPORT ======================
+
+        [Authorize(Roles = SD.CustomerSupport + "," + SD.AdminRole)]
         [HttpPost]
-        public IActionResult UpdateRequestDetail(RequestVM RequestVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Approve(int id)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
-            {
-                return BadRequest("Invalid request data.");
-            }
+            var header = await _db.tblRequestHeaders.FindAsync(id);
+            if (header == null) return NotFound();
 
-            var RequestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == 
-                RequestVM.RequstHeader.RequestHeaderId);
-
-            if (RequestHeaderFromDb == null)
-            {
-                return NotFound("Request not found.");
-            }
-
-            RequestHeaderFromDb.FirstName = RequestVM.RequstHeader.FirstName;
-            RequestHeaderFromDb.LastName = RequestVM.RequstHeader.LastName;
-            RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
-            RequestHeaderFromDb.StreetAddress = RequestVM.RequstHeader.StreetAddress;
-            RequestHeaderFromDb.City = RequestVM.RequstHeader.City;
-            RequestHeaderFromDb.State = RequestVM.RequstHeader.State;
-            RequestHeaderFromDb.PostalCode = RequestVM.RequstHeader.PostalCode;
-
-           
-
-            _db.tblRequestHeaders.Update(RequestHeaderFromDb);
-            _db.SaveChanges();
-
-            TempData[SD.Success] = "Order Details Updated Successfully.";
-
-            return RedirectToAction(nameof(Details), 
-                new { id = RequestHeaderFromDb.RequestHeaderId });
-        }
-
-        [HttpPost]
-        public IActionResult Approve(RequestVM RequestVM)
-        {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == 
-                RequestVM.RequstHeader.RequestHeaderId);
-
-            if (requestHeaderFromDb == null)
-            {
-                return NotFound("Request not found.");
-            }
-
-            requestHeaderFromDb.Status = SD.Approved;
-            requestHeaderFromDb.RequestDate = DateTime.Now;
-
-            _db.tblRequestHeaders.Update(requestHeaderFromDb);
-            _db.SaveChanges();
+            header.Status = SD.Approved;
+            header.RequestDate = DateTime.Now;
+            await _db.SaveChangesAsync();
 
             TempData[SD.Success] = "Request approved successfully.";
-
-            return RedirectToAction(nameof(Details), 
-                new { id = requestHeaderFromDb.RequestHeaderId });
-        }
-        private async Task ReserveApprovedFridges(RequestVM RequestVM)
-        {
-            var fridgesInStock = await _db.tblFridgeInStocks.Where(x => x.IsAvailable).ToListAsync();
-
-            var selectedModels = RequestVM.RequstDetail.Select(x => x.FridgeId).ToList();
-
-            var fridges = fridgesInStock.Where(x => selectedModels.Contains(x.FridgeId)).ToList();
-
-            _ = fridges.Take(selectedModels.Count); //TODO double check that the user is allocated the quantity of fridges they actually requested.
-
-            foreach (var f in fridges)
-            {
-                //TODO insert into CustomerFridges
-
-                //TODO Update reserved fridge status as Unavailable
-                f.IsAvailable = false;
-                _db.tblFridgeInStocks.Update(f);
-            }
-            //TODO Save changes
-            _db.SaveChanges();
-
-        }
-        public IActionResult Reject(RequestVM RequestVM)
-        {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId ==
-                RequestVM.RequstHeader.RequestHeaderId);
-
-            if (requestHeaderFromDb == null)
-            {
-                return NotFound("Request not found.");
-            }
-
-            requestHeaderFromDb.Status = SD.Rejected;
-            requestHeaderFromDb.RequestDate = DateTime.Now;
-
-            _db.tblRequestHeaders.Update(requestHeaderFromDb);
-            _db.SaveChanges();
-
-            TempData[SD.Success] = "Request rejected successfully.";
-
-            return RedirectToAction(nameof(Details), 
-                new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { id });
         }
 
-        public IActionResult Feedback(RequestVM RequestVM)
-        {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId ==
-                RequestVM.RequstHeader.RequestHeaderId);
-
-            if (requestHeaderFromDb == null)
-            {
-                return NotFound("Request not found.");
-            }
-
-            requestHeaderFromDb.Status = SD.NeedsFeedback;
-            requestHeaderFromDb.RequestDate = DateTime.Now;
-
-            _db.tblRequestHeaders.Update(requestHeaderFromDb);
-            _db.SaveChanges();
-
-            TempData[SD.Success] = "Request marked as needing feedback.";
-
-            return RedirectToAction(nameof(Details), 
-                new { id = requestHeaderFromDb.RequestHeaderId });
-        }
-
-
-
-
-
+        [Authorize(Roles = SD.CustomerSupport + "," + SD.AdminRole)]
         [HttpPost]
-        public IActionResult ShipOrder()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Decline(int id, string declineReason)
         {
+            if (string.IsNullOrWhiteSpace(declineReason))
+            {
+                TempData[SD.Error] = "Decline reason is required.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
 
-            var RequestHeader = _db.tblRequestHeaders.
-                FirstOrDefault(u => u.RequestHeaderId ==
-                RequestVM.RequstHeader.RequestHeaderId);
-            //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
-            RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
-            RequestHeader.ShippingDate = DateTime.Now;
-            //if (RequestHeader.Status == SD.PaymentStatusDelayedPayment)
-            //{
-            //    RequestHeader.PaymentDueDate = DateTime.Now.AddDays(30);
-            //}
+            var header = await _db.tblRequestHeaders.FindAsync(id);
+            if (header == null) return NotFound();
 
-            _db.tblRequestHeaders.Update(RequestHeader);
-            _db.SaveChanges();
-            TempData[SD.Success] = "Order Shipped Successfully.";
-            return RedirectToAction(nameof(Details), 
-                new { requesId = RequestVM.RequstHeader.RequestHeaderId });
+            header.Status = SD.Rejected;
+            header.RequestDate = DateTime.Now;
+
+            // Store decline reason in a lightweight log table or header extension
+            var declineNote = new RequestNote
+            {
+                RequestHeaderId = id,
+                NoteType = "DeclineReason",
+                NoteContent = declineReason,
+                CreatedDate = DateTime.Now
+            };
+            _db.Add(declineNote);
+
+            await _db.SaveChangesAsync();
+
+            TempData[SD.Success] = "Request declined successfully.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [Authorize(Roles = SD.CustomerSupport + "," + SD.AdminRole)]
+        public async Task<IActionResult> Dashboard(string statusFilter)
+        {
+            var query = _db.tblRequestHeaders
+                .Include(r => r.Customer)
+                    .ThenInclude(c => c.ApplicationUser)
+                .Include(r => r.RequestFridges)
+                    .ThenInclude(d => d.Fridge)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                query = query.Where(r => r.Status == statusFilter);
+            }
+
+            var allRequests = await query.OrderByDescending(r => r.RequestDate).ToListAsync();
+
+            // Summary counts for cards
+            ViewBag.TotalPending = await _db.tblRequestHeaders.CountAsync(r => r.Status == SD.Pending);
+            ViewBag.TotalApproved = await _db.tblRequestHeaders.CountAsync(r => r.Status == SD.Approved);
+            ViewBag.TotalDeclined = await _db.tblRequestHeaders.CountAsync(r => r.Status == SD.Rejected);
+            ViewBag.TotalRelaunched = await _db.tblRequestHeaders.CountAsync(r => r.Status == SD.Relaunched);
+
+            ViewBag.SelectedStatus = statusFilter;
+
+            return View("SupportDashboard", allRequests);
         }
 
 
+        // ====================== CUSTOMER ======================
 
+        [Authorize(Roles = SD.CustomerRole)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Relaunch(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var request = await _db.tblRequestHeaders
+                .Include(r => r.Customer)
+                .FirstOrDefaultAsync(r => r.RequestHeaderId == id && r.Customer.ApplicationUserId == userId);
 
+            if (request == null)
+            {
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
+            }
 
+            if (request.Status != SD.Rejected)
+            {
+                TempData[SD.Error] = "Only declined requests can be relaunched.";
+                return RedirectToAction(nameof(Index));
+            }
 
+            request.Status = SD.Relaunched;
+            request.RequestDate = DateTime.Now;
+            await _db.SaveChangesAsync();
+
+            TempData[SD.Success] = "Request relaunched successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ====================== REPLACEMENT / FAULTS CONTROL ======================
+
+        [Authorize(Roles = SD.CustomerRole)]
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> CreateReplacement(int fridgeId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Verify that fridge belongs to this customer
+            var allocated = await _db.tblCustomerFridge
+                .Include(cf => cf.FridgeInStock)
+                .FirstOrDefaultAsync(cf => cf.FridgeInStockId == fridgeId &&
+                                           cf.Customer.ApplicationUserId == userId);
+
+            if (allocated == null)
+            {
+                TempData[SD.Error] = "You can only request replacements for your allocated fridges.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var model = new ReplacementRequest
+            {
+                FridgeInStockId = fridgeId,
+                RequestDate = DateTime.Now,
+                Status = SD.Pending
+            };
+
+            return View(model);
+        }
+
+        [Authorize(Roles = SD.CustomerRole)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateReplacement(ReplacementRequest model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var customer = await _db.tblCustomer.FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
+
+            if (customer == null)
+            {
+                TempData[SD.Error] = "Customer profile not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            model.CustomerId = customer.CustomerID;
+            model.RequestDate = DateTime.Now;
+            model.Status = SD.Pending;
+
+            _db.Add(model);
+            await _db.SaveChangesAsync();
+
+            TempData[SD.Success] = "Replacement request submitted successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ====================== UTILITIES ======================
+
+        private bool RequestExists(int id)
+        {
+            return _db.tblRequestHeaders.Any(e => e.RequestHeaderId == id);
+        }
+    }
+
+    // Optional: simple note entity for tracking decline reasons etc.
+    public class RequestNote
+    {
+        public int RequestNoteId { get; set; }
+        public int RequestHeaderId { get; set; }
+        public string NoteType { get; set; } = string.Empty;
+        public string NoteContent { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
     }
 }

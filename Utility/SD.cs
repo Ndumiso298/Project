@@ -18,6 +18,8 @@
         public const string WaitingForPayment = "Waiting For Payment";
         public const string Approved = "Approved";
         public const string Rejected = "Rejected";
+        public const string Shipped = "Shipped";
+        public const string Relaunched = "Relaunched";
         public const string NeedsFeedback = "Needs Feedback";
         public const string FaultResolved = "Fault Resolved";
         public const string FaultPending = "Fault Pending";

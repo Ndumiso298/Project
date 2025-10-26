@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Project.Models.RequestNote>
+
+<h4 class="mb-3">Decline Reasons</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr>
+                <td>@n.CreatedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@n.NoteContent</td>
+            </tr>
+        }
+    </tbody>
+</table>

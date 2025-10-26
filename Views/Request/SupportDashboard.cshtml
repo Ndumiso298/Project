@@ -1,0 +1,164 @@
+﻿@model IEnumerable<Project.Models.RequestHeader>
+@using Project.Utility
+
+@{
+    ViewData["Title"] = "Customer Support Dashboard";
+}
+
+<h2 class="text-primary mb-4">Customer Support Dashboard</h2>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+                <h6 class="text-muted">Pending</h6>
+                <h3 class="fw-bold">@ViewBag.TotalPending</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-success border-4">
+            <div class="card-body">
+                <h6 class="text-muted">Approved</h6>
+                <h3 class="fw-bold">@ViewBag.TotalApproved</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-danger border-4">
+            <div class="card-body">
+                <h6 class="text-muted">Declined</h6>
+                <h3 class="fw-bold">@ViewBag.TotalDeclined</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-warning border-4">
+            <div class="card-body">
+                <h6 class="text-muted">Relaunched</h6>
+                <h3 class="fw-bold">@ViewBag.TotalRelaunched</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter -->
+<form asp-action="Dashboard" method="get" class="mb-3">
+    <div class="input-group">
+        <select name="statusFilter" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="@SD.Pending" selected="@(ViewBag.SelectedStatus == SD.Pending)">Pending</option>
+            <option value="@SD.Approved" selected="@(ViewBag.SelectedStatus == SD.Approved)">Approved</option>
+            <option value="@SD.Rejected" selected="@(ViewBag.SelectedStatus == SD.Rejected)">Declined</option>
+            <option value="@SD.Relaunched" selected="@(ViewBag.SelectedStatus == SD.Relaunched)">Relaunched</option>
+        </select>
+        <button type="submit" class="btn btn-outline-primary">Filter</button>
+    </div>
+</form>
+
+<!-- Requests Table -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Request #</th>
+                    <th>Customer</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th>Total (R)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@r.RequestHeaderId</td>
+                        <td>@(r.Customer?.ApplicationUser?.FirstName) @(r.Customer?.ApplicationUser?.LastName)</td>
+                        <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <span class="badge
+                                    @(r.Status == SD.Approved ? "bg-success" :
+                                                                    r.Status == SD.Rejected ? "bg-danger" :
+                                                                    r.Status == SD.Pending ? "bg-secondary" :
+                                                                    "bg-warning text-dark")">@r.Status</span>
+                    </td>
+                    <td>@r.RequestTotal.ToString("N2")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@r.RequestHeaderId" class="btn btn-sm btn-outline-primary">View</a>
+
+                        @if (r.Status == SD.Pending)
+                            {
+                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal" data-id="@r.RequestHeaderId">Approve</button>
+                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#declineModal" data-id="@r.RequestHeaderId">Decline</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-action="Approve" method="post">
+            <input type="hidden" id="approveRequestId" name="id" />
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Approve Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Confirm approval for this request?
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Approve</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Decline Modal -->
+<div class="modal fade" id="declineModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form asp-action="Decline" method="post">
+            <input type="hidden" id="declineRequestId" name="id" />
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Decline Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Reason for Declining</label>
+                    <textarea name="declineReason" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Decline</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const approveModal = document.getElementById('approveModal');
+        approveModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            document.getElementById('approveRequestId').value = button.getAttribute('data-id');
+        });
+
+        const declineModal = document.getElementById('declineModal');
+        declineModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            document.getElementById('declineRequestId').value = button.getAttribute('data-id');
+        });
+    </script>
+}
