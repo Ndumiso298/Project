@@ -61,7 +61,7 @@
                                         @if (Model.ResolvedDate != default(DateTime))
                                         {
                                             <dt class="col-sm-4">Resolved Date:</dt>
-                                            <dd class="col-sm-8">@Model.ResolvedDate.ToString("MMM dd, yyyy")</dd>
+                                            <dd class="col-sm-8">@Model.ResolvedDate?.ToString("MMM dd, yyyy")</dd>
                                         }
 
                                         @if (!string.IsNullOrEmpty(Model.DeclineReason))

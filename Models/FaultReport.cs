@@ -34,8 +34,8 @@ namespace Project.Models
         public string? ImageUrl { get; set; }
 
         public bool RequestReplacement { get; set; }
-        public DateTime ResolvedDate { get; set; }
-        
+        public DateTime? ResolvedDate { get; set; } // Changed to nullable
+
         public string? DeclineReason { get; set; }
 
         public bool IsRelaunched { get; set; } = false;
@@ -44,13 +44,21 @@ namespace Project.Models
         [ForeignKey("OriginalFaultReportId")]
         [ValidateNever]
         public FaultReport? OriginalFaultReport { get; set; }
+
         public string? ReportedBy { get; set; } // "Customer" or "Maintenance"
         public int? VisitId { get; set; } // Reference to maintenance visit
         public bool IsMaintenanceReported => !string.IsNullOrEmpty(ReportedBy) && ReportedBy == "Maintenance";
 
-        // Navigation property
+        // NEW PROPERTIES FOR CONTROLLER COMPATIBILITY
+        public bool IsReplacementRequested { get; set; } = false; // Added for controller
+
+        // Navigation property for relaunched fault reports
+        [ValidateNever]
+        public ICollection<FaultReport> RelaunchedFaultReports { get; set; } = new List<FaultReport>();
+
+        // Navigation properties
         public virtual FridgeVisit? FridgeVisit { get; set; }
-        
+
         public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
     }
 }

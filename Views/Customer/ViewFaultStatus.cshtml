@@ -1,285 +1,473 @@
 ﻿@model PaginatedList<FaultReport>
+@using Project.Utility
 
 @{
     ViewData["Title"] = "My Fault Reports";
+    var statusPriorityMap = new Dictionary<string, string>
+    {
+        { "Reported", "info" },
+        { "In Progress", "warning" },
+        { "Resolved", "success" },
+        { "Declined", "danger" }
+    };
+    var priorityColorMap = new Dictionary<string, string>
+    {
+        { "High", "danger" },
+        { "Medium", "warning" },
+        { "Low", "success" }
+    };
 }
 
 <div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800 font-weight-bold">@ViewData["Title"]</h1>
-                <a asp-action="CreateFaultSelection" class="btn btn-primary">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>Report New Fault
-                </a>
-            </div>
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div class="mb-3 mb-md-0">
+            <h1 class="h3 fw-bold text-gray-800 mb-1">
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i>@ViewData["Title"]
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active text-gray-600">Fault Reports</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("CreateFaultSelection")" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Report New Fault
+            </a>
+        </div>
+    </div>
 
-            <!-- Search and Filter Section -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Search & Filter</h6>
-                </div>
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-4 border-start-primary shadow-sm h-100 py-2">
                 <div class="card-body">
-                    <form asp-action="ViewFaultStatus" method="get" class="form-inline">
-                        <div class="form-group mr-2 mb-2">
-                            <input type="text" class="form-control" name="searchString" value="@ViewData["CurrentFilter"]"
-                                   placeholder="Search by fault type or status...">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Reports</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.TotalCount</div>
                         </div>
-                        <div class="form-group mr-2 mb-2">
-                            <select name="sortOrder" class="form-control" onchange="this.form.submit()">
-                                <option value="">Sort by...</option>
-                                <option value="date_desc" selected>Newest First</option>
-                                <option value="">Oldest First</option>
-                                <option value="faulttype">Fault Type A-Z</option>
-                                <option value="faulttype_desc">Fault Type Z-A</option>
-                                <option value="priority">Priority Low-High</option>
-                                <option value="priority_desc">Priority High-Low</option>
-                                <option value="status">Status A-Z</option>
-                                <option value="status_desc">Status Z-A</option>
-                            </select>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
                         </div>
-                        <button type="submit" class="btn btn-primary mb-2">
-                            <i class="fas fa-search mr-1"></i> Search
-                        </button>
-                        <a asp-action="ViewFaultStatus" class="btn btn-outline-secondary mb-2 ml-2">Clear</a>
-                    </form>
+                    </div>
                 </div>
             </div>
-
-            <!-- Fault Reports Table -->
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Fault Reports</h6>
-                </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-4 border-start-info shadow-sm h-100 py-2">
                 <div class="card-body">
-                    @if (Model.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Fridge</th>
-                                        <th>Fault Type</th>
-                                        <th>Description</th>
-                                        <th>Priority</th>
-                                        <th>Status</th>
-                                        <th>Reported Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var fault in Model)
-                                    {
-                                        <tr>
-                                            <td>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Pending Review</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(f => f.Status == "Reported")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-4 border-start-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">In Progress</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(f => f.Status == "In Progress")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-4 border-start-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Resolved</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(f => f.Status == "Resolved")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-transparent border-bottom-0 py-3">
+            <h6 class="m-0 fw-semibold text-gray-800">
+                <i class="fas fa-search text-primary me-2"></i>Search & Filter
+            </h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="ViewFaultStatus" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-muted">Search</label>
+                    <input type="text" class="form-control" name="searchString" value="@ViewData["CurrentFilter"]"
+                           placeholder="Search by fault type or status...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Sort By</label>
+                    <select name="sortOrder" class="form-select" onchange="this.form.submit()">
+                        <option value="date_desc" selected="@(ViewData["CurrentSort"]?.ToString() == "date_desc")">Newest First</option>
+                        <option value="" selected="@(string.IsNullOrEmpty(ViewData["CurrentSort"]?.ToString()))">Oldest First</option>
+                        <option value="faulttype" selected="@(ViewData["CurrentSort"]?.ToString() == "faulttype")">Fault Type A-Z</option>
+                        <option value="faulttype_desc" selected="@(ViewData["CurrentSort"]?.ToString() == "faulttype_desc")">Fault Type Z-A</option>
+                        <option value="priority" selected="@(ViewData["CurrentSort"]?.ToString() == "priority")">Priority Low-High</option>
+                        <option value="priority_desc" selected="@(ViewData["CurrentSort"]?.ToString() == "priority_desc")">Priority High-Low</option>
+                        <option value="status" selected="@(ViewData["CurrentSort"]?.ToString() == "status")">Status A-Z</option>
+                        <option value="status_desc" selected="@(ViewData["CurrentSort"]?.ToString() == "status_desc")">Status Z-A</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Status Filter</label>
+                    <select name="statusFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="Reported" selected="@(ViewData["StatusFilter"]?.ToString() == "Reported")">Reported</option>
+                        <option value="In Progress" selected="@(ViewData["StatusFilter"]?.ToString() == "In Progress")">In Progress</option>
+                        <option value="Resolved" selected="@(ViewData["StatusFilter"]?.ToString() == "Resolved")">Resolved</option>
+                        <option value="Declined" selected="@(ViewData["StatusFilter"]?.ToString() == "Declined")">Declined</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-1"></i>Apply
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-transparent border-bottom-0 py-3">
+            <h6 class="m-0 fw-semibold text-gray-800">
+                <i class="fas fa-list-alt text-primary me-2"></i>Fault Reports
+                <span class="badge bg-primary rounded-pill ms-2">@Model.TotalCount</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="fw-semibold text-muted text-uppercase small">Fridge Details</th>
+                                <th class="fw-semibold text-muted text-uppercase small">Fault Information</th>
+                                <th class="fw-semibold text-muted text-uppercase small text-center">Priority</th>
+                                <th class="fw-semibold text-muted text-uppercase small text-center">Status</th>
+                                <th class="fw-semibold text-muted text-uppercase small text-center">Reported</th>
+                                <th class="fw-semibold text-muted text-uppercase small text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var fault in Model)
+                            {
+                                <tr class="border-bottom">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-refrigerator fa-2x text-gray-300 me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
                                                 @if (fault.FridgeInStock?.Fridge != null)
                                                 {
-                                                    <strong>@fault.FridgeInStock.Fridge.Brand</strong>
-                                        
-                                                    <br>
+                                                    <strong class="text-gray-800 d-block">@fault.FridgeInStock.Fridge.Brand</strong>
                                                     <small class="text-muted">@fault.FridgeInStock.Fridge.Model</small>
+                                                    <br>
+                                                    <small class="text-info">
+                                                        <i class="fas fa-barcode me-1"></i>@fault.FridgeInStock.FridgeNo
+                                                    </small>
                                                 }
                                                 else
                                                 {
-                                                    <span class="text-muted">N/A</span>
+                                                    <span class="text-muted fst-italic">Fridge details unavailable</span>
                                                 }
-                                            </td>
-                                            <td>@fault.FaultType</td>
-                                            <td>
-                                                @if (fault.Description.Length > 50)
-                                                {
-                                                    @fault.Description.Substring(0, 50)
-                                        
-                                                    <text>...</text>
-                                                }
-                                                else
-                                                {
-                                                    @fault.Description
-                                                }
-                                            </td>
-                                            <td>
-                                                @switch (fault.Priority)
-                                                {
-                                                    case "High":
-                                                        <span class="badge badge-danger">@fault.Priority</span>
-                                                        break;
-                                                    case "Medium":
-                                                        <span class="badge badge-warning">@fault.Priority</span>
-                                                        break;
-                                                    case "Low":
-                                                        <span class="badge badge-success">@fault.Priority</span>
-                                                        break;
-                                                    default:
-                                                        <span class="badge badge-secondary">@fault.Priority</span>
-                                                        break;
-                                                }
-                                            </td>
-                                            <td>
-                                                @switch (fault.Status)
-                                                {
-                                                    case "Reported":
-                                                        <span class="badge badge-info">@fault.Status</span>
-                                                        break;
-                                                    case "In Progress":
-                                                        <span class="badge badge-warning">@fault.Status</span>
-                                                        break;
-                                                    case "Resolved":
-                                                        <span class="badge badge-success">@fault.Status</span>
-                                                        break;
-                                                    case "Declined":
-                                                        <span class="badge badge-danger">@fault.Status</span>
-                                                        break;
-                                                    default:
-                                                        <span class="badge badge-secondary">@fault.Status</span>
-                                                        break;
-                                                }
-                                            </td>
-                                            <td>@fault.ReportedDate.ToString("MMM dd, yyyy")</td>
-                                            <td>
-                                                <a asp-action="FaultDetails" asp-route-id="@fault.FaultReportId"
-                                                   class="btn btn-info btn-sm" title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                @if (fault.Status == "Declined")
-                                                {
-                                                    <button type="button" class="btn btn-warning btn-sm"
-                                                            data-toggle="modal" data-target="#relaunchModal@(fault.FaultReportId)"
-                                                            title="Relaunch Request">
-                                                        <i class="fas fa-redo"></i>
-                                                    </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mb-1">
+                                            <strong class="text-gray-800">@fault.FaultType</strong>
+                                        </div>
+                                        <div class="text-muted small">
+                                            @if (fault.Description.Length > 80)
+                                            {
+                                                @fault.Description.Substring(0, 80)
+                                                <text>...</text>
+                                            }
+                                            else
+                                            {
+                                                @fault.Description
+                                            }
+                                        </div>
+                                        @if (fault.RequestReplacement)
+                                        {
+                                            <span class="badge bg-warning text-dark mt-1">
+                                                <i class="fas fa-sync me-1"></i>Replacement Requested
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (priorityColorMap.ContainsKey(fault.Priority))
+                                        {
+                                            <span class="badge bg-@priorityColorMap[fault.Priority] rounded-pill px-3 py-2">
+                                                @fault.Priority
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                                @fault.Priority
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (statusPriorityMap.ContainsKey(fault.Status))
+                                        {
+                                            <span class="badge bg-@statusPriorityMap[fault.Status] rounded-pill px-3 py-2">
+                                                @fault.Status
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                                @fault.Status
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="text-gray-800 fw-semibold">@fault.ReportedDate.ToString("MMM dd, yyyy")</div>
+                                        <div class="text-muted small">@fault.ReportedDate.ToString("hh:mm tt")</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <a href="@Url.Action("FaultDetails", new { id = fault.FaultReportId })"
+                                               class="btn btn-outline-primary btn-sm"
+                                               data-bs-toggle="tooltip"
+                                               title="View full details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if (fault.Status == "Declined")
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-outline-warning btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#relaunchModal@(fault.FaultReportId)"
+                                                        data-bs-tooltip="tooltip"
+                                                        title="Relaunch this request">
+                                                    <i class="fas fa-redo"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
 
-                                                    <!-- Relaunch Modal -->
-                                                    <div class="modal fade" id="relaunchModal@(fault.FaultReportId)" tabindex="-1" role="dialog">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Relaunch Fault Report</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal">
-                                                                        <span>&times;</span>
-                                                                    </button>
+                                <!-- Relaunch Modal -->
+                                @if (fault.Status == "Declined")
+                                {
+                                    <div class="modal fade" id="relaunchModal@(fault.FaultReportId)" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header border-bottom-0">
+                                                    <h5 class="modal-title fw-bold text-gray-800">
+                                                        <i class="fas fa-redo text-warning me-2"></i>Relaunch Fault Report
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form asp-action="RelaunchFault" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="faultReportId" value="@fault.FaultReportId" />
+                                                    <div class="modal-body">
+                                                        <div class="alert alert-info border-0">
+                                                            <div class="d-flex">
+                                                                <i class="fas fa-info-circle text-info me-3 mt-1"></i>
+                                                                <div>
+                                                                    <h6 class="alert-heading fw-bold mb-2">Relaunch Process</h6>
+                                                                    <p class="mb-0">You are creating a new fault report based on your declined request. Please provide any additional information or corrections.</p>
                                                                 </div>
-                                                                <form asp-action="RelaunchFault" method="post">
-                                                                    <input type="hidden" name="faultReportId" value="@fault.FaultReportId" />
-                                                                    <div class="modal-body">
-                                                                        <div class="form-group">
-                                                                            <label>Additional Information (Optional):</label>
-                                                                            <textarea name="additionalInfo" class="form-control" rows="4"
-                                                                          placeholder="Add any additional information or corrections..."></textarea>
-                                                                        </div>
-                                                                        <div class="alert alert-info">
-                                                                            <i class="fas fa-info-circle"></i>
-                                                                            This will create a new fault report based on the original declined request.
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                                        <button type="submit" class="btn btn-warning">Relaunch Report</button>
-                                                                    </div>
-                                                                </form>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-4">
+                                                            <label class="form-label fw-semibold">Additional Information & Corrections</label>
+                                                            <textarea name="additionalInfo" class="form-control" rows="4"
+                                                          placeholder="Describe any changes you've made or provide additional context for our support team..."></textarea>
+                                                            <div class="form-text">This information will help our team review your updated request more efficiently.</div>
+                                                        </div>
+
+                                                        <div class="bg-light p-3 rounded">
+                                                            <h6 class="fw-semibold mb-2">Original Report Details:</h6>
+                                                            <div class="row small">
+                                                                <div class="col-md-6">
+                                                                    <strong>Fridge:</strong> @fault.FridgeInStock?.Fridge?.Brand<br>
+                                                                    <strong>Fault Type:</strong> @fault.FaultType
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <strong>Priority:</strong> @fault.Priority<br>
+                                                                    <strong>Reported:</strong> @fault.ReportedDate.ToString("MMM dd, yyyy")
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <p class="text-muted">
-                                    Showing @((Model.PageIndex - 1) * Model.PageSize + 1) to
-                                    @((Model.PageIndex - 1) * Model.PageSize + Model.Count) of
-                                    @Model.TotalCount entries
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <nav>
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
-                                            <a class="page-link" asp-action="ViewFaultStatus"
-                                               asp-route-sortOrder="@ViewData["CurrentSort"]"
-                                               asp-route-pageNumber="@(Model.PageIndex - 1)"
-                                               asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                                                Previous
-                                            </a>
-                                        </li>
-                                        @for (int i = 1; i <= Model.TotalPages; i++)
-                                        {
-                                            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                                <a class="page-link" asp-action="ViewFaultStatus"
-                                                   asp-route-sortOrder="@ViewData["CurrentSort"]"
-                                                   asp-route-pageNumber="@i"
-                                                   asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                                                    @i
-                                                </a>
-                                            </li>
-                                        }
-                                        <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
-                                            <a class="page-link" asp-action="ViewFaultStatus"
-                                               asp-route-sortOrder="@ViewData["CurrentSort"]"
-                                               asp-route-pageNumber="@(Model.PageIndex + 1)"
-                                               asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                                                Next
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-5">
-                            <i class="fas fa-exclamation-triangle fa-4x text-muted mb-3"></i>
-                            <h4 class="text-muted">No Fault Reports Found</h4>
-                            <p class="text-muted mb-4">You haven't reported any faults yet.</p>
-                            <a asp-action="CreateFaultSelection" class="btn btn-primary btn-lg">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>Report Your First Fault
-                            </a>
-                        </div>
-                    }
+                                                    <div class="modal-footer border-top-0">
+                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-warning">
+                                                            <i class="fas fa-paper-plane me-2"></i>Submit Relaunched Report
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+
+                <!-- Pagination -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <div class="mb-3 mb-md-0">
+                        <p class="text-muted mb-0">
+                            Showing <strong>@((Model.PageIndex - 1) * Model.PageSize + 1)</strong> to
+                            <strong>@((Model.PageIndex - 1) * Model.PageSize + Model.Count)</strong> of
+                            <strong>@Model.TotalCount</strong> entries
+                        </p>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                                <a class="page-link" asp-action="ViewFaultStatus"
+                                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                                   asp-route-statusFilter="@ViewData["StatusFilter"]">
+                                    <i class="fas fa-chevron-left me-1"></i>Previous
+                                </a>
+                            </li>
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="ViewFaultStatus"
+                                       asp-route-sortOrder="@ViewData["CurrentSort"]"
+                                       asp-route-pageNumber="@i"
+                                       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                                       asp-route-statusFilter="@ViewData["StatusFilter"]">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                                <a class="page-link" asp-action="ViewFaultStatus"
+                                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                                   asp-route-statusFilter="@ViewData["StatusFilter"]">
+                                    Next<i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="text-center py-5">
+                    <div class="empty-state-icon mb-4">
+                        <i class="fas fa-exclamation-triangle fa-4x text-gray-300"></i>
+                    </div>
+                    <h4 class="text-gray-600 mb-3">No Fault Reports Found</h4>
+                    <p class="text-muted mb-4">You haven't reported any faults yet. Start by reporting your first fault issue.</p>
+                    <a href="@Url.Action("CreateFaultSelection")" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>Report Your First Fault
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
 
 @section Styles {
     <style>
-        .table th {
-            border-top: none;
-            font-weight: 600;
+        .border-start-4 {
+            border-left-width: 4px !important;
+        }
+
+        .card {
+            border: 1px solid #e3e6f0;
+            transition: transform 0.2s ease-in-out;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem 0.75rem;
         }
 
         .badge {
             font-size: 0.75em;
+            font-weight: 500;
         }
 
-        .btn-sm {
-            margin-right: 5px;
+        .empty-state-icon {
+            opacity: 0.7;
+        }
+
+        .btn {
+            border-radius: 0.375rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .pagination .page-link {
+            border-radius: 0.375rem;
+            margin: 0 0.125rem;
         }
     </style>
 }
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            // Auto-submit sort order when changed
-            $('select[name="sortOrder"]').on('change', function() {
-                $(this).closest('form').submit();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
-            // Initialize tooltips
-            $('[title]').tooltip();
-
             // Auto-focus search input
-            $('input[name="searchString"]').focus();
+            const searchInput = document.querySelector('input[name="searchString"]');
+            if (searchInput) {
+                searchInput.focus();
+            }
 
-            console.log('Fault status page loaded successfully');
+            // Add smooth scrolling for pagination
+            document.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!this.parentElement.classList.contains('disabled')) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            console.log('Fault reports page initialized successfully');
         });
     </script>
 }

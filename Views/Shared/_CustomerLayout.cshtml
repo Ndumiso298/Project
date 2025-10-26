@@ -368,6 +368,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-area="" asp-controller="Customer" asp-action="Index">Available Items</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("AllFaults", "Request", new { requestTypeFilter = "Replacement" })">
+                                    <i class="fas fa-sync text-danger"></i>
+                                    <span>Replacement Requests</span>
+                                    <span class="badge bg-danger rounded-pill">@ViewBag.TotalReplacementPending</span>
+                                </a>
+                            </li>
                         }
                         else if (User.IsInRole(SD.StockController))
                         {

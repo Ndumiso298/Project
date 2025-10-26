@@ -93,14 +93,9 @@ namespace Project.Controllers
             var declineNote = await _db.tblRequestNotes
                 .FirstOrDefaultAsync(n => n.RequestHeaderId == id && n.NoteType == "DeclineReason");
 
-            // Check if customer has allocated fridges for replacement requests
-            var hasAllocatedFridges = await _db.tblCustomerFridge
-                .AnyAsync(cf => cf.CustomerID == request.CustomerID);
-
             ViewBag.DeclineReason = declineNote?.NoteContent;
             ViewBag.IsSupport = isSupport;
             ViewBag.CanRelaunch = !isSupport && request.Status == SD.Rejected;
-            ViewBag.HasAllocatedFridges = hasAllocatedFridges;
 
             var vm = new RequestVM
             {
@@ -321,6 +316,22 @@ namespace Project.Controllers
                 imageUrls = await SaveFaultImages(faultReportVM.FaultImages);
             }
 
+            // Determine status and priority based on replacement request
+            string status;
+            string priority;
+
+            if (faultReportVM.RequestReplacement)
+            {
+                // If replacement is requested, set status to "Replacement Requested" and high priority
+                status = "Replacement Requested";
+                priority = "High"; // Auto-high priority for replacement requests
+            }
+            else
+            {
+                status = "Reported";
+                priority = faultReportVM.Priority;
+            }
+
             // Save Fault Report
             var fault = new FaultReport
             {
@@ -328,11 +339,12 @@ namespace Project.Controllers
                 FridgeInStockId = faultReportVM.FridgeInStockId,
                 FaultType = faultReportVM.FaultType,
                 Description = faultReportVM.Description,
-                Priority = faultReportVM.Priority,
-                Status = "Reported",
+                Priority = priority,
+                Status = status,
                 ReportedDate = DateTime.Now,
                 ImageUrl = imageUrls,
-                RequestReplacement = faultReportVM.RequestReplacement
+                RequestReplacement = faultReportVM.RequestReplacement,
+                IsReplacementRequested = faultReportVM.RequestReplacement
             };
 
             _db.tblFaultReports.Add(fault);
@@ -345,19 +357,29 @@ namespace Project.Controllers
                 FaultDescription = $"{fault.FaultType}: {fault.Description}",
                 Priority = fault.Priority,
                 CustomerBookingStatus = "Pending",
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                ResolutionNotes = fault.RequestReplacement ? "Replacement requested - High priority" : null
             };
 
             _db.tblFaultTechnicians.Add(technicianRecord);
             await _db.SaveChangesAsync();
 
-            TempData[SD.Success] = "Fault reported successfully!";
+            // Send notification to support team for replacement requests
+            if (faultReportVM.RequestReplacement)
+            {
+                await CreateSupportNotification(fault);
+            }
+
+            TempData[SD.Success] = faultReportVM.RequestReplacement
+                ? "Fault reported successfully! Replacement request has been escalated to support team."
+                : "Fault reported successfully!";
+
             return RedirectToAction(nameof(ViewFaultStatus));
         }
 
-        // VIEW FAULT STATUS - FIXED WITH EXPLICIT VIEW PATH
+        // VIEW FAULT STATUS
         [Authorize(Roles = SD.CustomerRole)]
-        public async Task<IActionResult> ViewFaultStatus(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<IActionResult> ViewFaultStatus(string sortOrder, string currentFilter, string searchString, string statusFilter, int? page)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var customer = await _db.tblCustomer
@@ -371,6 +393,7 @@ namespace Project.Controllers
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["CurrentFilter"] = searchString;
+            ViewData["StatusFilter"] = statusFilter;
             ViewData["DateSortParm"] = string.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
             ViewData["FaultTypeSortParm"] = sortOrder == "faulttype" ? "faulttype_desc" : "faulttype";
             ViewData["PrioritySortParm"] = sortOrder == "priority" ? "priority_desc" : "priority";
@@ -386,6 +409,11 @@ namespace Project.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 faults = faults.Where(fr => fr.FaultType.Contains(searchString) || fr.Status.Contains(searchString));
+            }
+
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                faults = faults.Where(fr => fr.Status == statusFilter);
             }
 
             faults = sortOrder switch
@@ -408,8 +436,7 @@ namespace Project.Controllers
             ViewBag.CurrentPage = pageNumber;
             ViewBag.TotalPages = paginatedFaults.TotalPages;
 
-            // EXPLICITLY SPECIFY THE VIEW PATH
-            return View("~/Views/Request/ViewFaultStatus.cshtml", paginatedFaults);
+            return View("ViewFaultStatus", paginatedFaults);
         }
 
         // VIEW FAULT DETAILS
@@ -482,10 +509,11 @@ namespace Project.Controllers
                     Description = originalFault.Description +
                                  (string.IsNullOrEmpty(additionalInfo) ? "" : $"\n\nAdditional Info: {additionalInfo}"),
                     ReportedDate = DateTime.Now,
-                    Status = "Reported",
-                    Priority = originalFault.Priority,
+                    Status = originalFault.RequestReplacement ? "Replacement Requested" : "Reported",
+                    Priority = originalFault.RequestReplacement ? "High" : originalFault.Priority,
                     ImageUrl = originalFault.ImageUrl,
                     RequestReplacement = originalFault.RequestReplacement,
+                    IsReplacementRequested = originalFault.RequestReplacement,
                     DeclineReason = null,
                     IsRelaunched = true,
                     OriginalFaultReportId = faultReportId
@@ -500,10 +528,17 @@ namespace Project.Controllers
                     FaultReportId = newFaultReport.FaultReportId,
                     CustomerBookingStatus = "Pending",
                     Priority = newFaultReport.Priority,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.Now,
+                    ResolutionNotes = newFaultReport.RequestReplacement ? "Replacement requested - High priority" : null
                 };
                 _db.tblFaultTechnicians.Add(newFaultTechnician);
                 await _db.SaveChangesAsync();
+
+                // Send notification to support team for replacement requests
+                if (newFaultReport.RequestReplacement)
+                {
+                    await CreateSupportNotification(newFaultReport);
+                }
 
                 TempData[SD.Success] = "Fault request relaunched successfully!";
                 return RedirectToAction(nameof(ViewFaultStatus));
@@ -630,7 +665,7 @@ namespace Project.Controllers
 
         // SUPPORT: VIEW ALL FAULT REPORTS
         [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
-        public async Task<IActionResult> AllFaults(string statusFilter = null, string priorityFilter = null)
+        public async Task<IActionResult> AllFaults(string statusFilter = null, string priorityFilter = null, string requestTypeFilter = null)
         {
             var query = _db.tblFaultReports
                 .Include(fr => fr.Customer).ThenInclude(c => c.ApplicationUser)
@@ -648,13 +683,28 @@ namespace Project.Controllers
                 query = query.Where(fr => fr.Priority == priorityFilter);
             }
 
+            if (!string.IsNullOrEmpty(requestTypeFilter))
+            {
+                if (requestTypeFilter == "Replacement")
+                {
+                    query = query.Where(fr => fr.RequestReplacement);
+                }
+                else if (requestTypeFilter == "Repair")
+                {
+                    query = query.Where(fr => !fr.RequestReplacement);
+                }
+            }
+
             var faults = await query.OrderByDescending(fr => fr.ReportedDate).ToListAsync();
 
             ViewBag.StatusFilter = statusFilter;
             ViewBag.PriorityFilter = priorityFilter;
+            ViewBag.RequestTypeFilter = requestTypeFilter;
             ViewBag.TotalReported = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Reported");
             ViewBag.TotalInProgress = await _db.tblFaultReports.CountAsync(fr => fr.Status == "In Progress");
             ViewBag.TotalResolved = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Resolved");
+            ViewBag.TotalReplacementRequests = await _db.tblFaultReports.CountAsync(fr => fr.RequestReplacement);
+            ViewBag.TotalReplacementPending = await _db.tblFaultReports.CountAsync(fr => fr.RequestReplacement && fr.Status == "Replacement Requested");
 
             return View(faults);
         }
@@ -689,6 +739,107 @@ namespace Project.Controllers
             await _db.SaveChangesAsync();
 
             TempData[SD.Success] = $"Fault status updated to {status} successfully.";
+            return RedirectToAction(nameof(AllFaults));
+        }
+
+        // SUPPORT: PROCESS REPLACEMENT REQUEST
+        [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessReplacement(int id, string action, string notes)
+        {
+            var fault = await _db.tblFaultReports
+                .Include(fr => fr.Customer)
+                .Include(fr => fr.FridgeInStock)
+                .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
+
+            if (fault == null)
+            {
+                return NotFound();
+            }
+
+            if (!fault.RequestReplacement)
+            {
+                TempData[SD.Error] = "This is not a replacement request.";
+                return RedirectToAction(nameof(AllFaults));
+            }
+
+            using var transaction = await _db.Database.BeginTransactionAsync();
+
+            try
+            {
+                if (action == "approve")
+                {
+                    // Create a new request for replacement
+                    var replacementRequest = new RequestHeader
+                    {
+                        CustomerID = fault.CustomerId,
+                        RequestDate = DateTime.Now,
+                        RequestTotal = 0, // Could be calculated based on fridge value
+                        FirstName = fault.Customer?.ApplicationUser?.FirstName ?? "Customer",
+                        LastName = fault.Customer?.ApplicationUser?.LastName ?? "",
+                        StreetAddress = fault.Customer?.ApplicationUser?.StreetAddress ?? "",
+                        City = fault.Customer?.ApplicationUser?.City ?? "",
+                        State = fault.Customer?.ApplicationUser?.State ?? "",
+                        PostalCode = fault.Customer?.ApplicationUser?.PostalCode ?? "",
+                        CellNumber = fault.Customer?.ApplicationUser?.PhoneNumber ?? "",
+                        Status = SD.Approved, // Auto-approve replacement requests
+                        PaymentDueDate = DateTime.Now.AddDays(30),
+                        IsReplacement = true,
+                        OriginalFaultReportId = id
+                    };
+
+                    _db.tblRequestHeaders.Add(replacementRequest);
+                    await _db.SaveChangesAsync();
+
+                    // Add fridge to request
+                    if (fault.FridgeInStock?.FridgeId != null)
+                    {
+                        var fridge = await _db.tblFridges.FindAsync(fault.FridgeInStock.FridgeId);
+                        if (fridge != null)
+                        {
+                            var requestDetail = new RequestDetails
+                            {
+                                RequestHeaderId = replacementRequest.RequestHeaderId,
+                                FridgeId = fridge.FridgeId,
+                                Count = 1,
+                                Price = fridge.RentalPricePerMonth
+                            };
+                            _db.tblRequestDetais.Add(requestDetail);
+
+                            replacementRequest.RequestTotal = fridge.RentalPricePerMonth;
+                            _db.tblRequestHeaders.Update(replacementRequest);
+                        }
+                    }
+
+                    fault.Status = "Replacement Approved";
+                    TempData[SD.Success] = "Replacement request approved and new fridge allocation created.";
+                }
+                else if (action == "decline")
+                {
+                    fault.Status = "Replacement Declined";
+                    fault.DeclineReason = notes;
+                    TempData[SD.Success] = "Replacement request declined.";
+                }
+
+                // Update fault technician notes
+                var faultTechnician = fault.FaultTechnicians.FirstOrDefault();
+                if (faultTechnician != null)
+                {
+                    faultTechnician.ResolutionNotes = notes;
+                    faultTechnician.Completion = DateTime.Now;
+                }
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                TempData[SD.Error] = $"Error processing replacement: {ex.Message}";
+            }
+
             return RedirectToAction(nameof(AllFaults));
         }
 
@@ -730,9 +881,9 @@ namespace Project.Controllers
             await _db.SaveChangesAsync();
         }
 
-        private async Task<StockCheckResult> CheckStockAvailability(ICollection<RequestDetails> requestDetails)
+        private async Task<StockCheckResultVM> CheckStockAvailability(ICollection<RequestDetails> requestDetails)
         {
-            var result = new StockCheckResult { IsAvailable = true };
+            var result = new StockCheckResultVM { IsAvailable = true };
 
             foreach (var detail in requestDetails)
             {
@@ -777,6 +928,41 @@ namespace Project.Controllers
             return imageUrls.Count > 0 ? string.Join(",", imageUrls) : null;
         }
 
+        // Method to create support notification for replacement requests
+        private async Task CreateSupportNotification(FaultReport faultReport)
+        {
+            // Create notification using ViewModel if you're not storing in database
+            var notificationVM = new SupportNotificationVM
+            {
+                Title = "New Replacement Request",
+                Message = $"Customer has requested fridge replacement for fault report #{faultReport.FaultReportId}",
+                Type = "Replacement",
+                ReferenceId = faultReport.FaultReportId,
+                Priority = "High",
+                CreatedDate = DateTime.Now,
+                IsRead = false
+            };
+
+            // If you want to store notifications in database, you'll need to create a SupportNotification entity model
+            // and uncomment the following lines:
+
+            /*
+            var notification = new SupportNotification
+            {
+                Title = "New Replacement Request",
+                Message = $"Customer has requested fridge replacement for fault report #{faultReport.FaultReportId}",
+                Type = "Replacement",
+                ReferenceId = faultReport.FaultReportId,
+                Priority = "High",
+                CreatedDate = DateTime.Now,
+                IsRead = false
+            };
+
+            _db.tblSupportNotifications.Add(notification);
+            await _db.SaveChangesAsync();
+            */
+        }
+
         // Helper method to get stock information for display
         [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
         public async Task<JsonResult> GetStockInfo(int requestId)
@@ -810,12 +996,5 @@ namespace Project.Controllers
 
             return Json(new { success = true, stockInfo });
         }
-    }
-
-    // Helper class for stock checking
-    public class StockCheckResult
-    {
-        public bool IsAvailable { get; set; }
-        public string Message { get; set; } = string.Empty;
     }
 }

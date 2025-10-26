@@ -38,7 +38,7 @@ namespace Project.Models
         [Required]
         public string CellNumber { get; set; }
         public string? Carrier { get; set; }
-        public string? Status { get; set; } = SD.Pending; 
+        public string? Status { get; set; } = SD.Pending;
         public DateTime? ShippingDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
 
@@ -47,6 +47,13 @@ namespace Project.Models
         [ForeignKey("OriginalRequestHeaderId")]
         [ValidateNever]
         public RequestHeader? OriginalRequest { get; set; }
+
+        // NEW PROPERTIES FOR REPLACEMENT REQUESTS
+        public bool IsReplacement { get; set; } = false;
+        public int? OriginalFaultReportId { get; set; }
+        [ForeignKey("OriginalFaultReportId")]
+        [ValidateNever]
+        public FaultReport? OriginalFaultReport { get; set; }
 
         // Navigation property for relaunched requests 
         [ValidateNever]
