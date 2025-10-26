@@ -26,13 +26,6 @@
             <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back to List
             </a>
-            @if (!isSupport && hasAllocatedFridges && Model.RequstHeader.Status == SD.Approved)
-            {
-                <a href="@Url.Action("CreateReplacement", new { id = Model.RequstHeader.RequestHeaderId })"
-                   class="btn btn-warning">
-                    <i class="fas fa-exchange-alt me-2"></i>Replacement Request
-                </a>
-            }
         </div>
     </div>
 
@@ -322,10 +315,6 @@
                         <div class="d-grid gap-2">
                             @if (Model.RequstHeader.Status == SD.Approved && hasAllocatedFridges)
                             {
-                                <a href="@Url.Action("CreateReplacement", new { id = Model.RequstHeader.RequestHeaderId })"
-                                   class="btn btn-warning mb-2">
-                                    <i class="fas fa-exchange-alt me-2"></i>Replacement Request
-                                </a>
                                 <a href="@Url.Action("CreateFault", new { id = Model.RequstHeader.RequestHeaderId })"
                                    class="btn btn-outline-danger mb-2">
                                     <i class="fas fa-exclamation-triangle me-2"></i>Report Fault

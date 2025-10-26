@@ -60,6 +60,7 @@ namespace Project.Controllers
 
             return View(requests);
         }
+
         // VIEW REQUEST DETAILS (With decline reason if applicable)
         public async Task<IActionResult> Details(int id)
         {
@@ -69,8 +70,8 @@ namespace Project.Controllers
             var request = await _db.tblRequestHeaders
                 .Include(r => r.Customer).ThenInclude(c => c.ApplicationUser)
                 .Include(r => r.RequestFridges).ThenInclude(d => d.Fridge)
-                .Include(r => r.RelaunchedRequests) // Include relaunched requests
-                .Include(r => r.OriginalRequest)    // Include original request if this is a relaunch
+                .Include(r => r.RelaunchedRequests)
+                .Include(r => r.OriginalRequest)
                 .FirstOrDefaultAsync(r => r.RequestHeaderId == id);
 
             if (request == null)
@@ -108,66 +109,6 @@ namespace Project.Controllers
         }
 
         // ====================== CUSTOMER ACTIONS ======================
-
-        [Authorize(Roles = SD.CustomerRole)]
-        public async Task<IActionResult> CreateFridgeRequest()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer
-                .Include(c => c.ApplicationUser)
-                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Pre-populate with customer data
-            var model = new RequestHeader
-            {
-                FirstName = customer.ApplicationUser.FirstName,
-                LastName = customer.ApplicationUser.LastName,
-                CellNumber = customer.ApplicationUser.CellNumber ?? "",
-                StreetAddress = customer.ApplicationUser.StreetAddress ?? "",
-                City = customer.ApplicationUser.City ?? "",
-                State = customer.ApplicationUser.State ?? "",
-                PostalCode = customer.ApplicationUser.PostalCode ?? ""
-            };
-
-            return View(model);
-        }
-
-        [Authorize(Roles = SD.CustomerRole)]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFridgeRequest(RequestHeader model)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer.FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return View(model);
-            }
-
-            if (ModelState.IsValid)
-            {
-                model.CustomerID = customer.CustomerID;
-                model.RequestDate = DateTime.Now;
-                model.Status = SD.Pending;
-                model.RequestTotal = 0; // Update if needed
-
-                _db.tblRequestHeaders.Add(model);
-                await _db.SaveChangesAsync();
-
-                TempData[SD.Success] = "Fridge request submitted successfully.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(model);
-        }
 
         [Authorize(Roles = SD.CustomerRole)]
         [HttpPost]
@@ -254,25 +195,47 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(int id)
         {
-            var request = await _db.tblRequestHeaders
-                .Include(r => r.RequestFridges)
-                .FirstOrDefaultAsync(r => r.RequestHeaderId == id);
+            using var transaction = await _db.Database.BeginTransactionAsync();
 
-            if (request == null)
+            try
             {
-                return NotFound();
+                var request = await _db.tblRequestHeaders
+                    .Include(r => r.RequestFridges)
+                    .Include(r => r.Customer)
+                    .FirstOrDefaultAsync(r => r.RequestHeaderId == id);
+
+                if (request == null)
+                {
+                    return NotFound();
+                }
+
+                // Check stock availability before approving
+                var stockCheckResult = await CheckStockAvailability(request.RequestFridges);
+                if (!stockCheckResult.IsAvailable)
+                {
+                    TempData[SD.Error] = $"Cannot approve request: {stockCheckResult.Message}";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                request.Status = SD.Approved;
+                request.RequestDate = DateTime.Now;
+
+                _db.tblRequestHeaders.Update(request);
+
+                // Allocate fridges
+                await ReserveApprovedFridges(request);
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                TempData[SD.Success] = "Request approved and fridges allocated successfully.";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                TempData[SD.Error] = $"Error approving request: {ex.Message}";
             }
 
-            request.Status = SD.Approved;
-            request.RequestDate = DateTime.Now;
-
-            _db.tblRequestHeaders.Update(request);
-            await _db.SaveChangesAsync();
-
-            // Allocate fridges
-            await ReserveApprovedFridges(request);
-
-            TempData[SD.Success] = "Request approved and fridges allocated successfully.";
             return RedirectToAction(nameof(Details), new { id });
         }
 
@@ -351,8 +314,7 @@ namespace Project.Controllers
 
                 if (availableStocks.Count < detail.Count)
                 {
-                    // Handle insufficient stock
-                    throw new Exception($"Insufficient stock for fridge ID {detail.FridgeId}");
+                    throw new Exception($"Insufficient stock for fridge ID {detail.FridgeId}. Requested: {detail.Count}, Available: {availableStocks.Count}");
                 }
 
                 foreach (var stock in availableStocks)
@@ -375,5 +337,66 @@ namespace Project.Controllers
 
             await _db.SaveChangesAsync();
         }
+
+        private async Task<StockCheckResult> CheckStockAvailability(ICollection<RequestDetails> requestDetails)
+        {
+            var result = new StockCheckResult { IsAvailable = true };
+
+            foreach (var detail in requestDetails)
+            {
+                var availableStockCount = await _db.tblFridgeInStocks
+                    .CountAsync(s => s.FridgeId == detail.FridgeId && s.IsAvailable);
+
+                if (availableStockCount < detail.Count)
+                {
+                    result.IsAvailable = false;
+                    result.Message = $"Insufficient stock for {detail.Fridge?.Brand}. Requested: {detail.Count}, Available: {availableStockCount}";
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        // Helper method to get stock information for display
+        [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
+        public async Task<JsonResult> GetStockInfo(int requestId)
+        {
+            var request = await _db.tblRequestHeaders
+                .Include(r => r.RequestFridges)
+                .ThenInclude(rd => rd.Fridge)
+                .FirstOrDefaultAsync(r => r.RequestHeaderId == requestId);
+
+            if (request == null)
+            {
+                return Json(new { success = false, message = "Request not found" });
+            }
+
+            var stockInfo = new List<object>();
+
+            foreach (var detail in request.RequestFridges)
+            {
+                var availableStock = await _db.tblFridgeInStocks
+                    .CountAsync(s => s.FridgeId == detail.FridgeId && s.IsAvailable);
+
+                stockInfo.Add(new
+                {
+                    fridgeId = detail.FridgeId,
+                    modelName = detail.Fridge?.Brand,
+                    requested = detail.Count,
+                    available = availableStock,
+                    hasEnoughStock = availableStock >= detail.Count
+                });
+            }
+
+            return Json(new { success = true, stockInfo });
+        }
+    }
+
+    // Helper class for stock checking
+    public class StockCheckResult
+    {
+        public bool IsAvailable { get; set; }
+        public string Message { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace Project.Data
         public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
         public DbSet<FaultReport> tblFaultReports { get; set; }
         public DbSet<RequestNote> tblRequestNotes { get; set; }
-        public DbSet<ReplacementRequest> tblReplacementRequests { get; set; }
+
 
 
 

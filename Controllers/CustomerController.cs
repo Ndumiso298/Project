@@ -491,11 +491,7 @@ namespace Project.Controllers
                 };
                 _db.tblFaultTechnicians.Add(faultTechnician);
 
-                // Create replacement request if needed
-                if (faultReportVM.RequestReplacement)
-                {
-                    await CreateReplacementRequest(faultReport, customer.CustomerID);
-                }
+                
 
                 await _db.SaveChangesAsync();
 
@@ -690,84 +686,7 @@ namespace Project.Controllers
         }
 
         // CREATE FRIDGE REQUEST - GET
-        public IActionResult CreateFridgeRequest()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = _db.tblCustomer
-                .Include(c => c.ApplicationUser)
-                .FirstOrDefault(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Dashboard));
-            }
-
-            var model = new RequestHeader
-            {
-                FirstName = customer.ApplicationUser.FirstName,
-                LastName = customer.ApplicationUser.LastName,
-                CellNumber = customer.ApplicationUser.CellNumber ?? "",
-                StreetAddress = customer.ApplicationUser.StreetAddress ?? "",
-                City = customer.ApplicationUser.City ?? "",
-                State = customer.ApplicationUser.State ?? "",
-                PostalCode = customer.ApplicationUser.PostalCode ?? ""
-            };
-
-            return View(model);
-        }
-
-        // CREATE FRIDGE REQUEST - POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFridgeRequest(RequestHeader requestHeader)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer
-                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
-            {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Dashboard));
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    requestHeader.CustomerID = customer.CustomerID;
-                    requestHeader.RequestDate = DateTime.Now;
-                    requestHeader.Status = SD.Pending;
-                    requestHeader.PaymentDueDate = DateTime.Now.AddDays(7);
-                    requestHeader.RequestTotal = 0;
-
-                    _db.tblRequestHeaders.Add(requestHeader);
-                    await _db.SaveChangesAsync();
-
-                    TempData[SD.Success] = "Fridge request submitted successfully! We'll contact you shortly to discuss available options.";
-                    return RedirectToAction(nameof(ViewRequestStatus));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error creating fridge request: {ex.Message}");
-                    TempData[SD.Error] = "Error submitting request. Please try again.";
-                    ModelState.AddModelError("", "An error occurred while submitting your request.");
-                }
-            }
-            else
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach (var error in errors)
-                {
-                    Console.WriteLine($"Model Error: {error.ErrorMessage}");
-                }
-                TempData[SD.Error] = "Please correct the errors in the form.";
-            }
-
-            return View(requestHeader);
-        }
-
+       
         // VIEW FAULT DETAILS
         public async Task<IActionResult> FaultDetails(int id)
         {
@@ -907,20 +826,7 @@ namespace Project.Controllers
             return imageUrls.Count > 0 ? string.Join(",", imageUrls) : null;
         }
 
-        private async Task CreateReplacementRequest(FaultReport faultReport, int customerId)
-        {
-            var replacementRequest = new ReplacementRequest
-            {
-                CustomerId = customerId,
-                FridgeInStockId = faultReport.FridgeInStockId,
-                FaultReportId = faultReport.FaultReportId,
-                RequestDate = DateTime.Now,
-                Status = SD.Pending
-            };
-
-            _db.tblReplacementRequests.Add(replacementRequest);
-            await _db.SaveChangesAsync();
-        }
+       
 
         private async Task ReloadFaultReportVM(FaultReportVM viewModel, int customerId)
         {

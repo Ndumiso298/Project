@@ -16,12 +16,7 @@
             </h1>
             <p class="text-muted mb-0">@(isSupport ? "Manage and monitor all customer requests" : "Track and manage your fridge requests")</p>
         </div>
-        @if (!isSupport)
-        {
-            <a href="@Url.Action("CreateFridgeRequest")" class="btn btn-primary px-4">
-                <i class="fas fa-plus-circle me-2"></i>New Request
-            </a>
-        }
+        
     </div>
 
     <!-- Support Dashboard Cards -->
