@@ -32,7 +32,7 @@ namespace Project.Models
         [Required]
         public string City { get; set; }
         [Required]
-        public string Province { get; set; }
+        public string State { get; set; }
         [Required]
         public string PostalCode { get; set; }
         [Required]

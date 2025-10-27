@@ -24,7 +24,7 @@ namespace Project.Controllers
             _roleManager = roleManager;
             _hostingEnvironment = hostingEnvironment;
         }
-        public  IActionResult CustomerList()
+        public IActionResult CustomerList()
         {
             var customers = _db.tblCustomers
                 .Include(c => c.ApplicationUser)
@@ -62,9 +62,9 @@ namespace Project.Controllers
             if (user == null) return NotFound();
 
             if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
-                user.LockoutEnd = DateTime.Now; 
+                user.LockoutEnd = DateTime.Now;
             else
-                user.LockoutEnd = DateTime.Now.AddYears(1000); 
+                user.LockoutEnd = DateTime.Now.AddYears(1000);
 
             _db.SaveChanges();
             TempData[SD.Success] = $"Operation Successfully.";
@@ -179,7 +179,7 @@ namespace Project.Controllers
 
             user.IsApproved = true;
             user.Status = "Approved";
-            user.RejectionReason = null; 
+            user.RejectionReason = null;
 
             _db.SaveChanges();
             TempData[SD.Success] = $"User {user.FirstName} {user.LastName} approved successfully.";
@@ -193,12 +193,12 @@ namespace Project.Controllers
             var user = _db.AppUser.FirstOrDefault(u => u.Id == userId);
             if (user == null) return NotFound();
 
-           
+
 
             user.IsApproved = false;
             user.Status = "Declined";
             user.RejectionReason = "Your account was declined due to failing verification requirements.";
-            user.DeclinedAt = DateTime.UtcNow;  
+            user.DeclinedAt = DateTime.UtcNow;
 
             _db.SaveChanges();
 
@@ -251,10 +251,10 @@ namespace Project.Controllers
                 if (employee != null)
                 {
                     vm.EmployeeNumber = employee.EmployeeNumber;
-                    vm.StreetAddress = employee.UserAccount.StreetAddress;
-                    vm.City = employee.UserAccount.City;
-                    vm.Province = employee.UserAccount.Province;
-                    vm.PostalCode = employee.UserAccount.PostalCode;
+                    vm.StreetAddress = employee.ApplicationUser.StreetAddress;
+                    vm.City = employee.ApplicationUser.City;
+                    vm.State = employee.ApplicationUser.State;
+                    vm.PostalCode = employee.ApplicationUser.PostalCode;
                 }
             }
 
@@ -268,4 +268,3 @@ namespace Project.Controllers
 
     }
 }
-

@@ -50,11 +50,11 @@ namespace Project.Controllers
         {
             RequestVM = new()
             {
-                RequstHeader = _db.tblRequestHeaders
+                RequestHeader = _db.tblRequestHeaders
                                .Include(a => a.Customer.ApplicationUser)
                                .FirstOrDefault(o => o.RequestHeaderId == id),
 
-                RequstDetail = _db.tblRequestDetails
+                RequestDetails = _db.tblRequestDetails
                                .Include(d => d.Fridge)
                                .Where(d => d.RequestHeaderId == id)
                                .ToList()
@@ -75,27 +75,27 @@ namespace Project.Controllers
         [HttpPost]
         public IActionResult UpdateRequestDetail(RequestVM RequestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (RequestVM == null || RequestVM.RequestHeader == null)
             {
                 return BadRequest("Invalid request data.");
             }
 
             var RequestHeaderFromDb = _db.tblRequestHeaders
                 .FirstOrDefault(u => u.RequestHeaderId == 
-                RequestVM.RequstHeader.RequestHeaderId);
+                RequestVM.RequestHeader.RequestHeaderId);
 
             if (RequestHeaderFromDb == null)
             {
                 return NotFound("Request not found.");
             }
 
-            RequestHeaderFromDb.FirstName = RequestVM.RequstHeader.FirstName;
-            RequestHeaderFromDb.LastName = RequestVM.RequstHeader.LastName;
-            RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
-            RequestHeaderFromDb.StreetAddress = RequestVM.RequstHeader.StreetAddress;
-            RequestHeaderFromDb.City = RequestVM.RequstHeader.City;
-            RequestHeaderFromDb.Province = RequestVM.RequstHeader.Province;
-            RequestHeaderFromDb.PostalCode = RequestVM.RequstHeader.PostalCode;
+            RequestHeaderFromDb.FirstName = RequestVM.RequestHeader.FirstName;
+            RequestHeaderFromDb.LastName = RequestVM.RequestHeader.LastName;
+            RequestHeaderFromDb.CellNumber = RequestVM.RequestHeader.CellNumber;
+            RequestHeaderFromDb.StreetAddress = RequestVM.RequestHeader.StreetAddress;
+            RequestHeaderFromDb.City = RequestVM.RequestHeader.City;
+            RequestHeaderFromDb.State = RequestVM.RequestHeader.State;
+            RequestHeaderFromDb.PostalCode = RequestVM.RequestHeader.PostalCode;
 
            
 
@@ -111,14 +111,14 @@ namespace Project.Controllers
         [HttpPost]
         public IActionResult Approve(RequestVM RequestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (RequestVM == null || RequestVM.RequestHeader == null)
             {
                 return BadRequest("Invalid request data.");
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
                 .FirstOrDefault(u => u.RequestHeaderId == 
-                RequestVM.RequstHeader.RequestHeaderId);
+                RequestVM.RequestHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -143,7 +143,7 @@ namespace Project.Controllers
         {
             var fridgesInStock = await _db.tblFridgeInStocks.Where(x=>x.IsAvailable).ToListAsync();
 
-            var selectedModels = RequestVM.RequstDetail.Select(x => x.FridgeId).ToList();
+            var selectedModels = RequestVM.RequestDetails.Select(x => x.FridgeId).ToList();
 
             var fridges = fridgesInStock.Where(x => selectedModels.Contains(x.FridgeId)).ToList();
            
@@ -164,14 +164,14 @@ namespace Project.Controllers
        
         public IActionResult Reject(RequestVM RequestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (RequestVM == null || RequestVM.RequestHeader == null)
             {
                 return BadRequest("Invalid request data.");
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
                 .FirstOrDefault(u => u.RequestHeaderId ==
-                RequestVM.RequstHeader.RequestHeaderId);
+                RequestVM.RequestHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -192,14 +192,14 @@ namespace Project.Controllers
 
         public IActionResult Feedback(RequestVM RequestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (RequestVM == null || RequestVM.RequestHeader == null)
             {
                 return BadRequest("Invalid request data.");
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
                 .FirstOrDefault(u => u.RequestHeaderId ==
-                RequestVM.RequstHeader.RequestHeaderId);
+                RequestVM.RequestHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -228,9 +228,9 @@ namespace Project.Controllers
 
             var RequestHeader = _db.tblRequestHeaders.
                 FirstOrDefault(u => u.RequestHeaderId ==
-                RequestVM.RequstHeader.RequestHeaderId);
+                RequestVM.RequestHeader.RequestHeaderId);
             //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
-            RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
+            RequestHeader.Carrier = RequestVM.RequestHeader.Carrier;
             RequestHeader.ShippingDate = DateTime.Now;
             //if (RequestHeader.Status == SD.PaymentStatusDelayedPayment)
             //{
@@ -241,7 +241,7 @@ namespace Project.Controllers
             _db.SaveChanges();
             TempData[SD.Success] = "Order Shipped Successfully.";
             return RedirectToAction(nameof(Details), 
-                new { requesId = RequestVM.RequstHeader.RequestHeaderId });
+                new { requesId = RequestVM.RequestHeader.RequestHeaderId });
         }
 
 

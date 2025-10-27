@@ -135,327 +135,74 @@ namespace Project.Data
                 new FridgeInStock { FridgeInStockId = 5, FridgeNo = "FRG005", LastMaintenanceDate = new DateTime(2025, 5, 20), Condition = "Fair", IsAvailable = false, Location = "Cape Town", FridgeId = 3 },
                 new FridgeInStock { FridgeInStockId = 6, FridgeNo = "FRG006", LastMaintenanceDate = new DateTime(2025, 6, 11), Condition = "Excellent", IsAvailable = true, Location = "Cape Town", FridgeId = 3 },
 
-            new Fridge
-            {
-                FridgeId = 1,
-                Brand = "Samsung",
-                FridgeNo = "FRG-001",
-                Model = "RT28T",
-                CapacityLiters = 253,
-                Type = "Double Door",
-                Description = "Energy-efficient double door fridge with frost-free technology.",
-                RentalPricePerMonth = 1200.00,
-                LastMaintenanceDate = new DateTime(2025, 1, 15),
-                Condition = "Excellent",
-                ImageUrl = "https://example.com/images/fridge1.jpg",
-                Status = "Available",
-                Location = "Available"
-            },
-                new Fridge
-                {
-                    FridgeId = 2,
-                    Brand = "LG",
-                    FridgeNo = "FRG-002",
-                    Model = "GL-B201",
-                    CapacityLiters = 190,
-                    Type = "Single Door",
-                    Description = "Compact single door fridge ideal for small apartments.",
-                    RentalPricePerMonth = 900.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 10),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge2.jpg",
-                    Status = "Rented",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 3,
-                    Brand = "Whirlpool",
-                    FridgeNo = "FRG-003",
-                    Model = "WRT518",
-                    CapacityLiters = 500,
-                    Type = "Double Door",
-                    Description = "Spacious fridge with advanced cooling technology.",
-                    RentalPricePerMonth = 1500.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 5),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge3.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 4,
-                    Brand = "Defy",
-                    FridgeNo = "FRG-004",
-                    Model = "DAC700",
-                    CapacityLiters = 350,
-                    Type = "Double Door",
-                    Description = "Durable fridge with energy-saving features.",
-                    RentalPricePerMonth = 1100.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 1),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge4.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 5,
-                    Brand = "Hisense",
-                    FridgeNo = "FRG-005",
-                    Model = "H310BI",
-                    CapacityLiters = 310,
-                    Type = "Single Door",
-                    Description = "Compact fridge with adjustable shelves.",
-                    RentalPricePerMonth = 800.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 20),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge5.jpg",
-                    Status = "Rented",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 6,
-                    Brand = "Bosch",
-                    FridgeNo = "FRG-006",
-                    Model = "KDN42",
-                    CapacityLiters = 420,
-                    Type = "Double Door",
-                    Description = "Premium fridge with no-frost technology.",
-                    RentalPricePerMonth = 1600.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 15),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge6.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 7,
-                    Brand = "Kelvinator",
-                    FridgeNo = "FRG-007",
-                    Model = "KEL250",
-                    CapacityLiters = 250,
-                    Type = "Single Door",
-                    Description = "Affordable fridge with basic features.",
-                    RentalPricePerMonth = 700.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 25),
-                    Condition = "Fair",
-                    ImageUrl = "https://example.com/images/fridge7.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 8,
-                    Brand = "Smeg",
-                    FridgeNo = "FRG-008",
-                    Model = "FAB28",
-                    CapacityLiters = 281,
-                    Type = "Single Door",
-                    Description = "Retro-style fridge with modern cooling.",
-                    RentalPricePerMonth = 2000.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 5),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge8.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 9,
-                    Brand = "AEG",
-                    FridgeNo = "FRG-009",
-                    Model = "SKE818",
-                    CapacityLiters = 300,
-                    Type = "Single Door",
-                    Description = "Built-in fridge with adjustable compartments.",
-                    RentalPricePerMonth = 1800.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 1),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge9.jpg",
-                    Status = "Rented",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 10,
-                    Brand = "Panasonic",
-                    FridgeNo = "FRG-010",
-                    Model = "NR-BL347",
-                    CapacityLiters = 347,
-                    Type = "Double Door",
-                    Description = "Fridge with inverter technology for energy saving.",
-                    RentalPricePerMonth = 1300.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 10),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge10.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 11,
-                    Brand = "Haier",
-                    FridgeNo = "FRG-011",
-                    Model = "HRF-619",
-                    CapacityLiters = 565,
-                    Type = "Side by Side",
-                    Description = "Large capacity fridge with twin inverter technology.",
-                    RentalPricePerMonth = 2200.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 5),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge11.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 12,
-                    Brand = "Hitachi",
-                    FridgeNo = "FRG-012",
-                    Model = "R-WB640",
-                    CapacityLiters = 640,
-                    Type = "French Door",
-                    Description = "Premium French door fridge with eco-friendly features.",
-                    RentalPricePerMonth = 2500.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 20),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge12.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 13,
-                    Brand = "Electrolux",
-                    FridgeNo = "FRG-013",
-                    Model = "ETB3700",
-                    CapacityLiters = 370,
-                    Type = "Top Freezer",
-                    Description = "Fridge with taste guard deodorizer.",
-                    RentalPricePerMonth = 1400.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 2),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge13.jpg",
-                    Status = "Rented",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 14,
-                    Brand = "Sharp",
-                    FridgeNo = "FRG-014",
-                    Model = "SJ-GX60",
-                    CapacityLiters = 600,
-                    Type = "French Door",
-                    Description = "Fridge with plasmacluster ion technology.",
-                    RentalPricePerMonth = 2300.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 18),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge14.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 15,
-                    Brand = "Midea",
-                    FridgeNo = "FRG-015",
-                    Model = "HD-400",
-                    CapacityLiters = 400,
-                    Type = "Double Door",
-                    Description = "Affordable fridge with large freezer compartment.",
-                    RentalPricePerMonth = 1000.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 28),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge15.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 16,
-                    Brand = "Gorenje",
-                    FridgeNo = "FRG-016",
-                    Model = "NRK6192",
-                    CapacityLiters = 326,
-                    Type = "Bottom Freezer",
-                    Description = "Stylish bottom freezer fridge with crisp zone for vegetables.",
-                    RentalPricePerMonth = 1250.00,
-                    LastMaintenanceDate = new DateTime(2025, 3, 8),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge16.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 17,
-                    Brand = "Westinghouse",
-                    FridgeNo = "FRG-017",
-                    Model = "WBE5300",
-                    CapacityLiters = 528,
-                    Type = "Top Freezer",
-                    Description = "Family-sized fridge with humidity-controlled crisper.",
-                    RentalPricePerMonth = 1700.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 12),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge17.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 18,
-                    Brand = "Fisher & Paykel",
-                    FridgeNo = "FRG-018",
-                    Model = "RF522",
-                    CapacityLiters = 519,
-                    Type = "French Door",
-                    Description = "Premium French door fridge with active smart technology.",
-                    RentalPricePerMonth = 2400.00,
-                    LastMaintenanceDate = new DateTime(2025, 4, 7),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge18.jpg",
-                    Status = "Rented",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 19,
-                    Brand = "Ariston",
-                    FridgeNo = "FRG-019",
-                    Model = "MBA3832",
-                    CapacityLiters = 383,
-                    Type = "Top Freezer",
-                    Description = "Reliable fridge with antibacterial coating.",
-                    RentalPricePerMonth = 1150.00,
-                    LastMaintenanceDate = new DateTime(2025, 1, 30),
-                    Condition = "Good",
-                    ImageUrl = "https://example.com/images/fridge19.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                },
-                new Fridge
-                {
-                    FridgeId = 20,
-                    Brand = "Beko",
-                    FridgeNo = "FRG-020",
-                    Model = "RCNE560",
-                    CapacityLiters = 560,
-                    Type = "Bottom Freezer",
-                    Description = "Spacious bottom freezer fridge with NeoFrost cooling.",
-                    RentalPricePerMonth = 1850.00,
-                    LastMaintenanceDate = new DateTime(2025, 2, 22),
-                    Condition = "Excellent",
-                    ImageUrl = "https://example.com/images/fridge20.jpg",
-                    Status = "Available",
-                    Location = "Available"
-                }
-            ) ;
+                // Fridge 4
+                new FridgeInStock { FridgeInStockId = 7, FridgeNo = "FRG007", LastMaintenanceDate = new DateTime(2025, 4, 1), Condition = "Good", IsAvailable = true, Location = "Pretoria", FridgeId = 4 },
+                new FridgeInStock { FridgeInStockId = 8, FridgeNo = "FRG008", LastMaintenanceDate = new DateTime(2025, 2, 15), Condition = "Fair", IsAvailable = false, Location = "Pretoria", FridgeId = 4 },
+
+                // Fridge 5
+                new FridgeInStock { FridgeInStockId = 9, FridgeNo = "FRG009", LastMaintenanceDate = new DateTime(2025, 1, 30), Condition = "Good", IsAvailable = true, Location = "Durban", FridgeId = 5 },
+                new FridgeInStock { FridgeInStockId = 10, FridgeNo = "FRG010", LastMaintenanceDate = new DateTime(2025, 5, 3), Condition = "Excellent", IsAvailable = true, Location = "Durban", FridgeId = 5 },
+
+                // Fridge 6
+                new FridgeInStock { FridgeInStockId = 11, FridgeNo = "FRG011", LastMaintenanceDate = new DateTime(2025, 3, 19), Condition = "Good", IsAvailable = false, Location = "Port Elizabeth", FridgeId = 6 },
+                new FridgeInStock { FridgeInStockId = 12, FridgeNo = "FRG012", LastMaintenanceDate = new DateTime(2025, 6, 7), Condition = "Excellent", IsAvailable = true, Location = "Port Elizabeth", FridgeId = 6 },
+
+                // Fridge 7
+                new FridgeInStock { FridgeInStockId = 13, FridgeNo = "FRG013", LastMaintenanceDate = new DateTime(2025, 4, 4), Condition = "Excellent", IsAvailable = true, Location = "Johannesburg", FridgeId = 7 },
+                new FridgeInStock { FridgeInStockId = 14, FridgeNo = "FRG014", LastMaintenanceDate = new DateTime(2025, 3, 11), Condition = "Fair", IsAvailable = false, Location = "Johannesburg", FridgeId = 7 },
+
+                // Fridge 8
+                new FridgeInStock { FridgeInStockId = 15, FridgeNo = "FRG015", LastMaintenanceDate = new DateTime(2025, 2, 26), Condition = "Good", IsAvailable = true, Location = "Cape Town", FridgeId = 8 },
+                new FridgeInStock { FridgeInStockId = 16, FridgeNo = "FRG016", LastMaintenanceDate = new DateTime(2025, 4, 9), Condition = "Excellent", IsAvailable = false, Location = "Cape Town", FridgeId = 8 },
+
+                // Fridge 9
+                new FridgeInStock { FridgeInStockId = 17, FridgeNo = "FRG017", LastMaintenanceDate = new DateTime(2025, 1, 17), Condition = "Good", IsAvailable = true, Location = "Pretoria", FridgeId = 9 },
+                new FridgeInStock { FridgeInStockId = 18, FridgeNo = "FRG018", LastMaintenanceDate = new DateTime(2025, 6, 2), Condition = "Excellent", IsAvailable = false, Location = "Pretoria", FridgeId = 9 },
+
+                // Fridge 10
+                new FridgeInStock { FridgeInStockId = 19, FridgeNo = "FRG019", LastMaintenanceDate = new DateTime(2025, 3, 8), Condition = "Fair", IsAvailable = false, Location = "Durban", FridgeId = 10 },
+                new FridgeInStock { FridgeInStockId = 20, FridgeNo = "FRG020", LastMaintenanceDate = new DateTime(2025, 5, 13), Condition = "Excellent", IsAvailable = true, Location = "Durban", FridgeId = 10 },
+
+                // Fridge 11
+                new FridgeInStock { FridgeInStockId = 21, FridgeNo = "FRG021", LastMaintenanceDate = new DateTime(2025, 3, 6), Condition = "Excellent", IsAvailable = true, Location = "Bloemfontein", FridgeId = 11 },
+                new FridgeInStock { FridgeInStockId = 22, FridgeNo = "FRG022", LastMaintenanceDate = new DateTime(2025, 2, 18), Condition = "Fair", IsAvailable = false, Location = "Bloemfontein", FridgeId = 11 },
+
+                // Fridge 12
+                new FridgeInStock { FridgeInStockId = 23, FridgeNo = "FRG023", LastMaintenanceDate = new DateTime(2025, 5, 25), Condition = "Good", IsAvailable = false, Location = "Cape Town", FridgeId = 12 },
+                new FridgeInStock { FridgeInStockId = 24, FridgeNo = "FRG024", LastMaintenanceDate = new DateTime(2025, 6, 10), Condition = "Excellent", IsAvailable = true, Location = "Cape Town", FridgeId = 12 },
+
+                // Fridge 13
+                new FridgeInStock { FridgeInStockId = 25, FridgeNo = "FRG025", LastMaintenanceDate = new DateTime(2025, 1, 21), Condition = "Good", IsAvailable = true, Location = "Durban", FridgeId = 13 },
+                new FridgeInStock { FridgeInStockId = 26, FridgeNo = "FRG026", LastMaintenanceDate = new DateTime(2025, 4, 27), Condition = "Fair", IsAvailable = false, Location = "Durban", FridgeId = 13 },
+
+                // Fridge 14
+                new FridgeInStock { FridgeInStockId = 27, FridgeNo = "FRG027", LastMaintenanceDate = new DateTime(2025, 3, 14), Condition = "Excellent", IsAvailable = false, Location = "Pretoria", FridgeId = 14 },
+                new FridgeInStock { FridgeInStockId = 28, FridgeNo = "FRG028", LastMaintenanceDate = new DateTime(2025, 6, 20), Condition = "Good", IsAvailable = true, Location = "Pretoria", FridgeId = 14 },
+
+                // Fridge 15
+                new FridgeInStock { FridgeInStockId = 29, FridgeNo = "FRG029", LastMaintenanceDate = new DateTime(2025, 2, 2), Condition = "Excellent", IsAvailable = true, Location = "Johannesburg", FridgeId = 15 },
+                new FridgeInStock { FridgeInStockId = 30, FridgeNo = "FRG030", LastMaintenanceDate = new DateTime(2025, 4, 17), Condition = "Fair", IsAvailable = false, Location = "Johannesburg", FridgeId = 15 },
+
+                // Fridge 16
+                new FridgeInStock { FridgeInStockId = 31, FridgeNo = "FRG031", LastMaintenanceDate = new DateTime(2025, 5, 22), Condition = "Excellent", IsAvailable = true, Location = "Durban", FridgeId = 16 },
+                new FridgeInStock { FridgeInStockId = 32, FridgeNo = "FRG032", LastMaintenanceDate = new DateTime(2025, 3, 10), Condition = "Good", IsAvailable = false, Location = "Durban", FridgeId = 16 },
+
+                // Fridge 17
+                new FridgeInStock { FridgeInStockId = 33, FridgeNo = "FRG033", LastMaintenanceDate = new DateTime(2025, 1, 25), Condition = "Fair", IsAvailable = false, Location = "Cape Town", FridgeId = 17 },
+                new FridgeInStock { FridgeInStockId = 34, FridgeNo = "FRG034", LastMaintenanceDate = new DateTime(2025, 6, 5), Condition = "Excellent", IsAvailable = true, Location = "Cape Town", FridgeId = 17 },
+
+                // Fridge 18
+                new FridgeInStock { FridgeInStockId = 35, FridgeNo = "FRG035", LastMaintenanceDate = new DateTime(2025, 4, 12), Condition = "Good", IsAvailable = true, Location = "Johannesburg", FridgeId = 18 },
+                new FridgeInStock { FridgeInStockId = 36, FridgeNo = "FRG036", LastMaintenanceDate = new DateTime(2025, 2, 28), Condition = "Fair", IsAvailable = false, Location = "Johannesburg", FridgeId = 18 },
+
+                // Fridge 19
+                new FridgeInStock { FridgeInStockId = 37, FridgeNo = "FRG037", LastMaintenanceDate = new DateTime(2025, 5, 30), Condition = "Excellent", IsAvailable = true, Location = "Pretoria", FridgeId = 19 },
+                new FridgeInStock { FridgeInStockId = 38, FridgeNo = "FRG038", LastMaintenanceDate = new DateTime(2025, 6, 14), Condition = "Good", IsAvailable = false, Location = "Pretoria", FridgeId = 19 },
+
+                // Fridge 20
+                new FridgeInStock { FridgeInStockId = 39, FridgeNo = "FRG039", LastMaintenanceDate = new DateTime(2025, 1, 9), Condition = "Fair", IsAvailable = false, Location = "Durban", FridgeId = 20 },
+                new FridgeInStock { FridgeInStockId = 40, FridgeNo = "FRG040", LastMaintenanceDate = new DateTime(2025, 5, 18), Condition = "Excellent", IsAvailable = true, Location = "Durban", FridgeId = 20 }
+            );
         }
     }
 }

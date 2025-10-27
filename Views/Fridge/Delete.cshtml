@@ -4,56 +4,14 @@
     Layout = "_CustomerLayout";
 }
 
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="CapacityLiters" class="form-control border-0 shadow" disabled />
-                            <label asp-for="CapacityLiters" class="ms-2"></label>
-                            <span asp-validation-for="CapacityLiters" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Type" class="form-control border-0 shadow" disabled />
-                            <label asp-for="Type" class="ms-2"></label>
-                            <span asp-validation-for="Type" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <textarea asp-for="Description" class="form-control border-0 shadow" disabled></textarea>
-                            <label asp-for="Description" class="ms-2"></label>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="RentalPricePerMonth" class="form-control border-0 shadow" disabled />
-                            <label asp-for="RentalPricePerMonth" class="ms-2"></label>
-                            <span asp-validation-for="RentalPricePerMonth" class="text-danger"></span>
-                        </div>
-                        @* <div class="form-floating py-2 col-12">
-                            <input asp-for="RentedFromDate" class="form-control border-0 shadow" disabled />
-                            <label asp-for="RentedFromDate" class="ms-2"></label>
-                            <span asp-validation-for="RentedFromDate" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="RentedToDate" class="form-control border-0 shadow" disabled />
-                            <label asp-for="RentedToDate" class="ms-2"></label>
-                            <span asp-validation-for="RentedToDate" class="text-danger"></span>
-                        </div> *@
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="LastMaintenanceDate" class="form-control border-0 shadow" disabled />
-                            <label asp-for="LastMaintenanceDate" class="ms-2"></label>
-                            <span asp-validation-for="LastMaintenanceDate" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Condition" class="form-control border-0 shadow" disabled />
-                            <label asp-for="Condition" class="ms-2"></label>
-                            <span asp-validation-for="Condition" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="ImageUrl" class="form-control border-0 shadow" disabled />
-                            <label asp-for="ImageUrl" class="ms-2"></label>
-                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                        </div>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="Status" class="form-control border-0 shadow" disabled />
-                            <label asp-for="Status" class="ms-2"></label>
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </div>
+<div class="container py-4">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-danger text-white">
+            <h4>Delete Confirmation</h4>
+        </div>
+
+        <div class="card-body">
+            <h5>Are you sure you want to delete this fridge model?</h5>
 
             <dl class="row mt-3">
                 <dt class="col-sm-3">Brand</dt>

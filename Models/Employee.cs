@@ -22,14 +22,14 @@ namespace Project.Models
         public bool IsActive { get; set; } = true;
 
         [Display(Name = "Created Date")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Created By")]
         public string? CreatedBy { get; set; } = string.Empty;
 
         [Display(Name = "Last Updated")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? UpdatedAt { get; set; }
 
         [Display(Name = "Updated By")]
@@ -44,17 +44,10 @@ namespace Project.Models
 
         // Maintenance tech navigations
         [ValidateNever]
-        public virtual ICollection<MaintenanceVisit> MaintenanceVisits { get; set; } = new List<MaintenanceVisit>();
-
-        [ValidateNever]
-        public virtual ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();
+        public virtual ICollection<FridgeVisit> MaintenanceVisits { get; set; } = new List<FridgeVisit>();
 
         [NotMapped]
-        public virtual ICollection<Fault> FaultReports { get; set; } = new List<Fault>();
-
-        // FaultRecord tech navigations
-        //[InverseProperty(nameof(Fault.AssignedTechnician))]
-        public virtual ICollection<Fault> AssignedFaults { get; set; } = new List<Fault>();
+        public virtual ICollection<FaultTechnician> FaultReports { get; set; } = new List<FaultTechnician>();
 
         // Stock controller navigations
         [ValidateNever]

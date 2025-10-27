@@ -203,7 +203,7 @@
 
                                     <!-- Action Buttons -->
                                     <div class="d-grid gap-2">
-                                        @if (fridge.Status == "Available")
+                                        @if (fridge.AvailabilityStatus == "Available")
                                         {
                                             <a asp-controller="Customer" asp-action="Details" asp-route-id="@fridge.FridgeId"
                                                class="btn btn-primary">
