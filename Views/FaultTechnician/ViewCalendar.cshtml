@@ -1,0 +1,230 @@
+﻿@model IEnumerable<Project.Models.ViewModel.CalendarEventVM>
+@{
+    ViewData["Title"] = "Repair Schedule Calendar";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-calendar-alt me-2"></i>@ViewData["Title"]
+                </h1>
+                <div class="btn-group">
+                    <a href="@Url.Action("ViewFaults")" class="btn btn-secondary">
+                        <i class="fas fa-list me-1"></i>View Assignments
+                    </a>
+                    <a href="@Url.Action("Reports")" class="btn btn-primary">
+                        <i class="fas fa-chart-bar me-1"></i>View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-outline-primary" id="prevWeek">
+                                <i class="fas fa-chevron-left me-1"></i>Previous Week
+                            </button>
+                            <button class="btn btn-outline-primary" id="nextWeek">
+                                Next Week<i class="fas fa-chevron-right ms-1"></i>
+                            </button>
+                        </div>
+                        <h5 class="mb-0" id="currentWeekRange">
+                            @DateTime.Today.ToString("MMM dd") - @DateTime.Today.AddDays(6).ToString("MMM dd, yyyy")
+                        </h5>
+                        <button class="btn btn-primary" id="todayBtn">
+                            <i class="fas fa-calendar-day me-1"></i>Today
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar View -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-calendar me-1"></i>Weekly Schedule</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0" id="calendarTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 14%" class="text-center">Time</th>
+                                    @for (int i = 0; i < 7; i++)
+                                    {
+                                        var date = DateTime.Today.AddDays(i);
+                                        <th style="width: 12%" class="text-center @(date.Date == DateTime.Today.Date ? "table-primary" : "")">
+                                            <div>@date.ToString("ddd")</div>
+                                            <div class="fw-bold">@date.ToString("MMM dd")</div>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int hour = 8; hour <= 17; hour++)
+                                {
+                                    <tr>
+                                        <td class="text-center fw-bold bg-light">
+                                            @hour:00
+                                        </td>
+                                        @for (int day = 0; day < 7; day++)
+                                        {
+                                            var currentDate = DateTime.Today.AddDays(day);
+                                            var slotTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, hour, 0, 0);
+                                            var eventsInSlot = Model.Where(e =>
+                                            e.Start.Date == currentDate.Date &&
+                                            e.Start.Hour <= hour &&
+                                            e.End.Hour > hour);
+
+                                            <td class="calendar-slot @(eventsInSlot.Any() ? "bg-warning bg-opacity-25" : "")">
+                                                @foreach (var calendarEvent in eventsInSlot)
+                                                {
+                                                    <div class="calendar-event mb-1 p-1 rounded small
+                                                                     @(calendarEvent.IsOverdue ? "bg-danger text-white" :
+                                                                                                                    calendarEvent.Status == "Completed" || calendarEvent.Status == "Resolved" ? "bg-success text-white" :
+                                                                                                                    calendarEvent.Status == "In Progress" ? "bg-info text-white" : "bg-primary text-white")"
+                                             data-bs-toggle="tooltip"
+                                             title="@calendarEvent.Title - @calendarEvent.TechnicianName">
+                                            <div class="fw-bold">@calendarEvent.Title</div>
+                                            <small>@calendarEvent.Start.ToString("HH:mm")</small>
+                                            <div class="status-badge">
+                                                <span class="badge @(calendarEvent.CustomerBookingStatus == "Approved" ? "bg-success" :
+                                                                                                                                calendarEvent.CustomerBookingStatus == "Declined" ? "bg-danger" : "bg-warning text-dark")">
+                                                    @calendarEvent.CustomerBookingStatus
+                                                </span>
+                                            </div>
+                                        </div>
+                                                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-1"></i>Calendar Legend</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-primary rounded me-2" style="width: 20px; height: 20px;"></div>
+                                <span>Scheduled/Upcoming</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-info rounded me-2" style="width: 20px; height: 20px;"></div>
+                                <span>In Progress</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-success rounded me-2" style="width: 20px; height: 20px;"></div>
+                                <span>Completed/Resolved</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-danger rounded me-2" style="width: 20px; height: 20px;"></div>
+                                <span>Overdue</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Calendar navigation
+            let currentDate = new Date();
+
+            function updateCalendarDisplay() {
+                const startDate = new Date(currentDate);
+                const endDate = new Date(currentDate);
+                endDate.setDate(endDate.getDate() + 6);
+
+                $('#currentWeekRange').text(
+                    `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                );
+
+                // In a real implementation, you would fetch events for the new date range
+                // For now, we'll just reload the page with new dates
+            }
+
+            $('#prevWeek').click(function () {
+                currentDate.setDate(currentDate.getDate() - 7);
+                updateCalendarDisplay();
+            });
+
+            $('#nextWeek').click(function () {
+                currentDate.setDate(currentDate.getDate() + 7);
+                updateCalendarDisplay();
+            });
+
+            $('#todayBtn').click(function () {
+                currentDate = new Date();
+                updateCalendarDisplay();
+            });
+
+            // Make calendar events clickable
+            $('.calendar-event').click(function () {
+                const eventTitle = $(this).find('.fw-bold').text();
+                alert(`Event details: ${eventTitle}\n\nIn a real implementation, this would open a detailed view.`);
+            });
+        });
+    </script>
+
+    <style>
+        .calendar-slot {
+            min-height: 80px;
+            vertical-align: top;
+            cursor: pointer;
+        }
+
+            .calendar-slot:hover {
+                background-color: #f8f9fa !important;
+            }
+
+        .calendar-event {
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+            .calendar-event:hover {
+                opacity: 0.9;
+            }
+
+        .status-badge {
+            margin-top: 2px;
+        }
+    </style>
+}

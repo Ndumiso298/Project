@@ -1,4 +1,9 @@
-﻿namespace Project.Models.ViewModel
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+
+namespace Project.Models.ViewModel
 {
     public class FaultViewModel
     {

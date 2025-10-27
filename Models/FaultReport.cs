@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Project.Models
 {
@@ -8,57 +8,29 @@ namespace Project.Models
     {
         [Key]
         public int FaultReportId { get; set; }
-
         public int CustomerId { get; set; }
-        [ForeignKey("CustomerId")]
-        [ValidateNever]
-        public Customer Customer { get; set; }
-
         public int FridgeInStockId { get; set; }
-        [ForeignKey("FridgeInStockId")]
-        [ValidateNever]
-        public FridgeInStock FridgeInStock { get; set; }
-
-        [Required]
-        public string FaultType { get; set; } = string.Empty;
-
-        [Required]
-        public string Description { get; set; } = string.Empty;
-
-        public string Status { get; set; } = "Reported";
-
+        public string Description { get; set; } = "";
+        public string FaultType { get; set; } = "";
+        public string Status { get; set; } = "Pending";
         public string Priority { get; set; } = "Medium";
+        public DateTime ReportedDate { get; set; } = DateTime.Now;
+        public DateTime? ResolvedDate { get; set; }
 
-        public DateTime ReportedDate { get; set; }
-
+        // Add missing properties
+        public bool RequestReplacement { get; set; }
+        public bool IsReplacementRequested { get; set; }
+        public string? DeclineReason { get; set; }
+        public bool IsRelaunched { get; set; }
+        public int? OriginalFaultReportId { get; set; }
         public string? ImageUrl { get; set; }
 
-        public bool RequestReplacement { get; set; }
-        public DateTime? ResolvedDate { get; set; } // Changed to nullable
-
-        public string? DeclineReason { get; set; }
-
-        public bool IsRelaunched { get; set; } = false;
-
-        public int? OriginalFaultReportId { get; set; }
-        [ForeignKey("OriginalFaultReportId")]
-        [ValidateNever]
-        public FaultReport? OriginalFaultReport { get; set; }
-
-        public string? ReportedBy { get; set; } // "Customer" or "Maintenance"
-        public int? VisitId { get; set; } // Reference to maintenance visit
-        public bool IsMaintenanceReported => !string.IsNullOrEmpty(ReportedBy) && ReportedBy == "Maintenance";
-
-        // NEW PROPERTIES FOR CONTROLLER COMPATIBILITY
-        public bool IsReplacementRequested { get; set; } = false; // Added for controller
-
-        // Navigation property for relaunched fault reports
-        [ValidateNever]
-        public ICollection<FaultReport> RelaunchedFaultReports { get; set; } = new List<FaultReport>();
-
         // Navigation properties
-        public virtual FridgeVisit? FridgeVisit { get; set; }
-
-        public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
+        public virtual Customer Customer { get; set; } = new Customer();
+        public virtual FridgeInStock FridgeInStock { get; set; } = new FridgeInStock();
+        public virtual ICollection<FaultImage> FaultImages { get; set; } = new List<FaultImage>();
+        public virtual ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
+        public virtual FaultReport? OriginalFaultReport { get; set; }
+        public virtual ICollection<FaultReport> RelaunchedFaultReports { get; set; } = new List<FaultReport>();
     }
 }

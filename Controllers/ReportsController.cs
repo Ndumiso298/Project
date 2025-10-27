@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Models;
-
+using Project.Models.ViewModel;
 using Project.Services.Interfaces;
 
 namespace Project.Controllers

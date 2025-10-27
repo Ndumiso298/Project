@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027115956_faultUpdatess")]
+    partial class faultUpdatess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,17 +257,16 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.BookingNotification", b =>
                 {
-                    b.Property<int>("NotificationId")
+                    b.Property<int>("BookingNotificationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingNotificationId"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeclineReason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("FaultTechnicianId")
@@ -284,7 +286,7 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("NotificationId");
+                    b.HasKey("BookingNotificationId");
 
                     b.HasIndex("FaultTechnicianId");
 
@@ -379,11 +381,11 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.CustomerFeedback", b =>
                 {
-                    b.Property<int>("FeedbackId")
+                    b.Property<int>("CustomerFeedbackId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedbackId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerFeedbackId"));
 
                     b.Property<int>("FaultTechnicianId")
                         .HasColumnType("int");
@@ -402,7 +404,7 @@ namespace Project.Migrations
                     b.Property<DateTime>("SentDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("FeedbackId");
+                    b.HasKey("CustomerFeedbackId");
 
                     b.HasIndex("FaultTechnicianId");
 
@@ -476,27 +478,23 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.FaultImage", b =>
                 {
-                    b.Property<int>("ImageId")
+                    b.Property<int>("FaultImageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FaultImageId"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("FaultReportId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImagePath")
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ImageId");
+                    b.HasKey("FaultImageId");
 
                     b.HasIndex("FaultReportId");
 
@@ -547,6 +545,9 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReportedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("ReportedDate")
                         .HasColumnType("datetime2");
 
@@ -559,6 +560,9 @@ namespace Project.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VisitId")
+                        .HasColumnType("int");
 
                     b.HasKey("FaultReportId");
 
@@ -594,6 +598,7 @@ namespace Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerBookingStatus")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeclineReason")
@@ -603,6 +608,7 @@ namespace Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FaultDescription")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("FaultReportId")
@@ -611,16 +617,18 @@ namespace Project.Migrations
                     b.Property<int?>("FridgeVisitVisitId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("LastUpdated")
+                    b.Property<DateTime?>("LastUpdated")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Priority")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("RepairCost")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RepairStatus")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResolutionNotes")
@@ -1467,17 +1475,16 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.RebookingNotification", b =>
                 {
-                    b.Property<int>("RebookingId")
+                    b.Property<int>("RebookingNotificationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RebookingId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RebookingNotificationId"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeclineReason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("FaultTechnicianId")
@@ -1490,7 +1497,7 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("RebookingId");
+                    b.HasKey("RebookingNotificationId");
 
                     b.HasIndex("FaultTechnicianId");
 
@@ -1691,15 +1698,15 @@ namespace Project.Migrations
                         {
                             Id = "admin-id-123",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "002be432-e404-4fa5-91c3-e38c53ee6d17",
+                            ConcurrencyStamp = "aac0d68b-e5ed-46a4-bcc5-5f8c2d1c437a",
                             Email = "admin@fridgesystem.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
                             NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEC+XTMhjpSaxUQ1nbNznziXVheU8sitGgvR3d2IhbfIcSou0uVf8PoDGGHvpCKF87A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPV73i+8DDcA5KYYajiPig5CKoQnhoDJGT8ZLKaZU/6n043XVa9fhNxzHYgI84FUPA==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "2225381a-4dd1-45c7-b113-8bd3113a3da1",
+                            SecurityStamp = "65400d87-b083-4f00-9c4e-b459142c4648",
                             TwoFactorEnabled = false,
                             UserName = "admin@fridgesystem.com",
                             CellNumber = "+27123456789",
@@ -1829,7 +1836,7 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.FridgeVisit", null)
+                    b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
                         .WithMany("FaultReports")
                         .HasForeignKey("FridgeVisitVisitId");
 
@@ -1840,6 +1847,8 @@ namespace Project.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("FridgeInStock");
+
+                    b.Navigation("FridgeVisit");
 
                     b.Navigation("OriginalFaultReport");
                 });
@@ -1890,7 +1899,7 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.RebookingNotification", b =>
                 {
                     b.HasOne("Project.Models.FaultTechnician", "FaultTechnician")
-                        .WithMany()
+                        .WithMany("RebookingNotifications")
                         .HasForeignKey("FaultTechnicianId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1977,6 +1986,8 @@ namespace Project.Migrations
                     b.Navigation("BookingNotifications");
 
                     b.Navigation("CustomerFeedbacks");
+
+                    b.Navigation("RebookingNotifications");
                 });
 
             modelBuilder.Entity("Project.Models.Fridge", b =>

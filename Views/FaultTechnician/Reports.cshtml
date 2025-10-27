@@ -1,0 +1,276 @@
+﻿@model Project.Models.ViewModel.ReportResult
+@{
+    ViewData["Title"] = "Fault Reports & Analytics";
+    var filters = ViewBag.Filters as Project.Models.ViewModel.ReportFilters ?? new Project.Models.ViewModel.ReportFilters();
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-chart-bar me-2"></i>@ViewData["Title"]
+                </h1>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success" id="exportPdfBtn">
+                        <i class="fas fa-file-pdf me-1"></i>Export PDF
+                    </button>
+                    <button type="button" class="btn btn-success" id="exportExcelBtn">
+                        <i class="fas fa-file-excel me-1"></i>Export Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Filters -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="fas fa-filter me-1"></i>Report Filters</h6>
+        </div>
+        <div class="card-body">
+            <form id="reportFiltersForm" method="get">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="ReportType">Report Type</label>
+                            <select class="form-control" id="ReportType" name="ReportType">
+                                <option value="faults_summary">Faults Summary</option>
+                                <option value="technician_performance">Technician Performance</option>
+                                <option value="fault_trends">Fault Trends</option>
+                                <option value="completion_rates">Completion Rates</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="DateRange">Date Range</label>
+                            <select class="form-control" id="DateRange" name="DateRange">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="this_week">This Week</option>
+                                <option value="last_week">Last Week</option>
+                                <option value="this_month">This Month</option>
+                                <option value="last_month">Last Month</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="StartDate">Start Date</label>
+                            <input type="date" class="form-control" id="StartDate" name="StartDate" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="EndDate">End Date</label>
+                            <input type="date" class="form-control" id="EndDate" name="EndDate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="Status">Status</label>
+                            <select class="form-control" id="Status" name="Status">
+                                <option value="">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Resolved">Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="Technician">Technician</label>
+                            <select class="form-control" id="Technician" name="Technician">
+                                <option value="">All Technicians</option>
+                                <!-- Technicians will be populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-sync-alt me-1"></i>Generate Report
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetFilters">
+                            <i class="fas fa-times me-1"></i>Reset
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    @if (Model.Summary != null && Model.Summary.Any())
+    {
+        <div class="row mb-4">
+            @foreach (var item in Model.Summary)
+            {
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        @item.Title
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@item.Value</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Chart Section -->
+    @if (Model.ChartData != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-chart-line me-1"></i>@Model.ChartData.Title</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="reportChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="fas fa-table me-1"></i>@Model.Title</h6>
+            <span class="badge bg-light text-dark">@(Model.Data?.Count ?? 0) records</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="reportTable">
+                    <thead class="table-light">
+                        <tr>
+                            @if (Model.Columns != null)
+                            {
+                                foreach (var column in Model.Columns)
+                                {
+                                    <th>@column.Title</th>
+                                }
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Data != null && Model.Data.Any())
+                        {
+                            foreach (var row in Model.Data)
+                            {
+                                <tr>
+                                    @foreach (var column in Model.Columns)
+                                    {
+                                        <td>@row[column.Field]</td>
+                                    }
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(Model.Columns?.Count ?? 1)" class="text-center text-muted py-4">
+                                    No data available for the selected filters
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize date range visibility
+            toggleCustomDateRange();
+
+            $('#DateRange').change(toggleCustomDateRange);
+
+            function toggleCustomDateRange() {
+                const isCustom = $('#DateRange').val() === 'custom';
+                $('#StartDate, #EndDate').closest('.form-group').toggle(isCustom);
+            }
+
+            // Generate report on form submit
+            $('#reportFiltersForm').on('submit', function (e) {
+                e.preventDefault();
+                generateReport();
+            });
+
+            // Export functionality
+            $('#exportPdfBtn').click(function () {
+                exportReport('pdf');
+            });
+
+            $('#exportExcelBtn').click(function () {
+                exportReport('excel');
+            });
+
+            // Reset filters
+            $('#resetFilters').click(function () {
+                $('#reportFiltersForm')[0].reset();
+                generateReport();
+            });
+
+            function generateReport() {
+                const formData = $('#reportFiltersForm').serialize();
+                
+                $.post('@Url.Action("GenerateReportData")', formData)
+                    .done(function (response) {
+                        if (response.success) {
+                            updateReportUI(response.data);
+                        } else {
+                            showAlert('Error generating report: ' + response.error, 'danger');
+                        }
+                    })
+                    .fail(function () {
+                        showAlert('Error generating report. Please try again.', 'danger');
+                    });
+            }
+
+            function exportReport(format) {
+                const formData = $('#reportFiltersForm').serialize() + '&format=' + format;
+                
+                window.location.href = '@Url.Action("ExportReport")?' + formData;
+            }
+
+            function updateReportUI(data) {
+                // Update summary cards
+                // Update chart
+                // Update table
+                // This would require more complex UI updates based on the response
+                location.reload(); // Temporary reload for demonstration
+            }
+
+            function showAlert(message, type) {
+                const alert = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+                $('.container-fluid').prepend(alert);
+            }
+        });
+    </script>
+}

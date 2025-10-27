@@ -28,6 +28,8 @@
         public const string NotStarted = "Not Started";
         public const string Success = "Success";
         public const string Error = "Error";
+        public const string Warning = "Warning";
+        public const string Info = "Info";
 
         // New constants for fault management
         public const string InProgress = "In Progress";

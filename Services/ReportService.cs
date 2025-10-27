@@ -1,43 +1,35 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
-
+using Project.Models.ViewModel;
 using Project.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Project.Services
 {
     public class ReportService : IReportService
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<ReportService> _logger;
 
-        public ReportService(ApplicationDbContext context, ILogger<ReportService> logger)
+        public ReportService(ApplicationDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
         public async Task<ReportResult> GenerateReportAsync(ReportFilters filters)
         {
-            try
+            return filters.ReportType?.ToLower() switch
             {
-                _logger.LogInformation("Generating report of type: {ReportType}", filters.ReportType);
-
-                return filters.ReportType?.ToLower() switch
-                {
-                    "faults_summary" => await GenerateFaultsSummaryReport(filters),
-                    "technician_performance" => await GenerateTechnicianPerformanceReport(filters),
-                    "maintenance_schedule" => await GenerateMaintenanceScheduleReport(filters),
-                    "customer_reports" => await GenerateCustomerReportsAnalysis(filters),
-                    "response_times" => await GenerateResponseTimeAnalysis(filters),
-                    _ => throw new ArgumentException($"Invalid report type: {filters.ReportType}")
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error generating report of type: {ReportType}", filters.ReportType);
-                throw;
-            }
+                "faults_summary" => await GenerateFaultsSummaryReport(filters),
+                "technician_performance" => await GenerateTechnicianPerformanceReport(filters),
+                "maintenance_schedule" => await GenerateMaintenanceScheduleReport(filters),
+                "customer_reports" => await GenerateCustomerReportsAnalysis(filters),
+                "response_times" => await GenerateResponseTimeAnalysis(filters),
+                _ => await GenerateFaultsSummaryReport(filters)
+            };
         }
 
         public async Task<ReportResult> GenerateFaultsSummaryReport(ReportFilters filters)
@@ -53,26 +45,24 @@ namespace Project.Services
             var totalFaults = faults.Count;
             var completedFaults = faults.Count(f => f.RepairStatus == "Completed");
             var inProgressFaults = faults.Count(f => f.RepairStatus == "In Progress");
-            var notStartedFaults = faults.Count(f => f.RepairStatus == "Not Started");
+            var notStartedFaults = faults.Count(f => f.RepairStatus == "Not Started" || f.RepairStatus == "Pending");
 
-            // Get customer name and fridge model from related entities
             var faultData = new List<Dictionary<string, object>>();
             foreach (var fault in faults)
             {
-                var customerName = fault.FaultReport?.Customer.ApplicationUser.FirstName ?? fault.FridgeVisit?.CustomerApproval?? "Unknown";
-                //var fridgeModel = fault.FaultReport?.FridgeInStock.FridgeId ?? fault.FridgeVisit?.RequestHeader. ?? "Unknown";
-                var reportedDate = fault.Bookingate ?? fault.FaultReport?.ReportedDate ?? fault.FridgeVisit?.VisitDate ?? DateTime.MinValue;
+                var customerName = GetCustomerName(fault);
+                var fridgeModel = GetFridgeModel(fault);
+                var reportedDate = GetReportedDate(fault);
 
                 faultData.Add(new Dictionary<string, object>
                 {
                     ["id"] = fault.FaultId,
                     ["customerName"] = customerName,
-                    //["fridgeModel"] = fridgeModel,
+                    ["fridgeModel"] = fridgeModel,
                     ["reportedDate"] = reportedDate,
-                    ["status"] = fault.RepairStatus,
+                    ["status"] = fault.RepairStatus ?? "Unknown",
                     ["technicianName"] = fault.TechnicianAssigned ?? "Unassigned",
-                    ["priority"] = fault.Priority,
-                    ["estimatedTime"] = fault.EstimatedRepairTime
+                    ["priority"] = fault.Priority ?? "Medium"
                 });
             }
 
@@ -151,7 +141,7 @@ namespace Project.Services
                 },
                 Data = technicianPerformance.Select(t => new Dictionary<string, object>
                 {
-                    ["name"] = t.TechnicianName,
+                    ["name"] = t.TechnicianName ?? "Unknown",
                     ["totalFaults"] = t.TotalFaults,
                     ["completedFaults"] = t.CompletedFaults,
                     ["completionRate"] = t.TotalFaults > 0 ? $"{((decimal)t.CompletedFaults / t.TotalFaults * 100):0}%" : "0%",
@@ -160,12 +150,11 @@ namespace Project.Services
             };
         }
 
-        // Implement other report methods based on your actual models
         public async Task<ReportResult> GenerateMaintenanceScheduleReport(ReportFilters filters)
         {
             var query = _context.tblFaultTechnicians
                 .Include(ft => ft.FridgeVisit)
-                .Where(ft => ft.VisitId != null) // Only maintenance faults
+                .Where(ft => ft.VisitId != null)
                 .AsQueryable();
 
             query = ApplyFilters(query, filters);
@@ -175,12 +164,12 @@ namespace Project.Services
             var data = maintenanceFaults.Select(ft => new Dictionary<string, object>
             {
                 ["id"] = ft.FaultId,
-                ["customerName"] = ft.FridgeVisit?.CustomerApproval ?? "Unknown",
-                ["fridgeModel"] = ft.FridgeVisit?.TechnicianName ?? "Unknown",
+                ["customerName"] = GetCustomerName(ft),
+                ["fridgeModel"] = GetFridgeModel(ft),
                 ["scheduledDate"] = ft.Bookingate,
-                ["status"] = ft.RepairStatus,
+                ["status"] = ft.RepairStatus ?? "Unknown",
                 ["technician"] = ft.TechnicianAssigned ?? "Unassigned",
-                ["priority"] = ft.Priority
+                ["priority"] = ft.Priority ?? "Medium"
             }).ToList();
 
             return new ReportResult
@@ -209,7 +198,7 @@ namespace Project.Services
         {
             var query = _context.tblFaultTechnicians
                 .Include(ft => ft.FaultReport)
-                .Where(ft => ft.FaultReportId != null) // Only customer-reported faults
+                .Where(ft => ft.FaultReportId != null)
                 .AsQueryable();
 
             query = ApplyFilters(query, filters);
@@ -219,12 +208,12 @@ namespace Project.Services
             var data = customerFaults.Select(ft => new Dictionary<string, object>
             {
                 ["id"] = ft.FaultId,
-                ["customerName"] = ft.FaultReport?.Customer.ApplicationUser.FirstName ?? "Unknown",
-               
-                ["reportedDate"] = ft.FaultReport?.ReportedDate,
-                ["status"] = ft.RepairStatus,
+                ["customerName"] = GetCustomerName(ft),
+                ["fridgeModel"] = GetFridgeModel(ft),
+                ["reportedDate"] = ft.FaultReport?.ReportedDate ?? DateTime.MinValue,
+                ["status"] = ft.RepairStatus ?? "Unknown",
                 ["technician"] = ft.TechnicianAssigned ?? "Unassigned",
-                ["priority"] = ft.Priority,
+                ["priority"] = ft.Priority ?? "Medium",
                 ["resolutionNotes"] = ft.ResolutionNotes ?? "No notes"
             }).ToList();
 
@@ -262,19 +251,16 @@ namespace Project.Services
                 {
                     ft.FaultId,
                     ReportedDate = ft.FaultReport.ReportedDate,
-                    ft.Bookingate,
-                    // Fix: Access Value property for nullable TimeSpan
-                    ResponseTime = ft.Bookingate.Value - ft.FaultReport.ReportedDate
+                    ft.Bookingate
                 })
                 .ToListAsync();
 
-            // Calculate TotalDays after materializing the query
             var processedData = responseData.Select(r => new
             {
                 r.FaultId,
                 r.ReportedDate,
                 r.Bookingate,
-                ResponseTimeDays = r.ResponseTime.TotalDays
+                ResponseTimeDays = (r.Bookingate.Value - r.ReportedDate).TotalDays
             }).ToList();
 
             var avgResponseTime = processedData.Any() ? processedData.Average(r => r.ResponseTimeDays) : 0;
@@ -283,17 +269,17 @@ namespace Project.Services
             {
                 Title = "Response Time Analysis",
                 Summary = new List<SummaryItem>
-        {
-            new() { Title = "Avg Response Time", Value = $"{avgResponseTime:0.0} days", Color = "info", Icon = "fa-clock" },
-            new() { Title = "Total Responses", Value = processedData.Count.ToString(), Color = "primary", Icon = "fa-chart-line" }
-        },
+                {
+                    new() { Title = "Avg Response Time", Value = $"{avgResponseTime:0.0} days", Color = "info", Icon = "fa-clock" },
+                    new() { Title = "Total Responses", Value = processedData.Count.ToString(), Color = "primary", Icon = "fa-chart-line" }
+                },
                 Columns = new List<ColumnDefinition>
-        {
-            new() { Field = "id", Title = "Fault ID", Type = "text" },
-            new() { Field = "reportedDate", Title = "Reported Date", Type = "date" },
-            new() { Field = "scheduledDate", Title = "Scheduled Date", Type = "date" },
-            new() { Field = "responseTime", Title = "Response Time (days)", Type = "number" }
-        },
+                {
+                    new() { Field = "id", Title = "Fault ID", Type = "text" },
+                    new() { Field = "reportedDate", Title = "Reported Date", Type = "date" },
+                    new() { Field = "scheduledDate", Title = "Scheduled Date", Type = "date" },
+                    new() { Field = "responseTime", Title = "Response Time (days)", Type = "number" }
+                },
                 Data = processedData.Select(r => new Dictionary<string, object>
                 {
                     ["id"] = r.FaultId,
@@ -304,21 +290,19 @@ namespace Project.Services
             };
         }
 
+        // Helper methods
         private IQueryable<FaultTechnician> ApplyFilters(IQueryable<FaultTechnician> query, ReportFilters filters)
         {
-            // Apply status filter
             if (!string.IsNullOrEmpty(filters.Status))
             {
                 query = query.Where(ft => ft.RepairStatus == filters.Status);
             }
 
-            // Apply technician filter
             if (!string.IsNullOrEmpty(filters.Technician))
             {
                 query = query.Where(ft => ft.TechnicianAssigned == filters.Technician);
             }
 
-            // Apply date range filter
             var dateRange = GetDateRange(filters);
             query = query.Where(ft =>
                 (ft.Bookingate >= dateRange.Start && ft.Bookingate <= dateRange.End) ||
@@ -331,7 +315,6 @@ namespace Project.Services
 
         private (DateTime Start, DateTime End) GetDateRange(ReportFilters filters)
         {
-            var now = DateTime.Now;
             var today = DateTime.Today;
 
             return filters.DateRange?.ToLower() switch
@@ -344,8 +327,34 @@ namespace Project.Services
                 "year" => (new DateTime(today.Year, 1, 1), today.AddDays(1).AddTicks(-1)),
                 "custom" when filters.StartDate.HasValue && filters.EndDate.HasValue
                     => (filters.StartDate.Value, filters.EndDate.Value),
-                _ => (today.AddDays(-30), today.AddDays(1).AddTicks(-1)) // Default: last 30 days
+                _ => (today.AddDays(-30), today.AddDays(1).AddTicks(-1))
             };
+        }
+
+        private string GetCustomerName(FaultTechnician fault)
+        {
+            if (fault.FaultReport?.Customer?.ApplicationUser != null)
+                return fault.FaultReport.Customer.ApplicationUser.UserName ?? "Unknown";
+            if (fault.FridgeVisit?.RequestHeader != null)
+                return $"{fault.FridgeVisit.RequestHeader.FirstName} {fault.FridgeVisit.RequestHeader.LastName}";
+            return "Unknown";
+        }
+
+        private string GetFridgeModel(FaultTechnician fault)
+        {
+            if (fault.FaultReport?.FridgeInStock?.Fridge != null)
+                return fault.FaultReport.FridgeInStock.Fridge.Model ?? "Unknown";
+            if (fault.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge != null)
+                return fault.FridgeVisit.RequestHeader.RequestFridges.First().Fridge.Model ?? "Unknown";
+            return "Unknown";
+        }
+
+        private DateTime GetReportedDate(FaultTechnician fault)
+        {
+            return fault.FaultReport?.ReportedDate ??
+                   fault.FridgeVisit?.VisitDate ??
+                   fault.Bookingate ??
+                   fault.CreatedDate;
         }
     }
 }

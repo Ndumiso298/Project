@@ -272,8 +272,6 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFault(FaultReportVM faultReportVM)
         {
-            Console.WriteLine(">>> Entered POST CreateFault action <<<");
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var customer = await _db.tblCustomer
                 .Include(c => c.ApplicationUser)
@@ -322,9 +320,8 @@ namespace Project.Controllers
 
             if (faultReportVM.RequestReplacement)
             {
-                // If replacement is requested, set status to "Replacement Requested" and high priority
                 status = "Replacement Requested";
-                priority = "High"; // Auto-high priority for replacement requests
+                priority = "High";
             }
             else
             {
@@ -428,15 +425,22 @@ namespace Project.Controllers
                 _ => faults.OrderByDescending(fr => fr.ReportedDate)
             };
 
+            // Simple pagination without PaginatedList class
             int pageSize = 10;
             int pageNumber = page ?? 1;
+            var totalItems = await faults.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            var paginatedFaults = await PaginatedList<FaultReport>.CreateAsync(faults.AsNoTracking(), pageNumber, pageSize);
+            var paginatedFaults = await faults
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             ViewBag.CurrentPage = pageNumber;
-            ViewBag.TotalPages = paginatedFaults.TotalPages;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
 
-            return View("ViewFaultStatus", paginatedFaults);
+            return View(paginatedFaults);
         }
 
         // VIEW FAULT DETAILS
@@ -545,7 +549,6 @@ namespace Project.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error relaunching fault report: {ex.Message}");
                 TempData[SD.Error] = "Error relaunching fault request. Please try again.";
                 return RedirectToAction(nameof(ViewFaultStatus));
             }
@@ -943,7 +946,7 @@ namespace Project.Controllers
                 IsRead = false
             };
 
-            // If you want to store notifications in database, you'll need to create a SupportNotification entity model
+            // store notifications in database, create a SupportNotification entity model
             // and uncomment the following lines:
 
             /*

@@ -1,0 +1,222 @@
+﻿@model Project.Models.ViewModel.FaultDetailsVM
+@{
+    ViewData["Title"] = "Fault Details";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-info-circle me-2"></i>@ViewData["Title"]
+                </h1>
+                <div class="btn-group">
+                    <a href="@Url.Action("ViewFaults")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to List
+                    </a>
+                    @if (Model.Status != "Resolved" && Model.Status != "Completed")
+                    {
+                        <a href="@Url.Action("ScheduleRepair", new { id = Model.FaultReportId ?? Model.VisitId, source = Model.Source })"
+                           class="btn btn-success">
+                            <i class="fas fa-calendar-plus me-1"></i>Schedule Repair
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Customer Information -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-user me-1"></i>Customer Information</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Customer Name:</dt>
+                        <dd class="col-sm-8">@Model.CustomerName</dd>
+
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@Model.CustomerEmail</dd>
+
+                        <dt class="col-sm-4">Phone:</dt>
+                        <dd class="col-sm-8">@Model.CustomerPhone</dd>
+
+                        <dt class="col-sm-4">Address:</dt>
+                        <dd class="col-sm-8">@Model.Address</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fault Information -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-1"></i>Fault Information</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Source:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @(Model.Source == "Maintenance" ? "bg-info" : "bg-warning text-dark")">
+                                @Model.Source
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">Fridge Model:</dt>
+                        <dd class="col-sm-8">@Model.FridgeModel</dd>
+
+                        <dt class="col-sm-4">Serial Number:</dt>
+                        <dd class="col-sm-8">@Model.SerialNumber</dd>
+
+                        <dt class="col-sm-4">Reported Date:</dt>
+                        <dd class="col-sm-8">@Model.ReportedDate?.ToString("MMM dd, yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge status-@Model.Status.ToLower().Replace(" ", "-")">@Model.Status</span>
+                        </dd>
+
+                        @if (!string.IsNullOrEmpty(Model.Priority))
+                        {
+                            <dt class="col-sm-4">Priority:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge priority-@Model.Priority.ToLower()">@Model.Priority</span>
+                            </dd>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.FaultType))
+                        {
+                            <dt class="col-sm-4">Fault Type:</dt>
+                            <dd class="col-sm-8">@Model.FaultType</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fault Description -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-file-alt me-1"></i>Fault Description</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">@Model.Description</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fault Images -->
+    @if (Model.FaultImages != null && Model.FaultImages.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-images me-1"></i>Fault Images</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var image in Model.FaultImages)
+                            {
+                                <div class="col-md-3 mb-3">
+                                    <div class="card">
+                                        <img src="@Url.Content($"~/images/faults/{image.ImagePath}")"
+                                             class="card-img-top" alt="Fault Image"
+                                             style="height: 200px; object-fit: cover;">
+                                        <div class="card-body text-center">
+                                            <small class="text-muted">@image.CreatedDate.ToString("MMM dd, yyyy")</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Technician Notes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-clipboard me-1"></i>Technician Notes</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.TechnicianNotes))
+                    {
+                        <p class="mb-0">@Model.TechnicianNotes</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No technician notes available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    @if (Model.Status != "Resolved" && Model.Status != "Completed")
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-comments me-1"></i>Send Feedback to Customer</h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="@Url.Action("SendFeedback")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="faultId" value="@(Model.FaultReportId ?? Model.VisitId)" />
+                            <input type="hidden" name="source" value="@Model.Source" />
+                            <div class="form-group">
+                                <label for="feedback">Feedback Message</label>
+                                <textarea class="form-control" id="feedback" name="feedback" rows="4"
+                                      placeholder="Enter feedback or update for the customer..." required></textarea>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Feedback
+                                </button>
+                                <button type="button" class="btn btn-success"
+                                        onclick="closeFault(@(Model.FaultReportId ?? Model.VisitId), '@Model.Source')">
+                                    <i class="fas fa-check me-1"></i>Close Fault
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function closeFault(faultId, source) {
+            if (confirm('Are you sure you want to close this fault? This action cannot be undone.')) {
+                $.post('@Url.Action("CloseFault")', {
+                    faultId: faultId,
+                    source: source,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                })
+                .done(function () {
+                    window.location.href = '@Url.Action("ViewFaults")';
+                })
+                .fail(function () {
+                    alert('Error closing fault. Please try again.');
+                });
+            }
+        }
+    </script>
+}

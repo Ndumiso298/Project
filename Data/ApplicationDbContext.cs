@@ -28,6 +28,11 @@ namespace Project.Data
         public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
         public DbSet<FaultReport> tblFaultReports { get; set; }
         public DbSet<RequestNote> tblRequestNotes { get; set; }
+        public DbSet<CustomerFeedback> tblCustomerFeedbacks { get; set; }
+        public DbSet<BookingNotification> tblBookingNotifications { get; set; }
+        public DbSet<RebookingNotification> tblRebookingNotifications { get; set; }
+        public DbSet<FaultImage> tblFaultImages { get; set; }
+   
 
 
 

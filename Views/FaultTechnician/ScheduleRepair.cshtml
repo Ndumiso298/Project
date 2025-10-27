@@ -1,0 +1,151 @@
+﻿@model Project.Models.ViewModel.ScheduleRepairVM
+@{
+    ViewData["Title"] = "Schedule Repair";
+    var availability = ViewBag.TechnicianAvailability as Dictionary<DateTime, bool> ?? new Dictionary<DateTime, bool>();
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-calendar-plus me-2"></i>@ViewData["Title"]
+                </h1>
+                <a href="@Url.Action("ViewFaultDetails", new { id = Model.FaultId, source = Model.Source })"
+                   class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Details
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-calendar-alt me-1"></i>Schedule Repair Appointment</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="scheduleForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="FaultId" />
+                        <input type="hidden" asp-for="Source" />
+                        <input type="hidden" asp-for="ExistingBookingId" />
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProposedDate" class="form-label">Proposed Repair Date *</label>
+                            <input type="datetime-local" asp-for="ProposedDate" class="form-control"
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            <small class="form-text text-muted">
+                                Select a date and time for the repair appointment
+                            </small>
+                            <span asp-validation-for="ProposedDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="TechnicianNotes" class="form-label">Technician Notes</label>
+                            <textarea asp-for="TechnicianNotes" class="form-control" rows="4"
+                                      placeholder="Enter any additional notes, instructions, or details about the repair..."></textarea>
+                            <small class="form-text text-muted">
+                                These notes will be shared with the customer
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading"><i class="fas fa-info-circle me-1"></i>Scheduling Information</h6>
+                            <ul class="mb-0">
+                                <li>Repair appointments are typically 2 hours in duration</li>
+                                <li>Customer will receive a notification to approve the schedule</li>
+                                <li>You can reschedule if the customer declines the proposed time</li>
+                                <li>Ensure you have the necessary parts and tools before scheduling</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-1"></i>Schedule Repair
+                            </button>
+                            <a href="@Url.Action("ViewFaultDetails", new { id = Model.FaultId, source = Model.Source })"
+                               class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Technician Availability -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-user-check me-1"></i>Technician Availability</h6>
+                </div>
+                <div class="card-body">
+                    <div class="availability-calendar">
+                        @for (int i = 0; i < 14; i++)
+                        {
+                            var date = DateTime.Today.AddDays(i);
+                            var isAvailable = availability.ContainsKey(date) && availability[date];
+
+                            <div class="d-flex justify-content-between align-items-center mb-2 p-2
+                                          @(isAvailable ? "bg-light" : "bg-warning bg-opacity-25") rounded">
+                                <span>@date.ToString("ddd, MMM dd")</span>
+                                <span class="badge @(isAvailable ? "bg-success" : "bg-danger")">
+                                    @(isAvailable ? "Available" : "Booked")
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-bolt me-1"></i>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("ViewCalendar")" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-calendar-alt me-1"></i>View Full Calendar
+                        </a>
+                        <a href="@Url.Action("ViewFaults")" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-list me-1"></i>All Assignments
+                        </a>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="checkAvailability()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh Availability
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Set minimum time to current time for today
+            const now = new Date();
+            const minDateTime = now.toISOString().slice(0, 16);
+            $('#ProposedDate').attr('min', minDateTime);
+
+            // Form validation
+            $('#scheduleForm').on('submit', function (e) {
+                const proposedDate = new Date($('#ProposedDate').val());
+                const now = new Date();
+
+                if (proposedDate < now) {
+                    e.preventDefault();
+                    alert('Please select a future date and time.');
+                    return false;
+                }
+            });
+        });
+
+        function checkAvailability() {
+            // In a real implementation, this would refresh availability data
+            alert('Availability data refreshed');
+            location.reload();
+        }
+    </script>
+}
