@@ -122,7 +122,7 @@
             </div>
             <div>
                 <h1 class="mb-0">@(Model.VisitId == 0 ? "Book Fridge Visit" : "Edit Fridge Visit")</h1>
-                <p class="mb-0 mt-1">Schedule maintenance for your allocated refrigerator</p>
+                <p class="mb-0 mt-1">Schedule maintenance for your allocated refrigerators</p>
             </div>
         </div>
     </div>
@@ -131,6 +131,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-10">
+
             <!-- Fridge Details Card -->
             <div class="card mb-4">
                 <div class="card-header d-flex align-items-center">
@@ -143,11 +144,17 @@
                         <div class="row">
                             @foreach (var rf in Model.RequestHeader.RequestFridges)
                             {
+                                var fridgeNumbers = rf.CustomerFridges?
+                                .Select(cf => cf.FridgeInStock?.FridgeNo ?? "N/A")
+                                .ToList() ?? new List<string> { "N/A" };
+
                                 <div class="col-md-6 mb-3">
                                     <div class="p-3 fridge-item bg-light rounded">
                                         <div class="d-flex align-items-center mb-2">
                                             <i class="fas fa-refrigerator text-primary me-2"></i>
-                                            <h6 class="mb-0">Fridge #@rf.Fridge.CapacityLiters</h6>
+                                            <h6 class="mb-0">
+                                                Fridge Numbers: @string.Join(", " , fridgeNumbers)
+                                            </h6>
                                         </div>
                                         <div class="ms-4">
                                             <small class="d-block"><strong>Type:</strong> @rf.Fridge.Type</small>
@@ -176,7 +183,6 @@
                 <div class="card-body">
                     <form asp-action="BookVisit" method="post">
                         @Html.AntiForgeryToken()
-
                         <input type="hidden" asp-for="RequestHeaderId" />
                         <input type="hidden" asp-for="VisitId" />
 
@@ -209,7 +215,6 @@
                             <span asp-validation-for="Notes" class="text-danger small"></span>
                         </div>
 
-                        <!-- ✅ Checkup Status Dropdown with ID -->
                         <div class="form-group mb-4">
                             <label asp-for="CheckupStatus" class="form-label"></label>
                             <select id="checkupStatus" asp-for="CheckupStatus" class="form-select" asp-items="ViewBag.CheckupStatusList">

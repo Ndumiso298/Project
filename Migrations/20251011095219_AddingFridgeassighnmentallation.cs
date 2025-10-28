@@ -53,13 +53,13 @@ namespace Project.Migrations
                         column: x => x.FridgeInStockId,
                         principalTable: "tblFridgeInStocks",
                         principalColumn: "FridgeInStockId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblFridgeAllocation_tblRequestHeaders_RequestHeaderId",
                         column: x => x.RequestHeaderId,
                         principalTable: "tblRequestHeaders",
                         principalColumn: "RequestHeaderId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -109,19 +109,19 @@ namespace Project.Migrations
                         column: x => x.EmployeeID,
                         principalTable: "tblEmployee",
                         principalColumn: "EmployeeID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblRequestFridgeAssignments_tblFridgeInStocks_FridgeInStockId",
                         column: x => x.FridgeInStockId,
                         principalTable: "tblFridgeInStocks",
                         principalColumn: "FridgeInStockId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblRequestFridgeAssignments_tblRequestDetais_RequestDetailId",
                         column: x => x.RequestDetailId,
                         principalTable: "tblRequestDetais",
                         principalColumn: "RequestDetailId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

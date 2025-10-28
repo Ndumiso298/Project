@@ -130,7 +130,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -139,7 +138,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // SweetAlert Delete Confirmation
+        // 🧹 SweetAlert Delete Confirmation
         function confirmDelete(event, form) {
             event.preventDefault();
 
@@ -153,7 +152,7 @@
 
             swalWithBootstrapButtons.fire({
                 title: "Are you sure?",
-                text: "You won't be able to revert this!",
+                text: "This fridge model will be deleted permanently!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Yes, delete it!",
@@ -165,7 +164,7 @@
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire({
                         title: "Cancelled",
-                        text: "User deletion cancelled",
+                        text: "Delete action cancelled",
                         icon: "error"
                     });
                 }
@@ -173,57 +172,50 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Tooltip setup
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Create Search Input
+            // 🔍 Add search input dynamically
             const searchInput = document.createElement('input');
             searchInput.type = 'text';
-            searchInput.placeholder = 'Search users...';
+            searchInput.placeholder = 'Search fridges...';
             searchInput.className = 'form-control form-control-sm w-25 ms-auto';
-            const cardHeader = document.querySelector('.card-header');
-            cardHeader.appendChild(searchInput);
+            document.querySelector('.card-header').appendChild(searchInput);
 
-            const rows = document.querySelectorAll('#userTable tbody tr');
+            const rows = document.querySelectorAll('#fridgeTable tbody tr');
 
-            // 🔍 Search Functionality
+            // 🔎 Search functionality
             searchInput.addEventListener('keyup', function () {
-                const searchText = this.value.toLowerCase();
+                const query = this.value.toLowerCase();
                 rows.forEach(row => {
                     const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchText) ? '' : 'none';
+                    row.style.display = text.includes(query) ? '' : 'none';
                 });
             });
 
-            // 🔽 Filter Functionality
+            // 🔽 Filter functionality
             document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
                 item.addEventListener('click', function (e) {
                     e.preventDefault();
                     const filter = this.textContent.trim().toLowerCase();
 
                     rows.forEach(row => {
-                        const badge = row.querySelector('.badge');
-                        const status = badge ? badge.textContent.trim().toLowerCase() : '';
+                        const available = parseInt(row.querySelector('td:nth-child(5) .badge').textContent);
+                        const rented = parseInt(row.querySelector('td:nth-child(6) .badge').textContent);
 
-                        if (filter === 'all users') {
+                        if (filter === 'all') {
                             row.style.display = '';
-                        } else if (status.includes(filter)) {
+                        } else if (filter === 'available' && available > 0) {
+                            row.style.display = '';
+                        } else if (filter === 'rented' && rented > 0) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
                         }
                     });
 
-                    // Update dropdown button text
-                    const btn = document.getElementById('dropdownMenuButton');
-                    btn.innerHTML = `<i class="bi bi-filter me-1"></i> ${this.textContent}`;
+                    // Update dropdown text
+                    document.getElementById('filterDropdown').innerHTML =
+                        `<i class="bi bi-filter me-1"></i> ${this.textContent}`;
                 });
             });
         });
     </script>
-
-    <partial name="_ValidationScriptsPartial" />
 }

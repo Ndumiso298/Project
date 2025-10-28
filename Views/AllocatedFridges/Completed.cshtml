@@ -45,7 +45,8 @@
                             <th>Last Name</th>
                             <th>Cellphone</th>
                             <th>Type</th>
-                            <th>Checkup Status</th> 
+                            <th>Fridge Number</th> <!-- Added column -->
+                            <th>Checkup Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,39 +54,43 @@
                         {
                             foreach (var detail in visit.RequestHeader.RequestFridges)
                             {
-                                <tr>
-                                    <td class="fw-semibold">@visit.TechnicianName</td>
-                                    <td>@visit.VisitDate.ToString("yyyy-MM-dd")</td>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 200px;"
-                                             data-bs-toggle="tooltip" data-bs-placement="top"
-                                             title="@visit.Notes">
-                                            @visit.Notes
-                                        </div>
-                                    </td>
-                                    <td>@visit.RequestHeader.Customer.ApplicationUser?.FirstName</td>
-                                    <td>@visit.RequestHeader.Customer.ApplicationUser?.LastName</td>
-                                    <td>@visit.RequestHeader.Customer.ApplicationUser?.CellNumber</td>
-                                    <td>@detail.Fridge?.Type</td>
-                                    <td>
-                                        @if (visit.CheckupStatus == "Passed")
-                                        {
-                                            <span class="badge bg-success">@visit.CheckupStatus</span>
-                                        }
-                                        else if (visit.CheckupStatus == "Failed")
-                                        {
-                                            <span class="badge bg-warning text-dark">@visit.CheckupStatus</span>
-                                        }
-                                        else if (visit.CheckupStatus == "In Progress")
-                                        {
-                                            <span class="badge bg-info text-dark">@visit.CheckupStatus</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">Not Started</span>
-                                        }
-                                    </td>
-                                </tr>
+                                foreach (var customerFridge in detail.CustomerFridges)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@visit.TechnicianName</td>
+                                        <td>@visit.VisitDate.ToString("yyyy-MM-dd")</td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 200px;"
+                                                 data-bs-toggle="tooltip" data-bs-placement="top"
+                                                 title="@visit.Notes">
+                                                @visit.Notes
+                                            </div>
+                                        </td>
+                                        <td>@visit.RequestHeader.Customer.ApplicationUser?.FirstName</td>
+                                        <td>@visit.RequestHeader.Customer.ApplicationUser?.LastName</td>
+                                        <td>@visit.RequestHeader.Customer.ApplicationUser?.CellNumber</td>
+                                        <td>@detail.Fridge?.Type</td>
+                                        <td>@customerFridge.FridgeInStock?.FridgeNo</td> <!-- Display Fridge Number -->
+                                        <td>
+                                            @if (visit.CheckupStatus == "Passed")
+                                            {
+                                                <span class="badge bg-success">@visit.CheckupStatus</span>
+                                            }
+                                            else if (visit.CheckupStatus == "Failed")
+                                            {
+                                                <span class="badge bg-warning text-dark">@visit.CheckupStatus</span>
+                                            }
+                                            else if (visit.CheckupStatus == "In Progress")
+                                            {
+                                                <span class="badge bg-info text-dark">@visit.CheckupStatus</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Not Started</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
                             }
                         }
                     </tbody>

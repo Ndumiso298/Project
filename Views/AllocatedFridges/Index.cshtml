@@ -8,17 +8,14 @@
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
-            <div class="card-header bg-primary text-light py-4">
-                <div class="row align-items-center">
-                    <div class="col-12 text-center">
-                        <h2 class="fw-bold text-white mb-0">Allocated Requests</h2>
-                        <p class="opacity-75 mb-0">Manage customer fridge allocations and service visits</p>
-                    </div>
-                </div>
+            <div class="card-header bg-primary text-light py-4 text-center">
+                <h2 class="fw-bold text-white mb-0">Allocated Requests</h2>
+                <p class="opacity-75 mb-0">Manage customer fridge allocations and service visits</p>
             </div>
 
             <div class="card-body p-4 p-md-5">
 
+                <!-- Search Bar -->
                 <div class="row mb-4 justify-content-center">
                     <div class="col-md-6">
                         <div class="input-group">
@@ -43,11 +40,9 @@
                                         <i class="bi bi-person-circle me-2"></i>
                                         @item.Customer.ApplicationUser?.FirstName @item.Customer.ApplicationUser?.LastName
                                     </h5>
-                                 
                                 </div>
                             </div>
 
-                            <!-- Record Body -->
                             <div class="border-bottom pb-4 mb-5 request-card bg-white rounded-bottom-4 shadow-sm"
                                  data-searchable="@($"{item.Customer.ApplicationUser?.FirstName} {item.Customer.ApplicationUser?.LastName} {item.Customer.ApplicationUser?.Email} {item.RequestFridges?.FirstOrDefault()?.Fridge?.Brand} {item.RequestFridges?.FirstOrDefault()?.Fridge?.Model}")">
 
@@ -71,6 +66,7 @@
                                         <i class="bi bi-snow me-2"></i>Allocated Fridges
                                         <span class="badge bg-primary ms-2">@item.RequestFridges?.Count()</span>
                                     </h6>
+
                                     @if (item.RequestFridges != null && item.RequestFridges.Any())
                                     {
                                         <div class="row">
@@ -80,8 +76,33 @@
                                                     <div class="card h-100 shadow-sm border-0 rounded-3">
                                                         <div class="card-body text-center">
                                                             <h6 class="fw-bold text-primary mb-1">@fridge.Fridge?.Brand</h6>
-                                                            <p class="small text-muted mb-1">@fridge.Fridge?.Model</p>
-                                                            <span class="badge bg-secondary">@fridge.Fridge?.CapacityLiters L</span>
+                                                            <p class="small text-muted mb-1">
+                                                                Model: @fridge.Fridge?.Model<br />
+                                                                Capacity: @fridge.Fridge?.CapacityLiters L
+                                                            </p>
+
+                                                            <!-- Fridge In Stock -->
+                                                            @if (fridge.CustomerFridges != null && fridge.CustomerFridges.Any())
+                                                            {
+                                                                @foreach (var cf in fridge.CustomerFridges)
+                                                                {
+                                                                    <div class="mt-2">
+                                                                        <span class="badge bg-success rounded-pill px-3 py-2">
+                                                                            <i class="bi bi-upc-scan me-1"></i>
+                                                                            Fridge No: @cf.FridgeInStock?.FridgeNo
+                                                                        </span>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="mt-2">
+                                                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                                                        No Fridge Number Assigned
+                                                                    </span>
+                                                                </div>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -96,15 +117,22 @@
                                     }
                                 </div>
 
-                                <!-- Service Status with Customer Confirmation -->
+                                <!-- Service Status -->
                                 <div class="bg-light rounded-4 p-3 mb-3 mx-3">
                                     <h6 class="fw-semibold text-dark mb-3">
                                         <i class="bi bi-calendar-check me-2"></i>Service Status
                                     </h6>
+
                                     @if (item.FridgeVisits != null && item.FridgeVisits.Any())
                                     {
-                                        var upcomingVisits = item.FridgeVisits.Where(v => v.VisitDate >= DateTime.Now).OrderBy(v => v.VisitDate).ToList();
-                                        var pastVisits = item.FridgeVisits.Where(v => v.VisitDate < DateTime.Now).ToList();
+                                        var upcomingVisits = item.FridgeVisits
+                                        .Where(v => v.VisitDate >= DateTime.Now)
+                                        .OrderBy(v => v.VisitDate)
+                                        .ToList();
+
+                                        var pastVisits = item.FridgeVisits
+                                        .Where(v => v.VisitDate < DateTime.Now)
+                                        .ToList();
 
                                         foreach (var visit in upcomingVisits)
                                         {
@@ -122,27 +150,9 @@
                                                         <div><i class="bi bi-journal-text me-1"></i>@visit.Notes</div>
                                                     }
                                                 </div>
-
-                                                <!-- Customer Confirmation -->
-                                                @* <div class="mt-2">
-                                                    <strong>Customer Status:</strong> @visit.CustomerApproval
-                                                    @if (visit.CustomerApproval == SD.Pending)
-                                                    {
-                                                        <form asp-action="ApproveVisit" method="post" style="display:inline">
-                                                            <input type="hidden" name="visitId" value="@visit.VisitId" />
-                                                            <button type="submit" class="btn btn-success btn-sm ms-2">Approve</button>
-                                                        </form>
-
-                                                        <form asp-action="DeclineVisit" method="post" style="display:inline">
-                                                            <input type="hidden" name="visitId" value="@visit.VisitId" />
-                                                            <button type="submit" class="btn btn-danger btn-sm ms-1">Decline</button>
-                                                        </form>
-                                                    }
-                                                </div> *@
-
-                                                 <div class="mt-1">
+                                                <div class="mt-1">
                                                     <strong>Awaiting Confirmation:</strong> @visit.CustomerApproval
-                                                </div> 
+                                                </div>
                                             </div>
                                         }
 
@@ -171,7 +181,6 @@
                                        class="btn btn-outline-success rounded-pill px-4">
                                         <i class="bi bi-calendar-plus"></i> Book Visit
                                     </a>
-                                   
                                 </div>
                             </div>
                         }
@@ -189,19 +198,6 @@
     </div>
 </form>
 
-<!-- Visits Modal -->
-<div class="modal fade" id="visitsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content rounded-4 shadow-lg">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold"><i class="bi bi-calendar3 me-2"></i>Visit History</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="visitsModalBody"></div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -215,32 +211,6 @@
                     card.style.display = searchableText.includes(searchText) ? 'block' : 'none';
                 });
             });
-
-            const viewVisitsButtons = document.querySelectorAll('.view-visits-btn');
-            const visitsModal = new bootstrap.Modal(document.getElementById('visitsModal'));
-
-            viewVisitsButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const requestId = this.getAttribute('data-request-id');
-                    showVisitsForRequest(requestId);
-                });
-            });
-
-            function showVisitsForRequest(requestId) {
-                const modalBody = document.getElementById('visitsModalBody');
-                const requestCard = document.querySelector(`.view-visits-btn[data-request-id="${requestId}"]`).closest('.request-card');
-                const customerName = requestCard.querySelector('h5').textContent;
-
-                modalBody.innerHTML = `
-                                    <div class="text-center py-5">
-                                        <i class="bi bi-calendar2-week fs-1 text-primary mb-3"></i>
-                                        <h5 class="fw-bold mb-2">Visit History for ${customerName}</h5>
-                                        <p class="text-muted mb-0">Visit details would be loaded here via AJAX</p>
-                                        <p class="small text-muted mt-1">Request ID: ${requestId}</p>
-                                    </div>
-                                `;
-                visitsModal.show();
-            }
         });
     </script>
 }

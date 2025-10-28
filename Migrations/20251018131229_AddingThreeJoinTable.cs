@@ -31,19 +31,19 @@ namespace Project.Migrations
                         column: x => x.CustomerID,
                         principalTable: "tblCustomer",
                         principalColumn: "CustomerID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblCustomerFridge_tblFridgeInStocks_FridgeInStockId",
                         column: x => x.FridgeInStockId,
                         principalTable: "tblFridgeInStocks",
                         principalColumn: "FridgeInStockId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblCustomerFridge_tblFridges_FridgeId",
                         column: x => x.FridgeId,
                         principalTable: "tblFridges",
                         principalColumn: "FridgeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

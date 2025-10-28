@@ -40,7 +40,20 @@
                                     <h6 class="fw-semibold mb-1">@item.Fridge.Type</h6>
 
                                     <small class="text-muted">Quantity: @item.Count</small><br />
-                                    <small class="text-muted">Price per month: @item.Price.ToString("c")</small>
+                                    <small class="text-muted">Price per month: @item.Price.ToString("c")</small><br />
+
+                                    <!-- Fridge Numbers -->
+                                    @if (item.CustomerFridges != null && item.CustomerFridges.Any())
+                                    {
+                                        <small class="text-muted">
+                                            Fridge Numbers:
+                                            @string.Join(", ", item.CustomerFridges.Select(cf => cf.FridgeInStock.FridgeNo))
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-warning">No fridge numbers assigned yet</small>
+                                    }
                                 </div>
                                 <span class="fw-bold text-primary">@((item.Count * item.Price).ToString("c"))</span>
                             </li>
@@ -61,4 +74,3 @@
         </div>
     </div>
 </div>
- 

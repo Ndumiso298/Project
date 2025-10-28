@@ -5,6 +5,9 @@
 
 <form method="post">
     <input asp-for="RequstHeader.RequestHeaderId" type="hidden" />
+   
+
+
 
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
@@ -13,7 +16,7 @@
             <div class="card-header bg-primary text-light py-4 position-relative">
                 <div class="row align-items-center">
                     <div class="col-12 text-center">
-                        <h2 class="text-white fw-bold mb-1">Orders Details</h2>
+                        <h2 class="text-white fw-bold mb-1">Order Details</h2>
                         <p class="text-light mb-0 opacity-75">Manage customer pickup & order information</p>
                     </div>
                 </div>
@@ -38,7 +41,6 @@
                         </h3>
 
                         <div class="specs-container mb-4">
-                            <!-- First Name -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.FirstName" class="form-label fw-semibold text-dark">Name</label>
                                 <input asp-for="RequstHeader.FirstName" class="form-control"
@@ -46,7 +48,6 @@
                                 <span asp-validation-for="RequstHeader.FirstName" class="text-danger"></span>
                             </div>
 
-                            <!-- Last Name -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.LastName" class="form-label fw-semibold text-dark">Surname</label>
                                 <input asp-for="RequstHeader.LastName" class="form-control"
@@ -54,7 +55,6 @@
                                 <span asp-validation-for="RequstHeader.LastName" class="text-danger"></span>
                             </div>
 
-                            <!-- Phone -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.CellNumber" class="form-label fw-semibold text-dark">Phone</label>
                                 <input asp-for="RequstHeader.CellNumber" class="form-control"
@@ -62,7 +62,6 @@
                                 <span asp-validation-for="RequstHeader.CellNumber" class="text-danger"></span>
                             </div>
 
-                            <!-- Address -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.StreetAddress" class="form-label fw-semibold text-dark">Street Address</label>
                                 <input asp-for="RequstHeader.StreetAddress" class="form-control"
@@ -70,82 +69,70 @@
                                 <span asp-validation-for="RequstHeader.StreetAddress" class="text-danger"></span>
                             </div>
 
-                            <!-- City -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.City" class="form-label fw-semibold text-dark">City</label>
                                 <input asp-for="RequstHeader.City" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
                             </div>
 
-                            <!-- State -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.State" class="form-label fw-semibold text-dark">State</label>
                                 <input asp-for="RequstHeader.State" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
                             </div>
 
-                            <!-- Postal Code -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.PostalCode" class="form-label fw-semibold text-dark">Postal Code</label>
                                 <input asp-for="RequstHeader.PostalCode" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
                             </div>
 
-                            <!-- Email -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Email</label>
                                 <input asp-for="RequstHeader.Customer.ApplicationUser.Email" class="form-control" readonly />
                             </div>
 
-                            <!-- Order Date -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Order Date</label>
                                 <input value="@Model.RequstHeader.RequestDate.ToShortDateString()" class="form-control" readonly />
                             </div>
 
-                            <!-- Carrier -->
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.Carrier" class="form-label fw-semibold text-dark">Carrier</label>
                                 <input asp-for="RequstHeader.Carrier" id="carrier" class="form-control"
                                        readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
                             </div>
 
-                            <!-- Shipping Date -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-dark">Shipping Date</label>
                                 <input value="@Model.RequstHeader.ShippingDate?.ToShortDateString()" class="form-control" readonly />
                             </div>
+
                             <div class="mb-3">
                                 <label asp-for="RequstHeader.Status" class="form-label fw-semibold text-dark">Status</label>
                                 <input asp-for="RequstHeader.Status" class="form-control" readonly />
                             </div>
 
-                            <!-- Payment Status -->
-                            
-
                             <!-- Action Buttons -->
                             @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
                             {
                                 <div class="row g-2 mt-4">
-                                    <!-- Approve Button -->
                                     <div class="col-12 col-md-4">
-                                        <button type="submit" asp-action="Approve" 
+                                        <button type="submit" asp-action="Approve"
                                                 class="btn btn-success w-100 py-2 fw-semibold rounded-pill shadow">
                                             <i class="bi bi-check-circle me-1"></i> Approve
                                         </button>
                                     </div>
-                                    
-                                    <!-- Feedback Button -->
+
                                     <div class="col-12 col-md-4">
-                                        <button type="submit" asp-action="Feedback" 
+                                        <button type="submit" asp-action="Feedback"
                                                 class="btn btn-info w-100 py-2 fw-semibold rounded-pill shadow">
                                             <i class="bi bi-chat-dots me-1"></i> Feedback
                                         </button>
                                     </div>
-                                    
-                                    <!-- Reject Button -->
+
                                     <div class="col-12 col-md-4">
-                                        <button type="submit" asp-action="Reject" 
+                                        <button type="submit" asp-action="Reject"
                                                 class="btn btn-danger w-100 py-2 fw-semibold rounded-pill shadow">
                                             <i class="bi bi-x-circle me-1"></i> Reject
                                         </button>
@@ -164,13 +151,29 @@
                         <ul class="list-group mb-4 shadow-sm rounded-3 overflow-hidden">
                             @foreach (var detail in Model.RequstDetail)
                             {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="fw-semibold mb-1 text-primary">@detail.Fridge.Brand</h6>
-                                        <small class="text-muted">Price Per Month: @detail.Price.ToString("c")</small><br />
-                                        <small class="text-muted">Quantity: @detail.Count</small>
+                                <li class="list-group-item d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div>
+                                            <h6 class="fw-semibold mb-0 text-primary">@detail.Fridge.Brand</h6>
+                                            <small class="text-muted">Price Per Month: @detail.Price.ToString("c")</small><br />
+                                            <small class="text-muted">Quantity: @detail.Count</small>
+                                        </div>
+                                        <span class="fw-bold text-success">@((detail.Count * detail.Price).ToString("c"))</span>
                                     </div>
-                                    <span class="fw-bold text-success">@((detail.Count * detail.Price).ToString("c"))</span>
+
+                                    <!-- Allocated Fridge Numbers -->
+                                    @if (detail.CustomerFridges != null && detail.CustomerFridges.Any())
+                                    {
+                                        <div class="mt-2">
+                                            <strong>Allocated Fridge Numbers:</strong>
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach (var cf in detail.CustomerFridges)
+                                                {
+                                                    <li>@cf.FridgeInStock.FridgeNo</li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
                                 </li>
                             }
 

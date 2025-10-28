@@ -300,7 +300,6 @@
 
 
 
-    <!-- Statistics -->
     <div class="stats-container">
         <div class="stat-card">
             <div class="stat-number">@(Model?.Count() ?? 0)</div>
@@ -320,7 +319,6 @@
         </div>
     </div>
 
-    <!-- Calendar -->
     <div class="calendar-container">
         <div class="calendar-header">
             <button class="calendar-nav-btn" id="prevMonth">
@@ -352,11 +350,9 @@
         </div>
 
         <div class="days" id="calendarDays">
-            <!-- Calendar days will be populated by JavaScript -->
         </div>
     </div>
 
-    <!-- Display message if no data -->
     @if (Model == null || !Model.Any())
     {
         <div class="no-data">
@@ -369,7 +365,6 @@
         </div>
     }
 
-    <!-- Event Legend -->
     <div class="legend">
         <h5 class="mb-3">Event Legend</h5>
         <div class="d-flex flex-wrap gap-3">
@@ -393,7 +388,6 @@
     </div>
 </div>
 
-<!-- Event Modal -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -402,7 +396,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="eventDetails">
-                <!-- Event details will be populated by JavaScript -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

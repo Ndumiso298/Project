@@ -125,7 +125,7 @@ namespace Project.Areas.Identity.Pages.Account
                 if (await _userManager.IsInRoleAsync(user, SD.FaultTechnician))
                     return RedirectToAction("Dashboard", "FaultTechnician");
                 if (await _userManager.IsInRoleAsync(user, SD.MaintenanceTechnician))
-                    return RedirectToAction("Dashboard", "MaintenanceTech");
+                    return RedirectToAction("Dashbord", "AllocatedFridges");
 
                 return LocalRedirect(returnUrl);
             }

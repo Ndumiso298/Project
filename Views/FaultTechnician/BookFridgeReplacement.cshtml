@@ -1,0 +1,62 @@
+﻿@model Project.Models.FridgeReplacement
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Book Fridge Replacement";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Book Fridge Replacement</h4>
+                    <a asp-action="Completed" class="btn btn-light btn-sm">← Back to Visits</a>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="BookFridgeReplacement" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.VisitId)
+                        @Html.HiddenFor(m => m.CustomerID)
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Old Fridge Number</label>
+                            <input type="text" class="form-control" value="@Model.OldFridgeNo" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NewFridgeInStockId" class="form-label fw-bold">Select New Fridge</label>
+                            <select asp-for="NewFridgeInStockId" asp-items="ViewBag.AvailableFridges" class="form-select" required>
+                                <option value="">-- Select Available Fridge --</option>
+                            </select>
+                            <span asp-validation-for="NewFridgeInStockId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ReplacementDate" class="form-label fw-bold">Replacement Date</label>
+                            <input asp-for="ReplacementDate" class="form-control" type="date" />
+                            <span asp-validation-for="ReplacementDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary px-4">Confirm Replacement</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success mt-3" role="alert">
+                    @TempData["Success"]
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

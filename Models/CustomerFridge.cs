@@ -21,7 +21,7 @@ namespace Project.Models
         
         public int FridgeInStockId { get; set; }
         [ValidateNever]
-        public virtual FridgeInStock FridgeInStock { get; set; }
+        public FridgeInStock FridgeInStock { get; set; }
 
 
         [ForeignKey("CustomerID")]
@@ -33,6 +33,11 @@ namespace Project.Models
      
         public DateTime? AllocatedDate { get; set; }
 
+
+        [ForeignKey("RequestDetailId")]      
+        public int RequestDetailId { get; set; }
+        [ValidateNever]
+        public RequestDetails RequestDetail { get; set; }
     }
 
 

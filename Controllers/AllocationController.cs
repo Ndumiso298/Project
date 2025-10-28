@@ -73,8 +73,7 @@ namespace Project.Controllers
                 allocation.Price = GetPriceBasedOnQuantity(allocation);
                 AllocationVM.RequestHeader.RequestTotal += (allocation.Price * allocation.Count);
             }
-            _db.tblAllocations.RemoveRange(AllocationVM.AllocationList);
-            _db.SaveChanges();
+          
             return View(AllocationVM);
            
         }

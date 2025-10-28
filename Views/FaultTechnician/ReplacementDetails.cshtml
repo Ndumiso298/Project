@@ -1,0 +1,67 @@
+﻿@model Project.Models.FridgeReplacement
+
+@{
+    ViewData["Title"] = "Replacement Request Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Replacement Request Details</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Request ID:</dt>
+                    <dd class="col-sm-8">@Model.FridgeReplacementId</dd>
+
+                    <dt class="col-sm-4">Old Fridge Serial No:</dt>
+                    <dd class="col-sm-8">@Model.OldFridgeNo</dd>
+
+                    <dt class="col-sm-4">Reason for Replacement:</dt>
+                    <dd class="col-sm-8">@Model.ReasonForReplacement</dd>
+
+                    <dt class="col-sm-4">Additional Notes:</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.AdditionalNotes) ? "None" : Model.AdditionalNotes)</dd>
+
+                    <dt class="col-sm-4">Request Date:</dt>
+                    <dd class="col-sm-8">@Model.RequestDate.ToString("MM/dd/yyyy")</dd>
+
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge badge-@GetStatusBadgeClass(Model.ReplacementStatus)">
+                            @Model.ReplacementStatus
+                        </span>
+                    </dd>
+
+                    @if (Model.NewFridgeInStock != null)
+                    {
+                        <dt class="col-sm-4">New Fridge Assigned:</dt>
+                        <dd class="col-sm-8">
+                            <strong>@Model.NewFridgeInStock.Fridge.Model</strong><br />
+                            Serial: @Model.NewFridgeInStock.FridgeNo
+                        </dd>
+                    }
+                </dl>
+
+                <div class="form-group">
+                    <a asp-action="ReplacementRequests" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Approved" => "success",
+            "Rejected" => "danger",
+            "Completed" => "info",
+            _ => "secondary"
+        };
+    }
+}

@@ -25,6 +25,9 @@ namespace Project.Models
 
         public int Count { get; set; }
         public double Price { get; set; }
+        [ValidateNever]
+        public ICollection<CustomerFridge> CustomerFridges { get; set; }
+        public ICollection<FridgeInStock> FridgeInStock { get; set; }
 
 
     }

@@ -95,16 +95,91 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
-    <script>
-        document.getElementById("searchInput").addEventListener("keyup", function () {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll("#businessTable tbody tr");
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? "" : "none";
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // 🧹 SweetAlert Delete Confirmation
+        function confirmDelete(event, form) {
+            event.preventDefault();
+
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: "Are you sure?",
+                text: "This fridge model will be deleted permanently!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel!",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelled",
+                        text: "Delete action cancelled",
+                        icon: "error"
+                    });
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 🔍 Add search input dynamically
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search fridges...';
+            searchInput.className = 'form-control form-control-sm w-25 ms-auto';
+            document.querySelector('.card-header').appendChild(searchInput);
+
+            const rows = document.querySelectorAll('#fridgeTable tbody tr');
+
+            // 🔎 Search functionality
+            searchInput.addEventListener('keyup', function () {
+                const query = this.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            // 🔽 Filter functionality
+            document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const filter = this.textContent.trim().toLowerCase();
+
+                    rows.forEach(row => {
+                        const available = parseInt(row.querySelector('td:nth-child(5) .badge').textContent);
+                        const rented = parseInt(row.querySelector('td:nth-child(6) .badge').textContent);
+
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else if (filter === 'available' && available > 0) {
+                            row.style.display = '';
+                        } else if (filter === 'rented' && rented > 0) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Update dropdown text
+                    document.getElementById('filterDropdown').innerHTML =
+                        `<i class="bi bi-filter me-1"></i> ${this.textContent}`;
+                });
             });
         });
     </script>

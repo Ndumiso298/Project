@@ -48,20 +48,31 @@ namespace Project.Controllers
 
         public IActionResult Details(int id)
         {
-            RequestVM = new()
-            {
-                RequstHeader = _db.tblRequestHeaders
-                               .Include(a => a.Customer.ApplicationUser)
-                               .FirstOrDefault(o => o.RequestHeaderId == id),
+            // Fetch full request data with all related entities
+            var requestHeader =  _db.tblRequestHeaders
+                .Include(r => r.Customer)
+                .ThenInclude(c => c.ApplicationUser)
+                .Include(r => r.RequestFridges)
+                .ThenInclude(d => d.Fridge)
+                .Include(r => r.RequestFridges)
+                .ThenInclude(d => d.CustomerFridges)
+                .ThenInclude(cf => cf.FridgeInStock) // ✅ Includes FridgeNo
+                .FirstOrDefault(r => r.RequestHeaderId == id);
 
-                RequstDetail = _db.tblRequestDetais
-                               .Include(d => d.Fridge)
-                               .Where(d => d.RequestHeaderId == id)
-                               .ToList()
+            if (requestHeader == null)
+            {
+                return NotFound();
+            }
+
+            RequestVM = new RequestVM
+            {
+                RequstHeader = requestHeader,
+                RequstDetail = requestHeader.RequestFridges.ToList()
             };
 
             return View(RequestVM);
         }
+
 
         [HttpPost]
         public IActionResult UpdateRequestDetail(RequestVM RequestVM)
@@ -100,16 +111,20 @@ namespace Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult Approve(RequestVM RequestVM)
+        public async Task<IActionResult> Approve(RequestVM RequestVM)
         {
             if (RequestVM == null || RequestVM.RequstHeader == null)
             {
                 return BadRequest("Invalid request data.");
             }
 
-            var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == 
-                RequestVM.RequstHeader.RequestHeaderId);
+            var requestHeaderFromDb = await _db.tblRequestHeaders
+                .Include(r => r.RequestFridges)
+                    .ThenInclude(d => d.Fridge)
+                .Include(r => r.RequestFridges)
+                    .ThenInclude(d => d.CustomerFridges)
+                        .ThenInclude(cf => cf.FridgeInStock)
+                .FirstOrDefaultAsync(r => r.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
@@ -120,35 +135,48 @@ namespace Project.Controllers
             requestHeaderFromDb.RequestDate = DateTime.Now;
 
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
+
+            await ReserveApprovedFridges(requestHeaderFromDb);
 
             TempData[SD.Success] = "Request approved successfully.";
 
-            return RedirectToAction(nameof(Details), 
-                new { id = requestHeaderFromDb.RequestHeaderId });
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
         }
-        private async Task ReserveApprovedFridges(RequestVM RequestVM)
+
+        private async Task ReserveApprovedFridges(RequestHeader requestHeader)
         {
             var fridgesInStock = await _db.tblFridgeInStocks.Where(x => x.IsAvailable).ToListAsync();
 
-            var selectedModels = RequestVM.RequstDetail.Select(x => x.FridgeId).ToList();
-
-            var fridges = fridgesInStock.Where(x => selectedModels.Contains(x.FridgeId)).ToList();
-
-            _ = fridges.Take(selectedModels.Count); //TODO double check that the user is allocated the quantity of fridges they actually requested.
-
-            foreach (var f in fridges)
+            foreach (var detail in requestHeader.RequestFridges)
             {
-                //TODO insert into CustomerFridges
+                if (detail == null) continue;
 
-                //TODO Update reserved fridge status as Unavailable
-                f.IsAvailable = false;
-                _db.tblFridgeInStocks.Update(f);
+                var availableFridges = fridgesInStock
+                    .Where(x => x.FridgeId == detail.FridgeId)
+                    .Take(detail.Count)
+                    .ToList();
+
+                foreach (var f in availableFridges)
+                {
+                    var customerFridge = new CustomerFridge
+                    {
+                        CustomerID = requestHeader.CustomerID,
+                        FridgeId = detail.FridgeId,
+                        FridgeInStockId = f.FridgeInStockId,
+                        RequestDetailId = detail.RequestDetailId, 
+                        ReservedDate = DateTime.Now
+                    };
+                    _db.tblCustomerFridge.Add(customerFridge);
+
+                    f.IsAvailable = false;
+                    _db.tblFridgeInStocks.Update(f);
+                }
             }
-            //TODO Save changes
-            _db.SaveChanges();
 
+            await _db.SaveChangesAsync();
         }
+
         public IActionResult Reject(RequestVM RequestVM)
         {
             if (RequestVM == null || RequestVM.RequstHeader == null)
@@ -219,10 +247,7 @@ namespace Project.Controllers
             //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
             RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
             RequestHeader.ShippingDate = DateTime.Now;
-            //if (RequestHeader.Status == SD.PaymentStatusDelayedPayment)
-            //{
-            //    RequestHeader.PaymentDueDate = DateTime.Now.AddDays(30);
-            //}
+          
 
             _db.tblRequestHeaders.Update(RequestHeader);
             _db.SaveChanges();

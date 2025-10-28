@@ -1,317 +1,269 @@
 ﻿@model IEnumerable<Project.Models.FridgeVisit>
+
 @{
-    ViewData["Title"] = "Failed Fridge Visits & Upcoming Bookings";
     Layout = "_CustomerLayout";
+    ViewData["Title"] = "Fault Reports & Replacement Requests";
 }
 
-<style>
-    .status-badge {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
-
-    .upcoming-booking {
-        background-color: #e8f5e8;
-        border-left: 4px solid #28a745;
-    }
-
-    .failed-visit {
-        background-color: #f8f9fa;
-    }
-
-    .booking-highlight {
-        animation: pulse 2s infinite;
-    }
-
-    @@keyframes pulse {
-        0% {
-            background-color: #e8f5e8;
-        }
-
-        50% {
-            background-color: #d4edda;
-        }
-
-        100% {
-            background-color: #e8f5e8;
-        }
-    }
-</style>
-
-<div class="container">
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <h2 class="text-primary">Failed Fridge Visits & Upcoming Bookings</h2>
-            <p class="text-muted">Manage failed visits and track upcoming repair bookings</p>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="btn-group" role="group">
-                <a href="@Url.Action("Dashboard")" class="btn btn-info">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-                <a href="@Url.Action("Calendar")" class="btn btn-secondary">
-                    <i class="fas fa-calendar-alt"></i> View Calendar
-                </a>
-                <a href="@Url.Action("Index")" class="btn btn-primary">
-                    <i class="fas fa-list"></i> Failed Visits & Bookings
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Failed Visits</h4>
-                            <h2>@Model.Count()</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-exclamation-triangle fa-2x"></i>
-                        </div>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Fault Reports & Replacement Requests
+                    </h3>
+                    <div>
+                        <a asp-action="ReplacementRequests" class="btn btn-light btn-sm me-2">
+                            <i class="bi bi-arrow-repeat me-1"></i>My Replacement Requests
+                        </a>
+                        <a asp-action="Dashboard" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-warning">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Pending Repairs</h4>
-                            <h2>@Model.Count(v => v.FaultTechnicians != null && v.FaultTechnicians.Any(ft => ft.RepairStatus == "Not Started" || ft.RepairStatus == "In Progress"))</h2>
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-2 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center p-3">
+                                    <h4 class="mb-0">@Model.Count()</h4>
+                                    <small>Total Faults</small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-clock fa-2x"></i>
+                        <div class="col-md-2 mb-3">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body text-center p-3">
+                                    <h4 class="mb-0">@Model.Count(v => !v.FaultTechnicians.Any())</h4>
+                                    <small>Pending Repair</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center p-3">
+                                    <h4 class="mb-0">@Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "In Progress"))</h4>
+                                    <small>In Progress</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center p-3">
+                                    <h4 class="mb-0">@Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "Resolved"))</h4>
+                                    <small>Resolved</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="card bg-secondary text-white">
+                                <div class="card-body text-center p-3">
+                                    <h4 class="mb-0">@Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "Scrapped"))</h4>
+                                    <small>Scrapped</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center p-3">
+                                    <h4 class="mb-0">@ViewBag.PendingReplacements</h4>
+                                    <small>Replacements</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Completed Repairs</h4>
-                            <h2>@Model.Count(v => v.FaultTechnicians != null && v.FaultTechnicians.Any(ft => ft.RepairStatus == "Completed"))</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-check-circle fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4>Upcoming Bookings</h4>
-                            <h2>@Model.Count(v => v.FaultTechnicians != null && v.FaultTechnicians.Any(ft => ft.Bookingate.HasValue && ft.Bookingate.Value >= DateTime.Today))</h2>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-calendar-check fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Upcoming Bookings Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-calendar-check me-2"></i>Upcoming Repair Bookings
-                    </h5>
-                </div>
-                <div class="card-body">
-                    @{
-                        var upcomingBookings = Model
-                        .Where(v => v.FaultTechnicians != null && v.FaultTechnicians.Any())
-                        .SelectMany(v => v.FaultTechnicians
-                        .Where(ft => ft.Bookingate.HasValue && ft.Bookingate.Value >= DateTime.Today)
-                        .Select(ft => new { Visit = v, FaultTechnician = ft }))
-                        .OrderBy(x => x.FaultTechnician.Bookingate)
-                        .ToList();
-                    }
-
-                    @if (upcomingBookings.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Booking Date</th>
-                                        <th>Visit ID</th>
-                                        <th>Customer</th>
-                                        <th>Fridge Model</th>
-                                        <th>Technician</th>
-                                        <th>Repair Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var booking in upcomingBookings)
-                                    {
-                                        var isToday = booking.FaultTechnician.Bookingate?.Date == DateTime.Today;
-                                        <tr class="@(isToday ? "booking-highlight" : "upcoming-booking")">
-                                            <td>
-                                                <strong>@booking.FaultTechnician.Bookingate?.ToString("MM/dd/yyyy")</strong>
-                                                @if (isToday)
-                                                {
-                                                    <span class="badge bg-danger status-badge">Today</span>
-                                                }
-                                                else if (booking.FaultTechnician.Bookingate?.Date == DateTime.Today.AddDays(1))
-                                                {
-                                                    <span class="badge bg-warning status-badge">Tomorrow</span>
-                                                }
-                                            </td>
-                                            <td>@booking.Visit.VisitId</td>
-                                            <td>@booking.Visit.RequestHeader?.Customer?.ApplicationUser?.UserName</td>
-                                            <td>
-                                                @if (booking.Visit.RequestHeader?.RequestFridges != null && booking.Visit.RequestHeader.RequestFridges.Any())
-                                                {
-                                                    @string.Join(", ", booking.Visit.RequestHeader.RequestFridges.Select(rf => rf.Fridge?.Model))
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(booking.FaultTechnician.TechnicianAssigned))
-                                                {
-                                                    <span class="badge bg-info status-badge">@booking.FaultTechnician.TechnicianAssigned</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-secondary status-badge">Unassigned</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                <span class="badge @GetStatusBadgeClass(booking.FaultTechnician.RepairStatus) status-badge">
-                                                    @booking.FaultTechnician.RepairStatus
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="@Url.Action("BookFaultVisit", new { RequestedFaultId = booking.Visit.VisitId, visitId = booking.FaultTechnician.FaultId })"
-                                                       class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit
-                                                    </a>
-                                                    <button class="btn btn-info btn-sm view-booking-details"
-                                                            data-booking-id="@booking.FaultTechnician.FaultId"
-                                                            data-visit-id="@booking.Visit.VisitId">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                            <h5>No Upcoming Bookings</h5>
-                            <p class="text-muted">There are no upcoming repair bookings scheduled.</p>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Failed Visits Section -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Failed Fridge Visits
-                    </h5>
-                </div>
-                <div class="card-body">
+                    <!-- Faults Table -->
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="failedVisitsTable">
+                        <table class="table table-bordered table-hover table-striped" id="faultsTable">
                             <thead class="table-dark">
                                 <tr>
                                     <th>Visit ID</th>
                                     <th>Customer</th>
-                                    <th>Fridges</th>
+                                    <th>Fridge Details</th>
                                     <th>Visit Date</th>
-                                    <th>Checkup Status</th>
-                                    <th>Repair Bookings</th>
+                                    <th>Repair Status</th>
+                                    <th>Technician</th>
+                                    <th>Replacement Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var visit in Model)
+                                @foreach (var item in Model)
                                 {
-                                    <tr class="failed-visit">
-                                        <td>@visit.VisitId</td>
-                                        <td>@visit.RequestHeader?.Customer?.ApplicationUser?.UserName</td>
-                                        <td>
-                                            @if (visit.RequestHeader?.RequestFridges != null && visit.RequestHeader.RequestFridges.Any())
-                                            {
-                                                @string.Join(", ", visit.RequestHeader.RequestFridges.Select(rf => rf.Fridge?.Model))
-                                            }
-                                        </td>
-                                        <td>@visit.VisitDate.ToString("MM/dd/yyyy")</td>
-                                        <td>
-                                            <span class="badge bg-danger status-badge">@visit.CheckupStatus</span>
-                                        </td>
-                                        <td>
-                                            @if (visit.FaultTechnicians != null && visit.FaultTechnicians.Any())
-                                            {
-                                                var completed = visit.FaultTechnicians.Count(ft => ft.RepairStatus == "Completed");
-                                                var inProgress = visit.FaultTechnicians.Count(ft => ft.RepairStatus == "In Progress");
-                                                var notStarted = visit.FaultTechnicians.Count(ft => ft.RepairStatus == "Not Started");
+                                    var latestRepair = item.FaultTechnicians.OrderByDescending(ft => ft.Bookingate).FirstOrDefault();
+                                    var replacementRequest = ViewData[$"Replacement_{item.VisitId}"] as Project.Models.FridgeReplacement;
 
-                                                <div>
-                                                    <span class="badge bg-info status-badge" title="Total Bookings">@visit.FaultTechnicians.Count</span>
-                                                    @if (completed > 0)
-                                                    {
-                                                        <span class="badge bg-success status-badge" title="Completed">@completed</span>
-                                                    }
-                                                    @if (inProgress > 0)
-                                                    {
-                                                        <span class="badge bg-warning status-badge" title="In Progress">@inProgress</span>
-                                                    }
-                                                    @if (notStarted > 0)
-                                                    {
-                                                        <span class="badge bg-secondary status-badge" title="Not Started">@notStarted</span>
-                                                    }
-                                                </div>
+                                    <tr>
+                                        <td>@item.VisitId</td>
+                                        <td>
+                                            <strong>@item.RequestHeader?.FirstName @item.RequestHeader?.LastName</strong><br>
+                                            <small class="text-muted">@item.RequestHeader?.CellNumber</small>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var fridge = item.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge;
+                                                var customerFridge = item.RequestHeader?.RequestFridges?.FirstOrDefault()?.CustomerFridges?.FirstOrDefault();
+                                            }
+                                            @if (fridge != null)
+                                            {
+                                                <strong>@fridge.Model</strong>
+
+                                                <br>
+                                                <small class="text-muted">Serial: @(customerFridge?.FridgeInStock?.FridgeNo ?? "N/A")</small>
                                             }
                                             else
                                             {
-                                                <span class="badge bg-warning status-badge">No Bookings</span>
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>@item.VisitDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            @if (latestRepair != null)
+                                            {
+                                                <span class="badge badge-@GetRepairStatusBadge(latestRepair.RepairStatus)">
+                                                    @latestRepair.RepairStatus
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">@latestRepair.Bookingate?.ToString("MMM dd")</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">Not Assigned</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (latestRepair != null && !string.IsNullOrEmpty(latestRepair.TechnicianAssigned))
+                                            {
+                                                @latestRepair.TechnicianAssigned
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not Assigned</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (replacementRequest != null)
+                                            {
+                                                <span class="badge badge-@GetReplacementStatusBadge(replacementRequest.ReplacementStatus)">
+                                                    @replacementRequest.ReplacementStatus
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">@replacementRequest.RequestDate.ToString("MMM dd")</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-light">No Request</span>
                                             }
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="@Url.Action("BookFaultVisit", new { RequestedFaultId = visit.VisitId })"
-                                                   class="btn btn-success btn-sm">
-                                                    <i class="fas fa-tools"></i> Book Repair
-                                                </a>
-                                                @if (visit.FaultTechnicians != null && visit.FaultTechnicians.Any())
+                                                <!-- Repair Actions -->
+                                                @if (latestRepair == null)
                                                 {
-                                                    <a href="@Url.Action("BookFaultVisit", new { RequestedFaultId = visit.VisitId, visitId = visit.FaultTechnicians.First().FaultId })"
-                                                       class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i> Edit Booking
+                                                    <a asp-action="BookFaultVisit" asp-route-RequestedFaultId="@item.VisitId"
+                                                       class="btn btn-primary btn-sm" title="Assign Technician">
+                                                        <i class="bi bi-person-plus"></i>
                                                     </a>
                                                 }
+                                                else
+                                                {
+                                                    <a asp-action="BookFaultVisit" asp-route-RequestedFaultId="@item.VisitId" asp-route-visitId="@latestRepair.FaultId"
+                                                       class="btn btn-warning btn-sm" title="Update Repair">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                }
+
+                                                <!-- Replacement Actions -->
+                                                @if (replacementRequest == null && (latestRepair == null || latestRepair.RepairStatus == "Scrapped" || latestRepair.RepairStatus == "Beyond Repair"))
+                                                {
+                                                    <a asp-action="RequestReplacement" asp-route-visitId="@item.VisitId"
+                                                       class="btn btn-danger btn-sm" title="Request Replacement">
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                    </a>
+                                                }
+                                                else if (replacementRequest != null)
+                                                {
+                                                    <a asp-action="ReplacementDetails" asp-route-id="@replacementRequest.FridgeReplacementId"
+                                                       class="btn btn-info btn-sm" title="View Replacement Details">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                }
+
+                                                <!-- View Details -->
+                                                <button type="button" class="btn btn-secondary btn-sm"
+                                                        data-bs-toggle="modal" data-bs-target="#detailsModal@(item.VisitId)"
+                                                        title="View Details">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Details Modal -->
+                                            <div class="modal fade" id="detailsModal@(item.VisitId)" tabindex="-1">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-primary text-white">
+                                                            <h5 class="modal-title">Fault Details - Visit #@item.VisitId</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <h6>Customer Information</h6>
+                                                                    <p><strong>Name:</strong> @item.RequestHeader?.FirstName @item.RequestHeader?.LastName</p>
+                                                                    <p><strong>Phone:</strong> @item.RequestHeader?.CellNumber</p>
+                                                                    <p><strong>Email:</strong> @item.RequestHeader?.Customer.ApplicationUser.Email</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <h6>Fridge Information</h6>
+                                                                    @if (fridge != null)
+                                                                    {
+                                                                        <p><strong>Model:</strong> @fridge.Model</p>
+                                                                        <p><strong>Serial:</strong> @(customerFridge?.FridgeInStock?.FridgeNo ?? "N/A")</p>
+                                                                        <p><strong>Visit Date:</strong> @item.VisitDate.ToString("MMM dd, yyyy")</p>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                            @if (latestRepair != null)
+                                                            {
+                                                                <hr>
+                                                                <h6>Repair Information</h6>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <p><strong>Technician:</strong> @(latestRepair.TechnicianAssigned ?? "Not Assigned")</p>
+                                                                        <p><strong>Status:</strong> <span class="badge badge-@GetRepairStatusBadge(latestRepair.RepairStatus)">@latestRepair.RepairStatus</span></p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <p><strong>Booking Date:</strong> @(latestRepair.Bookingate?.ToString("MMM dd, yyyy") ?? "N/A")</p>
+                                                                        <p><strong>Notes:</strong> @(latestRepair.ResolutionNotes ?? "No notes")</p>
+                                                                    </div>
+                                                                </div>
+                                                            }
+
+                                                            @if (replacementRequest != null)
+                                                            {
+                                                                <hr>
+                                                                <h6>Replacement Request</h6>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <p><strong>Status:</strong> <span class="badge badge-@GetReplacementStatusBadge(replacementRequest.ReplacementStatus)">@replacementRequest.ReplacementStatus</span></p>
+                                                                        <p><strong>Reason:</strong> @replacementRequest.ReasonForReplacement</p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <p><strong>Request Date:</strong> @replacementRequest.RequestDate.ToString("MMM dd, yyyy")</p>
+                                                                        <p><strong>Old Fridge:</strong> @replacementRequest.OldFridgeNo</p>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -319,124 +271,85 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                            <h4 class="mt-3 text-muted">No Faults Found</h4>
+                            <p class="text-muted">There are currently no fridge faults reported.</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Booking Details Modal -->
-<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Booking Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="bookingDetailsContent">
-                <!-- Content will be loaded via JavaScript -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
+<!-- Quick Action Buttons Fixed at Bottom -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div class="btn-group-vertical shadow">
+        <a asp-action="Dashboard" class="btn btn-primary" title="Dashboard">
+            <i class="bi bi-speedometer2"></i>
+        </a>
+        <a asp-action="Calendar" class="btn btn-success" title="Calendar">
+            <i class="bi bi-calendar-week"></i>
+        </a>
+        <a asp-action="ReplacementRequests" class="btn btn-info" title="My Replacement Requests">
+            <i class="bi bi-arrow-repeat"></i>
+        </a>
     </div>
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Initialize DataTable for failed visits
-            $('#failedVisitsTable').DataTable({
+            $('#faultsTable').DataTable({
                 "pageLength": 10,
-                "order": [[3, 'desc']] // Sort by visit date descending
-            });
-
-            // Handle booking details view
-            $('.view-booking-details').click(function () {
-                const bookingId = $(this).data('booking-id');
-                const visitId = $(this).data('visit-id');
-
-                // Show loading state
-                $('#bookingDetailsContent').html(`
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Loading booking details...</p>
-                            </div>
-                        `);
-
-                // In a real application, you would make an AJAX call here
-                // For now, we'll simulate with the data we have
-                const row = $(this).closest('tr');
-                const bookingDate = row.find('td:eq(0)').text().trim();
-                const customer = row.find('td:eq(2)').text().trim();
-                const fridgeModel = row.find('td:eq(3)').text().trim();
-                const technician = row.find('td:eq(4)').text().trim();
-                const status = row.find('td:eq(5)').text().trim();
-
-                $('#bookingDetailsContent').html(`
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Booking Information</h6>
-                                    <p><strong>Booking ID:</strong> ${bookingId}</p>
-                                    <p><strong>Visit ID:</strong> ${visitId}</p>
-                                    <p><strong>Booking Date:</strong> ${bookingDate}</p>
-                                    <p><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(status)}">${status}</span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Customer & Equipment</h6>
-                                    <p><strong>Customer:</strong> ${customer}</p>
-                                    <p><strong>Fridge Model:</strong> ${fridgeModel}</p>
-                                    <p><strong>Technician:</strong> ${technician}</p>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <a href="@Url.Action("BookFaultVisit")?RequestedFaultId=${visitId}&visitId=${bookingId}" class="btn btn-primary">
-                                    <i class="fas fa-edit me-1"></i> Edit Booking
-                                </a>
-                                <a href="@Url.Action("Calendar")" class="btn btn-info">
-                                    <i class="fas fa-calendar me-1"></i> View in Calendar
-                                </a>
-                            </div>
-                        `);
-
-                $('#bookingDetailsModal').modal('show');
-            });
-
-            // Auto-refresh the page every 5 minutes to update upcoming bookings
-            setInterval(function () {
-                console.log('Auto-refreshing page to update booking data...');
-                location.reload();
-            }, 300000); // 5 minutes
-
-            function getStatusBadgeClass(status) {
-                switch (status.toLowerCase()) {
-                    case 'completed': return 'bg-success';
-                    case 'in progress': return 'bg-warning';
-                    case 'not started': return 'bg-secondary';
-                    case 'scrapped': return 'bg-danger';
-                    default: return 'bg-info';
+                "order": [[0, 'desc']],
+                "language": {
+                    "search": "Search faults:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ faults"
                 }
-            }
+            });
+
+            // Auto-refresh every 30 seconds to get updated status
+            setInterval(function () {
+                location.reload();
+            }, 30000);
+        });
+
+        // Tooltip initialization
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     </script>
 }
 
 @functions {
-    public string GetStatusBadgeClass(string status)
+    public string GetRepairStatusBadge(string status)
     {
-        if (string.IsNullOrEmpty(status)) return "bg-secondary";
-
-        switch (status.ToLower())
+        return status?.ToLower() switch
         {
-            case "completed": return "bg-success";
-            case "in progress": return "bg-warning";
-            case "not started": return "bg-secondary";
-            case "scrapped": return "bg-danger";
-            default: return "bg-info";
-        }
+            "resolved" => "success",
+            "in progress" => "warning",
+            "scrapped" => "secondary",
+            "not started" => "info",
+            _ => "danger"
+        };
+    }
+
+    public string GetReplacementStatusBadge(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "approved" => "success",
+            "pending" => "warning",
+            "completed" => "info",
+            "rejected" => "danger",
+            _ => "secondary"
+        };
     }
 }

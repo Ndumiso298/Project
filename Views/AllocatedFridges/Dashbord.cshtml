@@ -1,0 +1,155 @@
+﻿@model Project.ViewModels.DashboardViewModel
+@using System.Text.Json
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Business Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-0">Business Dashboard</h2>
+            <p class="text-muted mb-0">Operational insights for fridge requests and maintenance visits.</p>
+        </div>
+        <div>
+            <small class="text-muted">Last updated: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</small>
+        </div>
+    </div>
+
+    <!-- KPIs Section -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Total Requests</h6>
+                <h3 class="fw-bold text-dark">@Model.TotalRequests</h3>
+                <p class="text-muted small mb-0">All customer fridge requests</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Approved Requests</h6>
+                <h3 class="fw-bold text-success">@Model.ApprovedRequests</h3>
+                <p class="text-muted small mb-0">Successfully approved</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Pending Requests</h6>
+                <h3 class="fw-bold text-warning">@Model.PendingRequests</h3>
+                <p class="text-muted small mb-0">Awaiting review</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Visits Today</h6>
+                <h3 class="fw-bold text-info">@Model.VisitsToday</h3>
+                <p class="text-muted small mb-0">Scheduled maintenance visits</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Visits in Last 30 Days</h6>
+                    <small class="text-muted">Trend overview</small>
+                </div>
+                <canvas id="visitsChart" height="160"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Fridge Type Distribution</h6>
+                    <small class="text-muted">By Brand</small>
+                </div>
+                <canvas id="fridgeChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-3">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Checkup Status Overview</h6>
+                    <small class="text-muted">Inspection results</small>
+                </div>
+                <canvas id="statusChart" height="160"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <h6 class="fw-bold mb-2">Top 10 Customers</h6>
+                <ul class="list-group list-group-flush">
+                    @foreach (var c in Model.TopCustomers)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@c.Key</span>
+                            <span class="badge bg-secondary">@c.Value</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        const visitsData = @Html.Raw(JsonSerializer.Serialize(Model.VisitsByDate));
+        const fridgeData = @Html.Raw(JsonSerializer.Serialize(Model.FridgeTypeDistribution));
+        const statusData = @Html.Raw(JsonSerializer.Serialize(Model.CheckupStatusCounts));
+
+        new Chart(document.getElementById('visitsChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: visitsData.map(v => v.Key),
+                datasets: [{
+                    label: 'Visits',
+                    data: visitsData.map(v => v.Value),
+                    fill: true,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.3
+                }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+
+        new Chart(document.getElementById('fridgeChart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: fridgeData.map(v => v.Key),
+                datasets: [{
+                    data: fridgeData.map(v => v.Value),
+                    backgroundColor: ['#007bff', '#28a745', '#ffc107', '#17a2b8', '#6f42c1']
+                }]
+            },
+            options: { plugins: { legend: { position: 'bottom' } } }
+        });
+
+        new Chart(document.getElementById('statusChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: statusData.map(v => v.Key),
+                datasets: [{
+                    label: 'Count',
+                    data: statusData.map(v => v.Value),
+                    backgroundColor: '#6610f2'
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+}
