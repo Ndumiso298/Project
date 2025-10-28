@@ -10,23 +10,23 @@ namespace Project.Models
         public int FridgeInStockId { get; set; }
 
         [Required]
-        public string FridgeNo { get; set; }
+        public string FridgeNo { get; set; } = string.Empty; 
 
         [Required]
-        public DateTime LastMaintenanceDate { get; set; }
+        public DateTime LastMaintenanceDate { get; set; } = DateTime.Now; 
+
+        public string Condition { get; set; } = "Good"; 
 
         [Required]
-        public string Condition { get; set; } 
+        public bool IsAvailable { get; set; } = true; 
 
-        [Required]
-        public bool IsAvailable { get; set; }
-        [Required]
-        public int Quantity { get; set; }
+        public int Quantity { get; set; } = 0;
 
         public string? Location { get; set; }
 
         [ForeignKey("Fridge")]
         public int FridgeId { get; set; }
+
         [ValidateNever]
         public virtual Fridge Fridge { get; set; }
     }

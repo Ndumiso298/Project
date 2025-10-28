@@ -24,9 +24,105 @@ namespace Project.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        // ====================== PRIVATE HELPER METHODS ======================
+
+        private async Task<string?> SaveFaultImages(List<IFormFile> faultImages)
+        {
+            var imageUrls = new List<string>();
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "faults");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            foreach (var image in faultImages)
+            {
+                if (image.Length > 0 && image.Length < 5 * 1024 * 1024)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    imageUrls.Add($"/images/faults/{fileName}");
+                }
+            }
+
+            return imageUrls.Count > 0 ? string.Join(",", imageUrls) : null;
+        }
+
+        private async Task CreateSupportNotification(FaultReport faultReport)
+        {
+            var notificationVM = new SupportNotificationVM
+            {
+                Title = "New Replacement Request",
+                Message = $"Customer has requested fridge replacement for fault report #{faultReport.FaultReportId}",
+                Type = "Replacement",
+                ReferenceId = faultReport.FaultReportId,
+                Priority = "High",
+                CreatedDate = DateTime.Now,
+                IsRead = false
+            };
+        }
+
+        private async Task ReserveApprovedFridges(RequestHeader requestHeader)
+        {
+            foreach (var detail in requestHeader.RequestFridges)
+            {
+                var availableStocks = await _db.tblFridgeInStocks
+                    .Where(s => s.FridgeId == detail.FridgeId && s.IsAvailable)
+                    .Take(detail.Count)
+                    .ToListAsync();
+
+                if (availableStocks.Count < detail.Count)
+                {
+                    throw new Exception($"Insufficient stock for fridge ID {detail.FridgeId}. Requested: {detail.Count}, Available: {availableStocks.Count}");
+                }
+
+                foreach (var stock in availableStocks)
+                {
+                    stock.IsAvailable = false;
+                    _db.tblFridgeInStocks.Update(stock);
+
+                    var allocation = new CustomerFridge
+                    {
+                        CustomerID = requestHeader.CustomerID,
+                        FridgeId = detail.FridgeId,
+                        FridgeInStockId = stock.FridgeInStockId,
+                        ReservedDate = DateTime.Now,
+                        AllocatedDate = DateTime.Now
+                    };
+                    _db.tblCustomerFridge.Add(allocation);
+                }
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task<StockCheckResultVM> CheckStockAvailability(ICollection<RequestDetails> requestDetails)
+        {
+            var result = new StockCheckResultVM { IsAvailable = true };
+
+            foreach (var detail in requestDetails)
+            {
+                var availableStockCount = await _db.tblFridgeInStocks
+                    .CountAsync(s => s.FridgeId == detail.FridgeId && s.IsAvailable);
+
+                if (availableStockCount < detail.Count)
+                {
+                    result.IsAvailable = false;
+                    result.Message = $"Insufficient stock for {detail.Fridge?.Brand}. Requested: {detail.Count}, Available: {availableStockCount}";
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         // ====================== SHARED ACTIONS ======================
 
-        // LIST REQUESTS (Customer sees own, Support sees all)
         public async Task<IActionResult> Index(string statusFilter = null)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -52,7 +148,6 @@ namespace Project.Controllers
             ViewBag.IsSupport = isSupport;
             ViewBag.SelectedStatus = statusFilter;
 
-            // For support dashboard summary
             if (isSupport)
             {
                 ViewBag.TotalPending = await _db.tblRequestHeaders.CountAsync(r => r.Status == SD.Pending);
@@ -64,7 +159,6 @@ namespace Project.Controllers
             return View(requests);
         }
 
-        // VIEW REQUEST DETAILS (With decline reason if applicable)
         public async Task<IActionResult> Details(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -82,14 +176,12 @@ namespace Project.Controllers
                 return NotFound();
             }
 
-            // Security check for customers
             if (!isSupport && request.Customer.ApplicationUserId != userId)
             {
                 TempData[SD.Error] = "You are not authorized to view this request.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Load decline reason if rejected
             var declineNote = await _db.tblRequestNotes
                 .FirstOrDefaultAsync(n => n.RequestHeaderId == id && n.NoteType == "DeclineReason");
 
@@ -132,7 +224,6 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Create a new request based on the original
             var newRequest = new RequestHeader
             {
                 CustomerID = originalRequest.CustomerID,
@@ -154,7 +245,6 @@ namespace Project.Controllers
             _db.tblRequestHeaders.Add(newRequest);
             await _db.SaveChangesAsync();
 
-            // Copy request details
             foreach (var detail in originalRequest.RequestFridges)
             {
                 var newDetail = new RequestDetails
@@ -167,7 +257,6 @@ namespace Project.Controllers
                 _db.tblRequestDetais.Add(newDetail);
             }
 
-            // Add additional info as a note if provided
             if (!string.IsNullOrEmpty(additionalInfo))
             {
                 var note = new RequestNote
@@ -188,7 +277,6 @@ namespace Project.Controllers
 
         // ====================== FAULT REPORTING ACTIONS ======================
 
-        // FRIDGE SELECTION PAGE
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> CreateFaultSelection()
         {
@@ -199,8 +287,8 @@ namespace Project.Controllers
 
             if (customer == null)
             {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Index));
+                TempData[SD.Error] = "Customer profile not found. Please complete your registration.";
+                return RedirectToAction("Register", "Account");
             }
 
             var customerFridges = await _db.tblCustomerFridge
@@ -224,7 +312,6 @@ namespace Project.Controllers
             return View(viewModel);
         }
 
-        // CREATE FAULT REPORT - GET (for specific fridge)
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> CreateFault(int? id)
         {
@@ -235,8 +322,8 @@ namespace Project.Controllers
 
             if (customer == null)
             {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Index));
+                TempData[SD.Error] = "Customer profile not found. Please complete your registration.";
+                return RedirectToAction("Register", "Account");
             }
 
             var customerFridges = await _db.tblCustomerFridge
@@ -257,7 +344,6 @@ namespace Project.Controllers
                 CustomerName = $"{customer.ApplicationUser.FirstName} {customer.ApplicationUser.LastName}"
             };
 
-            // Pre-select fridge if id is passed
             if (id.HasValue)
             {
                 viewModel.FridgeInStockId = id.Value;
@@ -266,21 +352,22 @@ namespace Project.Controllers
             return View(viewModel);
         }
 
-        // CREATE FAULT REPORT - POST
         [Authorize(Roles = SD.CustomerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFault(FaultReportVM faultReportVM)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Get customer - don't create automatically
             var customer = await _db.tblCustomer
                 .Include(c => c.ApplicationUser)
                 .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
 
             if (customer == null)
             {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(Index));
+                TempData[SD.Error] = "Customer profile not found. Please complete your registration.";
+                return RedirectToAction("Register", "Account");
             }
 
             // Reload dropdown data if validation fails
@@ -329,10 +416,10 @@ namespace Project.Controllers
                 priority = faultReportVM.Priority;
             }
 
-            // Save Fault Report
+            // Now create fault report with the valid CustomerId
             var fault = new FaultReport
             {
-                CustomerId = customer.CustomerID,
+                CustomerId = customer.CustomerID, // This can now be null if needed
                 FridgeInStockId = faultReportVM.FridgeInStockId,
                 FaultType = faultReportVM.FaultType,
                 Description = faultReportVM.Description,
@@ -374,7 +461,6 @@ namespace Project.Controllers
             return RedirectToAction(nameof(ViewFaultStatus));
         }
 
-        // VIEW FAULT STATUS
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> ViewFaultStatus(string sortOrder, string currentFilter, string searchString, string statusFilter, int? page)
         {
@@ -443,7 +529,6 @@ namespace Project.Controllers
             return View(paginatedFaults);
         }
 
-        // VIEW FAULT DETAILS
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> FaultDetails(int id)
         {
@@ -472,7 +557,6 @@ namespace Project.Controllers
             return View(fault);
         }
 
-        // RELAUNCH DECLINED FAULT REQUEST
         [Authorize(Roles = SD.CustomerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -753,6 +837,7 @@ namespace Project.Controllers
         {
             var fault = await _db.tblFaultReports
                 .Include(fr => fr.Customer)
+                    .ThenInclude(c => c.ApplicationUser)
                 .Include(fr => fr.FridgeInStock)
                 .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
 
@@ -773,20 +858,27 @@ namespace Project.Controllers
             {
                 if (action == "approve")
                 {
+                    // Verify the customer exists and has the necessary data
+                    if (fault.Customer == null || !fault.CustomerId.HasValue)
+                    {
+                        TempData[SD.Error] = "Customer not found for this fault report.";
+                        return RedirectToAction(nameof(AllFaults));
+                    }
+
                     // Create a new request for replacement
                     var replacementRequest = new RequestHeader
                     {
-                        CustomerID = fault.CustomerId,
+                        CustomerID = fault.CustomerId.Value, // Use .Value since it's nullable
                         RequestDate = DateTime.Now,
-                        RequestTotal = 0, // Could be calculated based on fridge value
-                        FirstName = fault.Customer?.ApplicationUser?.FirstName ?? "Customer",
-                        LastName = fault.Customer?.ApplicationUser?.LastName ?? "",
-                        StreetAddress = fault.Customer?.ApplicationUser?.StreetAddress ?? "",
-                        City = fault.Customer?.ApplicationUser?.City ?? "",
-                        State = fault.Customer?.ApplicationUser?.State ?? "",
-                        PostalCode = fault.Customer?.ApplicationUser?.PostalCode ?? "",
-                        CellNumber = fault.Customer?.ApplicationUser?.PhoneNumber ?? "",
-                        Status = SD.Approved, // Auto-approve replacement requests
+                        RequestTotal = 0,
+                        FirstName = fault.Customer.ApplicationUser?.FirstName ?? "Customer",
+                        LastName = fault.Customer.ApplicationUser?.LastName ?? "",
+                        StreetAddress = fault.Customer.ApplicationUser?.StreetAddress ?? "",
+                        City = fault.Customer.ApplicationUser?.City ?? "",
+                        State = fault.Customer.ApplicationUser?.State ?? "",
+                        PostalCode = fault.Customer.ApplicationUser?.PostalCode ?? "",
+                        CellNumber = fault.Customer.ApplicationUser?.PhoneNumber ?? "",
+                        Status = SD.Approved,
                         PaymentDueDate = DateTime.Now.AddDays(30),
                         IsReplacement = true,
                         OriginalFaultReportId = id
@@ -844,126 +936,6 @@ namespace Project.Controllers
             }
 
             return RedirectToAction(nameof(AllFaults));
-        }
-
-        // ====================== PRIVATE METHODS ======================
-
-        private async Task ReserveApprovedFridges(RequestHeader requestHeader)
-        {
-            foreach (var detail in requestHeader.RequestFridges)
-            {
-                // Find available stock instances for this fridge model
-                var availableStocks = await _db.tblFridgeInStocks
-                    .Where(s => s.FridgeId == detail.FridgeId && s.IsAvailable)
-                    .Take(detail.Count)
-                    .ToListAsync();
-
-                if (availableStocks.Count < detail.Count)
-                {
-                    throw new Exception($"Insufficient stock for fridge ID {detail.FridgeId}. Requested: {detail.Count}, Available: {availableStocks.Count}");
-                }
-
-                foreach (var stock in availableStocks)
-                {
-                    stock.IsAvailable = false;
-                    _db.tblFridgeInStocks.Update(stock);
-
-                    // Allocate to customer
-                    var allocation = new CustomerFridge
-                    {
-                        CustomerID = requestHeader.CustomerID,
-                        FridgeId = detail.FridgeId,
-                        FridgeInStockId = stock.FridgeInStockId,
-                        ReservedDate = DateTime.Now,
-                        AllocatedDate = DateTime.Now
-                    };
-                    _db.tblCustomerFridge.Add(allocation);
-                }
-            }
-
-            await _db.SaveChangesAsync();
-        }
-
-        private async Task<StockCheckResultVM> CheckStockAvailability(ICollection<RequestDetails> requestDetails)
-        {
-            var result = new StockCheckResultVM { IsAvailable = true };
-
-            foreach (var detail in requestDetails)
-            {
-                var availableStockCount = await _db.tblFridgeInStocks
-                    .CountAsync(s => s.FridgeId == detail.FridgeId && s.IsAvailable);
-
-                if (availableStockCount < detail.Count)
-                {
-                    result.IsAvailable = false;
-                    result.Message = $"Insufficient stock for {detail.Fridge?.Brand}. Requested: {detail.Count}, Available: {availableStockCount}";
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        private async Task<string?> SaveFaultImages(List<IFormFile> faultImages)
-        {
-            var imageUrls = new List<string>();
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "faults");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            foreach (var image in faultImages)
-            {
-                if (image.Length > 0 && image.Length < 5 * 1024 * 1024)
-                {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await image.CopyToAsync(stream);
-                    }
-
-                    imageUrls.Add($"/images/faults/{fileName}");
-                }
-            }
-
-            return imageUrls.Count > 0 ? string.Join(",", imageUrls) : null;
-        }
-
-        // Method to create support notification for replacement requests
-        private async Task CreateSupportNotification(FaultReport faultReport)
-        {
-            // Create notification using ViewModel if you're not storing in database
-            var notificationVM = new SupportNotificationVM
-            {
-                Title = "New Replacement Request",
-                Message = $"Customer has requested fridge replacement for fault report #{faultReport.FaultReportId}",
-                Type = "Replacement",
-                ReferenceId = faultReport.FaultReportId,
-                Priority = "High",
-                CreatedDate = DateTime.Now,
-                IsRead = false
-            };
-
-            // store notifications in database, create a SupportNotification entity model
-            // and uncomment the following lines:
-
-            /*
-            var notification = new SupportNotification
-            {
-                Title = "New Replacement Request",
-                Message = $"Customer has requested fridge replacement for fault report #{faultReport.FaultReportId}",
-                Type = "Replacement",
-                ReferenceId = faultReport.FaultReportId,
-                Priority = "High",
-                CreatedDate = DateTime.Now,
-                IsRead = false
-            };
-
-            _db.tblSupportNotifications.Add(notification);
-            await _db.SaveChangesAsync();
-            */
         }
 
         // Helper method to get stock information for display
