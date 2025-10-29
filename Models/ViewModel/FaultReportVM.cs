@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Project.Models.ViewModel
 {
-    // Existing FaultReportVM
     public class FaultReportVM
     {
         public int CustomerID { get; set; }
@@ -19,8 +18,10 @@ namespace Project.Models.ViewModel
 
         [Required(ErrorMessage = "Description is required")]
         [Display(Name = "Fault Description")]
+        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         public string Description { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Priority is required")]
         [Display(Name = "Priority Level")]
         public string Priority { get; set; } = "Medium";
 

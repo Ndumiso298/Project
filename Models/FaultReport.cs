@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Project.Models;
 using System.ComponentModel.DataAnnotations;
+
+
+
 
 namespace Project.Models
 {
+
+
     public class FaultReport
     {
         [Key]
         public int FaultReportId { get; set; }
 
-   
         public int? CustomerId { get; set; }
 
         public int FridgeInStockId { get; set; }
@@ -20,7 +23,6 @@ namespace Project.Models
         public DateTime ReportedDate { get; set; } = DateTime.Now;
         public DateTime? ResolvedDate { get; set; }
 
-     
         public bool RequestReplacement { get; set; }
         public bool IsReplacementRequested { get; set; }
         public string? DeclineReason { get; set; }
@@ -28,9 +30,11 @@ namespace Project.Models
         public int? OriginalFaultReportId { get; set; }
         public string? ImageUrl { get; set; }
 
-        
         public virtual Customer? Customer { get; set; }
-        public virtual FridgeInStock FridgeInStock { get; set; } = new FridgeInStock();
+
+    
+        public virtual FridgeInStock FridgeInStock { get; set; } 
+
         public virtual ICollection<FaultImage> FaultImages { get; set; } = new List<FaultImage>();
         public virtual ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
         public virtual FaultReport? OriginalFaultReport { get; set; }

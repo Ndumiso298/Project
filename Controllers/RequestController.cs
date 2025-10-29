@@ -351,15 +351,12 @@ namespace Project.Controllers
 
             return View(viewModel);
         }
-
         [Authorize(Roles = SD.CustomerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFault(FaultReportVM faultReportVM)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Get customer - don't create automatically
             var customer = await _db.tblCustomer
                 .Include(c => c.ApplicationUser)
                 .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
@@ -370,95 +367,113 @@ namespace Project.Controllers
                 return RedirectToAction("Register", "Account");
             }
 
-            // Reload dropdown data if validation fails
+            // Always reload the dropdown data before validation
             faultReportVM.AvailableFridges = await _db.tblCustomerFridge
                 .Where(cf => cf.CustomerID == customer.CustomerID)
                 .Include(cf => cf.FridgeInStock).ThenInclude(fis => fis.Fridge)
                 .ToListAsync();
             faultReportVM.CustomerName = $"{customer.ApplicationUser.FirstName} {customer.ApplicationUser.LastName}";
 
+            // Check ModelState before custom validation
             if (!ModelState.IsValid)
             {
-                TempData[SD.Error] = "Please fill in all required fields.";
                 return View(faultReportVM);
             }
 
-            // Check fridge allocation
+            // Check if FridgeInStock exists (don't check IsAvailable since allocated fridges are not available)
+            var fridgeInStock = await _db.tblFridgeInStocks
+                .FirstOrDefaultAsync(f => f.FridgeInStockId == faultReportVM.FridgeInStockId);
+
+            if (fridgeInStock == null)
+            {
+                ModelState.AddModelError("FridgeInStockId", "Selected fridge does not exist.");
+                return View(faultReportVM);
+            }
+
+            // Check fridge allocation - this is the key check
             bool isAllocated = await _db.tblCustomerFridge
                 .AnyAsync(cf => cf.CustomerID == customer.CustomerID &&
                                 cf.FridgeInStockId == faultReportVM.FridgeInStockId);
 
             if (!isAllocated)
             {
-                TempData[SD.Error] = "You can only report faults for your allocated fridges.";
+                ModelState.AddModelError("FridgeInStockId", "You can only report faults for your allocated fridges.");
                 return View(faultReportVM);
             }
 
-            // Handle image upload
-            string? imageUrls = null;
-            if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
+            try
             {
-                imageUrls = await SaveFaultImages(faultReportVM.FaultImages);
+                // Handle image upload
+                string? imageUrls = null;
+                if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
+                {
+                    imageUrls = await SaveFaultImages(faultReportVM.FaultImages);
+                }
+
+                // Determine status and priority based on replacement request
+                string status;
+                string priority;
+
+                if (faultReportVM.RequestReplacement)
+                {
+                    status = "Replacement Requested";
+                    priority = "High";
+                }
+                else
+                {
+                    status = "Reported";
+                    priority = faultReportVM.Priority;
+                }
+
+                // Create fault report
+                var fault = new FaultReport
+                {
+                    CustomerId = customer.CustomerID,
+                    FridgeInStockId = faultReportVM.FridgeInStockId,
+                    FaultType = faultReportVM.FaultType,
+                    Description = faultReportVM.Description,
+                    Priority = priority,
+                    Status = status,
+                    ReportedDate = DateTime.Now,
+                    ImageUrl = imageUrls,
+                    RequestReplacement = faultReportVM.RequestReplacement,
+                    IsReplacementRequested = faultReportVM.RequestReplacement
+                };
+
+                _db.tblFaultReports.Add(fault);
+                await _db.SaveChangesAsync();
+
+                // Create fault technician record
+                var technicianRecord = new FaultTechnician
+                {
+                    FaultReportId = fault.FaultReportId,
+                    FaultDescription = $"{fault.FaultType}: {fault.Description}",
+                    Priority = fault.Priority,
+                    CustomerBookingStatus = "Pending",
+                    CreatedDate = DateTime.Now,
+                    ResolutionNotes = fault.RequestReplacement ? "Replacement requested - High priority" : null
+                };
+
+                _db.tblFaultTechnicians.Add(technicianRecord);
+                await _db.SaveChangesAsync();
+
+                // Send notification to support team for replacement requests
+                if (faultReportVM.RequestReplacement)
+                {
+                    await CreateSupportNotification(fault);
+                }
+
+                TempData[SD.Success] = faultReportVM.RequestReplacement
+                    ? "Fault reported successfully! Replacement request has been escalated to support team."
+                    : "Fault reported successfully!";
+
+                return RedirectToAction(nameof(ViewFaultStatus));
             }
-
-            // Determine status and priority based on replacement request
-            string status;
-            string priority;
-
-            if (faultReportVM.RequestReplacement)
+            catch (Exception ex)
             {
-                status = "Replacement Requested";
-                priority = "High";
+                ModelState.AddModelError("", "An error occurred while saving the fault report. Please try again.");
+                return View(faultReportVM);
             }
-            else
-            {
-                status = "Reported";
-                priority = faultReportVM.Priority;
-            }
-
-            // Now create fault report with the valid CustomerId
-            var fault = new FaultReport
-            {
-                CustomerId = customer.CustomerID, // This can now be null if needed
-                FridgeInStockId = faultReportVM.FridgeInStockId,
-                FaultType = faultReportVM.FaultType,
-                Description = faultReportVM.Description,
-                Priority = priority,
-                Status = status,
-                ReportedDate = DateTime.Now,
-                ImageUrl = imageUrls,
-                RequestReplacement = faultReportVM.RequestReplacement,
-                IsReplacementRequested = faultReportVM.RequestReplacement
-            };
-
-            _db.tblFaultReports.Add(fault);
-            await _db.SaveChangesAsync();
-
-            // Create fault technician record
-            var technicianRecord = new FaultTechnician
-            {
-                FaultReportId = fault.FaultReportId,
-                FaultDescription = $"{fault.FaultType}: {fault.Description}",
-                Priority = fault.Priority,
-                CustomerBookingStatus = "Pending",
-                CreatedDate = DateTime.Now,
-                ResolutionNotes = fault.RequestReplacement ? "Replacement requested - High priority" : null
-            };
-
-            _db.tblFaultTechnicians.Add(technicianRecord);
-            await _db.SaveChangesAsync();
-
-            // Send notification to support team for replacement requests
-            if (faultReportVM.RequestReplacement)
-            {
-                await CreateSupportNotification(fault);
-            }
-
-            TempData[SD.Success] = faultReportVM.RequestReplacement
-                ? "Fault reported successfully! Replacement request has been escalated to support team."
-                : "Fault reported successfully!";
-
-            return RedirectToAction(nameof(ViewFaultStatus));
         }
 
         [Authorize(Roles = SD.CustomerRole)]
