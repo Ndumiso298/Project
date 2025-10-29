@@ -18,7 +18,7 @@ namespace Project.Models
        
 
         public string? Notes { get; set; }
-
+         
         public string CustomerApproval { get; set; } = SD.Pending;
         public string? CheckupStatus { get; set; }=SD.NotStarted;
 
@@ -26,9 +26,10 @@ namespace Project.Models
         [ForeignKey("RequestHeaderId")]
         [ValidateNever]
         public RequestHeader RequestHeader { get; set; }
-       
 
 
         public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
+
+        //public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
     }
 }

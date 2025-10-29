@@ -4,7 +4,7 @@
     ViewData["Title"] = "Register";
     Layout = "_CustomerLayout";
 
-    bool isAdmin = User.IsInRole("Admin"); 
+    bool isAdmin = User.IsInRole("Admin");
 }
 
 <div class="row">
@@ -45,22 +45,26 @@
                                 </div>
                             </div>
 
-                            @if (!isAdmin)
-                            {
-                                <div class="card mb-4 border-0 shadow-sm">
-                                    <div class="card-header bg-primary text-light">
-                                        <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Business Verification</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label asp-for="Input.BusinessDocument" class="form-label fw-semibold"></label>
-                                            <input asp-for="Input.BusinessDocument" type="file" class="form-control" />
-                                            <span asp-validation-for="Input.BusinessDocument" class="text-danger"></span>
-                                            <small class="text-muted">Upload a valid document (PDF, JPG, PNG).</small>
-                                        </div>
+                            <!-- Business Document Section - Always Available -->
+                            <div class="card mb-4 border-0 shadow-sm">
+                                <div class="card-header bg-primary text-light">
+                                    <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Document Upload</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label asp-for="Input.BusinessDocument" class="form-label fw-semibold">
+                                            Business Proof Document
+                                            <span id="documentRequired" style="color: red;">*</span>
+                                        </label>
+                                        <input asp-for="Input.BusinessDocument" type="file" class="form-control" />
+                                        <span asp-validation-for="Input.BusinessDocument" class="text-danger"></span>
+                                        <small class="text-muted">
+                                            Upload a valid document (PDF, JPG, PNG).
+                                            <span id="documentDescription">Required for Customer accounts.</span>
+                                        </small>
                                     </div>
                                 </div>
-                            }
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -102,36 +106,55 @@
                                         <label asp-for="Input.Email">Email*</label>
                                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input asp-for="Input.Password" class="form-control" placeholder="Password" type="password" />
-                                        <label asp-for="Input.Password">Password*</label>
-                                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+                                    <!-- Password Fields - Only show for Customer role -->
+                                    <div id="passwordSection">
+                                        <div class="form-floating mb-3">
+                                            <input asp-for="Input.Password" class="form-control" placeholder="Password" type="password" />
+                                            <label asp-for="Input.Password">Password*</label>
+                                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" />
+                                            <label asp-for="Input.ConfirmPassword">Confirm Password*</label>
+                                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                                        </div>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" />
-                                        <label asp-for="Input.ConfirmPassword">Confirm Password*</label>
-                                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+
+                                    <!-- Employee Password Notice - Only show for non-Customer roles -->
+                                    <div id="employeePasswordNotice" class="alert alert-info mb-0" style="display: none;">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <strong>Employee Account:</strong> A strong password will be automatically generated and sent to the user's email.
                                     </div>
                                 </div>
+                            </div>
 
-                                @if (isAdmin)
-                                {   
-                                    <div class="card border-0 shadow-sm">
-                                        <div class="card-header bg-primary text-light">
-                                            <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Account Type</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-floating mb-3">
-                                                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-                                                    <option value="">--Select Role--</option>
-                                                </select>
-                                                <label asp-for="Input.Role">User Role*</label>
-                                                <span asp-validation-for="Input.Role" class="text-danger"></span>
-                                            </div>
+                            @if (isAdmin)
+                            {
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-primary text-light">
+                                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Account Type</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-floating mb-3">
+                                            <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select" id="roleSelect">
+                                                <option value="@SD.CustomerRole" selected>Customer</option>
+                                                @foreach (var role in Model.Input.RoleList.Where(r => r.Value != SD.CustomerRole))
+                                                {
+                                                    <option value="@role.Value">@role.Text</option>
+                                                }
+                                            </select>
+                                            <label asp-for="Input.Role">User Role*</label>
+                                            <span asp-validation-for="Input.Role" class="text-danger"></span>
                                         </div>
                                     </div>
-                                  }   
-                            </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Hidden field for non-admin users to always set role as Customer -->
+                                <input type="hidden" asp-for="Input.Role" value="@SD.CustomerRole" />
+                            }
                         </div>
                     </div>
 
@@ -148,4 +171,53 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleSelect = document.getElementById('roleSelect');
+            const passwordSection = document.getElementById('passwordSection');
+            const employeePasswordNotice = document.getElementById('employeePasswordNotice');
+            const documentRequired = document.getElementById('documentRequired');
+            const documentDescription = document.getElementById('documentDescription');
+
+            function toggleFields() {
+                // For non-admin users, always treat as Customer
+                const isAdmin = @isAdmin.ToString().ToLower();
+                let selectedRole = '@SD.CustomerRole'; // Default to Customer
+
+                if (isAdmin && roleSelect) {
+                    selectedRole = roleSelect.value;
+                }
+
+                const isCustomer = selectedRole === '@SD.CustomerRole' || selectedRole === '';
+
+                // Update document requirement text
+                if (isCustomer) {
+                    documentRequired.style.display = 'inline';
+                    documentDescription.textContent = 'Required for Customer accounts.';
+                } else {
+                    documentRequired.style.display = 'none';
+                    documentDescription.textContent = 'Optional for employee accounts.';
+                }
+
+                // Show/hide password fields vs employee notice
+                if (!isCustomer) {
+                    // Hide visible password fields, show employee notice
+                    passwordSection.style.display = 'none';
+                    employeePasswordNotice.style.display = 'block';
+                } else {
+                    // Show visible password fields, hide employee notice
+                    passwordSection.style.display = 'block';
+                    employeePasswordNotice.style.display = 'none';
+                }
+            }
+
+            // Initial toggle
+            toggleFields();
+
+            // Add event listener for role changes (only for admin users)
+            if (roleSelect) {
+                roleSelect.addEventListener('change', toggleFields);
+            }
+        });
+    </script>
 }

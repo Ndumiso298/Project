@@ -115,7 +115,7 @@ namespace Project.Areas.Identity.Pages.Account
 
                 // Redirect based on role
                 if (await _userManager.IsInRoleAsync(user, SD.AdminRole))
-                    return RedirectToAction("Dashboard", "Admin");
+                    return RedirectToAction("Index", "Admin");
                 if (await _userManager.IsInRoleAsync(user, SD.CustomerRole))
                     return RedirectToAction("Index", "Customer");
                 if (await _userManager.IsInRoleAsync(user, SD.CustomerSupport))

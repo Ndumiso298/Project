@@ -36,7 +36,9 @@ namespace Project.Models
         public string AvailabilityStatus { get; set; }
 
         public string? Location { get; set; }
+        
         [NotMapped] // EF will ignore this field in the database
+        [ValidateNever]
         public string FridgeNo { get; set; }
         [ValidateNever]
         public virtual ICollection<FridgeInStock> FridgeInstances { get; set; }
