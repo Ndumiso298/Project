@@ -53,11 +53,6 @@ namespace Project.Migrations
                     Guid.NewGuid().ToString()
                 });
 
-            // Insert AspNetUserRoles
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "UserId", "RoleId" },
-                values: new object[] { "admin-id-123", "admin-role-id-123" });
 
             // Insert Employee
             migrationBuilder.InsertData(

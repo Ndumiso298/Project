@@ -37,30 +37,30 @@ namespace Project.Data
             base.OnModelCreating(modelBuilder);
 
             // Configure Identity entities
-            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
-            {
-                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
-            });
+            //modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+            //});
 
-            modelBuilder.Entity<IdentityUserRole<string>>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.RoleId });
-            });
+            //modelBuilder.Entity<IdentityUserRole<string>>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.UserId, e.RoleId });
+            //});
 
-            modelBuilder.Entity<IdentityUserClaim<string>>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-            });
+            //modelBuilder.Entity<IdentityUserClaim<string>>(entity =>
+            //{
+            //    entity.HasKey(e => e.Id);
+            //});
 
-            modelBuilder.Entity<IdentityRoleClaim<string>>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-            });
+            //modelBuilder.Entity<IdentityRoleClaim<string>>(entity =>
+            //{
+            //    entity.HasKey(e => e.Id);
+            //});
 
-            modelBuilder.Entity<IdentityUserToken<string>>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
-            });
+            //modelBuilder.Entity<IdentityUserToken<string>>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+            //});
 
             // Configure Customer
             modelBuilder.Entity<Customer>(entity =>
