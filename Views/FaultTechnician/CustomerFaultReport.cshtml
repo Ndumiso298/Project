@@ -1,0 +1,133 @@
+﻿@model Project.Models.ViewModel.CustomerFaultReportViewModel
+@{
+    ViewData["Title"] = "Report Fridge Fault";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="fw-bold mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Report Fridge Fault</h2>
+                    <p class="mb-0 opacity-75">Let us know about any issues with your fridge</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Back button -->
+                    <div class="mb-4">
+                        <a asp-action="CustomerFaultReports" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to My Reports
+                        </a>
+                    </div>
+
+                    <!-- Fridge Information -->
+                    <div class="card mb-4 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="text-primary mb-3"><i class="bi bi-info-circle me-2"></i>Fridge Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <strong>Customer:</strong> @Model.CustomerName
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Fridge Model:</strong> @Model.FridgeModel
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Serial Number:</strong> @Model.FridgeNo
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <strong>Report Date:</strong> @Model.ReportDate.ToString("MMM dd, yyyy")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fault Report Form -->
+                    <form asp-action="CustomerFaultReport" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="VisitId" />
+                        <input type="hidden" asp-for="CustomerID" />
+                        <input type="hidden" asp-for="CustomerName" />
+                        <input type="hidden" asp-for="FridgeNo" />
+                        <input type="hidden" asp-for="FridgeModel" />
+                        <input type="hidden" asp-for="ReportDate" />
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-dark mb-4"><i class="bi bi-tools me-2"></i>Fault Details</h5>
+
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label asp-for="FaultType" class="form-label fw-bold required-field">Fault Type</label>
+                                        <select asp-for="FaultType" class="form-select" required>
+                                            <option value="">-- Select Fault Type --</option>
+                                            <option value="Not Cooling">Not Cooling</option>
+                                            <option value="Strange Noises">Strange Noises</option>
+                                            <option value="Water Leakage">Water Leakage</option>
+                                            <option value="Electrical Issues">Electrical Issues</option>
+                                            <option value="Door Problems">Door Problems</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <span asp-validation-for="FaultType" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="FaultDescription" class="form-label fw-bold required-field">Fault Description</label>
+                                    <textarea asp-for="FaultDescription" class="form-control" rows="4"
+                                              placeholder="Please describe the issue in detail..." required></textarea>
+                                    <div class="form-text">Be as specific as possible to help us diagnose the problem quickly.</div>
+                                    <span asp-validation-for="FaultDescription" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="AdditionalNotes" class="form-label fw-bold">Additional Notes</label>
+                                    <textarea asp-for="AdditionalNotes" class="form-control" rows="3"
+                                              placeholder="Any additional information that might help our technicians..."></textarea>
+                                    <div class="form-text">Optional: Include when the issue started, any error messages, etc.</div>
+                                    <span asp-validation-for="AdditionalNotes" class="text-danger small"></span>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>What happens next?</strong> Our technicians will review your report and contact you within 24 hours to schedule a visit.
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                                        <i class="bi bi-send me-2"></i>Submit Fault Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <style>
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function (e) {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+    </script>
+}

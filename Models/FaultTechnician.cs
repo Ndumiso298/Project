@@ -41,7 +41,8 @@ namespace Project.Models
         [ValidateNever]
         public FridgeVisit FridgeVisit { get; set; }
 
-     
 
+        public DateTime? ReportDate { get; set; }=System.DateTime.Now;
+        public string FaultType { get; set; }
     }
 }

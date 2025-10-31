@@ -1,0 +1,63 @@
+﻿@model Project.Models.ViewModel.FridgeReplacementViewModel
+@{
+    ViewData["Title"] = "Request Fridge Replacement";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary mb-3">Request Fridge Replacement</h2>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form asp-action="RequestReplacement" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="VisitId" />
+                <input type="hidden" asp-for="CustomerID" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="CustomerName" class="form-label fw-semibold"></label>
+                        <input asp-for="CustomerName" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="OldFridgeNo" class="form-label fw-semibold"></label>
+                        <input asp-for="OldFridgeNo" class="form-control" readonly />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="FridgeModel" class="form-label fw-semibold"></label>
+                        <input asp-for="FridgeModel" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ReplacementDate" class="form-label fw-semibold"></label>
+                        <input asp-for="ReplacementDate" class="form-control" readonly />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ReasonForReplacement" class="form-label fw-semibold">Reason for Replacement</label>
+                    <select asp-for="ReasonForReplacement" asp-items="ViewBag.ReplacementReasons" class="form-select">
+                        <option value="">-- Select Reason --</option>
+                    </select>
+                    <span asp-validation-for="ReasonForReplacement" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AdditionalNotes" class="form-label fw-semibold">Additional Notes</label>
+                    <textarea asp-for="AdditionalNotes" class="form-control" rows="4" placeholder="Provide any extra details..."></textarea>
+                    <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a asp-action="ReplacementRequests" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
