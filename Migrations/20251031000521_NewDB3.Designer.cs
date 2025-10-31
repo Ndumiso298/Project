@@ -12,8 +12,8 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251028221336_AddNewUncorruptedmigration")]
-    partial class AddNewUncorruptedmigration
+    [Migration("20251031000521_NewDB3")]
+    partial class NewDB3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -435,7 +435,7 @@ namespace Project.Migrations
                     b.Property<string>("TechnicianAssigned")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VisitId")
+                    b.Property<int?>("VisitId")
                         .HasColumnType("int");
 
                     b.HasKey("FaultId");
@@ -807,7 +807,14 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FridgeVisitVisitId")
                         .HasColumnType("int");
 
                     b.Property<int?>("NewFridgeInStockId")
@@ -831,16 +838,18 @@ namespace Project.Migrations
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VisitId")
+                    b.Property<int?>("VisitId")
                         .HasColumnType("int");
 
                     b.HasKey("FridgeReplacementId");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.HasIndex("CustomerID");
 
-                    b.HasIndex("NewFridgeInStockId");
+                    b.HasIndex("FridgeVisitVisitId");
 
-                    b.HasIndex("VisitId");
+                    b.HasIndex("NewFridgeInStockId");
 
                     b.ToTable("tblFridgeReplacements");
                 });
@@ -1152,9 +1161,7 @@ namespace Project.Migrations
                 {
                     b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
                         .WithMany("FaultTechnicians")
-                        .HasForeignKey("VisitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("VisitId");
 
                     b.Navigation("FridgeVisit");
                 });
@@ -1176,22 +1183,29 @@ namespace Project.Migrations
 
             modelBuilder.Entity("Project.Models.FridgeReplacement", b =>
                 {
+                    b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.FridgeInStock", "NewFridgeInStock")
-                        .WithMany()
-                        .HasForeignKey("NewFridgeInStockId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
                         .WithMany()
-                        .HasForeignKey("VisitId")
+                        .HasForeignKey("FridgeVisitVisitId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Project.Models.FridgeInStock", "NewFridgeInStock")
+                        .WithMany()
+                        .HasForeignKey("NewFridgeInStockId");
+
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Customer");
 

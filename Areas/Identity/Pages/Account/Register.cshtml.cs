@@ -319,10 +319,10 @@ namespace Project.Areas.Identity.Pages.Account
             const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string lowercase = "abcdefghijklmnopqrstuvwxyz";
             const string digits = "0123456789";
-            const string special = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+            const string special = "#$%@";
 
             var random = new Random();
-            var password = new char[12];
+            var password = new char[8];
 
             // Ensure at least one of each character type
             password[0] = uppercase[random.Next(uppercase.Length)];

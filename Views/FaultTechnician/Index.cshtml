@@ -13,14 +13,7 @@
                     <h3 class="card-title mb-0">
                         <i class="bi bi-exclamation-triangle me-2"></i>Fault Reports & Replacement Requests
                     </h3>
-                    <div>
-                        <a asp-action="ReplacementRequests" class="btn btn-light btn-sm me-2">
-                            <i class="bi bi-arrow-repeat me-1"></i>My Replacement Requests
-                        </a>
-                        <a asp-action="Dashboard" class="btn btn-outline-light btn-sm">
-                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
-                        </a>
-                    </div>
+                 
                 </div>
                 <div class="card-body">
                     <!-- Statistics Cards -->
@@ -110,7 +103,6 @@
                                             @if (fridge != null)
                                             {
                                                 <strong>@fridge.Model</strong>
-
                                                 <br>
                                                 <small class="text-muted">Serial: @(customerFridge?.FridgeInStock?.FridgeNo ?? "N/A")</small>
                                             }
@@ -179,7 +171,8 @@
                                                 <!-- Replacement Actions -->
                                                 @if (replacementRequest == null && (latestRepair == null || latestRepair.RepairStatus == "Scrapped" || latestRepair.RepairStatus == "Beyond Repair"))
                                                 {
-                                                    <a asp-action="RequestReplacement" asp-route-visitId="@item.VisitId"
+                                                    <a asp-action="RequestReplacement" asp-controller="Replacement" asp-route-visitId="@item.VisitId"
+                                                      
                                                        class="btn btn-danger btn-sm" title="Request Replacement">
                                                         <i class="bi bi-arrow-repeat"></i>
                                                     </a>
@@ -286,20 +279,7 @@
     </div>
 </div>
 
-<!-- Quick Action Buttons Fixed at Bottom -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div class="btn-group-vertical shadow">
-        <a asp-action="Dashboard" class="btn btn-primary" title="Dashboard">
-            <i class="bi bi-speedometer2"></i>
-        </a>
-        <a asp-action="Calendar" class="btn btn-success" title="Calendar">
-            <i class="bi bi-calendar-week"></i>
-        </a>
-        <a asp-action="ReplacementRequests" class="btn btn-info" title="My Replacement Requests">
-            <i class="bi bi-arrow-repeat"></i>
-        </a>
-    </div>
-</div>
+
 
 @section Scripts {
     <script>

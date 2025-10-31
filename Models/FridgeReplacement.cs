@@ -1,10 +1,12 @@
-﻿namespace Project.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Project.Models
 {
     public class FridgeReplacement
     {
         public int FridgeReplacementId { get; set; }
 
-        public int VisitId { get; set; }
+        public int? VisitId { get; set; }
         public FridgeVisit FridgeVisit { get; set; }
 
         public int CustomerID { get; set; }
@@ -21,5 +23,9 @@
         public DateTime RequestDate { get; set; } = DateTime.Now;
 
         public string ReplacementStatus { get; set; } = "Pending";
+
+        public string ApplicationUserId { get; set; }
+        [ForeignKey("ApplicationUserId")]
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

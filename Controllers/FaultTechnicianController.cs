@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
@@ -20,6 +19,7 @@ namespace Project.Controllers
         {
             _db = db;
         }
+
         public IActionResult Dashboard()
         {
             try
@@ -27,16 +27,14 @@ namespace Project.Controllers
                 var totalFaults = _db.tblFridgeVisits
                     .Count(v => v.CheckupStatus.ToLower() == "failed" || v.CheckupStatus == "Failed");
 
-                // Get pending faults (faults without any technician assignment)
                 var pendingFaults = _db.tblFridgeVisits
                     .Count(v => (v.CheckupStatus.ToLower() == "failed" || v.CheckupStatus == "Failed") &&
                                !v.FaultTechnicians.Any());
 
-                // Get in-progress repairs
                 var inProgress = _db.tblFaultTechnicians
                     .Count(ft => ft.RepairStatus == "In Progress");
 
-                // Get completed repairs
+                // Get completed repair
                 var completed = _db.tblFaultTechnicians
                     .Count(ft => ft.RepairStatus == "Completed");
 
@@ -95,9 +93,9 @@ namespace Project.Controllers
                 return View();
             }
         }
+
         public IActionResult Calendar()
         {
-
             var visits = _db.tblFaultTechnicians
                 .Include(u => u.FridgeVisit)
                 .ThenInclude(u => u.RequestHeader)
@@ -130,7 +128,7 @@ namespace Project.Controllers
 
             var serviceIds = failedVisits.Select(u => u.VisitId).ToList();
             var repair = _db.tblFaultTechnicians
-                .Where(u => serviceIds.Contains(u.VisitId))
+                .Where(u => serviceIds.Contains((int)u.VisitId))
                 .ToList();
 
             foreach (var fault in failedVisits)
@@ -140,8 +138,6 @@ namespace Project.Controllers
 
             return View(failedVisits);
         }
-
-
 
         public IActionResult BookFaultVisit(int RequestedFaultId, int? visitId)
         {
@@ -155,6 +151,7 @@ namespace Project.Controllers
             {
                 return NotFound();
             }
+
             ViewBag.RepairStatusList = new List<SelectListItem>
             {
                 new SelectListItem { Text = "Scrapped", Value = "Scrapped" },
@@ -162,6 +159,7 @@ namespace Project.Controllers
                 new SelectListItem { Text = "Resolved", Value = "Resolved" },
                 new SelectListItem { Text = "Not Started", Value = "Not Started" }
             };
+
             FaultTechnician visit;
 
             if (visitId.HasValue)
@@ -190,6 +188,7 @@ namespace Project.Controllers
 
             return View(visit);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult BookFaultVisit(FaultTechnician fault)
@@ -209,6 +208,7 @@ namespace Project.Controllers
 
                 return RedirectToAction("Index", new { id = fault.FaultId });
             }
+
             ViewBag.RepairStatusList = new List<SelectListItem>
             {
                 new SelectListItem { Text = "Scrapped", Value = "Scrapped" },
@@ -217,14 +217,7 @@ namespace Project.Controllers
                 new SelectListItem { Text = "Not Started", Value = "Not Started" }
             };
 
-
             return View(fault);
         }
-
-
     }
-} 
-
-
-
-
+}

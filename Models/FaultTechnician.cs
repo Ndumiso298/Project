@@ -36,12 +36,12 @@ namespace Project.Models
         public string CustomerBookingStatus { get; set; } = SD.Pending;
 
 
-        public int VisitId { get; set; }
+        public int? VisitId { get; set; }
         [ForeignKey("VisitId")]
         [ValidateNever]
         public FridgeVisit FridgeVisit { get; set; }
 
-       
+     
 
     }
 }

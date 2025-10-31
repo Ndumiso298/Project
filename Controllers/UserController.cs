@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
-using Project.Models.ViewModels;
 using Project.Utility;
 using System.Security.Claims;
 

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Project.Models.FridgeReplacement>
+@{
+    ViewData["Title"] = "My Replacement Requests";
+    Layout = "_CustomerLayout";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">My Replacement Requests</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You have not submitted any replacement requests yet.</div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Old Fridge No</th>
+                    <th>Fridge Model</th>
+                    <th>Reason</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@r.FridgeReplacementId</td>
+                        <td>@r.OldFridgeNo</td>
+                        <td>@r.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model ?? "N/A"</td>
+                        <td>@r.ReasonForReplacement</td>
+                        <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            @if (r.ReplacementStatus == Project.Utility.SD.Pending)
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            else if (r.ReplacementStatus == Project.Utility.SD.Approved)
+                            {
+                                <span class="badge bg-success">Approved</span>
+                            }
+                            else if (r.ReplacementStatus == Project.Utility.SD.Rejected)
+                            {
+                                <span class="badge bg-danger">Rejected</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="ReplacementDetails" asp-route-id="@r.FridgeReplacementId"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

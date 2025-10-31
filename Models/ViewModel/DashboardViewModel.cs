@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Project.ViewModels
+namespace Project.ViewModel
 {
     public class DashboardViewModel
     {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Utility;
-using Project.ViewModels;
+using Project.ViewModel;
 using System.Security.Claims;
 
 

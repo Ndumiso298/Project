@@ -54,7 +54,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Replacement}/{action=ReplacementRequests}/{id?}");
 app.MapRazorPages();
 
 app.Run();

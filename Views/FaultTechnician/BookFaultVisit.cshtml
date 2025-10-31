@@ -136,14 +136,45 @@
                 }
                 form.classList.add('was-validated');
             });
+
+            // Replacement prompt functionality
+            const repairStatusDropdown = document.querySelector('select[name="RepairStatus"]');
+
+            if (repairStatusDropdown) {
+                // Check initial value on page load
+                if (repairStatusDropdown.value === 'Scrapped') {
+                    const visitId = document.querySelector('input[name="VisitId"]').value;
+                    const confirmed = confirm('⚠️ This fridge is marked as Scrapped. Do you want to initiate a replacement request?');
+
+                    if (confirmed) {
+                        window.location.href = `@Url.Action("RequestReplacement", "Replacement")?visitId=${visitId}`;
+                        return; // Stop execution since we're redirecting
+                    }
+                }
+
+                // Listen for future changes
+                repairStatusDropdown.addEventListener('change', function() {
+                    if (this.value === 'Scrapped') {
+                        const visitId = document.querySelector('input[name="VisitId"]').value;
+                        const confirmed = confirm('⚠️ This fridge is marked as Scrapped. Do you want to initiate a replacement request?');
+
+                        if (confirmed) {
+                            window.location.href = `@Url.Action("RequestReplacement", "Replacement")?visitId=${visitId}`;
+                        } else {
+                            // Revert to "In Progress" if user cancels
+                            this.value = 'In Progress';
+                        }
+                    }
+                });
+            }
         });
 
         // Spinner animation
         const style = document.createElement('style');
         style.textContent = `
-                    .spin { animation: spin 1s linear infinite; }
-        keyframes spin { 100% { transform: rotate(360deg); } }
-                `;
+            .spin { animation: spin 1s linear infinite; }
+        @@keyframes spin { 100% { transform: rotate(360deg); } }
+        `;
         document.head.appendChild(style);
     </script>
 }

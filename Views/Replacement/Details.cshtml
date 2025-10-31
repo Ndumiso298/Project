@@ -1,0 +1,80 @@
+﻿@model Project.Models.FridgeReplacement
+
+@{
+    ViewData["Title"] = "Fridge Replacement Details";
+    Layout = "_Layout"; // Change to your specific layout if needed (e.g., "_AdminLayout" or "_CustomerLayout")
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Fridge Replacement Details</h4>
+        </div>
+
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">Customer Name</dt>
+                <dd class="col-sm-8">@($"{Model.Customer?.ApplicationUser?.FirstName} {Model.Customer?.ApplicationUser?.LastName}")</dd>
+
+                <dt class="col-sm-4">Old Fridge Number</dt>
+                <dd class="col-sm-8">@Model.OldFridgeNo</dd>
+
+                <dt class="col-sm-4">Reason for Replacement</dt>
+                <dd class="col-sm-8">@Model.ReasonForReplacement</dd>
+
+                <dt class="col-sm-4">Additional Notes</dt>
+                <dd class="col-sm-8">@Model.AdditionalNotes</dd>
+
+                <dt class="col-sm-4">Replacement Status</dt>
+                <dd class="col-sm-8">
+                    <span class="badge
+                        @(Model.ReplacementStatus == Project.Utility.SD.Pending ? "bg-warning text-dark" :
+                          Model.ReplacementStatus == Project.Utility.SD.Approved ? "bg-success" :
+                          "bg-danger")">
+                        @Model.ReplacementStatus
+                    </span>
+                </dd>
+
+                <dt class="col-sm-4">Request Date</dt>
+                <dd class="col-sm-8">@Model.RequestDate.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-4">Replacement Date</dt>
+                <dd class="col-sm-8">@Model.ReplacementDate.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-4">New Fridge (if assigned)</dt>
+                <dd class="col-sm-8">
+                    @if (Model.NewFridgeInStock != null)
+                    {
+                        @($"{Model.NewFridgeInStock.Fridge.Model} - {Model.NewFridgeInStock.FridgeNo}")
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not yet assigned</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">Recorded By</dt>
+                <dd class="col-sm-8">
+                    @($"{Model.ApplicationUser?.FirstName} {Model.ApplicationUser?.LastName}")
+                </dd>
+            </dl>
+        </div>
+
+        <div class="card-footer text-end">
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+            @if (Model.ReplacementStatus == Project.Utility.SD.Pending)
+            {
+                <form asp-action="ApproveReplacement" method="post" style="display:inline;">
+                    <input type="hidden" name="id" value="@Model.FridgeReplacementId" />
+                    <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+
+                <form asp-action="RejectReplacement" method="post" style="display:inline;">
+                    <input type="hidden" name="id" value="@Model.FridgeReplacementId" />
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

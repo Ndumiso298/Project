@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project.Migrations
 {
     /// <inheritdoc />
-    public partial class AddNewUncorruptedmigration : Migration
+    public partial class NewDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -389,7 +389,7 @@ namespace Project.Migrations
                     Bookingate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Completion = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CustomerBookingStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VisitId = table.Column<int>(type: "int", nullable: false)
+                    VisitId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -398,8 +398,7 @@ namespace Project.Migrations
                         name: "FK_tblFaultTechnicians_tblFridgeVisits_VisitId",
                         column: x => x.VisitId,
                         principalTable: "tblFridgeVisits",
-                        principalColumn: "VisitId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "VisitId");
                 });
 
             migrationBuilder.CreateTable(
@@ -481,7 +480,7 @@ namespace Project.Migrations
                 {
                     FridgeReplacementId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    VisitId = table.Column<int>(type: "int", nullable: false),
+                    VisitId = table.Column<int>(type: "int", nullable: true),
                     CustomerID = table.Column<int>(type: "int", nullable: false),
                     NewFridgeInStockId = table.Column<int>(type: "int", nullable: true),
                     OldFridgeNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -489,11 +488,18 @@ namespace Project.Migrations
                     AdditionalNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReplacementDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReplacementStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ReplacementStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tblFridgeReplacements", x => x.FridgeReplacementId);
+                    table.ForeignKey(
+                        name: "FK_tblFridgeReplacements_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tblFridgeReplacements_tblCustomer_CustomerID",
                         column: x => x.CustomerID,
@@ -634,6 +640,11 @@ namespace Project.Migrations
                 name: "IX_tblFridgeInStocks_RequestDetailsRequestDetailId",
                 table: "tblFridgeInStocks",
                 column: "RequestDetailsRequestDetailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFridgeReplacements_ApplicationUserId",
+                table: "tblFridgeReplacements",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFridgeReplacements_CustomerID",

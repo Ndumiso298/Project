@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251031000305_NewDB2")]
+    partial class NewDB2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -811,6 +814,9 @@ namespace Project.Migrations
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
+                    b.Property<int>("FridgeVisitVisitId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("NewFridgeInStockId")
                         .HasColumnType("int");
 
@@ -841,9 +847,9 @@ namespace Project.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.HasIndex("NewFridgeInStockId");
+                    b.HasIndex("FridgeVisitVisitId");
 
-                    b.HasIndex("VisitId");
+                    b.HasIndex("NewFridgeInStockId");
 
                     b.ToTable("tblFridgeReplacements");
                 });
@@ -1189,15 +1195,15 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.FridgeInStock", "NewFridgeInStock")
-                        .WithMany()
-                        .HasForeignKey("NewFridgeInStockId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
                         .WithMany()
-                        .HasForeignKey("VisitId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("FridgeVisitVisitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.FridgeInStock", "NewFridgeInStock")
+                        .WithMany()
+                        .HasForeignKey("NewFridgeInStockId");
 
                     b.Navigation("ApplicationUser");
 
