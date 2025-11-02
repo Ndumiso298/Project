@@ -14,13 +14,14 @@ namespace Project.Models
 
         public DateTime VisitDate { get; set; }
         [Required]
-        public string TechnicianName { get; set; }
-       
+        public string TechnicianName { get; set; } = "Not Assigned";
+
+
 
         public string? Notes { get; set; }
-         
+
         public string CustomerApproval { get; set; } = SD.Pending;
-        public string? CheckupStatus { get; set; }=SD.NotStarted;
+        public string? CheckupStatus { get; set; } = SD.NotStarted;
 
         public int RequestHeaderId { get; set; }
         [ForeignKey("RequestHeaderId")]
@@ -30,6 +31,14 @@ namespace Project.Models
 
         public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
 
-        //public ICollection<FaultTechnician> FaultTechnicians { get; set; } = new List<FaultTechnician>();
+        [StringLength(50)]
+        public string? VisitType { get; set; } = "Fault Report";
+
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+        [StringLength(20)]
+        public string? Status { get; set; } = SD.Pending;
     }
 }
+
+

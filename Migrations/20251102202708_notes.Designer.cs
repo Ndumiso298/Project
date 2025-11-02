@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102202708_notes")]
+    partial class notes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -421,10 +424,9 @@ namespace Project.Migrations
 
                     b.Property<string>("FaultType")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FridgeInStockId")
+                    b.Property<int>("FridgeInStockId")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
@@ -440,8 +442,8 @@ namespace Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Priority")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ReportedDate")
                         .HasColumnType("datetime2");
@@ -449,15 +451,20 @@ namespace Project.Migrations
                     b.Property<bool>("RequestReplacement")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("ResolvedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FaultReportId");
 
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("FridgeInStockId");
+
+                    b.HasIndex("OriginalFaultReportId");
 
                     b.ToTable("tblFaultReports");
                 });
@@ -476,30 +483,23 @@ namespace Project.Migrations
                     b.Property<DateTime?>("Completion")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CustomerBookingStatus")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FaultDescription")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("FaultReportId")
                         .HasColumnType("int");
 
                     b.Property<string>("FaultType")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Priority")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RepairStatus")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ReportDate")
                         .HasColumnType("datetime2");
@@ -508,8 +508,7 @@ namespace Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TechnicianAssigned")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("VisitId")
                         .HasColumnType("int");
@@ -940,9 +939,6 @@ namespace Project.Migrations
                     b.Property<string>("CheckupStatus")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CustomerApproval")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -953,20 +949,12 @@ namespace Project.Migrations
                     b.Property<int>("RequestHeaderId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("TechnicianName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("VisitDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("VisitType")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("VisitId");
 
@@ -1299,24 +1287,30 @@ namespace Project.Migrations
 
                     b.HasOne("Project.Models.FridgeInStock", "FridgeInStock")
                         .WithMany()
-                        .HasForeignKey("FridgeInStockId");
+                        .HasForeignKey("FridgeInStockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project.Models.FaultReport", "OriginalFaultReport")
+                        .WithMany("RelaunchedFaultReports")
+                        .HasForeignKey("OriginalFaultReportId");
 
                     b.Navigation("Customer");
 
                     b.Navigation("FridgeInStock");
+
+                    b.Navigation("OriginalFaultReport");
                 });
 
             modelBuilder.Entity("Project.Models.FaultTechnician", b =>
                 {
-                    b.HasOne("Project.Models.FaultReport", "FaultReport")
+                    b.HasOne("Project.Models.FaultReport", null)
                         .WithMany("FaultTechnicians")
                         .HasForeignKey("FaultReportId");
 
                     b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
                         .WithMany("FaultTechnicians")
                         .HasForeignKey("VisitId");
-
-                    b.Navigation("FaultReport");
 
                     b.Navigation("FridgeVisit");
                 });
@@ -1430,6 +1424,8 @@ namespace Project.Migrations
             modelBuilder.Entity("Project.Models.FaultReport", b =>
                 {
                     b.Navigation("FaultTechnicians");
+
+                    b.Navigation("RelaunchedFaultReports");
                 });
 
             modelBuilder.Entity("Project.Models.Fridge", b =>

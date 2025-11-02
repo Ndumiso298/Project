@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Project.Utility;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Project.Utility;
 
 namespace Project.Models
 {
@@ -11,38 +10,43 @@ namespace Project.Models
         [Key]
         public int FaultId { get; set; }
 
-       
-        [Required]
-        [Display(Name = "Fault Description")]
-        public string FaultDescription { get; set; }
+        public int? VisitId { get; set; }
 
-        [Display(Name = "Repair Status")]
-        public string? RepairStatus { get; set; } = SD.NotStarted;
+        [StringLength(100)]
+        public string? FaultType { get; set; }
 
-        [Display(Name = "Technician Assigned")]
-        public string? TechnicianAssigned { get; set; }
+        public string? FaultDescription { get; set; }
 
-        [Display(Name = "Resolution Notes")]
         public string? ResolutionNotes { get; set; }
 
+        public DateTime? ReportDate { get; set; }
 
-        [Display(Name ="Booking Date")]
+        [StringLength(50)]
+        public string? RepairStatus { get; set; } = SD.NotStarted;
+
+        [StringLength(100)]
+        public string? TechnicianAssigned { get; set; }
+
+        [StringLength(20)]
+        public string? CustomerBookingStatus { get; set; }
+
         public DateTime? Bookingate { get; set; }
 
+        // Add these missing properties
+        public int? FaultReportId { get; set; }
 
-        [Display(Name = "Completion Date")]
+        [StringLength(20)]
+        public string? Priority { get; set; }
+
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
+
         public DateTime? Completion { get; set; }
-        [Display(Name = "Customer Booking Status")]
-        public string CustomerBookingStatus { get; set; } = SD.Pending;
 
-
-        public int? VisitId { get; set; }
+        // Navigation properties
         [ForeignKey("VisitId")]
-        [ValidateNever]
-        public FridgeVisit FridgeVisit { get; set; }
+        public virtual FridgeVisit? FridgeVisit { get; set; }
 
-
-        public DateTime? ReportDate { get; set; }=System.DateTime.Now;
-        public string FaultType { get; set; }
+        [ForeignKey("FaultReportId")]
+        public virtual FaultReport? FaultReport { get; set; }
     }
 }

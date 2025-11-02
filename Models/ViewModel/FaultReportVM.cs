@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Project.Models.ViewModel
 {
@@ -8,31 +6,23 @@ namespace Project.Models.ViewModel
     {
         public int CustomerID { get; set; }
 
+        public string CustomerName { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Please select a fridge")]
-        [Display(Name = "Select Fridge")]
         public int FridgeInStockId { get; set; }
 
-        [Required(ErrorMessage = "Fault type is required")]
-        [Display(Name = "Fault Type")]
-        public string FaultType { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Please select a fault type")]
+        public string? FaultType { get; set; }
 
-        [Required(ErrorMessage = "Description is required")]
-        [Display(Name = "Fault Description")]
-        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
-        public string Description { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Please describe the fault")]
+        public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Priority is required")]
-        [Display(Name = "Priority Level")]
-        public string Priority { get; set; } = "Medium";
+        public string? Priority { get; set; } = "Medium";
 
-        [Display(Name = "Request Replacement")]
         public bool RequestReplacement { get; set; }
 
-        [Display(Name = "Upload Images")]
         public List<IFormFile>? FaultImages { get; set; }
 
-        // Display properties (read-only)
-        public string CustomerName { get; set; } = string.Empty;
-        public List<CustomerFridge> AvailableFridges { get; set; } = new List<CustomerFridge>();
+        public List<CustomerFridge>? AvailableFridges { get; set; }
     }
 }

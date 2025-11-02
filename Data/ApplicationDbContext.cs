@@ -27,6 +27,7 @@ namespace Project.Data
         public DbSet<CustomerFridge> tblCustomerFridge { get; set; }
         public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
         public DbSet<FridgeReplacement> tblFridgeReplacements { get; set; }
+        public DbSet<RequestNote> tblRequestNotes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
