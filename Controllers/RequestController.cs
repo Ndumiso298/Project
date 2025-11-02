@@ -24,10 +24,6 @@ namespace Project.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-
-
-
-
         public IActionResult Index(string status)
         {
             IEnumerable<RequestHeader> objRequestHeaders;
@@ -35,8 +31,8 @@ namespace Project.Controllers
             if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
             {
                 objRequestHeaders = _db.tblRequestHeaders
-                    .Include(a => a.Customer)
-                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(a => a.Customer) // Add this include
+                        .ThenInclude(c => c.ApplicationUser) // Add this include
                     .ToList();
             }
             else
@@ -45,8 +41,8 @@ namespace Project.Controllers
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 objRequestHeaders = _db.tblRequestHeaders
-                    .Include(u => u.Customer)
-                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(u => u.Customer) // Add this include
+                        .ThenInclude(c => c.ApplicationUser) // Add this include
                     .Where(r => r.Customer.ApplicationUserId == userId)
                     .ToList();
             }
@@ -56,6 +52,7 @@ namespace Project.Controllers
 
         public IActionResult Details(int id)
         {
+            // Fetch full request data with all related entities
             var requestHeader = _db.tblRequestHeaders
                 .Include(r => r.Customer)
                 .ThenInclude(c => c.ApplicationUser)
@@ -254,176 +251,193 @@ namespace Project.Controllers
         }
 
         // RELAUNCH REQUEST FUNCTIONALITY - CUSTOMER ONLY
-        // Inside Project/Controllers/RequestController.cs
-        // ... existing code ...
-
-        // GET: Relaunch Request
         [HttpGet]
         [Authorize(Roles = SD.CustomerRole)]
-        public async Task<IActionResult> RelaunchRequest(int id)
+        public IActionResult RelaunchRequest(int id)
         {
+            // Get the original rejected request with ALL required includes
+            var originalRequest = _db.tblRequestHeaders
+                .Include(r => r.Customer)
+                    .ThenInclude(c => c.ApplicationUser) // Include ApplicationUser
+                .Include(r => r.RequestFridges)
+                    .ThenInclude(d => d.Fridge)
+                .FirstOrDefault(r => r.RequestHeaderId == id && r.Status == SD.Rejected);
+
+            if (originalRequest == null)
+            {
+                TempData[SD.Error] = "Original request not found or not rejected.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Check if Customer and ApplicationUser are not null
+            if (originalRequest.Customer == null || originalRequest.Customer.ApplicationUser == null)
+            {
+                TempData[SD.Error] = "Customer information not found for this request.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Check if the current user owns this request
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if (originalRequest.Customer.ApplicationUserId != userId)
+            {
+                TempData[SD.Error] = "You can only relaunch your own requests.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Create view model for relaunch with null checks
+            var relaunchVM = new RelaunchRequestVM
+            {
+                OriginalRequestId = originalRequest.RequestHeaderId,
+                RejectionReason = originalRequest.RejectionReason ?? "No reason provided",
+                CustomerName = $"{originalRequest.Customer.ApplicationUser.FirstName} {originalRequest.Customer.ApplicationUser.LastName}",
+                OriginalRequestDate = originalRequest.RequestDate,
+                RejectionDate = originalRequest.RejectionDate,
+                OriginalFridges = originalRequest.RequestFridges?.ToList() ?? new List<RequestDetails>()
+            };
+
+            return View(relaunchVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> RelaunchRequest(RelaunchRequestVM relaunchVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Reload the original data if validation fails
+                await ReloadRelaunchVMData(relaunchVM);
+                return View(relaunchVM);
+            }
+
             try
             {
+                // Get original request with all required includes
                 var originalRequest = await _db.tblRequestHeaders
+                    .Include(r => r.RequestFridges)
                     .Include(r => r.Customer)
                         .ThenInclude(c => c.ApplicationUser)
-                    .Include(r => r.RequestFridges)
-                        .ThenInclude(d => d.Fridge)
-                    .FirstOrDefaultAsync(r => r.RequestHeaderId == id && r.Status == SD.Rejected);
+                    .FirstOrDefaultAsync(r => r.RequestHeaderId == relaunchVM.OriginalRequestId);
 
                 if (originalRequest == null)
                 {
-                    TempData[SD.Error] = "Request not found or not in rejected state.";
+                    TempData[SD.Error] = "Original request not found.";
                     return RedirectToAction(nameof(Index));
                 }
 
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                // Verify the current user owns this request
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
                 if (originalRequest.Customer?.ApplicationUserId != userId)
                 {
                     TempData[SD.Error] = "You can only relaunch your own requests.";
                     return RedirectToAction(nameof(Index));
                 }
 
-                var vm = new RelaunchRequestVM
+                // Create new request based on original
+                var newRequest = new RequestHeader
                 {
-                    OriginalRequestId = originalRequest.RequestHeaderId,
-                    RejectionReason = originalRequest.RejectionReason ?? "No reason provided.",
-                    CustomerName = $"{originalRequest.Customer.ApplicationUser.FirstName} {originalRequest.Customer.ApplicationUser.LastName}",
-                    OriginalRequestDate = originalRequest.RequestDate,
-                    RejectionDate = originalRequest.RejectionDate,
-                    OriginalFridges = originalRequest.RequestFridges?.ToList() ?? new List<RequestDetails>()
+                    CustomerID = originalRequest.CustomerID,
+                    FirstName = originalRequest.FirstName,
+                    LastName = originalRequest.LastName,
+                    CellNumber = originalRequest.CellNumber,
+                    StreetAddress = originalRequest.StreetAddress,
+                    City = originalRequest.City,
+                    State = originalRequest.State,
+                    PostalCode = originalRequest.PostalCode,
+                    RequestDate = DateTime.Now,
+                    Status = SD.Pending,
+                    AdditionalDescription = relaunchVM.AdditionalDescription,
+                    IsRelaunched = true,
+                    OriginalRequestId = originalRequest.RequestHeaderId
                 };
 
-                return View(vm);
+                // Handle file upload
+                if (relaunchVM.AdditionalDocument != null && relaunchVM.AdditionalDocument.Length > 0)
+                {
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(relaunchVM.AdditionalDocument.FileName);
+                    string requestPath = Path.Combine("uploads", "additional-documents");
+
+                    string finalPath = Path.Combine(wwwRootPath, requestPath);
+
+                    if (!Directory.Exists(finalPath))
+                    {
+                        Directory.CreateDirectory(finalPath);
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                    {
+                        await relaunchVM.AdditionalDocument.CopyToAsync(fileStream);
+                    }
+
+                    newRequest.AdditionalDocumentPath = Path.Combine(requestPath, fileName).Replace("\\", "/");
+                }
+
+                // Add to database
+                _db.tblRequestHeaders.Add(newRequest);
+                await _db.SaveChangesAsync();
+
+                // Copy request details (fridges) from original request
+                if (originalRequest.RequestFridges != null)
+                {
+                    foreach (var originalDetail in originalRequest.RequestFridges)
+                    {
+                        var newDetail = new RequestDetails
+                        {
+                            RequestHeaderId = newRequest.RequestHeaderId,
+                            FridgeId = originalDetail.FridgeId,
+                            Count = originalDetail.Count,
+                            Price = originalDetail.Price
+                        };
+                        _db.tblRequestDetais.Add(newDetail);
+                    }
+                }
+
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Request relaunched successfully with additional information. It will be reviewed again.";
+                return RedirectToAction(nameof(Details), new { id = newRequest.RequestHeaderId });
             }
             catch (Exception ex)
             {
-                TempData[SD.Error] = "Error loading request: " + ex.Message;
-                return RedirectToAction(nameof(Index));
+                TempData[SD.Error] = $"Error relaunching request: {ex.Message}";
+
+                // Reload original data for the view
+                await ReloadRelaunchVMData(relaunchVM);
+                return View(relaunchVM);
             }
         }
 
-        // POST: Relaunch Request
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.CustomerRole)]
-        public async Task<IActionResult> RelaunchRequest(RelaunchRequestVM vm, IFormFile? AdditionalDocument)
+        // Helper method to reload data for the view model
+        private async Task ReloadRelaunchVMData(RelaunchRequestVM relaunchVM)
         {
-            if (!ModelState.IsValid)
-            {
-                await ReloadRelaunchVMData(vm);
-                return View(vm);
-            }
-
             var originalRequest = await _db.tblRequestHeaders
                 .Include(r => r.RequestFridges)
+                    .ThenInclude(d => d.Fridge)
                 .Include(r => r.Customer)
                     .ThenInclude(c => c.ApplicationUser)
-                .FirstOrDefaultAsync(r => r.RequestHeaderId == vm.OriginalRequestId);
+                .FirstOrDefaultAsync(r => r.RequestHeaderId == relaunchVM.OriginalRequestId);
 
-            if (originalRequest == null)
+            if (originalRequest != null)
             {
-                TempData[SD.Error] = "Original request not found.";
-                return RedirectToAction(nameof(Index));
-            }
+                relaunchVM.OriginalFridges = originalRequest.RequestFridges?.ToList() ?? new List<RequestDetails>();
+                relaunchVM.RejectionReason = originalRequest.RejectionReason ?? "No reason provided";
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (originalRequest.Customer?.ApplicationUserId != userId)
-            {
-                TempData[SD.Error] = "Unauthorized access.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // File validation
-            string? documentPath = null;
-            if (AdditionalDocument != null && AdditionalDocument.Length > 0)
-            {
-                if (AdditionalDocument.Length > 5 * 1024 * 1024)
+                if (originalRequest.Customer?.ApplicationUser != null)
                 {
-                    ModelState.AddModelError("AdditionalDocument", "File size must be ≤ 5MB.");
-                    await ReloadRelaunchVMData(vm);
-                    return View(vm);
+                    relaunchVM.CustomerName = $"{originalRequest.Customer.ApplicationUser.FirstName} {originalRequest.Customer.ApplicationUser.LastName}";
+                }
+                else
+                {
+                    relaunchVM.CustomerName = "Customer information not available";
                 }
 
-                var allowed = new[] { ".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx" };
-                var ext = Path.GetExtension(AdditionalDocument.FileName).ToLowerInvariant();
-                if (!allowed.Contains(ext))
-                {
-                    ModelState.AddModelError("AdditionalDocument", "Invalid file type.");
-                    await ReloadRelaunchVMData(vm);
-                    return View(vm);
-                }
-
-                var fileName = Guid.NewGuid() + ext;
-                var uploadDir = Path.Combine("uploads", "additional-documents");
-                var fullDir = Path.Combine(_webHostEnvironment.WebRootPath, uploadDir);
-
-                if (!Directory.Exists(fullDir))
-                    Directory.CreateDirectory(fullDir);
-
-                var filePath = Path.Combine(fullDir, fileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await AdditionalDocument.CopyToAsync(stream);
-                }
-
-                documentPath = Path.Combine(uploadDir, fileName).Replace("\\", "/");
-            }
-
-            // Create new request
-            var newRequest = new RequestHeader
-            {
-                CustomerID = originalRequest.CustomerID,
-                FirstName = originalRequest.FirstName,
-                LastName = originalRequest.LastName,
-                CellNumber = originalRequest.CellNumber,
-                StreetAddress = originalRequest.StreetAddress,
-                City = originalRequest.City,
-                State = originalRequest.State,
-                PostalCode = originalRequest.PostalCode,
-                RequestDate = DateTime.Now,
-                Status = SD.Pending,
-                AdditionalDescription = vm.AdditionalDescription,
-                AdditionalDocumentPath = documentPath,
-                IsRelaunched = true,
-                OriginalRequestId = originalRequest.RequestHeaderId
-            };
-
-            _db.tblRequestHeaders.Add(newRequest);
-            await _db.SaveChangesAsync();
-
-            // Copy fridge details
-            foreach (var detail in originalRequest.RequestFridges)
-            {
-                _db.tblRequestDetais.Add(new RequestDetails
-                {
-                    RequestHeaderId = newRequest.RequestHeaderId,
-                    FridgeId = detail.FridgeId,
-                    Count = detail.Count,
-                    Price = detail.Price
-                });
-            }
-            await _db.SaveChangesAsync();
-
-            TempData[SD.Success] = "Request relaunched successfully!";
-            return RedirectToAction(nameof(Details), new { id = newRequest.RequestHeaderId });
-        }
-
-        // Helper to reload data on validation fail
-        private async Task ReloadRelaunchVMData(RelaunchRequestVM vm)
-        {
-            var req = await _db.tblRequestHeaders
-                .Include(r => r.RequestFridges).ThenInclude(d => d.Fridge)
-                .Include(r => r.Customer).ThenInclude(c => c.ApplicationUser)
-                .FirstOrDefaultAsync(r => r.RequestHeaderId == vm.OriginalRequestId);
-
-            if (req != null)
-            {
-                vm.RejectionReason = req.RejectionReason ?? "No reason provided.";
-                vm.CustomerName = $"{req.Customer.ApplicationUser.FirstName} {req.Customer.ApplicationUser.LastName}";
-                vm.OriginalRequestDate = req.RequestDate;
-                vm.RejectionDate = req.RejectionDate;
-                vm.OriginalFridges = req.RequestFridges?.ToList() ?? new();
+                relaunchVM.OriginalRequestDate = originalRequest.RequestDate;
+                relaunchVM.RejectionDate = originalRequest.RejectionDate;
             }
         }
     }

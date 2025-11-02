@@ -354,7 +354,14 @@
                                     </a>
                                 </li>
                             }
-
+                            @if (ViewBag.HasActiveFridge == true)
+                            {
+                                <a asp-controller="FaultTechnician"
+                                   asp-action="CustomerFaultReport"
+                                   asp-route-visitId="@ViewBag.ActiveVisitId"
+                                   class="nav-link">Report Issue</a>
+                            }
+                            
                             @if (hasFridgeBookings)
                             {
                                 <li class="nav-item">
