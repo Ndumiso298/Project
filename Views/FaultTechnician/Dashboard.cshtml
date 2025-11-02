@@ -1,130 +1,355 @@
-﻿@{
+﻿@model Project.ViewModel.FaultTechnicianDashboardViewModel
+@using System.Text.Json
+@{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Fault Technician Dashboard";
 }
 
 <div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title mb-0">
-                        <i class="bi bi-speedometer2 me-2"></i>Fault Technician Dashboard
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.TotalFaults</h4>
-                                            <p class="mb-0">Total Faults</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-tools fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.PendingFaults</h4>
-                                            <p class="mb-0">Pending</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-clock-history fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-warning text-dark">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.InProgress</h4>
-                                            <p class="mb-0">In Progress</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-gear fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-info text-white">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-0">@ViewBag.Completed</h4>
-                                            <p class="mb-0">Completed</p>
-                                        </div>
-                                        <div class="align-self-center">
-                                            <i class="bi bi-check-circle fs-1"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-0">Fault Technician Dashboard</h2>
+            <p class="text-muted mb-0">Operational insights for fault management and repair tracking.</p>
+        </div>
+        <div>
+            <small class="text-muted">Last updated: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</small>
+        </div>
+    </div>
 
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Quick Actions</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-grid gap-2">
-                                        <a asp-action="Index" class="btn btn-primary btn-lg">
-                                            <i class="bi bi-list-check me-2"></i>View All Faults
-                                        </a>
-                                        <a asp-action="Calendar" class="btn btn-success btn-lg">
-                                            <i class="bi bi-calendar-week me-2"></i>View Calendar
-                                        </a>
-                                        <a asp-action="MaintenanceBookings" class="btn btn-info btn-lg">
-                                            <i class="bi bi-tools me-2"></i>Maintenance Bookings
-                                        </a>
+    <!-- KPIs Section -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Total Faults</h6>
+                <h3 class="fw-bold text-dark">@Model.TotalFaults</h3>
+                <p class="text-muted small mb-0">All reported faults</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Pending Assignment</h6>
+                <h3 class="fw-bold text-warning">@Model.PendingAssignment</h3>
+                <p class="text-muted small mb-0">Awaiting technician assignment</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">In Progress</h6>
+                <h3 class="fw-bold text-info">@Model.InProgress</h3>
+                <p class="text-muted small mb-0">Currently being repaired</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="text-muted">Completed</h6>
+                <h3 class="fw-bold text-success">@Model.Completed</h3>
+                <p class="text-muted small mb-0">Successfully resolved</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Faults Reported (Last 30 Days)</h6>
+                    <small class="text-muted">Trend overview</small>
+                </div>
+                <canvas id="faultsChart" height="160"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Fault Type Distribution</h6>
+                    <small class="text-muted">By category</small>
+                </div>
+                <canvas id="faultTypeChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row Charts -->
+    <div class="row g-3 mt-3">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Repair Status Overview</h6>
+                    <small class="text-muted">Current repair progress</small>
+                </div>
+                <canvas id="repairStatusChart" height="160"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Top Technicians</h6>
+                    <small class="text-muted">By assigned faults</small>
+                </div>
+                <div class="list-group list-group-flush">
+                    @if (Model.TopTechnicians.Any())
+                    {
+                        foreach (var technician in Model.TopTechnicians)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="bi bi-person-gear text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <span class="fw-semibold">@technician.Key</span>
+                                        <br>
+                                        <small class="text-muted">@technician.Value assigned fault(s)</small>
                                     </div>
                                 </div>
+                                <span class="badge bg-primary rounded-pill">@technician.Value</span>
                             </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-people text-muted fs-1"></i>
+                            <p class="text-muted mt-2 mb-0">No technician assignments yet</p>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Recent Activities</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="list-group list-group-flush">
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">New fault reported</h6>
-                                                <small>2 hours ago</small>
-                                            </div>
-                                            <p class="mb-1">Fridge Model: XYZ-123</p>
-                                        </div>
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">Maintenance completed</h6>
-                                                <small>5 hours ago</small>
-                                            </div>
-                                            <p class="mb-1">Customer: John Doe</p>
-                                        </div>
-                                    </div>
-                                </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Recent Activities -->
+    <div class="row g-3 mt-3">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-3">
+                <h6 class="fw-bold mb-3">Quick Actions</h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <a asp-action="Index" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center p-3">
+                            <i class="bi bi-list-check fs-4 me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold">View All Faults</div>
+                                <small class="text-muted">Manage all reported issues</small>
                             </div>
-                        </div>
+                        </a>
                     </div>
+                    <div class="col-md-6">
+                        <a asp-action="PendingCustomerFaults" class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center p-3">
+                            <i class="bi bi-clock-history fs-4 me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold">Pending Faults</div>
+                                <small class="text-muted">@Model.PendingAssignment awaiting assignment</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-action="Calendar" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center p-3">
+                            <i class="bi bi-calendar-week fs-4 me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold">Repair Calendar</div>
+                                <small class="text-muted">Schedule and view bookings</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-action="CustomerFaultReports" class="btn btn-outline-info w-100 d-flex align-items-center justify-content-center p-3">
+                            <i class="bi bi-clipboard-check fs-4 me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-semibold">Customer Reports</div>
+                                <small class="text-muted">View all customer submissions</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Recent Activities</h6>
+                    <small class="text-muted">Latest updates</small>
+                </div>
+                <div class="list-group list-group-flush">
+                    @if (Model.RecentActivities.Any())
+                    {
+                        foreach (var activity in Model.RecentActivities.Take(5))
+                        {
+                            <div class="list-group-item border-0 px-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="bi bi-activity text-success"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-semibold text-dark">@activity.Key</small>
+                                        <br>
+                                        <small class="text-muted">Fault #@activity.Value</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-activity text-muted fs-1"></i>
+                            <p class="text-muted mt-2 mb-0">No recent activities</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            }
+
+        .btn-outline-primary:hover,
+        .btn-outline-warning:hover,
+        .btn-outline-success:hover,
+        .btn-outline-info:hover {
+            transform: translateY(-1px);
+        }
+
+        .list-group-item {
+            transition: background-color 0.2s ease-in-out;
+        }
+
+            .list-group-item:hover {
+                background-color: #f8f9fa;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        const faultsData = @Html.Raw(JsonSerializer.Serialize(Model.FaultsByDate));
+        const faultTypeData = @Html.Raw(JsonSerializer.Serialize(Model.FaultTypeDistribution));
+        const repairStatusData = @Html.Raw(JsonSerializer.Serialize(Model.RepairStatusDistribution));
+
+        // Faults Over Time Chart
+        if (faultsData.length > 0) {
+            new Chart(document.getElementById('faultsChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: faultsData.map(v => {
+                        const date = new Date(v.Key);
+                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }),
+                    datasets: [{
+                        label: 'Faults Reported',
+                        data: faultsData.map(v => v.Value),
+                        fill: true,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('faultsChart').closest('.card').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-graph-up text-muted fs-1"></i>
+                    <p class="text-muted mt-2 mb-0">No fault data available for the selected period</p>
+                </div>
+            `;
+        }
+
+        // Fault Type Distribution Chart
+        if (faultTypeData.length > 0) {
+            new Chart(document.getElementById('faultTypeChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: faultTypeData.map(v => v.Key),
+                    datasets: [{
+                        data: faultTypeData.map(v => v.Value),
+                        backgroundColor: [
+                            '#007bff', '#28a745', '#ffc107', '#17a2b8',
+                            '#6f42c1', '#e83e8c', '#fd7e14', '#20c997'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        } else {
+            document.getElementById('faultTypeChart').closest('.card').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-pie-chart text-muted fs-1"></i>
+                    <p class="text-muted mt-2 mb-0">No fault type data available</p>
+                </div>
+            `;
+        }
+
+        // Repair Status Chart
+        if (repairStatusData.length > 0) {
+            new Chart(document.getElementById('repairStatusChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: repairStatusData.map(v => v.Key),
+                    datasets: [{
+                        label: 'Count',
+                        data: repairStatusData.map(v => v.Value),
+                        backgroundColor: '#6610f2',
+                        borderWidth: 0,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('repairStatusChart').closest('.card').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-clipboard-data text-muted fs-1"></i>
+                    <p class="text-muted mt-2 mb-0">No repair status data available</p>
+                </div>
+            `;
+        }
+    </script>
+}

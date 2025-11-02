@@ -9,52 +9,64 @@
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">My Fault Reports</h3>
-
-                    @if (ViewBag.HasActiveFridge)
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-list-check me-2"></i>My Fault Reports
+                    </h3>
+                    @if (ViewBag.CanCreateReport)
                     {
-                        <a asp-action="CustomerFaultReport"
-                           asp-route-visitId="@ViewBag.ActiveVisitId"
-                           class="btn btn-light btn-sm">
-                            Report Issue
+                        <a asp-action="CustomerFaultReport" class="btn btn-light btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>New Report
                         </a>
                     }
-                    else
-                    {
-                        <button class="btn btn-secondary btn-sm" disabled>No Active Fridge</button>
-                    }
                 </div>
-
                 <div class="card-body">
+
                     @if (!Model.Any())
                     {
                         <div class="text-center py-5">
-                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                            <h4 class="mt-3 text-muted">No Fault Reports</h4>
-                            <p class="text-muted">You haven’t submitted any fault reports yet.</p>
-
-                            @if (ViewBag.HasActiveFridge)
+                            @if (ViewBag.HasFailedVisits)
                             {
-                                <a asp-action="CustomerFaultReport"
-                                   asp-route-visitId="@ViewBag.ActiveVisitId"
-                                   class="btn btn-primary mt-3">
-                                    Report Your First Issue
+                                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                                <h4 class="mt-3 text-muted">No Fault Reports</h4>
+                                <p class="text-muted">You haven't submitted any fault reports yet.</p>
+                                <a asp-action="CustomerFaultReport" class="btn btn-primary mt-3">
+                                    <i class="bi bi-plus-circle me-1"></i>Submit Your First Report
                                 </a>
                             }
                             else
                             {
-                                <p class="text-muted mt-3"><small>You need an active fridge booking to report a fault.</small></p>
+                                <i class="bi bi-info-circle text-info" style="font-size: 3rem;"></i>
+                                <h4 class="mt-3 text-muted">No Failed Fridge Checkups</h4>
+                                <p class="text-muted">You can only report issues for fridges that failed their checkup.</p>
+                                <p class="text-muted">Visit your <a asp-controller="AllocatedFridges" asp-action="CustomerBookings" class="text-primary">Fridge Checkups</a> to see your fridge status.</p>
                             }
                         </div>
                     }
                     else
                     {
+                        <div class="alert alert-info d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>@Model.Count() fault report(s) found</strong>
+                                @if (ViewBag.CanCreateReport)
+                                {
+                                    <span class="ms-2">- You can submit <strong>@ViewBag.FailedVisitsCount</strong> more report(s)</span>
+                                }
+                            </div>
+                            @if (ViewBag.CanCreateReport)
+                            {
+                                <a asp-action="CustomerFaultReport" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-circle me-1"></i>New Report
+                                </a>
+                            }
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-striped">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Report Date</th>
-                                        <th>Fridge</th>
+                                        <th>Fridge Details</th>
                                         <th>Fault Type</th>
                                         <th>Description</th>
                                         <th>Status</th>
@@ -63,55 +75,136 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var r in Model)
+                                    @foreach (var report in Model)
                                     {
-                                        var fridge = r.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault();
-                                        var serial = fridge?.CustomerFridges?.FirstOrDefault()?.FridgeInStock?.FridgeNo;
-
                                         <tr>
-                                            <td>@r.ReportDate?.ToString("MMM dd, yyyy")</td>
+                                            <td>@report.ReportDate.ToString()</td>
                                             <td>
-                                                <strong>@fridge?.Fridge?.Model</strong><br>
-                                                <small class="text-muted">Serial: @serial</small>
+                                                @{
+                                                    var fridgeModel = report.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand ?? "Unknown Model";
+                                                    var fridgeNo = report.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.CustomerFridges?.FirstOrDefault()?.FridgeInStock?.FridgeNo ?? "Unknown";
+                                                }
+                                                <strong>@fridgeModel</strong><br>
+                                                <small class="text-muted">Serial: @fridgeNo</small>
                                             </td>
-                                            <td>@r.FaultType</td>
+                                            <td>@report.FaultType</td>
                                             <td>
-                                                <div class="text-truncate" style="max-width:200px;" title="@r.FaultDescription">
-                                                    @r.FaultDescription
+                                                <div class="text-truncate" style="max-width: 200px;" title="@report.FaultDescription">
+                                                    @report.FaultDescription
                                                 </div>
                                             </td>
                                             <td>
-                                                @if (string.IsNullOrEmpty(r.TechnicianAssigned))
+                                                @if (string.IsNullOrEmpty(report.TechnicianAssigned))
                                                 {
-                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                    <span class="badge bg-warning text-dark">Pending Review</span>
+                                                }
+                                                else if (report.RepairStatus == "In Progress")
+                                                {
+                                                    <span class="badge bg-info">In Progress</span>
+                                                }
+                                                else if (report.RepairStatus == "Completed")
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else if (report.RepairStatus == "Reported")
+                                                {
+                                                    <span class="badge bg-secondary">Reported</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-info">Assigned</span>
+                                                    <span class="badge bg-secondary">@report.RepairStatus</span>
                                                 }
                                             </td>
-                                            <td>@(string.IsNullOrEmpty(r.TechnicianAssigned) ? "—" : r.TechnicianAssigned)</td>
+                                            <td>
+                                                @if (string.IsNullOrEmpty(report.TechnicianAssigned))
+                                                {
+                                                    <span class="text-muted">Not Assigned</span>
+                                                }
+                                                else
+                                                {
+                                                    @report.TechnicianAssigned
+                                                }
+                                            </td>
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-outline-primary"
-                                                        data-bs-toggle="modal" data-bs-target="#modal@(r.FaultId)">
-                                                    View
+                                                        data-bs-toggle="modal" data-bs-target="#detailsModal@(report.FaultId)">
+                                                    <i class="bi bi-eye"></i> View
                                                 </button>
 
-                                                <!-- Modal (same as you already have) -->
-                                                <div class="modal fade" id="modal@(r.FaultId)" tabindex="-1">
+                                                <!-- Details Modal -->
+                                                <div class="modal fade" id="detailsModal@(report.FaultId)" tabindex="-1">
                                                     <div class="modal-dialog modal-lg">
                                                         <div class="modal-content">
                                                             <div class="modal-header bg-primary text-white">
-                                                                <h5 class="modal-title">Fault Details</h5>
+                                                                <h5 class="modal-title">Fault Report Details</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <p><strong>Date:</strong> @r.ReportDate?.ToString("MMM dd, yyyy")</p>
-                                                                <p><strong>Type:</strong> @r.FaultType</p>
-                                                                <p><strong>Description:</strong> @r.FaultDescription</p>
-                                                                @if (!string.IsNullOrEmpty(r.ResolutionNotes))
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <h6>Report Information</h6>
+                                                                        <p><strong>Report Date:</strong> @report.ReportDate.ToString()</p>
+                                                                        <p><strong>Fault Type:</strong> @report.FaultType</p>
+                                                                        <p>
+                                                                            <strong>Status:</strong>
+                                                                            @if (string.IsNullOrEmpty(report.TechnicianAssigned))
+                                                                            {
+                                                                                <span class="badge bg-warning text-dark">Pending Review</span>
+                                                                            }
+                                                                            else if (report.RepairStatus == "In Progress")
+                                                                            {
+                                                                                <span class="badge bg-info">In Progress</span>
+                                                                            }
+                                                                            else if (report.RepairStatus == "Completed")
+                                                                            {
+                                                                                <span class="badge bg-success">Completed</span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span class="badge bg-secondary">@report.RepairStatus</span>
+                                                                            }
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <h6>Fridge Information</h6>
+                                                                        @{
+                                                                            var modalFridgeModel = report.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand ?? "Unknown Model";
+                                                                            var modalFridgeNo = report.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.CustomerFridges?.FirstOrDefault()?.FridgeInStock?.FridgeNo ?? "Unknown";
+                                                                        }
+                                                                        <p><strong>Model:</strong> @modalFridgeModel</p>
+                                                                        <p><strong>Serial:</strong> @modalFridgeNo</p>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="mt-3">
+                                                                    <h6>Fault Description</h6>
+                                                                    <p>@report.FaultDescription</p>
+                                                                </div>
+
+                                                                @if (!string.IsNullOrEmpty(report.ResolutionNotes))
                                                                 {
-                                                                    <p><strong>Technician notes:</strong> @r.ResolutionNotes</p>
+                                                                    <div class="mt-3">
+                                                                        <h6>Technician Notes</h6>
+                                                                        <p>@report.ResolutionNotes</p>
+                                                                    </div>
+                                                                }
+
+                                                                
+
+                                                                @if (!string.IsNullOrEmpty(report.TechnicianAssigned))
+                                                                {
+                                                                    <div class="mt-3">
+                                                                        <h6>Technician Information</h6>
+                                                                        <p><strong>Assigned To:</strong> @report.TechnicianAssigned</p>
+                                                                        @if (report.Bookingate.HasValue)
+                                                                        {
+                                                                            <p><strong>Scheduled Visit:</strong> @report.Bookingate.Value.ToString("MMM dd, yyyy")</p>
+                                                                        }
+                                                                        @if (report.Completion.HasValue)
+                                                                        {
+                                                                            <p><strong>Completed On:</strong> @report.Completion.Value.ToString("MMM dd, yyyy")</p>
+                                                                        }
+                                                                    </div>
                                                                 }
                                                             </div>
                                                             <div class="modal-footer">
@@ -135,8 +228,49 @@
 
 @section Scripts {
     <script>
-        // Bootstrap tooltips (optional)
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+        // Tooltip initialization
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Auto-refresh functionality
+        function refreshFaultReports() {
+            fetch('@Url.Action("GetCustomerFaultReports", "FaultTechnician")')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching fault reports:', data.error);
+                        return;
+                    }
+
+                    // You can implement dynamic table update here if needed
+                    console.log('Fault reports updated:', data);
+                })
+                .catch(error => {
+                    console.error('Error refreshing fault reports:', error);
+                });
+        }
+
+        // Refresh every 30 seconds if needed
+        // setInterval(refreshFaultReports, 30000);
+
+        // Check for new failed visits
+        function checkForNewFailedVisits() {
+            fetch('@Url.Action("CheckForFailedVisits", "FaultTechnician")')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.hasFailedVisits && !document.querySelector('.btn[href*="CustomerFaultReport"]')) {
+                        // If new failed visits detected and no create button exists, reload page
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking for failed visits:', error);
+                });
+        }
+
+        // Check every 60 seconds for new failed visits
+        // setInterval(checkForNewFailedVisits, 60000);
     </script>
 }

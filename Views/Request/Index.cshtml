@@ -186,10 +186,12 @@
                                         <!-- Fault Report Button - CUSTOMER ONLY -->
                                         @if (isCustomer && item.Status == SD.Approved)
                                         {
-                                            <a asp-controller="FaultTechnician" asp-action="CustomerFaultReport"
-                                               asp-route-visitId="@item.RequestHeaderId"
+                                            <a asp-controller="FaultTechnician"
+                                               asp-action="CustomerFaultReport"
+                                               asp-route-requestHeaderId="@item.RequestHeaderId"
                                                class="btn btn-sm btn-outline-warning rounded-3 me-2 px-3"
-                                               data-bs-toggle="tooltip" data-bs-title="Report Equipment Issue">
+                                               data-bs-toggle="tooltip"
+                                               data-bs-title="Report Equipment Issue">
                                                 <i class="bi bi-exclamation-triangle me-1"></i> Report Issue
                                             </a>
                                         }
@@ -304,6 +306,7 @@
                         'Filter: ' + this.textContent;
                 });
             });
+
 
             // Initialize tooltips
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

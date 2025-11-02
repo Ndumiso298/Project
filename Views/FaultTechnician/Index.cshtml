@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<Project.Models.FridgeVisit>
-
+@using Project.Utility
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Fault Reports & Replacement Requests";
@@ -10,59 +10,101 @@
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Fault Reports & Replacement Requests
-                    </h3>
-                 
+                    <div>
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-exclamation-triangle me-2"></i>Fault Reports & Replacement Requests
+                        </h3>
+                        <p class="mb-0 opacity-75">Manage and track all fridge fault reports and replacement requests</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-transparent">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" id="faultSearch" class="form-control border-start-0" placeholder="Search faults...">
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <!-- Statistics Cards -->
-                    <div class="row mb-4">
-                        <div class="col-md-2 mb-3">
-                            <div class="card bg-primary text-white">
+                    <div class="row g-3 mb-4">
+                        @{
+                            var totalFaults = Model.Count();
+                            var pendingRepair = Model.Count(v => !v.FaultTechnicians.Any());
+                            var inProgress = Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "In Progress"));
+                            var resolved = Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "Resolved"));
+                            var scrapped = Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "Scrapped"));
+                            var pendingReplacements = ViewBag.PendingReplacements ?? 0;
+                        }
+
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="card border-0 bg-primary bg-opacity-10">
                                 <div class="card-body text-center p-3">
-                                    <h4 class="mb-0">@Model.Count()</h4>
-                                    <small>Total Faults</small>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <i class="bi bi-exclamation-triangle fs-2 text-primary"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-1">@totalFaults</h3>
+                                    <small class="text-muted">Total Faults</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 mb-3">
-                            <div class="card bg-warning text-dark">
+
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="card border-0 bg-warning bg-opacity-10">
                                 <div class="card-body text-center p-3">
-                                    <h4 class="mb-0">@Model.Count(v => !v.FaultTechnicians.Any())</h4>
-                                    <small>Pending Repair</small>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <i class="bi bi-clock-history fs-2 text-warning"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-1">@pendingRepair</h3>
+                                    <small class="text-muted">Pending Repair</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 mb-3">
-                            <div class="card bg-info text-white">
+
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="card border-0 bg-info bg-opacity-10">
                                 <div class="card-body text-center p-3">
-                                    <h4 class="mb-0">@Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "In Progress"))</h4>
-                                    <small>In Progress</small>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <i class="bi bi-gear fs-2 text-info"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-1">@inProgress</h3>
+                                    <small class="text-muted">In Progress</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 mb-3">
-                            <div class="card bg-success text-white">
+
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="card border-0 bg-success bg-opacity-10">
                                 <div class="card-body text-center p-3">
-                                    <h4 class="mb-0">@Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "Resolved"))</h4>
-                                    <small>Resolved</small>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <i class="bi bi-check-circle fs-2 text-success"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-1">@resolved</h3>
+                                    <small class="text-muted">Resolved</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 mb-3">
-                            <div class="card bg-secondary text-white">
+
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="card border-0 bg-secondary bg-opacity-10">
                                 <div class="card-body text-center p-3">
-                                    <h4 class="mb-0">@Model.Count(v => v.FaultTechnicians.Any(ft => ft.RepairStatus == "Scrapped"))</h4>
-                                    <small>Scrapped</small>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <i class="bi bi-trash fs-2 text-secondary"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-1">@scrapped</h3>
+                                    <small class="text-muted">Scrapped</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 mb-3">
-                            <div class="card bg-danger text-white">
+
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="card border-0 bg-danger bg-opacity-10">
                                 <div class="card-body text-center p-3">
-                                    <h4 class="mb-0">@ViewBag.PendingReplacements</h4>
-                                    <small>Replacements</small>
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <i class="bi bi-arrow-repeat fs-2 text-danger"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-1">@pendingReplacements</h3>
+                                    <small class="text-muted">Replacements</small>
                                 </div>
                             </div>
                         </div>
@@ -70,40 +112,49 @@
 
                     <!-- Faults Table -->
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped" id="faultsTable">
-                            <thead class="table-dark">
+                        <table class="table table-hover align-middle mb-0" id="faultsTable">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Visit ID</th>
-                                    <th>Customer</th>
-                                    <th>Fridge Details</th>
-                                    <th>Visit Date</th>
-                                    <th>Repair Status</th>
-                                    <th>Technician</th>
-                                    <th>Replacement Status</th>
-                                    <th>Actions</th>
+                                    <th class="ps-4 fw-semibold text-muted small text-uppercase">Visit Details</th>
+                                    <th class="fw-semibold text-muted small text-uppercase">Customer</th>
+                                    <th class="fw-semibold text-muted small text-uppercase">Fridge Details</th>
+                                    <th class="fw-semibold text-muted small text-uppercase">Visit Date</th>
+                                    <th class="fw-semibold text-muted small text-uppercase">Repair Status</th>
+                                    <th class="fw-semibold text-muted small text-uppercase">Technician</th>
+                                    <th class="fw-semibold text-muted small text-uppercase">Replacement</th>
+                                    <th class="text-end pe-4 fw-semibold text-muted small text-uppercase">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model)
+                                @foreach (var item in Model.OrderByDescending(v => v.VisitDate))
                                 {
                                     var latestRepair = item.FaultTechnicians.OrderByDescending(ft => ft.Bookingate).FirstOrDefault();
                                     var replacementRequest = ViewData[$"Replacement_{item.VisitId}"] as Project.Models.FridgeReplacement;
+                                    var fridge = item.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge;
+                                    var customerFridge = item.RequestHeader?.RequestFridges?.FirstOrDefault()?.CustomerFridges?.FirstOrDefault();
 
-                                    <tr>
-                                        <td>@item.VisitId</td>
-                                        <td>
-                                            <strong>@item.RequestHeader?.FirstName @item.RequestHeader?.LastName</strong><br>
-                                            <small class="text-muted">@item.RequestHeader?.CellNumber</small>
+                                    <tr class="fault-row" data-visit-id="@item.VisitId">
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded-2 p-2 me-3">
+                                                    <i class="bi bi-tools text-primary fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="fw-bold text-dark mb-0">Visit #@item.VisitId</h6>
+                                                    <small class="text-muted">Fault Report</small>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
-                                            @{
-                                                var fridge = item.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge;
-                                                var customerFridge = item.RequestHeader?.RequestFridges?.FirstOrDefault()?.CustomerFridges?.FirstOrDefault();
-                                            }
+                                            <div>
+                                                <h6 class="fw-semibold mb-0">@item.RequestHeader?.FirstName @item.RequestHeader?.LastName</h6>
+                                                <small class="text-muted">@item.RequestHeader?.CellNumber</small>
+                                            </div>
+                                        </td>
+                                        <td>
                                             @if (fridge != null)
                                             {
-                                                <strong>@fridge.Model</strong>
-                                                <br>
+                                                <h6 class="fw-semibold mb-0">@fridge.Model</h6>
                                                 <small class="text-muted">Serial: @(customerFridge?.FridgeInStock?.FridgeNo ?? "N/A")</small>
                                             }
                                             else
@@ -111,11 +162,16 @@
                                                 <span class="text-muted">N/A</span>
                                             }
                                         </td>
-                                        <td>@item.VisitDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-semibold text-dark">@item.VisitDate.ToString("MMM dd, yyyy")</span>
+                                                <small class="text-muted">@item.VisitDate.ToString("hh:mm tt")</small>
+                                            </div>
+                                        </td>
                                         <td>
                                             @if (latestRepair != null)
                                             {
-                                                <span class="badge badge-@GetRepairStatusBadge(latestRepair.RepairStatus)">
+                                                <span class="badge @GetRepairStatusBadgeClass(latestRepair.RepairStatus) rounded-pill">
                                                     @latestRepair.RepairStatus
                                                 </span>
                                                 <br>
@@ -123,13 +179,18 @@
                                             }
                                             else
                                             {
-                                                <span class="badge badge-secondary">Not Assigned</span>
+                                                <span class="badge bg-light text-dark rounded-pill">Not Assigned</span>
                                             }
                                         </td>
                                         <td>
                                             @if (latestRepair != null && !string.IsNullOrEmpty(latestRepair.TechnicianAssigned))
                                             {
-                                                @latestRepair.TechnicianAssigned
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 rounded-circle p-1 me-2">
+                                                        <i class="bi bi-person-gear text-primary small"></i>
+                                                    </div>
+                                                    <span>@latestRepair.TechnicianAssigned</span>
+                                                </div>
                                             }
                                             else
                                             {
@@ -139,7 +200,7 @@
                                         <td>
                                             @if (replacementRequest != null)
                                             {
-                                                <span class="badge badge-@GetReplacementStatusBadge(replacementRequest.ReplacementStatus)">
+                                                <span class="badge @GetReplacementStatusBadgeClass(replacementRequest.ReplacementStatus) rounded-pill">
                                                     @replacementRequest.ReplacementStatus
                                                 </span>
                                                 <br>
@@ -147,24 +208,26 @@
                                             }
                                             else
                                             {
-                                                <span class="badge badge-light">No Request</span>
+                                                <span class="badge bg-light text-dark rounded-pill">No Request</span>
                                             }
                                         </td>
-                                        <td>
+                                        <td class="text-end pe-4">
                                             <div class="btn-group" role="group">
                                                 <!-- Repair Actions -->
                                                 @if (latestRepair == null)
                                                 {
                                                     <a asp-action="BookFaultVisit" asp-route-RequestedFaultId="@item.VisitId"
-                                                       class="btn btn-primary btn-sm" title="Assign Technician">
-                                                        <i class="bi bi-person-plus"></i>
+                                                       class="btn btn-sm btn-outline-primary rounded-3 me-2 px-3"
+                                                       data-bs-toggle="tooltip" data-bs-title="Assign Technician">
+                                                        <i class="bi bi-person-plus me-1"></i> Assign
                                                     </a>
                                                 }
                                                 else
                                                 {
                                                     <a asp-action="BookFaultVisit" asp-route-RequestedFaultId="@item.VisitId" asp-route-visitId="@latestRepair.FaultId"
-                                                       class="btn btn-warning btn-sm" title="Update Repair">
-                                                        <i class="bi bi-pencil"></i>
+                                                       class="btn btn-sm btn-outline-warning rounded-3 me-2 px-3"
+                                                       data-bs-toggle="tooltip" data-bs-title="Update Repair">
+                                                        <i class="bi bi-pencil me-1"></i> Update
                                                     </a>
                                                 }
 
@@ -172,164 +235,336 @@
                                                 @if (replacementRequest == null && (latestRepair == null || latestRepair.RepairStatus == "Scrapped" || latestRepair.RepairStatus == "Beyond Repair"))
                                                 {
                                                     <a asp-action="RequestReplacement" asp-controller="Replacement" asp-route-visitId="@item.VisitId"
-                                                      
-                                                       class="btn btn-danger btn-sm" title="Request Replacement">
-                                                        <i class="bi bi-arrow-repeat"></i>
+                                                       class="btn btn-sm btn-outline-danger rounded-3 me-2 px-3"
+                                                       data-bs-toggle="tooltip" data-bs-title="Request Replacement">
+                                                        <i class="bi bi-arrow-repeat me-1"></i> Replace
                                                     </a>
                                                 }
                                                 else if (replacementRequest != null)
                                                 {
                                                     <a asp-action="ReplacementDetails" asp-route-id="@replacementRequest.FridgeReplacementId"
-                                                       class="btn btn-info btn-sm" title="View Replacement Details">
-                                                        <i class="bi bi-eye"></i>
+                                                       class="btn btn-sm btn-outline-info rounded-3 me-2 px-3"
+                                                       data-bs-toggle="tooltip" data-bs-title="View Replacement Details">
+                                                        <i class="bi bi-eye me-1"></i> View
                                                     </a>
                                                 }
 
-                                                <!-- View Details -->
-                                                <button type="button" class="btn btn-secondary btn-sm"
-                                                        data-bs-toggle="modal" data-bs-target="#detailsModal@(item.VisitId)"
-                                                        title="View Details">
-                                                    <i class="bi bi-info-circle"></i>
+                                                <!-- View Details Button -->
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 px-3 details-btn"
+                                                        data-visit-id="@item.VisitId"
+                                                        data-bs-toggle="tooltip" data-bs-title="View Details">
+                                                    <i class="bi bi-info-circle me-1"></i> Details
                                                 </button>
-                                            </div>
-
-                                            <!-- Details Modal -->
-                                            <div class="modal fade" id="detailsModal@(item.VisitId)" tabindex="-1">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header bg-primary text-white">
-                                                            <h5 class="modal-title">Fault Details - Visit #@item.VisitId</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <h6>Customer Information</h6>
-                                                                    <p><strong>Name:</strong> @item.RequestHeader?.FirstName @item.RequestHeader?.LastName</p>
-                                                                    <p><strong>Phone:</strong> @item.RequestHeader?.CellNumber</p>
-                                                                    <p><strong>Email:</strong> @item.RequestHeader?.Customer.ApplicationUser.Email</p>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <h6>Fridge Information</h6>
-                                                                    @if (fridge != null)
-                                                                    {
-                                                                        <p><strong>Model:</strong> @fridge.Model</p>
-                                                                        <p><strong>Serial:</strong> @(customerFridge?.FridgeInStock?.FridgeNo ?? "N/A")</p>
-                                                                        <p><strong>Visit Date:</strong> @item.VisitDate.ToString("MMM dd, yyyy")</p>
-                                                                    }
-                                                                </div>
-                                                            </div>
-
-                                                            @if (latestRepair != null)
-                                                            {
-                                                                <hr>
-                                                                <h6>Repair Information</h6>
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        <p><strong>Technician:</strong> @(latestRepair.TechnicianAssigned ?? "Not Assigned")</p>
-                                                                        <p><strong>Status:</strong> <span class="badge badge-@GetRepairStatusBadge(latestRepair.RepairStatus)">@latestRepair.RepairStatus</span></p>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <p><strong>Booking Date:</strong> @(latestRepair.Bookingate?.ToString("MMM dd, yyyy") ?? "N/A")</p>
-                                                                        <p><strong>Notes:</strong> @(latestRepair.ResolutionNotes ?? "No notes")</p>
-                                                                    </div>
-                                                                </div>
-                                                            }
-
-                                                            @if (replacementRequest != null)
-                                                            {
-                                                                <hr>
-                                                                <h6>Replacement Request</h6>
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        <p><strong>Status:</strong> <span class="badge badge-@GetReplacementStatusBadge(replacementRequest.ReplacementStatus)">@replacementRequest.ReplacementStatus</span></p>
-                                                                        <p><strong>Reason:</strong> @replacementRequest.ReasonForReplacement</p>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <p><strong>Request Date:</strong> @replacementRequest.RequestDate.ToString("MMM dd, yyyy")</p>
-                                                                        <p><strong>Old Fridge:</strong> @replacementRequest.OldFridgeNo</p>
-                                                                    </div>
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
-                    </div>
 
-                    @if (!Model.Any())
-                    {
-                        <div class="text-center py-5">
-                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                            <h4 class="mt-3 text-muted">No Faults Found</h4>
-                            <p class="text-muted">There are currently no fridge faults reported.</p>
-                        </div>
-                    }
+                        @if (!Model.Any())
+                        {
+                            <div class="text-center py-5">
+                                <i class="bi bi-check-circle display-1 text-muted opacity-50"></i>
+                                <h4 class="mt-4 text-muted fw-semibold">No Fault Reports Found</h4>
+                                <p class="text-muted mb-4">Fault reports will appear here once customers report issues with their fridges.</p>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Single Dynamic Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="detailsModalLabel">
+                    <i class="bi bi-info-circle me-2"></i>Fault Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem 0.75rem;
+        }
+
+        .fault-row:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+            .btn:hover {
+                transform: translateY(-1px);
+            }
+
+        .modal-content {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+    </style>
+}
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('#faultsTable').DataTable({
-                "pageLength": 10,
-                "order": [[0, 'desc']],
-                "language": {
-                    "search": "Search faults:",
-                    "lengthMenu": "Show _MENU_ entries",
-                    "info": "Showing _START_ to _END_ of _TOTAL_ faults"
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('faultSearch');
+            const faultRows = document.querySelectorAll('.fault-row');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+
+                    faultRows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Modal functionality - FIXED VERSION
+            const detailsModal = document.getElementById('detailsModal');
+            const modalBody = document.getElementById('modalBody');
+            const modalTitle = document.getElementById('detailsModalLabel');
+            let modalInstance = null;
+
+            // Initialize Bootstrap modal
+            if (detailsModal) {
+                modalInstance = new bootstrap.Modal(detailsModal);
+            }
+
+            // Add click event to all details buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.details-btn')) {
+                    const button = e.target.closest('.details-btn');
+                    const visitId = button.getAttribute('data-visit-id');
+                    showModalContent(visitId);
                 }
             });
 
-            // Auto-refresh every 30 seconds to get updated status
-            setInterval(function () {
+            function showModalContent(visitId) {
+                if (!modalInstance) return;
+
+                // Show loading state
+                modalBody.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading details...</p>
+                    </div>
+                `;
+
+                // Set modal title
+                modalTitle.textContent = `Fault Details - Visit #${visitId}`;
+
+                // Show modal
+                modalInstance.show();
+
+                // Find the row with matching visit ID
+                const row = document.querySelector(`.fault-row[data-visit-id="${visitId}"]`);
+
+                if (row) {
+                    // Extract data from the row cells
+                    const customerName = row.querySelector('td:nth-child(2) h6')?.textContent?.trim() || 'N/A';
+                    const customerPhone = row.querySelector('td:nth-child(2) small')?.textContent?.trim() || 'N/A';
+                    const fridgeModel = row.querySelector('td:nth-child(3) h6')?.textContent?.trim() || 'N/A';
+                    const fridgeSerialElement = row.querySelector('td:nth-child(3) small');
+                    const fridgeSerial = fridgeSerialElement ? fridgeSerialElement.textContent.replace('Serial: ', '').trim() : 'N/A';
+                    const visitDate = row.querySelector('td:nth-child(4) span')?.textContent?.trim() || 'N/A';
+                    const repairStatusElement = row.querySelector('td:nth-child(5) .badge');
+                    const repairStatus = repairStatusElement ? repairStatusElement.textContent.trim() : 'Not Assigned';
+                    const technicianElement = row.querySelector('td:nth-child(6) span');
+                    const technician = technicianElement ? technicianElement.textContent.trim() : 'Not Assigned';
+
+                    // Populate modal content immediately (no setTimeout needed)
+                    modalBody.innerHTML = createModalContent({
+                        visitId,
+                        customerName,
+                        customerPhone,
+                        fridgeModel,
+                        fridgeSerial,
+                        visitDate,
+                        repairStatus,
+                        technician
+                    });
+                } else {
+                    modalBody.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="bi bi-exclamation-triangle text-warning fs-1"></i>
+                            <p class="mt-2 text-muted">Unable to load details for this fault report.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            function createModalContent(data) {
+                const statusBadgeClass = getRepairStatusBadgeClass(data.repairStatus);
+
+                return `
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="fw-bold text-primary mb-3">
+                                        <i class="bi bi-person me-2"></i>Customer Information
+                                    </h6>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Name</small>
+                                        <p class="fw-semibold mb-0">${data.customerName}</p>
+                                    </div>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Phone</small>
+                                        <p class="fw-semibold mb-0">${data.customerPhone}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="fw-bold text-primary mb-3">
+                                        <i class="bi bi-refrigerator me-2"></i>Fridge Information
+                                    </h6>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Model</small>
+                                        <p class="fw-semibold mb-0">${data.fridgeModel}</p>
+                                    </div>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Serial Number</small>
+                                        <p class="fw-semibold mb-0">${data.fridgeSerial}</p>
+                                    </div>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Visit Date</small>
+                                        <p class="fw-semibold mb-0">${data.visitDate}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="fw-bold text-primary mb-3">
+                                        <i class="bi bi-tools me-2"></i>Repair Information
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Technician</small>
+                                                <p class="fw-semibold mb-0">${data.technician}</p>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Status</small>
+                                                <p class="mb-0">
+                                                    <span class="badge ${statusBadgeClass} rounded-pill">
+                                                        ${data.repairStatus}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Visit ID</small>
+                                                <p class="fw-semibold mb-0">${data.visitId}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function getRepairStatusBadgeClass(status) {
+                const statusLower = status.toLowerCase();
+                if (statusLower.includes('resolved')) return 'bg-success';
+                if (statusLower.includes('progress')) return 'bg-warning';
+                if (statusLower.includes('scrapped')) return 'bg-secondary';
+                if (statusLower.includes('not started')) return 'bg-info';
+                if (statusLower.includes('beyond repair')) return 'bg-danger';
+                return 'bg-light text-dark';
+            }
+
+            // Auto-refresh every 30 seconds
+            setInterval(function() {
                 location.reload();
             }, 30000);
-        });
-
-        // Tooltip initialization
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     </script>
 }
 
 @functions {
-    public string GetRepairStatusBadge(string status)
+    public string GetRepairStatusBadgeClass(string status)
     {
         return status?.ToLower() switch
         {
-            "resolved" => "success",
-            "in progress" => "warning",
-            "scrapped" => "secondary",
-            "not started" => "info",
-            _ => "danger"
+            "resolved" => "bg-success",
+            "in progress" => "bg-warning",
+            "scrapped" => "bg-secondary",
+            "not started" => "bg-info",
+            "beyond repair" => "bg-danger",
+            _ => "bg-light text-dark"
         };
     }
 
-    public string GetReplacementStatusBadge(string status)
+    public string GetReplacementStatusBadgeClass(string status)
     {
         return status?.ToLower() switch
         {
-            "approved" => "success",
-            "pending" => "warning",
-            "completed" => "info",
-            "rejected" => "danger",
-            _ => "secondary"
+            "approved" => "bg-success",
+            "pending" => "bg-warning",
+            "completed" => "bg-info",
+            "rejected" => "bg-danger",
+            _ => "bg-light text-dark"
         };
     }
 }

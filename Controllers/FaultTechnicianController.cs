@@ -5,6 +5,7 @@ using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
 using Project.Utility;
+using Project.ViewModel;
 using System.Security.Claims;
 
 namespace Project.Controllers
@@ -18,72 +19,101 @@ namespace Project.Controllers
         // ===================================================================
         // 1. TECHNICIAN DASHBOARD
         // ===================================================================
+        [HttpGet]
         public IActionResult Dashboard()
         {
             try
             {
-                var totalFaults = _db.tblFridgeVisits
-                    .Count(v => v.CheckupStatus.ToLower() == "failed");
+                var totalFaults = _db.tblFaultTechnicians.Count();
+                var pendingFaults = _db.tblFaultTechnicians.Count(ft => ft.TechnicianAssigned == null);
+                var inProgressFaults = _db.tblFaultTechnicians.Count(ft => ft.RepairStatus == "In Progress");
+                var completedFaults = _db.tblFaultTechnicians.Count(ft => ft.RepairStatus == "Completed");
 
-                var pendingFaults = _db.tblFridgeVisits
-                    .Count(v => v.CheckupStatus.ToLower() == "failed" && !v.FaultTechnicians.Any());
+                var today = DateTime.Today;
+                var todaysBookings = _db.tblFaultTechnicians.Count(ft => ft.Bookingate.HasValue && ft.Bookingate.Value.Date == today);
 
-                var inProgress = _db.tblFaultTechnicians
-                    .Count(ft => ft.RepairStatus == "In Progress");
-
-                var completed = _db.tblFaultTechnicians
-                    .Count(ft => ft.RepairStatus == "Completed");
-
-                var todaysBookings = _db.tblFaultTechnicians
-                    .Count(ft => ft.Bookingate.HasValue && ft.Bookingate.Value.Date == DateTime.Today);
-
-                var upcomingBookings = _db.tblFaultTechnicians
-                    .Count(ft => ft.Bookingate.HasValue && ft.Bookingate.Value.Date > DateTime.Today);
-
-                // ----- FIXED: Pull data first, then use ?. in memory -----
-                var recentActivities = _db.tblFaultTechnicians
-                    .Include(ft => ft.FridgeVisit)
-                        .ThenInclude(fv => fv.RequestHeader)
-                            .ThenInclude(rh => rh.RequestFridges)
-                                .ThenInclude(rf => rf.Fridge)
-                    .OrderByDescending(ft => ft.Bookingate)
-                    .Take(5)
-                    .Select(ft => new
-                    {
-                        ft.RepairStatus,
-                        ft.Bookingate,
-                        RequestFridge = ft.FridgeVisit.RequestHeader.RequestFridges.FirstOrDefault(),
-                        CustomerName = $"{ft.FridgeVisit.RequestHeader.FirstName} {ft.FridgeVisit.RequestHeader.LastName}"
-                    })
-                    .AsEnumerable()                     // <-- Switch to in-memory
-                    .Select(x => new
-                    {
-                        Type = x.RepairStatus == "Completed" ? "Repair completed" :
-                               x.RepairStatus == "In Progress" ? "Repair started" : "New repair assigned",
-                        FridgeModel = x.RequestFridge?.Fridge?.Brand ?? "Unknown",
-                        x.CustomerName,
-                        TimeAgo = x.Bookingate
-                    })
+                // Faults by date for chart (last 30 days)
+                var faultsByDate = _db.tblFaultTechnicians
+                    .Where(ft => ft.ReportDate >= DateTime.Today.AddDays(-30))
+                    .AsEnumerable()
+                    .GroupBy(ft => ft.ReportDate?.Date)
+                    .Select(g => new KeyValuePair<string, int>(g.Key.ToString(), g.Count()))
+                    .OrderBy(x => x.Key)
                     .ToList();
 
-                // ----- ViewBag assignments -----
-                ViewBag.TotalFaults = totalFaults;
-                ViewBag.PendingFaults = pendingFaults;
-                ViewBag.InProgress = inProgress;
-                ViewBag.Completed = completed;
-                ViewBag.TodaysBookings = todaysBookings;
-                ViewBag.UpcomingBookings = upcomingBookings;
-                ViewBag.RecentActivities = recentActivities;
+                // Fault type distribution
+                var faultTypeDistribution = _db.tblFaultTechnicians
+                    .Where(ft => !string.IsNullOrEmpty(ft.FaultType))
+                    .AsEnumerable()
+                    .GroupBy(ft => ft.FaultType)
+                    .Select(g => new KeyValuePair<string, int>(g.Key ?? "Unknown", g.Count()))
+                    .ToList();
 
-                return View();
+                // Repair status distribution
+                var repairStatusDistribution = _db.tblFaultTechnicians
+                    .Where(ft => !string.IsNullOrEmpty(ft.RepairStatus))
+                    .AsEnumerable()
+                    .GroupBy(ft => ft.RepairStatus)
+                    .Select(g => new KeyValuePair<string, int>(g.Key ?? "Unknown", g.Count()))
+                    .ToList();
+
+                // Top technicians by assigned faults
+                var topTechnicians = _db.tblFaultTechnicians
+                    .Where(ft => !string.IsNullOrEmpty(ft.TechnicianAssigned))
+                    .AsEnumerable()
+                    .GroupBy(ft => ft.TechnicianAssigned)
+                    .Select(g => new KeyValuePair<string, int>(g.Key ?? "Unknown", g.Count()))
+                    .OrderByDescending(x => x.Value)
+                    .Take(10)
+                    .ToList();
+
+                // Recent activities (last 10 activities)
+                var recentActivities = _db.tblFaultTechnicians
+                    .Include(ft => ft.FridgeVisit)
+                    .ThenInclude(fv => fv.RequestHeader)
+                    .OrderByDescending(ft => ft.ReportDate)
+                    .Take(10)
+                    .AsEnumerable()
+                    .Select(ft => new KeyValuePair<string, int>(
+                        $"{ft.FaultType} - {(ft.FridgeVisit?.RequestHeader?.Customer?.ApplicationUser?.FirstName ?? "Unknown")}",
+                        ft.FaultId
+                    ))
+                    .ToList();
+
+                var vm = new FaultTechnicianDashboardViewModel
+                {
+                    TotalFaults = totalFaults,
+                    PendingAssignment = pendingFaults,
+                    InProgress = inProgressFaults,
+                    Completed = completedFaults,
+                    TodaysBookings = todaysBookings,
+                    FaultsByDate = faultsByDate,
+                    FaultTypeDistribution = faultTypeDistribution,
+                    RepairStatusDistribution = repairStatusDistribution,
+                    TopTechnicians = topTechnicians,
+                    RecentActivities = recentActivities
+                };
+
+                return View(vm);
             }
-            catch
+            catch (Exception ex)
             {
-                // Graceful fallback
-                ViewBag.TotalFaults = ViewBag.PendingFaults = ViewBag.InProgress = ViewBag.Completed = 0;
-                ViewBag.TodaysBookings = ViewBag.UpcomingBookings = 0;
-                ViewBag.RecentActivities = new List<dynamic>();
-                return View();
+                // Log the exception
+                var vm = new FaultTechnicianDashboardViewModel
+                {
+                    TotalFaults = 0,
+                    PendingAssignment = 0,
+                    InProgress = 0,
+                    Completed = 0,
+                    TodaysBookings = 0,
+                    FaultsByDate = new List<KeyValuePair<string, int>>(),
+                    FaultTypeDistribution = new List<KeyValuePair<string, int>>(),
+                    RepairStatusDistribution = new List<KeyValuePair<string, int>>(),
+                    TopTechnicians = new List<KeyValuePair<string, int>>(),
+                    RecentActivities = new List<KeyValuePair<string, int>>()
+                };
+
+                return View(vm);
             }
         }
 
@@ -121,7 +151,7 @@ namespace Project.Controllers
                     .ThenInclude(u => u.RequestFridges)
                         .ThenInclude(u => u.CustomerFridges)
                             .ThenInclude(u => u.FridgeInStock)
-                .Where(u => u.CheckupStatus.ToLower() == "failed")
+                .Where(u => u.CheckupStatus != null && u.CheckupStatus.ToLower() == "failed")
                 .OrderByDescending(u => u.VisitDate)
                 .ToList();
 
@@ -201,61 +231,71 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 5. CUSTOMER: REPORT FAULT (FORM)
+        // 5. CUSTOMER: REPORT FAULT (FORM) - FIXED
         // ===================================================================
         [HttpGet]
-        public IActionResult CustomerFaultReport(int visitId)
+        public IActionResult CustomerFaultReport([FromQuery] int? requestHeaderId)
         {
             var customerId = GetCurrentCustomerId();
-            if (customerId == 0) return RedirectToAction("Login", "Account");
-
-            if (visitId <= 0)
+            if (customerId == 0)
             {
-                TempData[SD.Error] = "Please select a fridge to report a fault.";
-                return RedirectToAction(nameof(CustomerFaultReports));
+                TempData[SD.Error] = "Please log in to report faults";
+                return RedirectToAction("Login", "Account");
             }
 
-            var visit = _db.tblFridgeVisits
-                .Include(v => v.RequestHeader)
-                    .ThenInclude(rh => rh.Customer.ApplicationUser)
-                .Include(v => v.RequestHeader)
-                    .ThenInclude(rh => rh.RequestFridges)
-                        .ThenInclude(rf => rf.Fridge)
-                .Include(v => v.RequestHeader)
-                    .ThenInclude(rh => rh.RequestFridges)
-                        .ThenInclude(rf => rf.CustomerFridges)
-                            .ThenInclude(cf => cf.FridgeInStock)
-                .FirstOrDefault(v => v.VisitId == visitId && v.RequestHeader.CustomerID == customerId);
-
-            if (visit == null)
+            if (!requestHeaderId.HasValue)
             {
-                TempData[SD.Error] = "Fridge not found or not assigned to you.";
-                return RedirectToAction(nameof(CustomerFaultReports));
+                TempData[SD.Error] = "Invalid request";
+                return RedirectToAction("Index", "Request");
             }
 
-            var customerFridge = visit.RequestHeader.RequestFridges
+            // PROPERLY INCLUDE CustomerFridges
+            var requestHeader = _db.tblRequestHeaders
+                .Include(rh => rh.Customer).ThenInclude(c => c.ApplicationUser)
+                .Include(rh => rh.RequestFridges)
+                    .ThenInclude(rf => rf.Fridge)
+                .Include(rh => rh.RequestFridges)
+                    .ThenInclude(rf => rf.CustomerFridges)
+                        .ThenInclude(cf => cf.FridgeInStock)
+                .FirstOrDefault(rh => rh.RequestHeaderId == requestHeaderId.Value &&
+                                      rh.CustomerID == customerId &&
+                                      rh.Status == SD.Approved);
+
+            if (requestHeader == null)
+            {
+                TempData[SD.Error] = "Approved request not found or not assigned to you.";
+                return RedirectToAction("Index", "Request");
+            }
+
+            var allocatedFridge = requestHeader.RequestFridges
                 .SelectMany(rf => rf.CustomerFridges)
                 .FirstOrDefault();
 
+            if (allocatedFridge == null)
+            {
+                TempData[SD.Error] = "No fridge has been allocated yet. Please wait for delivery.";
+                return RedirectToAction("Index", "Request");
+            }
+
             var vm = new CustomerFaultReportViewModel
             {
-                VisitId = visitId,
+                RequestHeaderId = requestHeaderId.Value,
                 CustomerID = customerId,
-                CustomerName = $"{visit.RequestHeader.Customer.ApplicationUser?.FirstName} {visit.RequestHeader.Customer.ApplicationUser?.LastName}",
-                FridgeNo = customerFridge?.FridgeInStock?.FridgeNo ?? "N/A",
-                FridgeModel = visit.RequestHeader.RequestFridges.FirstOrDefault()?.Fridge?.Model ?? "Unknown",
+                CustomerName = $"{requestHeader.Customer?.ApplicationUser?.FirstName} {requestHeader.Customer?.ApplicationUser?.LastName}",
+                FridgeNo = allocatedFridge.FridgeInStock?.FridgeNo ?? "N/A",
+                FridgeModel = requestHeader.RequestFridges.FirstOrDefault()?.Fridge?.Model ?? "Unknown",
                 ReportDate = DateTime.Now
             };
 
             ViewBag.FaultTypes = new List<SelectListItem>
             {
                 new() { Text = "-- Select Fault Type --", Value = "" },
-                new() { Text = "Not Cooling",       Value = "Not Cooling" },
-                new() { Text = "Strange Noises",    Value = "Strange Noises" },
-                new() { Text = "Water Leakage",     Value = "Water Leakage" },
+                new() { Text = "Not Cooling", Value = "Not Cooling" },
+                new() { Text = "Strange Noises", Value = "Strange Noises" },
+                new() { Text = "Water Leakage", Value = "Water Leakage" },
                 new() { Text = "Electrical Issues", Value = "Electrical Issues" },
-                new() { Text = "Door Problems",     Value = "Door Problems" },
-                new() { Text = "Other",             Value = "Other" }
+                new() { Text = "Door Problems", Value = "Door Problems" },
+                new() { Text = "Other", Value = "Other" }
             };
 
             return View(vm);
@@ -269,36 +309,54 @@ namespace Project.Controllers
                 ViewBag.FaultTypes = new List<SelectListItem>
                 {
                     new() { Text = "-- Select Fault Type --", Value = "" },
-                    new() { Text = "Not Cooling",       Value = "Not Cooling" },
-                    new() { Text = "Strange Noises",    Value = "Strange Noises" },
-                    new() { Text = "Water Leakage",     Value = "Water Leakage" },
+                    new() { Text = "Not Cooling", Value = "Not Cooling" },
+                    new() { Text = "Strange Noises", Value = "Strange Noises" },
+                    new() { Text = "Water Leakage", Value = "Water Leakage" },
                     new() { Text = "Electrical Issues", Value = "Electrical Issues" },
-                    new() { Text = "Door Problems",     Value = "Door Problems" },
-                    new() { Text = "Other",             Value = "Other" }
+                    new() { Text = "Door Problems", Value = "Door Problems" },
+                    new() { Text = "Other", Value = "Other" }
                 };
                 return View(vm);
             }
 
             var customerId = GetCurrentCustomerId();
-            var visit = _db.tblFridgeVisits
-                .Include(v => v.RequestHeader)
-                .FirstOrDefault(v => v.VisitId == vm.VisitId && v.RequestHeader.CustomerID == customerId);
+            var requestHeader = _db.tblRequestHeaders
+                .FirstOrDefault(rh => rh.RequestHeaderId == vm.RequestHeaderId &&
+                                     rh.CustomerID == customerId &&
+                                     rh.Status == SD.Approved);
 
-            if (visit == null)
+            if (requestHeader == null)
             {
-                TempData[SD.Error] = "Invalid visit.";
+                TempData[SD.Error] = "Request not found or not approved";
+                return RedirectToAction("Index", "Request");
+            }
+
+            var existingReport = _db.tblFaultTechnicians
+                .Include(ft => ft.FridgeVisit)
+                .FirstOrDefault(ft => ft.FridgeVisit != null &&
+                                     ft.FridgeVisit.RequestHeaderId == vm.RequestHeaderId &&
+                                     ft.TechnicianAssigned == null);
+
+            if (existingReport != null)
+            {
+                TempData[SD.Error] = "You already have a pending fault report for this fridge";
                 return RedirectToAction(nameof(CustomerFaultReports));
             }
 
-            if (_db.tblFaultTechnicians.Any(ft => ft.VisitId == vm.VisitId && ft.TechnicianAssigned == null))
+            var fridgeVisit = new FridgeVisit
             {
-                TempData[SD.Error] = "You have already reported a fault for this fridge.";
-                return RedirectToAction(nameof(CustomerFaultReports));
-            }
+                RequestHeaderId = vm.RequestHeaderId,
+                VisitDate = DateTime.Now,
+                CheckupStatus = "Fault Reported",
+                Notes = $"Customer reported: {vm.FaultType}"
+            };
+
+            _db.tblFridgeVisits.Add(fridgeVisit);
+            _db.SaveChanges();
 
             var faultReport = new FaultTechnician
             {
-                VisitId = vm.VisitId,
+                VisitId = fridgeVisit.VisitId,
                 FaultType = vm.FaultType,
                 FaultDescription = vm.FaultDescription,
                 ResolutionNotes = vm.AdditionalNotes,
@@ -311,7 +369,7 @@ namespace Project.Controllers
             _db.tblFaultTechnicians.Add(faultReport);
             _db.SaveChanges();
 
-            TempData[SD.Success] = "Fault reported successfully! We’ll contact you soon.";
+            TempData[SD.Success] = "Fault reported successfully!";
             return RedirectToAction(nameof(CustomerFaultReports));
         }
 
@@ -337,16 +395,18 @@ namespace Project.Controllers
                 .OrderByDescending(ft => ft.ReportDate)
                 .ToList();
 
-            var activeVisit = _db.tblFridgeVisits
-                .Include(v => v.RequestHeader)
-                .Where(v => v.RequestHeader.CustomerID == customerId &&
-                           (v.RequestHeader.Status == SD.Approved ||
-                            v.RequestHeader.Status == SD.Shipped))
-                .OrderByDescending(v => v.VisitDate)
+            // Find active approved request WITH allocated fridge
+            var activeRequest = _db.tblRequestHeaders
+                .Include(rh => rh.RequestFridges)
+                    .ThenInclude(rf => rf.CustomerFridges)
+                .Where(rh => rh.CustomerID == customerId &&
+                             rh.Status == SD.Approved &&
+                             rh.RequestFridges.Any(rf => rf.CustomerFridges.Any()))
+                .OrderByDescending(rh => rh.RequestDate)
                 .FirstOrDefault();
 
-            ViewBag.ActiveVisitId = activeVisit?.VisitId ?? 0;
-            ViewBag.HasActiveFridge = activeVisit != null;
+            ViewBag.ActiveRequestId = activeRequest?.RequestHeaderId ?? 0;
+            ViewBag.HasActiveFridge = activeRequest != null;
 
             return View(reports);
         }
@@ -371,9 +431,9 @@ namespace Project.Controllers
             return View(faults);
         }
 
- 
-        // TECHNICIAN: ASSIGN SELF TO FAULT
-    
+        // ===================================================================
+        // 8. TECHNICIAN: ASSIGN SELF TO FAULT
+        // ===================================================================
         public IActionResult AssignToFault(int faultId)
         {
             var fault = _db.tblFaultTechnicians.Find(faultId);

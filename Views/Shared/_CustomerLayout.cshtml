@@ -358,8 +358,14 @@
                             {
                                 <a asp-controller="FaultTechnician"
                                    asp-action="CustomerFaultReport"
-                                   asp-route-visitId="@ViewBag.ActiveVisitId"
-                                   class="nav-link">Report Issue</a>
+                                   asp-route-requestHeaderId="@ViewBag.ActiveRequestId"
+                                   class="btn btn-primary btn-sm">
+                                    Report Issue
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No active fridge</span>
                             }
                             
                             @if (hasFridgeBookings)
