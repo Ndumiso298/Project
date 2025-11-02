@@ -24,7 +24,10 @@
                     <div>
                         <h5 class="alert-heading mb-2">Previous Request Rejected</h5>
                         <p class="mb-1"><strong>Reason for Rejection:</strong> @Model.RejectionReason</p>
-                        <p class="mb-0"><strong>Rejected on:</strong> @Model.RejectionDate?.ToString("MMMM dd, yyyy 'at' hh:mm tt")</p>
+                        @if (Model.RejectionDate.HasValue)
+                        {
+                            <p class="mb-0"><strong>Rejected on:</strong> @Model.RejectionDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -60,12 +63,29 @@
                                         {
                                             @foreach (var fridge in Model.OriginalFridges)
                                             {
-                                                <div class="list-group-item px-0">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="fw-semibold">@fridge.Fridge?.Brand</span>
+                                                <div class="list-group-item px-0 border-bottom">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="fw-semibold">@(fridge.Fridge?.Brand ?? "Unknown Brand")</span>
                                                         <span class="badge bg-primary">Qty: @fridge.Count</span>
                                                     </div>
-                                                    <small class="text-muted">@fridge.Fridge?.FridgeNo</small>
+                                                    @if (!string.IsNullOrEmpty(fridge.Fridge?.Description))
+                                                    {
+                                                        <div class="mb-1">
+                                                            <small class="text-muted">@fridge.Fridge.Description</small>
+                                                        </div>
+                                                    }
+                                                    @if (fridge.Fridge?.CapacityLiters > 0)
+                                                    {
+                                                        <div class="mb-1">
+                                                            <small class="text-muted">Capacity: @fridge.Fridge.CapacityLiters L</small>
+                                                        </div>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(fridge.Fridge?.FridgeNo))
+                                                    {
+                                                        <div class="mb-1">
+                                                            <small class="text-muted">Model: @fridge.Fridge.FridgeNo</small>
+                                                        </div>
+                                                    }
                                                 </div>
                                             }
                                         }
@@ -97,8 +117,8 @@
                                     </label>
                                     <textarea asp-for="AdditionalDescription" class="form-control" rows="6"
                                               placeholder="Please provide additional information addressing the rejection reason. Explain any changes or additional details that support your request..."
-                                              required></textarea>
-                                    <span asp-validation-for="AdditionalDescription" class="text-danger"></span>
+                                              required maxlength="1000"></textarea>
+                                    <span asp-validation-for="AdditionalDescription" class="text-danger small"></span>
                                     <div class="form-text">
                                         <span id="charCount">0</span>/1000 characters
                                     </div>
@@ -108,15 +128,15 @@
                                     <label asp-for="AdditionalDocument" class="form-label fw-semibold">
                                         Additional Supporting Document
                                     </label>
-                                    <input asp-for="AdditionalDocument" class="form-control"
+                                    <input type="file" asp-for="AdditionalDocument" class="form-control"
                                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
-                                    <span asp-validation-for="AdditionalDocument" class="text-danger"></span>
+                                    <span asp-validation-for="AdditionalDocument" class="text-danger small"></span>
                                     <div class="form-text">
-                                        Upload any supporting documents (PDF, JPG, PNG, DOC). Max file size: 5MB
+                                        Upload any supporting documents (PDF, JPG, PNG, DOC, DOCX). Max file size: 5MB
                                     </div>
                                 </div>
 
-                                <div class="alert alert-info border-0">
+                                <div class="alert alert-info border-0 mt-4">
                                     <i class="bi bi-info-circle me-2"></i>
                                     <strong>Note:</strong> Your request will be reviewed again with this additional information. Please ensure you address the original rejection reason.
                                 </div>
@@ -129,7 +149,7 @@
                 <div class="row mt-5">
                     <div class="col-12">
                         <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2">
+                            <a asp-action="Index" asp-controller="Request" class="btn btn-outline-secondary px-4 py-2">
                                 <i class="bi bi-arrow-left me-2"></i>Back to Requests
                             </a>
                             <button type="submit" class="btn btn-primary px-4 py-2">
@@ -152,8 +172,17 @@
             const charCount = document.getElementById('charCount');
 
             if (descriptionTextarea && charCount) {
+                // Update character count on input
                 descriptionTextarea.addEventListener('input', function () {
-                    charCount.textContent = this.value.length;
+                    const currentLength = this.value.length;
+                    charCount.textContent = currentLength;
+
+                    // Optional: Add warning when approaching limit
+                    if (currentLength > 900) {
+                        charCount.className = 'text-warning';
+                    } else {
+                        charCount.className = '';
+                    }
                 });
 
                 // Initialize character count
@@ -161,16 +190,32 @@
             }
 
             // File size validation
-            const fileInput = document.getElementById('AdditionalDocument');
+            const fileInput = document.querySelector('input[type="file"]');
             if (fileInput) {
                 fileInput.addEventListener('change', function () {
-                    const fileSize = this.files[0]?.size || 0;
-                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    const file = this.files[0];
+                    if (file) {
+                        const fileSize = file.size;
+                        const maxSize = 5 * 1024 * 1024; // 5MB
 
-                    if (fileSize > maxSize) {
-                        alert('File size must be less than 5MB.');
-                        this.value = '';
+                        if (fileSize > maxSize) {
+                            alert('File size must be less than 5MB. Selected file is ' + (fileSize / (1024 * 1024)).toFixed(2) + 'MB.');
+                            this.value = '';
+                        }
                     }
+                });
+            }
+
+            // Form validation
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    form.classList.add('was-validated');
                 });
             }
         });

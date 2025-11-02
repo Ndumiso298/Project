@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<Project.Models.RequestHeader>
 @using System.Security.Claims
+@using Project.Utility
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Order Management";
@@ -7,8 +8,8 @@
     // Get user role for conditional rendering
     var claimsIdentity = (ClaimsIdentity)User.Identity;
     var userRole = claimsIdentity.FindFirst(ClaimTypes.Role)?.Value;
-    var isCustomer = userRole == "Customer";
-    var isCustomerSupport = userRole == "CustomerSupport" || userRole == "Admin";
+    var isCustomer = userRole == SD.CustomerRole;
+    var isCustomerSupport = userRole == SD.CustomerSupport || userRole == SD.AdminRole;
 }
 
 <div class="container-fluid py-4">
@@ -29,9 +30,10 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="statusFilterDropdown">
                             <li><a class="dropdown-item filter-option" href="#" data-filter="all">All Orders</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Needs Feedback">Pending Review</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Approved">Approved</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="Rejected">Rejected</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Pending">Pending</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Approved">Approved</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Rejected">Rejected</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="relaunched">Relaunched</a></li>
                         </ul>
                     </div>
                 </div>
@@ -39,69 +41,35 @@
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start-4 border-start-primary shadow-sm h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Orders</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count()</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-clipboard-data fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start-4 border-start-success shadow-sm h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Approved</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(r => r.Status == "Approved")</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+    <!-- Status Summary Section - ONLY FOR CUSTOMERS -->
+    @if (isCustomer)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col">
+                                <span class="fw-bold text-primary">Total: @Model.Count()</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-warning">Pending: @Model.Count(r => r.Status == SD.Pending)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-success">Approved: @Model.Count(r => r.Status == SD.Approved)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-danger">Rejected: @Model.Count(r => r.Status == SD.Rejected)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-info">Relaunched: @Model.Count(r => r.IsRelaunched)</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start-4 border-start-warning shadow-sm h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(r => r.Status == "Needs Feedback")</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-clock-history fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-start-4 border-start-danger shadow-sm h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Rejected</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(r => r.Status == "Rejected")</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-x-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 
     <!-- Orders Table -->
     <div class="card shadow-sm border-0 rounded-3">
@@ -135,7 +103,7 @@
                     <tbody>
                         @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
                         {
-                            <tr class="order-row" data-status="@item.Status?.ToLower()">
+                            <tr class="order-row" data-status="@item.Status?.ToLower()" data-relaunched="@item.IsRelaunched.ToString().ToLower()">
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
                                         <div class="bg-light rounded-2 p-2 me-3">
@@ -162,28 +130,28 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if (item.Status == "Needs Feedback")
+                                    @if (item.Status == SD.Pending)
                                     {
-                                        <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
-                                            <i class="bi bi-hourglass-split me-1"></i> Under Review
+                                        <span class="fw-bold text-warning">
+                                            <i class="bi bi-hourglass-split me-1"></i>Pending
                                         </span>
                                     }
-                                    else if (item.Status == "Approved")
+                                    else if (item.Status == SD.Approved)
                                     {
-                                        <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Approved
+                                        <span class="fw-bold text-success">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Approved
                                         </span>
                                     }
-                                    else if (item.Status == "Rejected")
+                                    else if (item.Status == SD.Rejected)
                                     {
-                                        <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">
-                                            <i class="bi bi-x-circle-fill me-1"></i> Rejected
+                                        <span class="fw-bold text-danger">
+                                            <i class="bi bi-x-circle-fill me-1"></i>Rejected
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary bg-opacity-15 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill">
-                                            <i class="bi bi-question-circle me-1"></i> @item.Status
+                                        <span class="fw-bold text-secondary">
+                                            <i class="bi bi-question-circle me-1"></i>@item.Status
                                         </span>
                                     }
                                 </td>
@@ -195,14 +163,18 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="btn-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
-                                           class="btn btn-sm btn-outline-primary rounded-3 me-2 px-3"
-                                           data-bs-toggle="tooltip" data-bs-title="View Order Details">
-                                            <i class="bi bi-eye me-1"></i> Details
-                                        </a>
+                                        <!-- Details Button for Customers -->
+                                        @if (isCustomer)
+                                        {
+                                            <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
+                                               class="btn btn-sm btn-outline-primary rounded-3 me-2 px-3"
+                                               data-bs-toggle="tooltip" data-bs-title="View Order Details">
+                                                <i class="bi bi-eye me-1"></i> Details
+                                            </a>
+                                        }
 
                                         <!-- Relaunch Button for Rejected Requests - CUSTOMER ONLY -->
-                                        @if (isCustomer && item.Status == "Rejected" && !item.IsRelaunched)
+                                        @if (isCustomer && item.Status == SD.Rejected && !item.IsRelaunched)
                                         {
                                             <a asp-action="RelaunchRequest" asp-route-id="@item.RequestHeaderId"
                                                class="btn btn-sm btn-outline-info rounded-3 me-2 px-3"
@@ -212,7 +184,7 @@
                                         }
 
                                         <!-- Fault Report Button - CUSTOMER ONLY -->
-                                        @if (isCustomer && item.Status == "Approved")
+                                        @if (isCustomer && item.Status == SD.Approved)
                                         {
                                             <a asp-controller="FaultTechnician" asp-action="CustomerFaultReport"
                                                asp-route-visitId="@item.RequestHeaderId"
@@ -222,12 +194,11 @@
                                             </a>
                                         }
 
-                                        <!-- Admin/Customer Support Actions -->
+                                        <!-- Customer Support Actions - Only Manage Button -->
                                         @if (isCustomerSupport)
                                         {
-                                            <!-- Add any admin-specific actions here -->
                                             <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
-                                               class="btn btn-sm btn-outline-secondary rounded-3 me-2 px-3"
+                                               class="btn btn-sm btn-outline-secondary rounded-3 px-3"
                                                data-bs-toggle="tooltip" data-bs-title="Manage Request">
                                                 <i class="bi bi-gear me-1"></i> Manage
                                             </a>
@@ -281,63 +252,63 @@
 }
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('orderSearch');
+            const orderRows = document.querySelectorAll('.order-row');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+
+                    orderRows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Filter functionality
+            const filterOptions = document.querySelectorAll('.filter-option');
+
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const filter = this.getAttribute('data-filter');
+
+                    orderRows.forEach(row => {
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else if (filter === 'relaunched') {
+                            if (row.getAttribute('data-relaunched') === 'true') {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        } else {
+                            if (row.getAttribute('data-status') === filter.toLowerCase()) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // Update dropdown button text
+                    document.getElementById('statusFilterDropdown').textContent =
+                        'Filter: ' + this.textContent;
+                });
+            });
+
             // Initialize tooltips
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Search functionality
-            const searchInput = document.getElementById('orderSearch');
-            const orderRows = document.querySelectorAll('#orderTable tbody tr.order-row');
-
-            searchInput.addEventListener('input', function () {
-                const searchText = this.value.toLowerCase().trim();
-
-                orderRows.forEach(row => {
-                    const rowText = row.textContent.toLowerCase();
-                    const isVisible = rowText.includes(searchText);
-                    row.style.display = isVisible ? '' : 'none';
-                });
-            });
-
-            // Status filter functionality
-            const filterOptions = document.querySelectorAll('.filter-option');
-
-            filterOptions.forEach(option => {
-                option.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const filterValue = this.getAttribute('data-filter');
-
-                    // Update dropdown button text
-                    document.getElementById('statusFilterDropdown').innerHTML =
-                        `<i class="bi bi-filter me-2"></i>${this.textContent}`;
-
-                    // Filter rows
-                    orderRows.forEach(row => {
-                        const rowStatus = row.getAttribute('data-status');
-
-                        if (filterValue === 'all') {
-                            row.style.display = '';
-                        } else {
-                            const isMatch = rowStatus === filterValue.toLowerCase();
-                            row.style.display = isMatch ? '' : 'none';
-                        }
-                    });
-                });
-            });
-
-            // Reset filters when search is cleared
-            searchInput.addEventListener('keyup', function () {
-                if (this.value === '') {
-                    orderRows.forEach(row => {
-                        row.style.display = '';
-                    });
-                }
             });
         });
     </script>

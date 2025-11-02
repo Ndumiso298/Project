@@ -16,9 +16,9 @@
         public const string WaitingForPayment = "Waiting For Payment";
         public const string Approved = "Approved";
         public const string Rejected = "Rejected";
-        public const string NeedsFeedback = "Needs Feedback";
-        public const string FaultResolved = "Fsult Resolved";
-        public const string FaultPending = "Fsult Resolved";
+        public const string Relaunched = "Relaunched";
+        public const string FaultResolved = "Fault Resolved";
+        public const string FaultPending = "Fault Pending";
         public const string Pending = "Pending";
         public const string Declined = "Decline";
         public const string NotStarted = "Not Started";

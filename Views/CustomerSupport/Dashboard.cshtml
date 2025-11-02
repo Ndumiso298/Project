@@ -1,8 +1,241 @@
-﻿
+﻿@model Project.Models.ViewModel.CustomerSupportDashboardViewModel
+@using System.Text.Json
 @{
-    ViewData["Title"] = "Dashboard";
     Layout = "_CustomerLayout";
+    ViewData["Title"] = "Customer Support Dashboard";
 }
 
-<h1>Dashboard</h1>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-0">Customer Support Dashboard</h2>
+            <p class="text-muted mb-0">Comprehensive overview of customer requests and support activities.</p>
+        </div>
+        <div>
+            <small class="text-muted">Last updated: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</small>
+        </div>
+    </div>
 
+    <!-- KPIs Section -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Requests</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.TotalRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-clipboard-data fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.PendingRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Approved</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.ApprovedRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Rejected</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.RejectedRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-x-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-info shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Relaunched</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.RelaunchedRequests</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-secondary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Total Customers</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.TotalCustomers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-arrow-repeat fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Requests Trend (Last 30 Days)</h6>
+                    <small class="text-muted">Daily request volume</small>
+                </div>
+                <canvas id="requestsChart" height="160"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Request Status Distribution</h6>
+                    <small class="text-muted">Current status breakdown</small>
+                </div>
+                <canvas id="statusChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-3">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Top Requested Fridge Brands</h6>
+                    <small class="text-muted">Most popular brands</small>
+                </div>
+                <canvas id="fridgeChart" height="160"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 p-3 h-100">
+                <div class="d-flex justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0">Recent Activity (Last 7 Days)</h6>
+                    <small class="text-muted">Daily request activity</small>
+                </div>
+                <canvas id="activityChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        const requestsData = @Html.Raw(JsonSerializer.Serialize(Model.RequestsByDate));
+        const statusData = @Html.Raw(JsonSerializer.Serialize(Model.RequestStatusDistribution));
+        const fridgeData = @Html.Raw(JsonSerializer.Serialize(Model.TopRequestedFridges));
+        const activityData = @Html.Raw(JsonSerializer.Serialize(Model.RecentActivity));
+
+        // Requests Trend Chart
+        new Chart(document.getElementById('requestsChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: requestsData.map(v => v.Key),
+                datasets: [{
+                    label: 'Requests',
+                    data: requestsData.map(v => v.Value),
+                    fill: true,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Status Distribution Chart
+        new Chart(document.getElementById('statusChart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: statusData.map(v => v.Key),
+                datasets: [{
+                    data: statusData.map(v => v.Value),
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1']
+                }]
+            },
+            options: {
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // Fridge Brand Distribution Chart
+        new Chart(document.getElementById('fridgeChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: fridgeData.map(v => v.Key),
+                datasets: [{
+                    label: 'Request Count',
+                    data: fridgeData.map(v => v.Value),
+                    backgroundColor: '#6610f2'
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Recent Activity Chart
+        new Chart(document.getElementById('activityChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: activityData.map(v => v.Key),
+                datasets: [{
+                    label: 'Requests',
+                    data: activityData.map(v => v.Value),
+                    backgroundColor: '#20c997'
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+}
