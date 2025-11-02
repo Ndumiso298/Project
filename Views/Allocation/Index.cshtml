@@ -3,7 +3,7 @@
     Layout = "_CustomerLayout";
 }
 
-<form method="post">
+<form method="post" id="cartForm">
     <div class="container py-5">
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
@@ -107,9 +107,23 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+    </div>
 </form>
 
 @section Scripts {
     <script src="~/js/Product.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Clear cart when navigating away if checkout was completed
+            const checkoutBtn = document.querySelector('a[asp-action="Summary"]');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function (e) {
+                    // You can add confirmation here if needed
+                    console.log('Proceeding to checkout - cart will be cleared after order placement');
+                });
+            }
+        });
+    </script>
 }

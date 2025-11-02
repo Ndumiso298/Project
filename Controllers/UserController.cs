@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
@@ -22,9 +23,11 @@ namespace Project.Controllers
             _roleManager = roleManager;
             _hostingEnvironment = hostingEnvironment;
         }
-        public  IActionResult CustomerList()
+        public async Task<IActionResult> CustomerList()
         {
-            var customers =  _db.tblCustomer.ToList();
+            var customers = await _db.tblCustomer
+                .Include(c => c.ApplicationUser)
+                .ToListAsync();
             return View(customers);
         }
         public IActionResult EmployeeList()

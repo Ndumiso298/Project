@@ -1,55 +1,216 @@
 ﻿@{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Order Confirmation";
+
+    // These would typically come from your model or ViewData
+    var orderNumber = ViewData["OrderNumber"] ?? "ORD-" + DateTime.Now.ToString("yyyyMMdd-HHmmss");
+    var firstName = User.FindFirst("FirstName")?.Value;
+    var lastName = User.FindFirst("LastName")?.Value;
+    var customerName = !string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName)
+        ? $"{firstName} {lastName}"
+        : User.Identity?.Name ?? "Valued Customer";
+
+    var orderDate = DateTime.Now.ToString("MMMM dd, yyyy");
 }
 
 <div class="container py-5">
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
 
         <!-- Header -->
-        <div class="card-header bg-success text-white text-center py-4">
-            <h2 class="fw-bold mb-1">Request Successfully Placed</h2>
-            <p class="mb-0">Thank you for choosing our services</p>
+        <div class="card-header bg-success text-white text-center py-5">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <i class="bi bi-check-circle-fill display-1 mb-3"></i>
+                    <h1 class="fw-bold mb-2">Order Confirmed!</h1>
+                    <p class="lead mb-0 opacity-90">Thank you for choosing SmartChill Solutions</p>
+                </div>
+            </div>
         </div>
 
         <!-- Body -->
-        <div class="card-body p-5">
-            <div class="row text-center mb-4">
+        <div class="card-body p-4 p-md-5">
+            <!-- Success Alert -->
+            <div class="row mb-5">
                 <div class="col-12">
-                    <i class="bi bi-check-circle-fill text-success display-3 mb-3"></i>
-                    <h4 class="fw-semibold">Your fridge request has been successfully placed!</h4>
-                    <p class="text-muted">We have received your order and our team is processing it.</p>
-                </div>
-            </div>
-
-            <!-- Payment Details -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-md-8">
-                    <div class="card border-0 shadow-sm rounded-3">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Payment Details</h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-2"><strong>Bank Name:</strong> Standard Bank</p>
-                            <p class="mb-2"><strong>Account Number:</strong> 123 456 789</p>
-                            <p class="mb-2"><strong>Branch Code:</strong> 051001</p>
-                            <p class="mb-2"><strong>Reference:</strong> Your Request ID</p>
-                            
+                    <div class="alert alert-success border-0 rounded-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Order Successfully Processed</h5>
+                                <p class="mb-0">Your refrigerator rental request has been received and is being processed.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Follow-up Info -->
-            <div class="row text-center">
+            <div class="row g-4 mb-5">
+                <!-- Order Information -->
+                <div class="col-lg-8 mx-auto">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-clipboard-check me-2"></i>
+                                Order Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="border rounded-3 p-3 h-100">
+                                        <label class="form-label fw-semibold text-muted small mb-2">Order Number</label>
+                                        <p class="fw-bold text-primary fs-4 mb-0">@orderNumber</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded-3 p-3 h-100">
+                                        <label class="form-label fw-semibold text-muted small mb-2">Order Date</label>
+                                        <p class="fw-bold fs-6 mb-0">@orderDate</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded-3 p-3 h-100">
+                                        <label class="form-label fw-semibold text-muted small mb-2">Customer</label>
+                                        <p class="fw-bold mb-0">@customerName</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded-3 p-3 h-100">
+                                        <label class="form-label fw-semibold text-muted small mb-2">Status</label>
+                                        <span class="badge bg-success fs-6">Confirmed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps Timeline -->
+            <div class="row mb-5">
                 <div class="col-12">
-                    <h5 class="fw-semibold">What’s Next?</h5>
-                    <p class="text-muted mb-4">One of our consultants will give you a call within <strong>24 hours</strong> to confirm delivery and finalize details.</p>
-                    <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-primary rounded-pill px-5 py-2">
-                        <i class="bi bi-house-door me-2"></i> Back to Home
-                    </a>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0 text-dark">
+                                <i class="bi bi-list-check me-2 text-primary"></i>
+                                What Happens Next?
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="bg-primary rounded-circle p-3 d-inline-flex mb-3">
+                                            <i class="bi bi-telephone text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-dark">Step 1: Confirmation Call</h6>
+                                        <p class="text-muted small">
+                                            Our customer service team will contact you within <strong>24 hours</strong> to verify your order details and preferred delivery time.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="bg-success rounded-circle p-3 d-inline-flex mb-3">
+                                            <i class="bi bi-truck text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-dark">Step 2: Delivery Scheduling</h6>
+                                        <p class="text-muted small">
+                                            We'll schedule your delivery based on your availability and location. You'll receive a confirmed delivery date and time window.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="bg-info rounded-circle p-3 d-inline-flex mb-3">
+                                            <i class="bi bi-gear text-white fs-3"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-dark">Step 3: Installation & Setup</h6>
+                                        <p class="text-muted small">
+                                            Our technicians will deliver, install, and set up your refrigerator, ensuring it's working perfectly before they leave.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center p-4">
+                            <h5 class="fw-bold text-dark mb-3">Need Immediate Assistance?</h5>
+                            <p class="text-muted mb-4">Our customer support team is here to help you with any questions about your order.</p>
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-telephone text-primary me-2"></i>
+                                        <span class="fw-semibold">Support: (072) 199-6470</span>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-envelope text-primary me-2"></i>
+                                        <span class="fw-semibold">smartchills3@gmail.com</span>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-clock text-primary me-2"></i>
+                                        <span class="fw-semibold">Mon-Fri: 8AM-6PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+                        <a asp-controller="Customer" asp-action="Index" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="bi bi-house-door me-2"></i> Return to Dashboard
+                        </a>
+                        <a asp-controller="Request" asp-action="Index" class="btn btn-outline-primary btn-lg px-5 py-3">
+                            <i class="bi bi-clock-history me-2"></i> View Order Status
+                        </a>
+                    </div>
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            A confirmation email has been sent to your registered email address with complete order details.
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .badge {
+        font-size: 0.8em;
+    }
+</style>

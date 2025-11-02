@@ -41,7 +41,12 @@ namespace Project.Models
         public string? Status { get; set; } =SD.Pending;
         public DateTime? ShippingDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
-
+        public string? RejectionReason { get; set; }
+        public DateTime? RejectionDate { get; set; }
+        public string? AdditionalDocumentPath { get; set; }
+        public string? AdditionalDescription { get; set; }
+        public bool IsRelaunched { get; set; } = false;
+        public int? OriginalRequestId { get; set; }
 
 
         public ICollection<RequestDetails> RequestFridges { get; set; }

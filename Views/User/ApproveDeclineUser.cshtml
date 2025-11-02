@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Review User - Approve/Decline";
     Layout = "_CustomerLayout";
+    // More specific role checking
+    bool isCustomer = Model.Role != null && Model.Role.Equals("Customer", StringComparison.OrdinalIgnoreCase);
+    bool isEmployee = Model.Role != null && !Model.Role.Equals("Customer", StringComparison.OrdinalIgnoreCase);
 }
 
 <div class="container py-5">
@@ -12,7 +15,16 @@
             <div class="row align-items-center">
                 <div class="col-12 text-center">
                     <h2 class="fw-bold text-white mb-0">User Verification</h2>
-                    <p class="opacity-75 mb-0">Review the user’s submitted business document</p>
+                    <p class="opacity-75 mb-0">
+                        @if (isCustomer)
+                        {
+                            <text>Review the user's submitted business document</text>
+                        }
+                        else
+                        {
+                            <text>User Details Review</text>
+                        }
+                    </p>
                 </div>
             </div>
         </div>
@@ -29,8 +41,17 @@
             <div class="container py-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2 class="text-primary mb-1">User Review & Approval</h2>
-                        <p class="text-muted">Review user details and business documentation before making a decision</p>
+                        <h2 class="text-primary mb-1">User Review</h2>
+                        <p class="text-muted">
+                            @if (isCustomer)
+                            {
+                                <text>Review user details and business documentation before making a decision</text>
+                            }
+                            else
+                            {
+                                <text>Review employee details</text>
+                            }
+                        </p>
                     </div>
                 </div>
 
@@ -53,7 +74,8 @@
                 }
 
                 <div class="row">
-                    <div class="col-lg-6 mb-4">
+                    <!-- User Information Card - Always Visible -->
+                    <div class="@(isCustomer ? "col-lg-6" : "col-lg-12") mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="card-title mb-0"><i class="bi bi-person-badge me-2"></i>User Information</h5>
@@ -83,7 +105,7 @@
 
                                 <div class="row">
                                     <div class="col-sm-6 mb-3">
-                                        @if (Model.Role != null && Model.Role.Contains("Customer"))
+                                        @if (isCustomer)
                                         {
                                             <label class="form-label fw-bold text-muted small">Customer Number</label>
                                             <p class="mb-0 fs-6">@Model.CustomerNumber</p>
@@ -123,138 +145,148 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6 mb-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="card-title mb-0"><i class="bi bi-file-earmark-text me-2"></i>Business Documentation</h5>
-                            </div>
-                            <div class="card-body">
-                                @if (Model.Role != null && Model.Role.Contains("Customer") && !string.IsNullOrEmpty(Model.BusinessDocumentPath))
-                                {
-                                    <div class="text-center">
-                                        @{
-                                            var fileExtension = System.IO.Path.GetExtension(Model.BusinessDocumentPath)?.ToLower();
-                                            var fileUrl = Url.Content("~" + Model.BusinessDocumentPath);
-                                            var fileName = System.IO.Path.GetFileName(Model.BusinessDocumentPath);
-                                        }
+                    <!-- Business Documentation Section - Only show for Customers -->
+                    @if (isCustomer)
+                    {
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="card-title mb-0"><i class="bi bi-file-earmark-text me-2"></i>Business Documentation</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if (!string.IsNullOrEmpty(Model.BusinessDocumentPath))
+                                    {
+                                        <div class="text-center">
+                                            @{
+                                                var fileExtension = System.IO.Path.GetExtension(Model.BusinessDocumentPath)?.ToLower();
+                                                var fileUrl = Url.Content("~" + Model.BusinessDocumentPath);
+                                                var fileName = System.IO.Path.GetFileName(Model.BusinessDocumentPath);
+                                            }
 
-                                        @if (fileExtension == ".pdf")
-                                        {
-                                            <div class="mb-3">
-                                                <i class="bi bi-file-earmark-pdf display-1 text-danger"></i>
-                                                <p class="text-muted">PDF Document Ready for Review</p>
-                                            </div>
-                                        }
-                                        else if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
-                                        {
-                                            <div class="mb-3">
-                                                <i class="bi bi-file-earmark-image display-1 text-success"></i>
-                                                <p class="text-muted">Image Document Ready for Review</p>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="mb-3">
-                                                <i class="bi bi-file-earmark-binary display-1 text-secondary"></i>
-                                                <p class="text-muted">Document Ready for Download</p>
-                                            </div>
-                                        }
-
-                                        <!-- Document Display Area -->
-                                        @if (fileExtension == ".pdf")
-                                        {
-                                            <div class="mt-2 border rounded bg-light">
-                                                <iframe src="@fileUrl" width="100%" height="300px" class="border-0" title="Business Document PDF"></iframe>
-                                            </div>
-                                        }
-                                        else if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
-                                        {
-                                            <div class="mt-2 text-center border rounded bg-light p-3">
-                                                <img src="@fileUrl" alt="Uploaded Business Document" class="img-fluid rounded shadow-sm" style="max-height: 300px; max-width: 100%;" onerror="this.style.display='none'; document.getElementById('fileError').style.display='block';" />
-                                                <div id="fileError" class="alert alert-warning mt-2" style="display: none;">
-                                                    <i class="bi bi-exclamation-triangle me-2"></i>
-                                                    Could not load document. Please use the download button below.
+                                            @if (fileExtension == ".pdf")
+                                            {
+                                                <div class="mb-3">
+                                                    <i class="bi bi-file-earmark-pdf display-1 text-danger"></i>
+                                                    <p class="text-muted">PDF Document Ready for Review</p>
                                                 </div>
+                                            }
+                                            else if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
+                                            {
+                                                <div class="mb-3">
+                                                    <i class="bi bi-file-earmark-image display-1 text-success"></i>
+                                                    <p class="text-muted">Image Document Ready for Review</p>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="mb-3">
+                                                    <i class="bi bi-file-earmark-binary display-1 text-secondary"></i>
+                                                    <p class="text-muted">Document Ready for Download</p>
+                                                </div>
+                                            }
+
+                                            <!-- Document Display Area -->
+                                            @if (fileExtension == ".pdf")
+                                            {
+                                                <div class="mt-2 border rounded bg-light">
+                                                    <iframe src="@fileUrl" width="100%" height="300px" class="border-0" title="Business Document PDF"></iframe>
+                                                </div>
+                                            }
+                                            else if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
+                                            {
+                                                <div class="mt-2 text-center border rounded bg-light p-3">
+                                                    <img src="@fileUrl" alt="Uploaded Business Document" class="img-fluid rounded shadow-sm" style="max-height: 300px; max-width: 100%;" onerror="this.style.display='none'; document.getElementById('fileError').style.display='block';" />
+                                                    <div id="fileError" class="alert alert-warning mt-2" style="display: none;">
+                                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                                        Could not load document. Please use the download button below.
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            <!-- Document Actions -->
+                                            <div class="btn-group w-100 mt-3" role="group">
+                                                <a href="@fileUrl" target="_blank" class="btn btn-outline-primary">
+                                                    <i class="bi bi-eye me-2"></i> View
+                                                </a>
+                                                <a href="@fileUrl" download class="btn btn-outline-success">
+                                                    <i class="bi bi-download me-2"></i> Download
+                                                </a>
                                             </div>
-                                        }
 
-                                        <!-- Document Actions -->
-                                        <div class="btn-group w-100 mt-3" role="group">
-                                            <a href="@fileUrl" target="_blank" class="btn btn-outline-primary">
-                                                <i class="bi bi-eye me-2"></i> View
-                                            </a>
-                                            <a href="@fileUrl" download class="btn btn-outline-success">
-                                                <i class="bi bi-download me-2"></i> Download
-                                            </a>
+                                            <!-- File Information -->
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    File: @fileName
+                                                </small>
+                                            </div>
                                         </div>
-
-                                        <!-- File Information -->
-                                        <div class="mt-2">
-                                            <small class="text-muted">
-                                                <i class="bi bi-info-circle me-1"></i>
-                                                File: @fileName
-                                            </small>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="text-center py-4">
-                                        <i class="bi bi-file-earmark-x display-1 text-muted"></i>
-                                        <p class="text-muted mt-3"><em>No business document uploaded by user.</em></p>
-                                        @if (Model.Role != null && Model.Role.Contains("Customer"))
-                                        {
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-file-earmark-x display-1 text-muted"></i>
+                                            <p class="text-muted mt-3"><em>No business document uploaded by user.</em></p>
                                             <small class="text-warning">
                                                 <i class="bi bi-exclamation-triangle me-1"></i>
                                                 Customer account requires business documentation
                                             </small>
-                                        }
-                                    </div>
-                                }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Approval Actions Card - Only show for Customers -->
+                @if (isCustomer)
+                {
+                    <div class="card shadow-sm border-0 mt-2">
+                        <div class="card-body text-center py-4">
+                            <h5 class="card-title text-dark mb-4">Account Decision</h5>
+                            <p class="text-muted mb-4">Please review all user information and documentation before making your decision.</p>
+
+                            <div class="row justify-content-center">
+                                <!-- Approve Button -->
+                                <div class="col-md-4 mb-3">
+                                    <form asp-action="ApproveUser" method="post" class="d-grid" id="approveForm">
+                                        <input type="hidden" name="userId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-success btn-lg py-3" id="approveBtn">
+                                            <i class="bi bi-check-circle-fill me-2"></i> Approve User
+                                        </button>
+                                        <small class="form-text text-muted mt-2">
+                                            User will gain full system access and be marked as approved.
+                                        </small>
+                                    </form>
+                                </div>
+
+                                <!-- Decline Button -->
+                                <div class="col-md-4 mb-3">
+                                    <form asp-action="DeclineUser" method="post" class="d-grid" id="declineForm">
+                                        <input type="hidden" name="userId" value="@Model.Id" />
+                                        <input type="hidden" name="rejectionReason" id="rejectionReason" value="Your account was declined due to failing verification requirements." />
+                                        <button type="button" class="btn btn-outline-danger btn-lg py-3" id="declineBtn" onclick="showDeclineConfirmation()">
+                                            <i class="bi bi-x-circle me-2"></i> Decline User
+                                        </button>
+                                        <small class="form-text text-muted mt-2">
+                                            User account will be rejected and marked as declined.
+                                        </small>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Approval Actions Card -->
-                <div class="card shadow-sm border-0 mt-2">
-                    <div class="card-body text-center py-4">
-                        <h5 class="card-title text-dark mb-4">Account Decision</h5>
-                        <p class="text-muted mb-4">Please review all user information and documentation before making your decision.</p>
-
-                        <div class="row justify-content-center">
-                            <!-- Approve Button -->
-                            <div class="col-md-4 mb-3">
-                                <form asp-action="ApproveUser" method="post" class="d-grid" id="approveForm">
-                                    <input type="hidden" name="userId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-success btn-lg py-3" id="approveBtn">
-                                        <i class="bi bi-check-circle-fill me-2"></i> Approve User
-                                    </button>
-                                    <small class="form-text text-muted mt-2">
-                                        User will gain full system access and be marked as approved.
-                                    </small>
-                                </form>
-                            </div>
-
-                            <!-- Decline Button -->
-                            <div class="col-md-4 mb-3">
-                                <form asp-action="DeclineUser" method="post" class="d-grid" id="declineForm">
-                                    <input type="hidden" name="userId" value="@Model.Id" />
-                                    <input type="hidden" name="rejectionReason" id="rejectionReason" value="Your account was declined due to failing verification requirements." />
-                                    <button type="button" class="btn btn-outline-danger btn-lg py-3" id="declineBtn" onclick="showDeclineConfirmation()">
-                                        <i class="bi bi-x-circle me-2"></i> Decline User
-                                    </button>
-                                    <small class="form-text text-muted mt-2">
-                                        User account will be rejected and marked as declined.
-                                    </small>
-                                </form>
-                            </div>
-                        </div>
-
-                        
-                </div>
+                }
+                else
+                {
+                    <!-- Employee Information Note -->
+                    <div class="alert alert-info mt-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Employee Account:</strong> This is an employee account. Approval/decline actions are not available for employee accounts.
+                    </div>
+                }
             </div>
-
         </div>
     </div>
 </div>
@@ -297,10 +329,12 @@
             const approveForm = document.getElementById('approveForm');
             const approveBtn = document.getElementById('approveBtn');
 
-            approveForm.addEventListener('submit', function () {
-                approveBtn.disabled = true;
-                approveBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2 spin"></i> Processing...';
-            });
+            if (approveForm && approveBtn) {
+                approveForm.addEventListener('submit', function () {
+                    approveBtn.disabled = true;
+                    approveBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2 spin"></i> Processing...';
+                });
+            }
 
             // Auto-hide alerts
             setTimeout(function () {
@@ -314,9 +348,9 @@
         // Spinner animation
         const style = document.createElement('style');
         style.innerHTML = `
-                    .spin { animation: spin 1s linear infinite; }
-        keyframes spin { 100% { transform: rotate(360deg); } }
-                `;
+            .spin { animation: spin 1s linear infinite; }
+            keyframes spin { 100% { transform: rotate(360deg); } }
+        `;
         document.head.appendChild(style);
     </script>
 }

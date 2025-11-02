@@ -45,8 +45,8 @@
                                 </div>
                             </div>
 
-                            <!-- Business Document Section - Always Available -->
-                            <div class="card mb-4 border-0 shadow-sm">
+                            <!-- Business Document Section - Only show for Customers -->
+                            <div id="documentSection" class="card mb-4 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-light">
                                     <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Document Upload</h5>
                                 </div>
@@ -117,7 +117,6 @@
                                         <div class="form-floating mb-3">
                                             <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" />
                                             <label asp-for="Input.ConfirmPassword">Confirm Password*</label>
-                                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                                         </div>
                                     </div>
 
@@ -129,16 +128,15 @@
                                 </div>
                             </div>
 
-                           @*  @if (isAdmin)
-                            { *@
+                            @if (isAdmin)
+                            {
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-primary text-light">
                                         <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Account Type</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="form-floating mb-3">
-                                            <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select" id="roleSelect">
-                                                <option value="@SD.CustomerRole" selected>Customer</option>
+                                            <select asp-for="Input.Role" class="form-select" id="roleSelect">
                                                 @foreach (var role in Model.Input.RoleList.Where(r => r.Value != SD.CustomerRole))
                                                 {
                                                     <option value="@role.Value">@role.Text</option>
@@ -149,12 +147,12 @@
                                         </div>
                                     </div>
                                 </div>
-                         @*    }
+                            }
                             else
-                            { *@
+                            {
                                 <!-- Hidden field for non-admin users to always set role as Customer -->
                                 <input type="hidden" asp-for="Input.Role" value="@SD.CustomerRole" />
-                        @*     } *@
+                            }
                         </div>
                     </div>
 
@@ -176,6 +174,7 @@
             const roleSelect = document.getElementById('roleSelect');
             const passwordSection = document.getElementById('passwordSection');
             const employeePasswordNotice = document.getElementById('employeePasswordNotice');
+            const documentSection = document.getElementById('documentSection');
             const documentRequired = document.getElementById('documentRequired');
             const documentDescription = document.getElementById('documentDescription');
 
@@ -190,11 +189,13 @@
 
                 const isCustomer = selectedRole === '@SD.CustomerRole' || selectedRole === '';
 
-                // Update document requirement text
+                // Show/hide document section
                 if (isCustomer) {
+                    documentSection.style.display = 'block';
                     documentRequired.style.display = 'inline';
                     documentDescription.textContent = 'Required for Customer accounts.';
                 } else {
+                    documentSection.style.display = 'none';
                     documentRequired.style.display = 'none';
                     documentDescription.textContent = 'Optional for employee accounts.';
                 }

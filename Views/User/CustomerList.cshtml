@@ -14,7 +14,6 @@
                     <h2 class="h3 fw-bold text-primary mb-1">Customer List Management</h2>
                     <p class="text-muted">Manage all registered customers</p>
                 </div>
-              
             </div>
         </div>
     </div>
@@ -64,8 +63,26 @@
                             {
                                 <tr>
                                     <td>@count</td>
-                                    <td>@item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</td>
-                                    <td>@item.ApplicationUser?.Email</td>
+                                    <td>
+                                        @if (item.ApplicationUser != null)
+                                        {
+                                            <text>@item.ApplicationUser.FirstName @item.ApplicationUser.LastName</text>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">User data not available</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.ApplicationUser != null)
+                                        {
+                                            <text>@item.ApplicationUser.Email</text>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Email not available</span>
+                                        }
+                                    </td>
                                     <td>@item.CustomerNumber</td>
                                     <td>
                                         @if (!string.IsNullOrEmpty(item.BusinessDocumentPath))
@@ -80,7 +97,6 @@
                                             <span class="badge bg-warning text-dark">No Document</span>
                                         }
                                     </td>
-                                  
                                 </tr>
                                 count++;
                             }

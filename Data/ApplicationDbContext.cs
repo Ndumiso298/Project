@@ -66,29 +66,29 @@ namespace Project.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            //// Seed Admin User
-            //var hasher = new PasswordHasher<ApplicationUser>();
-            //var adminUser = new ApplicationUser
-            //{
-            //    Id = "admin-id-123",
-            //    UserName = "admin@fridgesystem.com",
-            //    NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-            //    Email = "admin@fridgesystem.com",
-            //    NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
-            //    EmailConfirmed = true,
-            //    PhoneNumberConfirmed = true,
-            //    SecurityStamp = Guid.NewGuid().ToString("D"),
-            //    FirstName = "System",
-            //    LastName = "Administrator",
-            //    CellNumber = "+27123456789",
-            //    StreetAddress = "123 Admin Street",
-            //    City = "Johannesburg",
-            //    State = "Gauteng",
-            //    PostalCode = "2000",
-            //    Status = SD.Approved,
-            //    IsApproved = true
-            //};
-            //adminUser.PasswordHash = hasher.HashPassword(adminUser, "Sthandwa@97");
+            // Seed Admin User
+            var hasher = new PasswordHasher<ApplicationUser>();
+            var adminUser = new ApplicationUser
+            {
+                Id = "admin-id-123",
+                UserName = "admin@fridgesystem.com",
+                NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
+                Email = "admin@fridgesystem.com",
+                NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString("D"),
+                FirstName = "System",
+                LastName = "Administrator",
+                CellNumber = "+27123456789",
+                StreetAddress = "123 Admin Street",
+                City = "Johannesburg",
+                State = "Gauteng",
+                PostalCode = "2000",
+                Status = SD.Approved,
+                IsApproved = true
+            };
+            adminUser.PasswordHash = hasher.HashPassword(adminUser, "Sthandwa@97");
 
             //modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
 
