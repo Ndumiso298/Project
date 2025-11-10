@@ -39,7 +39,7 @@ namespace Project.Models
         public string CellNumber { get; set; }
         public string? Carrier { get; set; }
         public string? Status { get; set; } =SD.Pending;
-        public DateTime? ShippingDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
         public string? RejectionReason { get; set; }
         public DateTime? RejectionDate { get; set; }

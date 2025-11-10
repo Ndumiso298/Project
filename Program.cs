@@ -4,6 +4,8 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Utility;
+using Microsoft.Extensions.Localization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -29,7 +31,17 @@ builder.Services.AddScoped<IUserNumberService, UserNumberService>();
 
 
 builder.Services.AddHostedService<UserCleanupService>();
-builder.Services.AddControllersWithViews();
+
+// Add localization services for multi-language support
+builder.Services.AddLocalization(options =>
+{
+    options.ResourcesPath = "Resources"; // Path where resource files are stored
+});
+
+// Add MVC with localization support
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization() // Enable view localization
+    .AddDataAnnotationsLocalization(); // Enable data annotations localization
 
 var app = builder.Build();
 

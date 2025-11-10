@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251110123243_ShippingDetails")]
+    partial class ShippingDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1032,11 +1035,11 @@ namespace Project.Migrations
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeliveryDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("EmployeeID")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("EstimatedDeliveryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -1070,6 +1073,9 @@ namespace Project.Migrations
 
                     b.Property<double>("RequestTotal")
                         .HasColumnType("float");
+
+                    b.Property<DateTime?>("ShippingDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("State")
                         .IsRequired()

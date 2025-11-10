@@ -7,6 +7,7 @@ using Project.Utility;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Project.Controllers
 {
@@ -14,9 +15,6 @@ namespace Project.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        [BindProperty]
-        public RequestVM RequestVM { get; set; }
 
         public RequestController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
@@ -26,96 +24,146 @@ namespace Project.Controllers
 
         public IActionResult Index(string status)
         {
-            IEnumerable<RequestHeader> objRequestHeaders;
+            IQueryable<RequestHeader> query;
 
             if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
             {
-                objRequestHeaders = _db.tblRequestHeaders
-                    .Include(a => a.Customer) // Add this include
-                        .ThenInclude(c => c.ApplicationUser) // Add this include
-                    .ToList();
+                query = _db.tblRequestHeaders
+                    .Include(a => a.Customer)
+                        .ThenInclude(c => c.ApplicationUser);
             }
             else
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                objRequestHeaders = _db.tblRequestHeaders
-                    .Include(u => u.Customer) // Add this include
-                        .ThenInclude(c => c.ApplicationUser) // Add this include
-                    .Where(r => r.Customer.ApplicationUserId == userId)
-                    .ToList();
+                if (userId == null)
+                {
+                    return Challenge();
+                }
+
+                query = _db.tblRequestHeaders
+                    .Include(u => u.Customer)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .Where(r => r.Customer.ApplicationUserId == userId);
             }
 
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(r => r.Status == status);
+            }
+
+            var objRequestHeaders = query.ToList();
+            ViewBag.StatusFilter = status;
             return View(objRequestHeaders);
         }
 
         public IActionResult Details(int id)
         {
-            // Fetch full request data with all related entities
             var requestHeader = _db.tblRequestHeaders
                 .Include(r => r.Customer)
-                .ThenInclude(c => c.ApplicationUser)
+                    .ThenInclude(c => c.ApplicationUser)
                 .Include(r => r.RequestFridges)
-                .ThenInclude(d => d.Fridge)
+                    .ThenInclude(d => d.Fridge)
                 .Include(r => r.RequestFridges)
-                .ThenInclude(d => d.CustomerFridges)
-                .ThenInclude(cf => cf.FridgeInStock)
+                    .ThenInclude(d => d.CustomerFridges)
+                        .ThenInclude(cf => cf.FridgeInStock)
                 .FirstOrDefault(r => r.RequestHeaderId == id);
 
             if (requestHeader == null)
             {
-                return NotFound();
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
             }
 
-            RequestVM = new RequestVM
+            if (!User.IsInRole(SD.AdminRole) && !User.IsInRole(SD.CustomerSupport))
+            {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (requestHeader.Customer?.ApplicationUserId != userId)
+                {
+                    TempData[SD.Error] = "You don't have permission to view this request.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            var requestVM = new RequestVM
             {
                 RequstHeader = requestHeader,
-                RequstDetail = requestHeader.RequestFridges.ToList()
+                RequstDetail = requestHeader.RequestFridges != null ? requestHeader.RequestFridges.ToList() : new List<RequestDetails>()
             };
 
-            return View(RequestVM);
+            // Add carriers and cancellation reasons for admin/support users
+            if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
+            {
+                ViewBag.Carriers = GetAvailableCarriers();
+            }
+
+            // Add cancellation reasons for customers
+            if (User.IsInRole(SD.CustomerRole))
+            {
+                ViewBag.CancellationReasons = GetCancellationReasons();
+            }
+
+            return View(requestVM);
         }
 
         [HttpPost]
-        public IActionResult UpdateRequestDetail(RequestVM RequestVM)
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateRequestDetail(RequestVM requestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (requestVM?.RequstHeader == null)
             {
-                return BadRequest("Invalid request data.");
+                TempData[SD.Error] = "Invalid request data.";
+                return RedirectToAction(nameof(Index));
             }
 
-            var RequestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == requestVM.RequstHeader.RequestHeaderId);
 
-            if (RequestHeaderFromDb == null)
+            if (requestHeaderFromDb == null)
             {
-                return NotFound("Request not found.");
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
             }
 
-            RequestHeaderFromDb.FirstName = RequestVM.RequstHeader.FirstName;
-            RequestHeaderFromDb.LastName = RequestVM.RequstHeader.LastName;
-            RequestHeaderFromDb.CellNumber = RequestVM.RequstHeader.CellNumber;
-            RequestHeaderFromDb.StreetAddress = RequestVM.RequstHeader.StreetAddress;
-            RequestHeaderFromDb.City = RequestVM.RequstHeader.City;
-            RequestHeaderFromDb.State = RequestVM.RequstHeader.State;
-            RequestHeaderFromDb.PostalCode = RequestVM.RequstHeader.PostalCode;
+            if (!User.IsInRole(SD.AdminRole) && !User.IsInRole(SD.CustomerSupport))
+            {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _db.tblRequestHeaders.Update(RequestHeaderFromDb);
+                if (requestHeaderFromDb.Customer?.ApplicationUserId != userId)
+                {
+                    TempData[SD.Error] = "You don't have permission to update this request.";
+                    return RedirectToAction(nameof(Details), new { id = requestVM.RequstHeader.RequestHeaderId });
+                }
+            }
+
+            requestHeaderFromDb.FirstName = requestVM.RequstHeader.FirstName;
+            requestHeaderFromDb.LastName = requestVM.RequstHeader.LastName;
+            requestHeaderFromDb.CellNumber = requestVM.RequstHeader.CellNumber;
+            requestHeaderFromDb.StreetAddress = requestVM.RequstHeader.StreetAddress;
+            requestHeaderFromDb.City = requestVM.RequstHeader.City;
+            requestHeaderFromDb.State = requestVM.RequstHeader.State;
+            requestHeaderFromDb.PostalCode = requestVM.RequstHeader.PostalCode;
+
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
             _db.SaveChanges();
 
-            TempData[SD.Success] = "Order Details Updated Successfully.";
-
-            return RedirectToAction(nameof(Details), new { id = RequestHeaderFromDb.RequestHeaderId });
+            TempData[SD.Success] = "Order details updated successfully.";
+            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupport)]
-        public async Task<IActionResult> Approve(RequestVM RequestVM)
+        public async Task<IActionResult> Approve(RequestVM requestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (requestVM?.RequstHeader == null)
             {
-                return BadRequest("Invalid request data.");
+                TempData[SD.Error] = "Invalid request data.";
+                return RedirectToAction(nameof(Index));
             }
 
             var requestHeaderFromDb = await _db.tblRequestHeaders
@@ -124,11 +172,12 @@ namespace Project.Controllers
                 .Include(r => r.RequestFridges)
                     .ThenInclude(d => d.CustomerFridges)
                         .ThenInclude(cf => cf.FridgeInStock)
-                .FirstOrDefaultAsync(r => r.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+                .FirstOrDefaultAsync(r => r.RequestHeaderId == requestVM.RequstHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
-                return NotFound("Request not found.");
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
             }
 
             requestHeaderFromDb.Status = SD.Approved;
@@ -140,7 +189,6 @@ namespace Project.Controllers
             await ReserveApprovedFridges(requestHeaderFromDb);
 
             TempData[SD.Success] = "Request approved successfully.";
-
             return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
@@ -148,117 +196,180 @@ namespace Project.Controllers
         {
             var fridgesInStock = await _db.tblFridgeInStocks.Where(x => x.IsAvailable).ToListAsync();
 
-            foreach (var detail in requestHeader.RequestFridges)
+            if (requestHeader.RequestFridges != null)
             {
-                if (detail == null) continue;
-
-                var availableFridges = fridgesInStock
-                    .Where(x => x.FridgeId == detail.FridgeId)
-                    .Take(detail.Count)
-                    .ToList();
-
-                foreach (var f in availableFridges)
+                foreach (var detail in requestHeader.RequestFridges)
                 {
-                    var customerFridge = new CustomerFridge
+                    var availableFridges = fridgesInStock
+                        .Where(x => x.FridgeId == detail.FridgeId)
+                        .Take(detail.Count)
+                        .ToList();
+
+                    foreach (var fridge in availableFridges)
                     {
-                        CustomerID = requestHeader.CustomerID,
-                        FridgeId = detail.FridgeId,
-                        FridgeInStockId = f.FridgeInStockId,
-                        RequestDetailId = detail.RequestDetailId,
-                        ReservedDate = DateTime.Now
-                    };
-                    _db.tblCustomerFridge.Add(customerFridge);
+                        var customerFridge = new CustomerFridge
+                        {
+                            CustomerID = requestHeader.CustomerID,
+                            FridgeId = detail.FridgeId,
+                            FridgeInStockId = fridge.FridgeInStockId,
+                            RequestDetailId = detail.RequestDetailId,
+                            ReservedDate = DateTime.Now
+                        };
+                        _db.tblCustomerFridge.Add(customerFridge);
 
-                    f.IsAvailable = false;
-                    _db.tblFridgeInStocks.Update(f);
+                        fridge.IsAvailable = false;
+                        _db.tblFridgeInStocks.Update(fridge);
+                    }
                 }
-            }
 
-            await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
+            }
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupport)]
-        public IActionResult Reject(RequestVM RequestVM)
+        public IActionResult Reject(RequestVM requestVM)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            if (requestVM?.RequstHeader == null)
             {
-                return BadRequest("Invalid request data.");
+                TempData[SD.Error] = "Invalid request data.";
+                return RedirectToAction(nameof(Index));
             }
 
             var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+                .FirstOrDefault(u => u.RequestHeaderId == requestVM.RequstHeader.RequestHeaderId);
 
             if (requestHeaderFromDb == null)
             {
-                return NotFound("Request not found.");
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Validate rejection reason
+            if (string.IsNullOrEmpty(requestVM.RequstHeader.RejectionReason) || string.IsNullOrWhiteSpace(requestVM.RequstHeader.RejectionReason))
+            {
+                TempData[SD.Error] = "Rejection reason is required.";
+                return RedirectToAction(nameof(Details), new { id = requestVM.RequstHeader.RequestHeaderId });
+            }
+
+            if (requestVM.RequstHeader.RejectionReason.Trim().Length < 10)
+            {
+                TempData[SD.Error] = "Please provide a more detailed rejection reason (at least 10 characters).";
+                return RedirectToAction(nameof(Details), new { id = requestVM.RequstHeader.RequestHeaderId });
             }
 
             requestHeaderFromDb.Status = SD.Rejected;
-            requestHeaderFromDb.RejectionReason = RequestVM.RequstHeader.RejectionReason;
+            requestHeaderFromDb.RejectionReason = requestVM.RequstHeader.RejectionReason.Trim();
             requestHeaderFromDb.RejectionDate = DateTime.Now;
 
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
             _db.SaveChanges();
 
-            TempData[SD.Success] = "Request rejected successfully.";
-
+            TempData[SD.Success] = "Request rejected successfully. The customer can see the rejection reason when they relaunch.";
             return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupport)]
-        public IActionResult Feedback(RequestVM RequestVM)
+        public IActionResult ShipOrder(int RequestHeaderId, string Carrier, DateTime DeliveryDate)
         {
-            if (RequestVM == null || RequestVM.RequstHeader == null)
+            var requestHeader = _db.tblRequestHeaders
+                .FirstOrDefault(u => u.RequestHeaderId == RequestHeaderId);
+
+            if (requestHeader == null)
             {
-                return BadRequest("Invalid request data.");
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
             }
 
-            var requestHeaderFromDb = _db.tblRequestHeaders
-                .FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
-
-            if (requestHeaderFromDb == null)
+            if (string.IsNullOrEmpty(Carrier))
             {
-                return NotFound("Request not found.");
+                TempData[SD.Error] = "Carrier is required.";
+                return RedirectToAction(nameof(Details), new { id = RequestHeaderId });
             }
 
-            requestHeaderFromDb.RequestDate = DateTime.Now;
+            if (DeliveryDate == default)
+            {
+                TempData[SD.Error] = "Shipping date is required.";
+                return RedirectToAction(nameof(Details), new { id = RequestHeaderId });
+            }
 
-            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            // Calculate next payment date (30 days from delivery date)
+            var nextPaymentDate = DeliveryDate.AddDays(30);
+
+            requestHeader.Carrier = Carrier;
+            requestHeader.DeliveryDate = DeliveryDate;
+            requestHeader.PaymentDueDate = nextPaymentDate;
+            requestHeader.Status = SD.Shipped;
+
+            _db.tblRequestHeaders.Update(requestHeader);
             _db.SaveChanges();
 
-            TempData[SD.Success] = "Request marked as needing feedback.";
-
-            return RedirectToAction(nameof(Details), new { id = requestHeaderFromDb.RequestHeaderId });
+            TempData[SD.Success] = "Order shipped successfully. Waiting for customer delivery confirmation.";
+            return RedirectToAction(nameof(Details), new { id = RequestHeaderId });
         }
 
         [HttpPost]
-        [Authorize(Roles = SD.AdminRole + "," + SD.CustomerSupport)]
-        public IActionResult ShipOrder()
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> CloseOrder(int id)
         {
-            var RequestHeader = _db.tblRequestHeaders.
-                FirstOrDefault(u => u.RequestHeaderId == RequestVM.RequstHeader.RequestHeaderId);
+            try
+            {
+                var requestHeader = await _db.tblRequestHeaders
+                    .Include(r => r.Customer)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .FirstOrDefaultAsync(r => r.RequestHeaderId == id);
 
-            RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
-            RequestHeader.ShippingDate = DateTime.Now;
+                if (requestHeader == null)
+                {
+                    TempData[SD.Error] = "Request not found.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            _db.tblRequestHeaders.Update(RequestHeader);
-            _db.SaveChanges();
+                // Verify the current user owns this request
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var currentUserId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            TempData[SD.Success] = "Order Shipped Successfully.";
-            return RedirectToAction(nameof(Details), new { requesId = RequestVM.RequstHeader.RequestHeaderId });
+                if (requestHeader.Customer?.ApplicationUserId != currentUserId)
+                {
+                    TempData[SD.Error] = "You can only close your own orders.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                // Only allow closing if status is Shipped
+                if (requestHeader.Status != SD.Shipped)
+                {
+                    TempData[SD.Error] = "Only shipped orders can be closed by confirming delivery.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                // Update status to Closed and set actual delivery date to now
+                requestHeader.Status = SD.Closed;
+                requestHeader.DeliveryDate = DateTime.Now; // Set actual delivery date
+
+                _db.tblRequestHeaders.Update(requestHeader);
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Delivery confirmed successfully! Order has been closed.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            catch (Exception ex)
+            {
+                TempData[SD.Error] = $"Error confirming delivery: {ex.Message}";
+                return RedirectToAction(nameof(Details), new { id });
+            }
         }
 
-        // RELAUNCH REQUEST FUNCTIONALITY - CUSTOMER ONLY
         [HttpGet]
         [Authorize(Roles = SD.CustomerRole)]
         public IActionResult RelaunchRequest(int id)
         {
-            // Get the original rejected request with ALL required includes
             var originalRequest = _db.tblRequestHeaders
                 .Include(r => r.Customer)
-                    .ThenInclude(c => c.ApplicationUser) // Include ApplicationUser
+                    .ThenInclude(c => c.ApplicationUser)
                 .Include(r => r.RequestFridges)
                     .ThenInclude(d => d.Fridge)
                 .FirstOrDefault(r => r.RequestHeaderId == id && r.Status == SD.Rejected);
@@ -269,24 +380,15 @@ namespace Project.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Check if Customer and ApplicationUser are not null
-            if (originalRequest.Customer == null || originalRequest.Customer.ApplicationUser == null)
-            {
-                TempData[SD.Error] = "Customer information not found for this request.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Check if the current user owns this request
             var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (originalRequest.Customer.ApplicationUserId != userId)
+            if (originalRequest.Customer?.ApplicationUserId != userId)
             {
                 TempData[SD.Error] = "You can only relaunch your own requests.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Create view model for relaunch with null checks
             var relaunchVM = new RelaunchRequestVM
             {
                 OriginalRequestId = originalRequest.RequestHeaderId,
@@ -294,7 +396,7 @@ namespace Project.Controllers
                 CustomerName = $"{originalRequest.Customer.ApplicationUser.FirstName} {originalRequest.Customer.ApplicationUser.LastName}",
                 OriginalRequestDate = originalRequest.RequestDate,
                 RejectionDate = originalRequest.RejectionDate,
-                OriginalFridges = originalRequest.RequestFridges?.ToList() ?? new List<RequestDetails>()
+                OriginalFridges = originalRequest.RequestFridges != null ? originalRequest.RequestFridges.ToList() : new List<RequestDetails>()
             };
 
             return View(relaunchVM);
@@ -307,14 +409,12 @@ namespace Project.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Reload the original data if validation fails
                 await ReloadRelaunchVMData(relaunchVM);
                 return View(relaunchVM);
             }
 
             try
             {
-                // Get original request with all required includes
                 var originalRequest = await _db.tblRequestHeaders
                     .Include(r => r.RequestFridges)
                     .Include(r => r.Customer)
@@ -327,9 +427,8 @@ namespace Project.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Verify the current user owns this request
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (originalRequest.Customer?.ApplicationUserId != userId)
                 {
@@ -337,7 +436,6 @@ namespace Project.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Create new request based on original
                 var newRequest = new RequestHeader
                 {
                     CustomerID = originalRequest.CustomerID,
@@ -352,37 +450,29 @@ namespace Project.Controllers
                     Status = SD.Pending,
                     AdditionalDescription = relaunchVM.AdditionalDescription,
                     IsRelaunched = true,
-                    OriginalRequestId = originalRequest.RequestHeaderId
+                    OriginalRequestId = originalRequest.RequestHeaderId,
+                    RequestTotal = originalRequest.RequestTotal
                 };
 
-                // Handle file upload
                 if (relaunchVM.AdditionalDocument != null && relaunchVM.AdditionalDocument.Length > 0)
                 {
-                    string wwwRootPath = _webHostEnvironment.WebRootPath;
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(relaunchVM.AdditionalDocument.FileName);
-                    string requestPath = Path.Combine("uploads", "additional-documents");
-
-                    string finalPath = Path.Combine(wwwRootPath, requestPath);
-
-                    if (!Directory.Exists(finalPath))
+                    var uploadResult = await UploadAdditionalDocument(relaunchVM.AdditionalDocument);
+                    if (uploadResult.Success)
                     {
-                        Directory.CreateDirectory(finalPath);
+                        newRequest.AdditionalDocumentPath = uploadResult.FilePath;
                     }
-
-                    using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                    else
                     {
-                        await relaunchVM.AdditionalDocument.CopyToAsync(fileStream);
+                        ModelState.AddModelError("AdditionalDocument", uploadResult.ErrorMessage);
+                        await ReloadRelaunchVMData(relaunchVM);
+                        return View(relaunchVM);
                     }
-
-                    newRequest.AdditionalDocumentPath = Path.Combine(requestPath, fileName).Replace("\\", "/");
                 }
 
-                // Add to database
                 _db.tblRequestHeaders.Add(newRequest);
                 await _db.SaveChangesAsync();
 
-                // Copy request details (fridges) from original request
-                if (originalRequest.RequestFridges != null)
+                if (originalRequest.RequestFridges != null && originalRequest.RequestFridges.Any())
                 {
                     foreach (var originalDetail in originalRequest.RequestFridges)
                     {
@@ -395,9 +485,8 @@ namespace Project.Controllers
                         };
                         _db.tblRequestDetais.Add(newDetail);
                     }
+                    await _db.SaveChangesAsync();
                 }
-
-                await _db.SaveChangesAsync();
 
                 TempData[SD.Success] = "Request relaunched successfully with additional information. It will be reviewed again.";
                 return RedirectToAction(nameof(Details), new { id = newRequest.RequestHeaderId });
@@ -405,14 +494,76 @@ namespace Project.Controllers
             catch (Exception ex)
             {
                 TempData[SD.Error] = $"Error relaunching request: {ex.Message}";
-
-                // Reload original data for the view
                 await ReloadRelaunchVMData(relaunchVM);
                 return View(relaunchVM);
             }
         }
 
-        // Helper method to reload data for the view model
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.CustomerRole)]
+        public IActionResult CancelRequest(CancelRequestVM cancelVM)
+        {
+            if (cancelVM?.RequestHeaderId == null)
+            {
+                TempData[SD.Error] = "Invalid request data.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var requestHeaderFromDb = _db.tblRequestHeaders
+                .Include(r => r.Customer)
+                    .ThenInclude(c => c.ApplicationUser)
+                .FirstOrDefault(u => u.RequestHeaderId == cancelVM.RequestHeaderId);
+
+            if (requestHeaderFromDb == null)
+            {
+                TempData[SD.Error] = "Request not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (requestHeaderFromDb.Customer?.ApplicationUserId != userId)
+            {
+                TempData[SD.Error] = "You can only cancel your own requests.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (requestHeaderFromDb.Status != SD.Pending)
+            {
+                TempData[SD.Error] = "Only pending requests can be cancelled.";
+                return RedirectToAction(nameof(Details), new { id = cancelVM.RequestHeaderId });
+            }
+
+            // Validate cancellation reason
+            if (string.IsNullOrEmpty(cancelVM.CancellationReason))
+            {
+                TempData[SD.Error] = "Cancellation reason is required.";
+                return RedirectToAction(nameof(Details), new { id = cancelVM.RequestHeaderId });
+            }
+
+            // If "Other" is selected, require additional details
+            if (cancelVM.CancellationReason == "Other" && string.IsNullOrEmpty(cancelVM.AdditionalDetails))
+            {
+                TempData[SD.Error] = "Please provide additional details for your cancellation reason.";
+                return RedirectToAction(nameof(Details), new { id = cancelVM.RequestHeaderId });
+            }
+
+            requestHeaderFromDb.Status = SD.Cancelled;
+            requestHeaderFromDb.RejectionReason = cancelVM.CancellationReason == "Other"
+                ? $"Customer Cancellation - Other: {cancelVM.AdditionalDetails}"
+                : $"Customer Cancellation - {cancelVM.CancellationReason}";
+            requestHeaderFromDb.RejectionDate = DateTime.Now;
+
+            _db.tblRequestHeaders.Update(requestHeaderFromDb);
+            _db.SaveChanges();
+
+            TempData[SD.Success] = "Your request has been cancelled successfully.";
+            return RedirectToAction(nameof(Details), new { id = cancelVM.RequestHeaderId });
+        }
+
+        // Helper Methods
         private async Task ReloadRelaunchVMData(RelaunchRequestVM relaunchVM)
         {
             var originalRequest = await _db.tblRequestHeaders
@@ -424,21 +575,77 @@ namespace Project.Controllers
 
             if (originalRequest != null)
             {
-                relaunchVM.OriginalFridges = originalRequest.RequestFridges?.ToList() ?? new List<RequestDetails>();
+                relaunchVM.OriginalFridges = originalRequest.RequestFridges != null ? originalRequest.RequestFridges.ToList() : new List<RequestDetails>();
                 relaunchVM.RejectionReason = originalRequest.RejectionReason ?? "No reason provided";
-
-                if (originalRequest.Customer?.ApplicationUser != null)
-                {
-                    relaunchVM.CustomerName = $"{originalRequest.Customer.ApplicationUser.FirstName} {originalRequest.Customer.ApplicationUser.LastName}";
-                }
-                else
-                {
-                    relaunchVM.CustomerName = "Customer information not available";
-                }
-
+                relaunchVM.CustomerName = originalRequest.Customer?.ApplicationUser != null
+                    ? $"{originalRequest.Customer.ApplicationUser.FirstName} {originalRequest.Customer.ApplicationUser.LastName}"
+                    : "Customer information not available";
                 relaunchVM.OriginalRequestDate = originalRequest.RequestDate;
                 relaunchVM.RejectionDate = originalRequest.RejectionDate;
             }
+        }
+
+        private async Task<(bool Success, string FilePath, string ErrorMessage)> UploadAdditionalDocument(IFormFile file)
+        {
+            try
+            {
+                var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx" };
+                var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+                if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+                {
+                    return (false, "", "Only PDF, JPG, PNG, DOC, and DOCX files are allowed.");
+                }
+
+                if (file.Length > 5 * 1024 * 1024)
+                {
+                    return (false, "", "Maximum file size is 5MB.");
+                }
+
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string fileName = $"{Guid.NewGuid()}{extension}";
+                string requestPath = Path.Combine("uploads", "additional-documents");
+                string finalPath = Path.Combine(wwwRootPath, requestPath);
+
+                if (!Directory.Exists(finalPath))
+                {
+                    Directory.CreateDirectory(finalPath);
+                }
+
+                using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                return (true, Path.Combine(requestPath, fileName).Replace("\\", "/"), "");
+            }
+            catch (Exception ex)
+            {
+                return (false, "", $"Error uploading file: {ex.Message}");
+            }
+        }
+
+        private List<string> GetAvailableCarriers()
+        {
+            return new List<string>
+            {
+                "DHL",
+                "Local Delivery",
+                "Amazon Logistics"
+            };
+        }
+
+        private List<string> GetCancellationReasons()
+        {
+            return new List<string>
+            {
+                "Changed my mind",
+                "Financial reasons",
+                "No longer needed",
+                "Moving to a different location",
+                "Delivery timeframe too long",
+                "Other"
+            };
         }
     }
 }

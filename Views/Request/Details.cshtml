@@ -1,195 +1,1104 @@
 ﻿@model RequestVM
 @{
     Layout = "_CustomerLayout";
+    ViewData["Title"] = "Order Report";
 }
 
-<form method="post">
-    <input asp-for="RequstHeader.RequestHeaderId" type="hidden" />
-   
+<!-- Hidden Forms -->
+<form method="post" asp-action="CloseOrder" id="closeOrderForm">
+    <input type="hidden" name="id" value="@Model.RequstHeader.RequestHeaderId" />
+    @Html.AntiForgeryToken()
+</form>
 
+<!-- Approve Form -->
+<form method="post" asp-action="Approve" id="approveForm">
+    <input type="hidden" name="RequstHeader.RequestHeaderId" value="@Model.RequstHeader.RequestHeaderId" />
+    @Html.AntiForgeryToken()
+</form>
 
+<!-- Reject Form -->
+<form method="post" asp-action="Reject" id="rejectForm">
+    <input type="hidden" name="RequstHeader.RequestHeaderId" value="@Model.RequstHeader.RequestHeaderId" />
+    <input type="hidden" name="RequstHeader.RejectionReason" id="rejectReasonField" />
+    @Html.AntiForgeryToken()
+</form>
 
-    <div class="container py-5">
-        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+<!-- Ship Order Form -->
+<form method="post" asp-action="ShipOrder" id="shipOrderForm">
+    <input type="hidden" name="RequestHeaderId" value="@Model.RequstHeader.RequestHeaderId" />
+    <input type="hidden" name="Carrier" id="shipCarrierField" />
+    <input type="hidden" name="DeliveryDate" id="shipDeliveryDateField" />
+    @Html.AntiForgeryToken()
+</form>
 
-            <!-- Header -->
-            <div class="card-header bg-primary text-light py-4 position-relative">
-                <div class="row align-items-center">
-                    <div class="col-12 text-center">
-                        <h2 class="text-white fw-bold mb-1">Order Details</h2>
-                        <p class="text-light mb-0 opacity-75">Manage customer pickup & order information</p>
-                    </div>
+<!-- Cancel Request Form -->
+<form method="post" asp-action="CancelRequest" id="cancelRequestForm">
+    <input type="hidden" name="RequestHeaderId" value="@Model.RequstHeader.RequestHeaderId" />
+    <input type="hidden" name="CancellationReason" id="cancelReasonField" />
+    <input type="hidden" name="AdditionalDetails" id="cancelAdditionalDetailsField" />
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="container py-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+        <!-- Header -->
+        <div class="card-header bg-primary text-light py-4">
+            <div class="row align-items-center">
+                <div class="col-12 text-center">
+                    <h2 class="text-white fw-bold mb-1">Order Report</h2>
+                    <p class="text-light mb-0 opacity-75">Order #@Model.RequstHeader.RequestHeaderId - Detailed Information</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Body -->
-            <div class="card-body p-4 p-md-5">
-                <!-- Back Button -->
-                <div class="row mb-4">
-                    <div class="col-12 col-md-3">
-                        <a asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill">
-                            <i class="bi bi-arrow-left me-1"></i> Back to Orders
-                        </a>
+        <!-- Body -->
+        <div class="card-body p-4 p-md-5">
+            <!-- Status Alerts -->
+            @if ((Model.RequstHeader.Status == SD.Rejected || Model.RequstHeader.Status == SD.Cancelled) && !string.IsNullOrEmpty(Model.RequstHeader.RejectionReason))
+            {
+                <div class="alert alert-warning border-0 rounded-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading mb-2">Request @Model.RequstHeader.Status</h5>
+                            <p class="mb-1"><strong>Reason:</strong> @Model.RequstHeader.RejectionReason</p>
+                            @if (Model.RequstHeader.RejectionDate.HasValue)
+                            {
+                                <p class="mb-0"><strong>@Model.RequstHeader.Status on:</strong> @Model.RequstHeader.RejectionDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</p>
+                            }
+                        </div>
                     </div>
                 </div>
+            }
 
-                <div class="row g-5">
-                    <!-- Pickup / Shipping Details -->
-                    <div class="col-12 col-lg-6">
-                        <h3 class="section-title mb-3 text-primary fw-bold">
-                            <i class="bi bi-person-lines-fill me-2"></i> Pickup Details
-                        </h3>
-
-                        <div class="specs-container mb-4">
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.FirstName" class="form-label fw-semibold text-dark">Name</label>
-                                <input asp-for="RequstHeader.FirstName" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.FirstName" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.LastName" class="form-label fw-semibold text-dark">Surname</label>
-                                <input asp-for="RequstHeader.LastName" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.LastName" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.CellNumber" class="form-label fw-semibold text-dark">Phone</label>
-                                <input asp-for="RequstHeader.CellNumber" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.CellNumber" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.StreetAddress" class="form-label fw-semibold text-dark">Street Address</label>
-                                <input asp-for="RequstHeader.StreetAddress" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                                <span asp-validation-for="RequstHeader.StreetAddress" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.City" class="form-label fw-semibold text-dark">City</label>
-                                <input asp-for="RequstHeader.City" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.State" class="form-label fw-semibold text-dark">State</label>
-                                <input asp-for="RequstHeader.State" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.PostalCode" class="form-label fw-semibold text-dark">Postal Code</label>
-                                <input asp-for="RequstHeader.PostalCode" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-dark">Email</label>
-                                <input asp-for="RequstHeader.Customer.ApplicationUser.Email" class="form-control" readonly />
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-dark">Order Date</label>
-                                <input value="@Model.RequstHeader.RequestDate.ToShortDateString()" class="form-control" readonly />
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.Carrier" class="form-label fw-semibold text-dark">Carrier</label>
-                                <input asp-for="RequstHeader.Carrier" id="carrier" class="form-control"
-                                       readonly="@(User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport) ? "false" : "true")" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-dark">Shipping Date</label>
-                                <input value="@Model.RequstHeader.ShippingDate?.ToShortDateString()" class="form-control" readonly />
-                            </div>
-
-                            <div class="mb-3">
-                                <label asp-for="RequstHeader.Status" class="form-label fw-semibold text-dark">Status</label>
-                                <input asp-for="RequstHeader.Status" class="form-control" readonly />
-                            </div>
-
-                            <!-- Action Buttons -->
-                            @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
+            @if (Model.RequstHeader.Status == SD.Closed)
+            {
+                <div class="alert alert-success border-0 rounded-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading mb-2">Order Completed</h5>
+                            <p class="mb-0">This order has been successfully delivered and is now closed.</p>
+                            @if (Model.RequstHeader.PaymentDueDate.HasValue)
                             {
-                                <div class="row g-2 mt-4">
-                                    <div class="col-12 col-md-4">
-                                        <button type="submit" asp-action="Approve"
-                                                class="btn btn-success w-100 py-2 fw-semibold rounded-pill shadow">
-                                            <i class="bi bi-check-circle me-1"></i> Approve
-                                        </button>
-                                    </div>
+                                <p class="mb-0"><strong>Next Payment Date:</strong> @Model.RequstHeader.PaymentDueDate.Value.ToString("MMMM dd, yyyy")</p>
+                            }
+                            @if (Model.RequstHeader.DeliveryDate.HasValue)
+                            {
+                                <p class="mb-0"><strong>Delivered on:</strong> @Model.RequstHeader.DeliveryDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
 
-                                   @*  <div class="col-12 col-md-4">
-                                        <button type="submit" asp-action="Feedback"
-                                                class="btn btn-info w-100 py-2 fw-semibold rounded-pill shadow">
-                                            <i class="bi bi-chat-dots me-1"></i> Feedback
-                                        </button>
-                                    </div> *@
-
-                                    <div class="col-12 col-md-4">
-                                        <button type="submit" asp-action="Reject"
-                                                class="btn btn-danger w-100 py-2 fw-semibold rounded-pill shadow">
-                                            <i class="bi bi-x-circle me-1"></i> Decline
-                                            </button>
-                                    </div>
+            @if (Model.RequstHeader.Status == SD.Shipped)
+            {
+                <div class="alert alert-info border-0 rounded-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-truck fs-4 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading mb-2">Order Shipped</h5>
+                            <p class="mb-0">This order has been shipped and is on its way to the customer.</p>
+                            @if (User.IsInRole(SD.CustomerRole))
+                            {
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Please confirm delivery once you receive your order.
+                                    </small>
                                 </div>
                             }
                         </div>
                     </div>
+                </div>
+            }
 
-                    <!-- Order Summary -->
-                    <div class="col-12 col-lg-6">
-                        <h3 class="section-title mb-3 text-primary fw-bold">
-                            <i class="bi bi-receipt me-2"></i> Order Summary
-                        </h3>
-
-                        <ul class="list-group mb-4 shadow-sm rounded-3 overflow-hidden">
-                            @foreach (var detail in Model.RequstDetail)
+            <!-- Quick Stats -->
+            <div class="row mb-5">
+                <div class="col-12 col-md-3 mb-3">
+                    <div class="card bg-light border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-calendar-check fs-1 text-primary mb-2"></i>
+                            <h5 class="card-title">Order Date</h5>
+                            <p class="card-text fw-bold">@Model.RequstHeader.RequestDate.ToString("MMM dd, yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 mb-3">
+                    <div class="card bg-light border-0 h-100">
+                        <div class="card-body text-center">
+                            @if (Model.RequstHeader.Status == SD.Closed)
                             {
-                                <li class="list-group-item d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <div>
-                                            <h6 class="fw-semibold mb-0 text-primary">@detail.Fridge.Brand</h6>
-                                            <small class="text-muted">Price Per Month: @detail.Price.ToString("c")</small><br />
-                                            <small class="text-muted">Quantity: @detail.Count</small>
-                                        </div>
-                                        <span class="fw-bold text-success">@((detail.Count * detail.Price).ToString("c"))</span>
-                                    </div>
-
-                                    <!-- Allocated Fridge Numbers -->
-                                    @if (detail.CustomerFridges != null && detail.CustomerFridges.Any())
-                                    {
-                                        <div class="mt-2">
-                                            <strong>Allocated Fridge Numbers:</strong>
-                                            <ul class="list-unstyled mb-0">
-                                                @foreach (var cf in detail.CustomerFridges)
-                                                {
-                                                    <li>@cf.FridgeInStock.FridgeNo</li>
-                                                }
-                                            </ul>
-                                        </div>
-                                    }
-                                </li>
+                                <i class="bi bi-check-circle fs-1 text-success mb-2"></i>
                             }
-
-                            <li class="list-group-item d-flex justify-content-between bg-primary text-white">
-                                <small>Total Per Month</small>
-                                <strong class="fs-5">@Model.RequstHeader.RequestTotal.ToString("c")</strong>
-                            </li>
-                        </ul>
+                            else if (Model.RequstHeader.Status == SD.Shipped)
+                            {
+                                <i class="bi bi-truck fs-1 text-info mb-2"></i>
+                            }
+                            else if (Model.RequstHeader.Status == SD.Approved)
+                            {
+                                <i class="bi bi-check-lg fs-1 text-success mb-2"></i>
+                            }
+                            else if (Model.RequstHeader.Status == SD.Pending)
+                            {
+                                <i class="bi bi-clock fs-1 text-warning mb-2"></i>
+                            }
+                            else if (Model.RequstHeader.Status == SD.Rejected || Model.RequstHeader.Status == SD.Cancelled)
+                            {
+                                <i class="bi bi-x-circle fs-1 text-danger mb-2"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-tag fs-1 text-secondary mb-2"></i>
+                            }
+                            <h5 class="card-title">Status</h5>
+                            <p class="card-text fw-bold">@Model.RequstHeader.Status</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 mb-3">
+                    <div class="card bg-light border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-cash-coin fs-1 text-warning mb-2"></i>
+                            <h5 class="card-title">Monthly Total</h5>
+                            <p class="card-text fw-bold">@Model.RequstHeader.RequestTotal.ToString("C")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 mb-3">
+                    <div class="card bg-light border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-box-seam fs-1 text-info mb-2"></i>
+                            <h5 class="card-title">Total Items</h5>
+                            <p class="card-text fw-bold">@(Model.RequstDetail?.Sum(d => d.Count) ?? 0)</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <div class="row g-5">
+                <!-- Customer & Shipping Information -->
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i>Customer Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <label class="form-label fw-semibold text-dark">Name</label>
+                                    <div class="form-control-plaintext">@Model.RequstHeader.FirstName @Model.RequstHeader.LastName</div>
+                                </div>
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <label class="form-label fw-semibold text-dark">Phone</label>
+                                    <div class="form-control-plaintext">@Model.RequstHeader.CellNumber</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark">Email</label>
+                                <div class="form-control-plaintext">@Model.RequstHeader.Customer?.ApplicationUser?.Email</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark">Address</label>
+                                <div class="form-control-plaintext">
+                                    @Model.RequstHeader.StreetAddress, @Model.RequstHeader.City, @Model.RequstHeader.State @Model.RequstHeader.PostalCode
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Details - Always show if shipped or closed -->
+                    @if (Model.RequstHeader.Status == SD.Closed || Model.RequstHeader.Status == SD.Shipped)
+                    {
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h4 class="mb-0"><i class="bi bi-truck me-2"></i>Shipping Information</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-6 mb-3">
+                                        <label class="form-label fw-semibold text-dark">Carrier</label>
+                                        <div class="form-control-plaintext">
+                                            @if (!string.IsNullOrEmpty(Model.RequstHeader.Carrier))
+                                            {
+                                                @Model.RequstHeader.Carrier
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not specified</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 mb-3">
+                                        <label class="form-label fw-semibold text-dark">
+                                            @(Model.RequstHeader.Status == SD.Closed ? "Delivered Date" : "Estimated Delivery")
+                                        </label>
+                                        <div class="form-control-plaintext">
+                                            @if (Model.RequstHeader.Status == SD.Closed && Model.RequstHeader.DeliveryDate.HasValue)
+                                            {
+                                                @Model.RequstHeader.DeliveryDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                            }
+                                            else if (Model.RequstHeader.DeliveryDate.HasValue)
+                                            {
+                                                @Model.RequstHeader.DeliveryDate.Value.ToString("MMM dd, yyyy")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not scheduled</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Next Payment Date for Closed Orders -->
+                                @if (Model.RequstHeader.Status == SD.Closed && Model.RequstHeader.PaymentDueDate.HasValue)
+                                {
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label fw-semibold text-dark">Next Payment Date</label>
+                                            <div class="form-control-plaintext text-success fw-bold">
+                                                @Model.RequstHeader.PaymentDueDate.Value.ToString("MMMM dd, yyyy")
+                                            </div>
+                                            <small class="text-muted">Your next monthly payment is due on this date</small>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.RequstHeader.Status == SD.Shipped && User.IsInRole(SD.CustomerRole))
+                                {
+                                    <div class="mt-3 p-3 bg-light rounded">
+                                        <small class="text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Once you receive your order, please confirm delivery to complete the process and see your next payment date.
+                                        </small>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Order Summary & Timeline -->
+                <div class="col-12 col-lg-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0"><i class="bi bi-receipt me-2"></i>Order Summary</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-end">Price/Month</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var detail in Model.RequstDetail ?? new List<RequestDetails>())
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <strong class="text-primary">@detail.Fridge?.Brand</strong>
+                                                        @if (detail.CustomerFridges != null && detail.CustomerFridges.Any())
+                                                        {
+                                                            <div class="mt-1">
+                                                                <small class="text-muted">
+                                                                    <strong>Serial Numbers:</strong>
+                                                                    @string.Join(", ", detail.CustomerFridges.Select(cf => cf.FridgeInStock?.FridgeNo))
+                                                                </small>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">@detail.Count</td>
+                                                <td class="text-end">@detail.Price.ToString("C")</td>
+                                                <td class="text-end fw-bold text-success">@((detail.Count * detail.Price).ToString("C"))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot class="table-primary">
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold">Monthly Total:</td>
+                                            <td class="text-end fw-bold fs-5">@Model.RequstHeader.RequestTotal.ToString("C")</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Timeline -->
+                    <div class="card border-0 shadow-sm mt-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h4 class="mb-0"><i class="bi bi-clock-history me-2"></i>Order Timeline</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                @{
+                                    var statusOrder = new[] { SD.Pending, SD.Approved, SD.Shipped, SD.Closed };
+                                    var currentStatusIndex = Array.IndexOf(statusOrder, Model.RequstHeader.Status);
+                                }
+
+                                <!-- Order Placed - Always shown and completed -->
+                                <div class="timeline-item completed">
+                                    <div class="timeline-marker bg-primary"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Order Placed</h6>
+                                        <p class="text-muted mb-0">@Model.RequstHeader.RequestDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
+                                    </div>
+                                </div>
+
+                                <!-- Pending Status -->
+                                @if (currentStatusIndex >= 0)
+                                {
+                                    <div class="timeline-item @(currentStatusIndex >= 1 ? "completed" : "active")">
+                                        <div class="timeline-marker @(currentStatusIndex >= 1 ? "bg-success" : "bg-warning")"></div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">@(currentStatusIndex >= 1 ? "Approved" : "Under Review")</h6>
+                                            <p class="text-muted mb-0">
+                                                @if (currentStatusIndex >= 1)
+                                                {
+                                                    @:Order approved and processing
+                                                }
+                                                else
+                                                {
+                                                    @:Waiting for approval
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Approved Status -->
+                                @if (currentStatusIndex >= 1)
+                                {
+                                    <div class="timeline-item @(currentStatusIndex >= 2 ? "completed" : "active")">
+                                        <div class="timeline-marker @(currentStatusIndex >= 2 ? "bg-info" : "bg-warning")"></div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">@(currentStatusIndex >= 2 ? "Shipped" : "Preparing for Shipment")</h6>
+                                            <p class="text-muted mb-0">
+                                                @if (currentStatusIndex >= 2)
+                                                {
+                                                    if (!string.IsNullOrEmpty(Model.RequstHeader.Carrier))
+                                                    {
+                                                        <text>Shipped via @Model.RequstHeader.Carrier</text>
+                                                    }
+                                                    else
+                                                    {
+                                                        @:Order has been shipped
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    @:Being prepared for shipment
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Shipped Status -->
+                                @if (currentStatusIndex >= 2)
+                                {
+                                    <div class="timeline-item @(currentStatusIndex >= 3 ? "completed" : "active")">
+                                        <div class="timeline-marker @(currentStatusIndex >= 3 ? "bg-success" : "bg-warning")"></div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">@(currentStatusIndex >= 3 ? "Delivered & Closed" : "In Transit")</h6>
+                                            <p class="text-muted mb-0">
+                                                @if (currentStatusIndex >= 3)
+                                                {
+                                                    if (Model.RequstHeader.DeliveryDate.HasValue)
+                                                    {
+                                                        <text>Delivered on @Model.RequstHeader.DeliveryDate.Value.ToString("MMM dd, yyyy")</text>
+                                                    }
+                                                    else
+                                                    {
+                                                        @:Order completed and closed
+                                                    }
+                                                    <br />
+                                                    @if (Model.RequstHeader.PaymentDueDate.HasValue)
+                                                    {
+                                                        <small class="text-success fw-bold">Next payment: @Model.RequstHeader.PaymentDueDate.Value.ToString("MMM dd, yyyy")</small>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    @:On the way to customer
+                                                    if (User.IsInRole(SD.CustomerRole))
+                                                    {
+                                                        <br />
+                                                        <small class="text-info">Confirm delivery upon receipt</small>
+                                                    }
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Rejected/Cancelled Status -->
+                                @if (Model.RequstHeader.Status == SD.Rejected || Model.RequstHeader.Status == SD.Cancelled)
+                                {
+                                    <div class="timeline-item completed">
+                                        <div class="timeline-marker @(Model.RequstHeader.Status == SD.Rejected ? "bg-danger" : "bg-warning")"></div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">@Model.RequstHeader.Status</h6>
+                                            <p class="text-muted mb-0">
+                                                @if (Model.RequstHeader.RejectionDate.HasValue)
+                                                {
+                                                    @Model.RequstHeader.RejectionDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                                }
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(Model.RequstHeader.RejectionReason))
+                                            {
+                                                <small class="text-muted">Reason: @Model.RequstHeader.RejectionReason</small>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-12 col-md-4 mb-3">
+                                    <small class="text-muted">Report Generated On</small>
+                                    <div class="fw-bold">@DateTime.Now.ToString("MMMM dd, yyyy 'at' hh:mm tt")</div>
+                                </div>
+                                <div class="col-12 col-md-4 mb-3">
+                                    <small class="text-muted">Order ID</small>
+                                    <div class="fw-bold">#@Model.RequstHeader.RequestHeaderId</div>
+                                </div>
+                                <div class="col-12 col-md-4 mb-3">
+                                    <small class="text-muted">Report Type</small>
+                                    <div class="fw-bold">Order Detail Report</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons - Moved to Bottom -->
+            <div class="row mt-5 pt-4 border-top">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <!-- Back Button -->
+                        <a asp-action="Index" class="btn btn-outline-primary rounded-pill">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Orders
+                        </a>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- Customer Actions -->
+                            @if (User.IsInRole(SD.CustomerRole))
+                            {
+                                <!-- Cancel Pending Request -->
+                                @if (Model.RequstHeader.Status == SD.Pending)
+                                {
+                                    <button type="button" id="cancelRequestBtn" class="btn btn-warning rounded-pill">
+                                        <i class="bi bi-x-circle me-1"></i> Cancel Request
+                                    </button>
+                                }
+
+                                <!-- Confirm Delivery -->
+                                @if (Model.RequstHeader.Status == SD.Shipped)
+                                {
+                                    <button type="button" id="confirmDeliveryBtn" class="btn btn-success rounded-pill">
+                                        <i class="bi bi-check-circle me-1"></i> Confirm Delivery
+                                    </button>
+                                }
+
+                                <!-- Relaunch Rejected Request -->
+                                @if (Model.RequstHeader.Status == SD.Rejected)
+                                {
+                                    <a asp-action="RelaunchRequest" asp-route-id="@Model.RequstHeader.RequestHeaderId"
+                                       class="btn btn-info rounded-pill">
+                                        <i class="bi bi-arrow-clockwise me-1"></i> Relaunch Request
+                                    </a>
+                                }
+                            }
+
+                            <!-- Customer Support & Admin Actions -->
+                            @if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.CustomerSupport))
+                            {
+                                <!-- Pending Order Actions -->
+                                @if (Model.RequstHeader.Status == SD.Pending)
+                                {
+                                    <button type="button" id="approveOrderBtn" class="btn btn-success rounded-pill">
+                                        <i class="bi bi-check-lg me-1"></i> Approve Order
+                                    </button>
+                                    <button type="button" id="declineOrderBtn" class="btn btn-danger rounded-pill">
+                                        <i class="bi bi-x-lg me-1"></i> Decline Order
+                                    </button>
+                                    <!-- Ship Order button for pending orders -->
+                                    <button type="button" id="shipOrderBtn" class="btn btn-info rounded-pill">
+                                        <i class="bi bi-truck me-1"></i> Ship Order
+                                    </button>
+                                }
+
+                                <!-- Approved Order Actions -->
+                                @if (Model.RequstHeader.Status == SD.Approved)
+                                {
+                                    <button type="button" id="shipOrderBtn" class="btn btn-info rounded-pill">
+                                        <i class="bi bi-truck me-1"></i> Ship Order
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</form>
+</div>
 
+<!-- Confirm Delivery Modal -->
+<div class="modal fade" id="confirmDeliveryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-check-circle me-2"></i>Confirm Delivery Received</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please confirm you have received your order in good condition.</p>
+                <div class="alert alert-info small">
+                    <strong>By confirming:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Status → <strong>Closed</strong></li>
+                        <li>Next payment date will be displayed</li>
+                        <li>Order completed</li>
+                    </ul>
+                </div>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="confirmReceipt">
+                    <label class="form-check-label" for="confirmReceipt">
+                        I confirm receipt in good condition
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="finalConfirmDelivery" disabled>Yes, Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Request Modal (Customer) -->
+<div class="modal fade" id="cancelRequestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title"><i class="bi bi-x-circle me-2"></i>Cancel Order Request</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this order request?</p>
+                <div class="alert alert-warning small">
+                    <strong>Note:</strong> This action cannot be undone. Customer support will be notified of your cancellation.
+                </div>
+                <div class="mb-3">
+                    <label for="cancellationReason" class="form-label fw-semibold">Reason for Cancellation</label>
+                    <select class="form-select" id="cancellationReason" required>
+                        <option value="">Select a reason...</option>
+                        @if (ViewBag.CancellationReasons != null)
+                        {
+                            foreach (var reason in ViewBag.CancellationReasons)
+                            {
+                                <option value="@reason">@reason</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="Changed my mind">Changed my mind</option>
+                            <option value="Financial reasons">Financial reasons</option>
+                            <option value="No longer needed">No longer needed</option>
+                            <option value="Moving to a different location">Moving to a different location</option>
+                            <option value="Delivery timeframe too long">Delivery timeframe too long</option>
+                            <option value="Other">Other (please specify)</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3" id="otherReasonContainer" style="display: none;">
+                    <label for="otherReason" class="form-label fw-semibold">Please specify</label>
+                    <textarea class="form-control" id="otherReason" rows="2" placeholder="Enter your reason..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Request</button>
+                <button type="button" class="btn btn-warning" id="finalCancelRequest" disabled>Yes, Cancel Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Decline Order Modal (Customer Support) -->
+<div class="modal fade" id="declineOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-x-lg me-2"></i>Decline Order Request</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to decline this order request?</p>
+                <div class="alert alert-danger small">
+                    <strong>Note:</strong> The customer will be notified and this action cannot be undone.
+                </div>
+                <div class="mb-3">
+                    <label for="declineReason" class="form-label fw-semibold">Reason for Declining</label>
+                    <textarea class="form-control" id="declineReason" rows="3" placeholder="Please provide a detailed reason for declining this order (at least 10 characters)" required></textarea>
+                    <div class="form-text">Minimum 10 characters required</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Order</button>
+                <button type="button" class="btn btn-danger" id="finalDeclineOrder" disabled>Yes, Decline Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ship Order Modal (Customer Support) -->
+<div class="modal fade" id="shipOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-truck me-2"></i>Ship Order</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please provide shipping details to mark this order as shipped.</p>
+                <div class="alert alert-info small">
+                    <strong>Note:</strong> Customer will be able to see the carrier and delivery date. Once confirmed, the next payment date will be calculated automatically.
+                </div>
+                <div class="mb-3">
+                    <label for="carrier" class="form-label fw-semibold">Carrier <span class="text-danger">*</span></label>
+                    <select class="form-select" id="carrier" required>
+                        <option value="">Select carrier...</option>
+                        @if (ViewBag.Carriers != null)
+                        {
+                            foreach (var carrier in ViewBag.Carriers)
+                            {
+                                <option value="@carrier">@carrier</option>
+                            }
+                        }
+                        else
+                        {
+                         
+                            <option value="DHL">DHL</option>
+                           
+                            <option value="Local Delivery">Local Delivery</option>
+                            <option value="Amazon Logistics">Amazon Logistics</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="deliveryDate" class="form-label fw-semibold">Estimated Delivery Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="deliveryDate" required>
+                    <div class="form-text">Customer will see this as the expected delivery date</div>
+                </div>
+                <!-- Next Payment Date Preview -->
+                <div class="mb-3 p-3 bg-light rounded" id="nextPaymentPreview" style="display: none;">
+                    <label class="form-label fw-semibold">Next Payment Date Preview</label>
+                    <div class="text-success fw-bold" id="PaymentDueDateText"></div>
+                    <small class="text-muted">This will be shown to the customer after delivery confirmation</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" id="finalShipOrder" disabled>Mark as Shipped</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px currentColor;
+        }
+
+        .timeline-item.completed .timeline-marker {
+            color: #28a745;
+        }
+
+        .timeline-item.active .timeline-marker {
+            color: #007bff;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-item.pending .timeline-marker {
+            color: #6c757d;
+        }
+
+        .timeline-content {
+            padding-left: 1rem;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 1rem;
+            bottom: -1rem;
+            width: 2px;
+            background: #dee2e6;
+        }
+
+        .timeline-item.completed:not(:last-child)::before {
+            background: #28a745;
+        }
+
+        .timeline-item.active:not(:last-child)::before {
+            background: #007bff;
+        }
+
+        .timeline-item.pending:not(:last-child)::before {
+            background: #e9ecef;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @@media print {
+            .btn, .modal, .alert {
+                display: none !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #dee2e6 !important;
+            }
+        }
+    </style>
+}
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Delivery Confirmation
+            const confirmDeliveryBtn = document.getElementById('confirmDeliveryBtn');
+            const confirmDeliveryModal = document.getElementById('confirmDeliveryModal');
+            const confirmReceiptCheckbox = document.getElementById('confirmReceipt');
+            const finalConfirmDeliveryBtn = document.getElementById('finalConfirmDelivery');
+            const closeOrderForm = document.getElementById('closeOrderForm');
+
+            // Cancel Request (Customer)
+            const cancelRequestBtn = document.getElementById('cancelRequestBtn');
+            const cancelRequestModal = document.getElementById('cancelRequestModal');
+            const cancellationReason = document.getElementById('cancellationReason');
+            const otherReasonContainer = document.getElementById('otherReasonContainer');
+            const otherReason = document.getElementById('otherReason');
+            const finalCancelRequest = document.getElementById('finalCancelRequest');
+            const cancelRequestForm = document.getElementById('cancelRequestForm');
+            const cancelReasonField = document.getElementById('cancelReasonField');
+            const cancelAdditionalDetailsField = document.getElementById('cancelAdditionalDetailsField');
+
+            // Customer Support Actions
+            const approveOrderBtn = document.getElementById('approveOrderBtn');
+            const declineOrderBtn = document.getElementById('declineOrderBtn');
+            const shipOrderBtn = document.getElementById('shipOrderBtn');
+
+            const declineOrderModal = document.getElementById('declineOrderModal');
+            const shipOrderModal = document.getElementById('shipOrderModal');
+
+            const declineReason = document.getElementById('declineReason');
+            const finalDeclineOrder = document.getElementById('finalDeclineOrder');
+            const finalShipOrder = document.getElementById('finalShipOrder');
+
+            const approveForm = document.getElementById('approveForm');
+            const rejectForm = document.getElementById('rejectForm');
+            const shipOrderForm = document.getElementById('shipOrderForm');
+            const rejectReasonField = document.getElementById('rejectReasonField');
+            const shipCarrierField = document.getElementById('shipCarrierField');
+            const shipDeliveryDateField = document.getElementById('shipDeliveryDateField');
+
+            // Initialize Bootstrap modals
+            let confirmDeliveryModalInstance = null;
+            let cancelRequestModalInstance = null;
+            let declineOrderModalInstance = null;
+            let shipOrderModalInstance = null;
+
+            if (confirmDeliveryModal) {
+                confirmDeliveryModalInstance = new bootstrap.Modal(confirmDeliveryModal);
+            }
+            if (cancelRequestModal) {
+                cancelRequestModalInstance = new bootstrap.Modal(cancelRequestModal);
+            }
+            if (declineOrderModal) {
+                declineOrderModalInstance = new bootstrap.Modal(declineOrderModal);
+            }
+            if (shipOrderModal) {
+                shipOrderModalInstance = new bootstrap.Modal(shipOrderModal);
+            }
+
+            // Delivery Confirmation
+            if (confirmDeliveryBtn && confirmDeliveryModalInstance) {
+                confirmDeliveryBtn.addEventListener('click', () => confirmDeliveryModalInstance.show());
+            }
+
+            if (confirmReceiptCheckbox && finalConfirmDeliveryBtn) {
+                confirmReceiptCheckbox.addEventListener('change', () => {
+                    finalConfirmDeliveryBtn.disabled = !confirmReceiptCheckbox.checked;
+                });
+            }
+
+            if (finalConfirmDeliveryBtn) {
+                finalConfirmDeliveryBtn.addEventListener('click', () => {
+                    if (closeOrderForm) {
+                        closeOrderForm.submit();
+                    }
+                });
+            }
+
+            // Cancel Request (Customer)
+            if (cancelRequestBtn && cancelRequestModalInstance) {
+                cancelRequestBtn.addEventListener('click', () => cancelRequestModalInstance.show());
+            }
+
+            if (cancellationReason) {
+                cancellationReason.addEventListener('change', function() {
+                    const isOther = this.value === 'Other';
+                    if (otherReasonContainer) {
+                        otherReasonContainer.style.display = isOther ? 'block' : 'none';
+                    }
+                    updateCancelButtonState();
+                });
+            }
+
+            if (otherReason) {
+                otherReason.addEventListener('input', updateCancelButtonState);
+            }
+
+            function updateCancelButtonState() {
+                if (finalCancelRequest) {
+                    const reason = cancellationReason ? cancellationReason.value : '';
+                    const isValid = reason && (reason !== 'Other' || (otherReason && otherReason.value.trim()));
+                    finalCancelRequest.disabled = !isValid;
+                }
+            }
+
+            if (finalCancelRequest) {
+                finalCancelRequest.addEventListener('click', function() {
+                    let reason = cancellationReason ? cancellationReason.value : '';
+                    let additionalDetails = '';
+
+                    if (reason === 'Other' && otherReason) {
+                        additionalDetails = otherReason.value.trim();
+                    }
+
+                    if (cancelReasonField) {
+                        cancelReasonField.value = reason;
+                    }
+                    if (cancelAdditionalDetailsField) {
+                        cancelAdditionalDetailsField.value = additionalDetails;
+                    }
+                    if (cancelRequestForm) {
+                        cancelRequestForm.submit();
+                    }
+                });
+            }
+
+            // Customer Support: Approve Order
+            if (approveOrderBtn) {
+                approveOrderBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to approve this order?')) {
+                        if (approveForm) {
+                            approveForm.submit();
+                        }
+                    }
+                });
+            }
+
+            // Customer Support: Decline Order
+            if (declineOrderBtn && declineOrderModalInstance) {
+                declineOrderBtn.addEventListener('click', () => declineOrderModalInstance.show());
+            }
+
+            if (declineReason) {
+                declineReason.addEventListener('input', function() {
+                    const isValid = this.value.trim().length >= 10;
+                    if (finalDeclineOrder) {
+                        finalDeclineOrder.disabled = !isValid;
+                    }
+                });
+            }
+
+            if (finalDeclineOrder) {
+                finalDeclineOrder.addEventListener('click', function() {
+                    if (rejectReasonField && declineReason) {
+                        rejectReasonField.value = declineReason.value.trim();
+                    }
+                    if (rejectForm) {
+                        rejectForm.submit();
+                    }
+                });
+            }
+
+            // Customer Support: Ship Order
+            if (shipOrderBtn && shipOrderModalInstance) {
+                shipOrderBtn.addEventListener('click', () => shipOrderModalInstance.show());
+            }
+
+            // Validate ship order form and calculate next payment date
+            const carrierSelect = document.getElementById('carrier');
+            const deliveryDateInput = document.getElementById('deliveryDate');
+            const nextPaymentPreview = document.getElementById('nextPaymentPreview');
+            const PaymentDueDateText = document.getElementById('PaymentDueDateText');
+
+            function updateShipButtonState() {
+                const isValid = carrierSelect && carrierSelect.value && deliveryDateInput && deliveryDateInput.value;
+                if (finalShipOrder) {
+                    finalShipOrder.disabled = !isValid;
+                }
+
+                // Show next payment preview if delivery date is set
+                if (deliveryDateInput && deliveryDateInput.value) {
+                    calculatePaymentDueDate();
+                } else if (nextPaymentPreview) {
+                    nextPaymentPreview.style.display = 'none';
+                }
+            }
+
+            function calculatePaymentDueDate() {
+                if (!deliveryDateInput || !deliveryDateInput.value || !PaymentDueDateText) {
+                    return;
+                }
+
+                const deliveryDate = new Date(deliveryDateInput.value);
+
+                // Calculate next payment date (30 days from delivery date)
+                const paymentDueDate = new Date(deliveryDate);
+                paymentDueDate.setDate(paymentDueDate.getDate() + 30);
+
+                // Format date for display
+                const paymentDueDateFormatted = paymentDueDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Update preview
+                PaymentDueDateText.textContent = paymentDueDateFormatted;
+                if (nextPaymentPreview) {
+                    nextPaymentPreview.style.display = 'block';
+                }
+            }
+
+            if (carrierSelect && deliveryDateInput) {
+                carrierSelect.addEventListener('change', updateShipButtonState);
+                deliveryDateInput.addEventListener('change', updateShipButtonState);
+            }
+
+            if (finalShipOrder) {
+                finalShipOrder.addEventListener('click', function() {
+                    // Set carrier
+                    if (shipCarrierField && carrierSelect) {
+                        shipCarrierField.value = carrierSelect.value;
+                    }
+
+                    // Set delivery date
+                    if (shipDeliveryDateField && deliveryDateInput && deliveryDateInput.value) {
+                        const deliveryDate = new Date(deliveryDateInput.value);
+                        shipDeliveryDateField.value = deliveryDate.toISOString();
+                    }
+
+                    if (shipOrderForm) {
+                        shipOrderForm.submit();
+                    }
+                });
+            }
+
+            // Set minimum date for delivery date to today
+            if (deliveryDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                deliveryDateInput.min = today;
+
+                // Set default delivery date to 3 days from today
+                const defaultDate = new Date();
+                defaultDate.setDate(defaultDate.getDate() + 3);
+                deliveryDateInput.value = defaultDate.toISOString().split('T')[0];
+
+                // Trigger calculation for default date
+                calculatePaymentDueDate();
+            }
+
+            // Reset modals when closed
+            if (confirmDeliveryModal) {
+                confirmDeliveryModal.addEventListener('hidden.bs.modal', () => {
+                    if (confirmReceiptCheckbox) confirmReceiptCheckbox.checked = false;
+                    if (finalConfirmDeliveryBtn) finalConfirmDeliveryBtn.disabled = true;
+                });
+            }
+
+            if (cancelRequestModal) {
+                cancelRequestModal.addEventListener('hidden.bs.modal', () => {
+                    if (cancellationReason) cancellationReason.value = '';
+                    if (otherReason) otherReason.value = '';
+                    if (otherReasonContainer) otherReasonContainer.style.display = 'none';
+                    if (finalCancelRequest) finalCancelRequest.disabled = true;
+                });
+            }
+
+            if (declineOrderModal) {
+                declineOrderModal.addEventListener('hidden.bs.modal', () => {
+                    if (declineReason) declineReason.value = '';
+                    if (finalDeclineOrder) finalDeclineOrder.disabled = true;
+                });
+            }
+
+            if (shipOrderModal) {
+                shipOrderModal.addEventListener('hidden.bs.modal', () => {
+                    if (carrierSelect) carrierSelect.value = '';
+                    if (deliveryDateInput) deliveryDateInput.value = '';
+                    if (finalShipOrder) finalShipOrder.disabled = true;
+                    if (nextPaymentPreview) nextPaymentPreview.style.display = 'none';
+                });
+            }
+        });
+    </script>
+}
 }
