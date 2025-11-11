@@ -3,6 +3,15 @@
 @{
     ViewData["Title"] = "Fridge Replacement Management";
     Layout = "_CustomerLayout";
+
+    // Status counts for statistics
+    var totalRequests = Model.Count();
+    var pendingCount = Model.Count(r => r.ReplacementStatus == SD.Pending);
+    var approvedCount = Model.Count(r => r.ReplacementStatus == SD.Approved);
+    var rejectedCount = Model.Count(r => r.ReplacementStatus == SD.Rejected);
+
+    // Localization helper function
+    string T(string key) => key; // In real scenario, this would use IStringLocalizer
 }
 
 <div class="container-fluid py-4">
@@ -11,21 +20,20 @@
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="h3 fw-bold text-gray-800 mb-1">Fridge Replacement Requests</h1>
-                    <p class="text-muted mb-0">Manage and process refrigerator replacement requests from customers</p>
+                    <h1 class="h3 fw-bold text-gray-800 mb-1">@T("Fridge Replacement Requests")</h1>
+                    <p class="text-muted mb-0">@T("Manage and process refrigerator replacement requests from customers")</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <!-- Export Form -->
                     <form asp-action="ExportReplacements" method="post" id="exportForm" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" name="exportType" id="exportType" value="excel" />
+                        <input type="hidden" name="exportType" id="exportType" />
                         <input type="hidden" name="requestIds" id="exportRequestIds" />
                         <button type="submit" class="btn btn-outline-primary" id="exportBtn">
-                            <i class="bi bi-download me-2"></i>Export
+                            <i class="bi bi-download me-2"></i>@T("Export")
                         </button>
                     </form>
                     <button type="button" class="btn btn-primary" id="refreshBtn">
-                        <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                        <i class="bi bi-arrow-clockwise me-2"></i>@T("Refresh")
                     </button>
                 </div>
             </div>
@@ -39,8 +47,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Requests</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count()</div>
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">@T("Total Requests")</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@totalRequests</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-list-check fs-1 text-gray-300"></i>
@@ -54,8 +62,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(r => r.ReplacementStatus == SD.Pending)</div>
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">@T("Pending")</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@pendingCount</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-clock fs-1 text-gray-300"></i>
@@ -69,8 +77,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Approved</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(r => r.ReplacementStatus == SD.Approved)</div>
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">@T("Approved")</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@approvedCount</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-check-circle fs-1 text-gray-300"></i>
@@ -84,8 +92,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Rejected</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count(r => r.ReplacementStatus == SD.Rejected)</div>
+                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">@T("Rejected")</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@rejectedCount</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-x-circle fs-1 text-gray-300"></i>
@@ -102,7 +110,7 @@
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
             @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@T("Close")"></button>
         </div>
     }
     @if (TempData["Error"] != null)
@@ -110,7 +118,7 @@
         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@T("Close")"></button>
         </div>
     }
 
@@ -119,23 +127,23 @@
         <div class="card-body">
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
-                    <label for="statusFilter" class="form-label fw-semibold">Status Filter</label>
+                    <label for="statusFilter" class="form-label fw-semibold">@T("Status Filter")</label>
                     <select class="form-select" id="statusFilter">
-                        <option value="all">All Statuses</option>
-                        <option value="@SD.Pending">Pending</option>
-                        <option value="@SD.Approved">Approved</option>
-                        <option value="@SD.Rejected">Rejected</option>
+                        <option value="all">@T("All Statuses")</option>
+                        <option value="@SD.Pending">@T("Pending")</option>
+                        <option value="@SD.Approved">@T("Approved")</option>
+                        <option value="@SD.Rejected">@T("Rejected")</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label for="searchInput" class="form-label fw-semibold">Search</label>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search requests...">
+                    <label for="searchInput" class="form-label fw-semibold">@T("Search")</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="@T("Search by customer, fridge number, or reason...")">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">&nbsp;</label>
                     <div>
                         <button type="button" class="btn btn-outline-secondary" id="clearFilters">
-                            <i class="bi bi-arrow-counterclockwise me-2"></i>Clear Filters
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>@T("Clear Filters")
                         </button>
                     </div>
                 </div>
@@ -145,29 +153,32 @@
 
     <!-- Main Table -->
     <div class="card shadow-sm">
-        <div class="card-header bg-transparent py-3">
+        <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0 text-gray-800">
-                <i class="bi bi-table me-2"></i>Replacement Requests
+                <i class="bi bi-table me-2"></i>@T("Replacement Requests")
             </h5>
+            <span class="text-muted small" id="tableSummary">
+                @string.Format(T("Showing {0} requests"), totalRequests)
+            </span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0" id="requestsTable">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">
+                            <th class="ps-4" style="width: 40px;">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="selectAll">
                                 </div>
                             </th>
-                            <th>Request ID</th>
-                            <th>Customer</th>
-                            <th>Old Fridge</th>
-                            <th>Reason</th>
-                            <th>Request Date</th>
-                            <th>Status</th>
-                            <th>Processor</th>
-                            <th class="text-end pe-4">Actions</th>
+                            <th>@T("Request ID")</th>
+                            <th>@T("Customer")</th>
+                            <th>@T("Old Fridge")</th>
+                            <th>@T("Reason")</th>
+                            <th>@T("Request Date")</th>
+                            <th>@T("Status")</th>
+                            <th>@T("Processor")</th>
+                            <th class="text-end pe-4" style="width: 150px;">@T("Actions")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -180,7 +191,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="fw-semibold text-primary">#REQ-@request.FridgeReplacementId.ToString("D4")</span>
+                                    <span class="fw-semibold text-primary">@string.Format(T("REQ-{0}"), request.FridgeReplacementId.ToString("D4"))</span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -199,7 +210,8 @@
                                     <span class="badge bg-light text-dark font-monospace">@request.OldFridgeNo</span>
                                 </td>
                                 <td>
-                                    <span class="d-inline-block text-truncate" style="max-width: 200px;" title="@request.ReasonForReplacement">
+                                    <span class="d-inline-block text-truncate" style="max-width: 200px;"
+                                          data-bs-toggle="tooltip" title="@request.ReasonForReplacement">
                                         @request.ReasonForReplacement
                                     </span>
                                 </td>
@@ -214,19 +226,19 @@
                                     @if (request.ReplacementStatus == SD.Pending)
                                     {
                                         <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-clock me-1"></i>Pending
+                                            <i class="bi bi-clock me-1"></i>@T("Pending")
                                         </span>
                                     }
                                     else if (request.ReplacementStatus == SD.Approved)
                                     {
                                         <span class="badge bg-success">
-                                            <i class="bi bi-check-circle me-1"></i>Approved
+                                            <i class="bi bi-check-circle me-1"></i>@T("Approved")
                                         </span>
                                     }
-                                    else
+                                    else if (request.ReplacementStatus == SD.Rejected)
                                     {
                                         <span class="badge bg-danger">
-                                            <i class="bi bi-x-circle me-1"></i>Rejected
+                                            <i class="bi bi-x-circle me-1"></i>@T("Rejected")
                                         </span>
                                     }
                                 </td>
@@ -240,26 +252,24 @@
                                     }
                                     else
                                     {
-                                        <span class="text-muted fst-italic">Unassigned</span>
+                                        <span class="text-muted fst-italic">@T("Unassigned")</span>
                                     }
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="btn-group" role="group">
-                                        <!-- View Details Button -->
-                                        <button type="button" class="btn btn-sm btn-outline-primary view-details"
-                                                data-bs-toggle="tooltip" title="View Details"
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary view-details"
+                                                data-bs-toggle="tooltip" title="@T("View Details")"
                                                 data-request-id="@request.FridgeReplacementId">
                                             <i class="bi bi-eye"></i>
                                         </button>
 
-                                        <!-- Action Buttons -->
                                         @if (request.ReplacementStatus == SD.Pending)
                                         {
                                             <form asp-action="ApproveReplacement" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@request.FridgeReplacementId" />
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-sm btn-success"
-                                                        data-bs-toggle="tooltip" title="Approve Request">
+                                                <button type="submit" class="btn btn-outline-success"
+                                                        data-bs-toggle="tooltip" title="@T("Approve Request")">
                                                     <i class="bi bi-check-lg"></i>
                                                 </button>
                                             </form>
@@ -267,16 +277,16 @@
                                             <form asp-action="RejectReplacement" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@request.FridgeReplacementId" />
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                        data-bs-toggle="tooltip" title="Reject Request"
-                                                        onclick="return confirm('Are you sure you want to reject this replacement request?')">
+                                                <button type="submit" class="btn btn-outline-danger"
+                                                        data-bs-toggle="tooltip" title="@T("Reject Request")"
+                                                        onclick="return confirm('@T("Are you sure you want to reject this replacement request?")')">
                                                     <i class="bi bi-x-lg"></i>
                                                 </button>
                                             </form>
                                         }
                                         else
                                         {
-                                            <span class="text-muted small">Completed</span>
+                                            <span class="text-muted small">@T("Processed")</span>
                                         }
                                     </div>
                                 </td>
@@ -286,51 +296,51 @@
                 </table>
             </div>
 
-            <!-- Empty State -->
             @if (!Model.Any())
             {
                 <div class="text-center py-5">
                     <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
-                    <h5 class="text-muted">No Replacement Requests Found</h5>
-                    <p class="text-muted mb-4">There are currently no fridge replacement requests to display.</p>
+                    <h5 class="text-muted">@T("No Replacement Requests Found")</h5>
+                    <p class="text-muted mb-4">@T("There are currently no fridge replacement requests to display.")</p>
                 </div>
             }
         </div>
     </div>
 
     <!-- Bulk Actions -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-muted" id="selectedCount">0 requests selected</span>
-                        </div>
-                        <div class="btn-group" id="bulkActions" style="display: none;">
-                            <!-- Bulk Approve Form -->
-                            <form asp-action="BulkApproveReplacements" method="post" id="bulkApproveForm" class="d-inline">
-                                <input type="hidden" name="requestIds" id="bulkApproveIds" />
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-success" id="bulkApproveBtn">
-                                    <i class="bi bi-check-lg me-2"></i>Approve Selected
-                                </button>
-                            </form>
+    @if (Model.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted" id="selectedCount">@T("0 requests selected")</span>
+                            </div>
+                            <div class="btn-group" id="bulkActions" style="display: none;">
+                                <form asp-action="BulkApproveReplacements" method="post" id="bulkApproveForm" class="d-inline">
+                                    <input type="hidden" name="requestIds" id="bulkApproveIds" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-success" id="bulkApproveBtn">
+                                        <i class="bi bi-check-lg me-2"></i>@T("Approve Selected")
+                                    </button>
+                                </form>
 
-                            <!-- Bulk Reject Form -->
-                            <form asp-action="BulkRejectReplacements" method="post" id="bulkRejectForm" class="d-inline">
-                                <input type="hidden" name="requestIds" id="bulkRejectIds" />
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-danger" id="bulkRejectBtn">
-                                    <i class="bi bi-x-lg me-2"></i>Reject Selected
-                                </button>
-                            </form>
+                                <form asp-action="BulkRejectReplacements" method="post" id="bulkRejectForm" class="d-inline">
+                                    <input type="hidden" name="requestIds" id="bulkRejectIds" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger" id="bulkRejectBtn">
+                                        <i class="bi bi-x-lg me-2"></i>@T("Reject Selected")
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 </div>
 
 <!-- Export Options Modal -->
@@ -338,24 +348,25 @@
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Export Options</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">@T("Export Options")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T("Close")"></button>
             </div>
             <div class="modal-body">
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="radio" name="exportOption" id="exportAll" value="all" checked>
                     <label class="form-check-label" for="exportAll">
-                        Export All Requests
+                        @T("Export All Requests")
                     </label>
                 </div>
-                <div class="form-check">
+                <div class="form-check mb-3">
                     <input class="form-check-input" type="radio" name="exportOption" id="exportSelected" value="selected">
                     <label class="form-check-label" for="exportSelected">
-                        Export Selected Requests Only
+                        @T("Export Selected Requests")
+                        <span class="badge bg-primary ms-1" id="selectedCountPreview">0</span>
                     </label>
                 </div>
                 <div class="mt-3">
-                    <label for="exportFormat" class="form-label">Format</label>
+                    <label for="exportFormat" class="form-label">@T("Format")</label>
                     <select class="form-select" id="exportFormat">
                         <option value="excel">Excel (.xlsx)</option>
                         <option value="csv">CSV (.csv)</option>
@@ -364,8 +375,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmExport">Export</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T("Cancel")</button>
+                <button type="button" class="btn btn-primary" id="confirmExport">@T("Export")</button>
             </div>
         </div>
     </div>
@@ -376,11 +387,16 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Replacement Request Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">@T("Replacement Request Details")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@T("Close")"></button>
             </div>
             <div class="modal-body" id="detailsModalBody">
-                <!-- Details will be loaded via AJAX -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">@T("Loading...")</span>
+                    </div>
+                    <p class="mt-2 text-muted">@T("Loading request details...")</p>
+                </div>
             </div>
         </div>
     </div>
@@ -402,23 +418,33 @@
             color: #6c757d;
         }
 
-        .request-row:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-1px);
+        .request-row {
             transition: all 0.2s ease;
         }
+
+            .request-row:hover {
+                background-color: #f8f9fa;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
 
         .border-start {
             border-left-width: 4px !important;
         }
 
         .btn-group .btn {
-            margin: 0 2px;
+            border-radius: 0.375rem;
+            margin: 0 1px;
         }
 
         .form-check-input:checked {
             background-color: #0d6efd;
             border-color: #0d6efd;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
         }
     </style>
 }
@@ -437,10 +463,12 @@
             const searchInput = document.getElementById('searchInput');
             const clearFilters = document.getElementById('clearFilters');
             const requestRows = document.querySelectorAll('.request-row');
+            const tableSummary = document.getElementById('tableSummary');
 
             function filterTable() {
                 const statusValue = statusFilter.value;
                 const searchValue = searchInput.value.toLowerCase();
+                let visibleCount = 0;
 
                 requestRows.forEach(row => {
                     const status = row.getAttribute('data-status');
@@ -449,9 +477,26 @@
                     const statusMatch = statusValue === 'all' || status === statusValue;
                     const searchMatch = rowText.includes(searchValue);
 
-                    row.style.display = statusMatch && searchMatch ? '' : 'none';
+                    if (statusMatch && searchMatch) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
-                updateSelectedCount(); // Update count after filtering
+
+                // Update table summary
+                const summaryText = visibleCount === 1 ?
+                    `Showing ${visibleCount} request` :
+                    `Showing ${visibleCount} requests`;
+
+                if (statusValue !== 'all') {
+                    tableSummary.textContent = summaryText + ' filtered';
+                } else {
+                    tableSummary.textContent = summaryText;
+                }
+
+                updateSelectedCount();
             }
 
             statusFilter.addEventListener('change', filterTable);
@@ -462,7 +507,7 @@
                 filterTable();
             });
 
-            // Select All functionality
+            // Selection management
             const selectAll = document.getElementById('selectAll');
             const rowCheckboxes = document.querySelectorAll('.row-checkbox');
             const selectedCount = document.getElementById('selectedCount');
@@ -486,7 +531,11 @@
 
             function updateSelectedCount() {
                 const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-                selectedCount.textContent = `${checkedCount} request${checkedCount !== 1 ? 's' : ''} selected`;
+                const selectedText = checkedCount === 1 ?
+                    `${checkedCount} request selected` :
+                    `${checkedCount} requests selected`;
+
+                selectedCount.textContent = selectedText;
                 bulkActions.style.display = checkedCount > 0 ? 'block' : 'none';
 
                 // Update select all checkbox state
@@ -498,6 +547,17 @@
 
                 selectAll.checked = visibleChecked > 0 && visibleChecked === visibleRows.length;
                 selectAll.indeterminate = visibleChecked > 0 && visibleChecked < visibleRows.length;
+
+                // Update export preview
+                if (document.getElementById('selectedCountPreview')) {
+                    document.getElementById('selectedCountPreview').textContent = checkedCount;
+                }
+            }
+
+            function getSelectedRequestIds() {
+                return Array.from(document.querySelectorAll('.row-checkbox:checked'))
+                    .map(checkbox => checkbox.value)
+                    .filter(id => id !== '');
             }
 
             // Bulk actions
@@ -510,7 +570,11 @@
                     return;
                 }
 
-                if (confirm(`Are you sure you want to approve ${selectedIds.length} request(s)?`)) {
+                const confirmMessage = selectedIds.length === 1 ?
+                    'Are you sure you want to approve this request?' :
+                    `Are you sure you want to approve ${selectedIds.length} requests?`;
+
+                if (confirm(confirmMessage)) {
                     document.getElementById('bulkApproveIds').value = selectedIds.join(',');
                     document.getElementById('bulkApproveForm').submit();
                 }
@@ -525,28 +589,49 @@
                     return;
                 }
 
-                if (confirm(`Are you sure you want to reject ${selectedIds.length} request(s)?`)) {
+                const confirmMessage = selectedIds.length === 1 ?
+                    'Are you sure you want to reject this request?' :
+                    `Are you sure you want to reject ${selectedIds.length} requests?`;
+
+                if (confirm(confirmMessage)) {
                     document.getElementById('bulkRejectIds').value = selectedIds.join(',');
                     document.getElementById('bulkRejectForm').submit();
                 }
             });
 
-            function getSelectedRequestIds() {
-                return Array.from(document.querySelectorAll('.row-checkbox:checked'))
-                    .map(checkbox => checkbox.value)
-                    .filter(id => id !== '');
-            }
-
-            // Export functionality
+            // Export functionality - FIXED: No duplicate DOMContentLoaded
             const exportBtn = document.getElementById('exportBtn');
             const exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
             const confirmExport = document.getElementById('confirmExport');
             const exportForm = document.getElementById('exportForm');
             const exportType = document.getElementById('exportType');
             const exportRequestIds = document.getElementById('exportRequestIds');
+            const selectedCountPreview = document.getElementById('selectedCountPreview');
+            const exportSelectedRadio = document.getElementById('exportSelected');
+
+            // Prevent default form submission
+            exportForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                return false;
+            });
 
             exportBtn.addEventListener('click', function (e) {
                 e.preventDefault();
+
+                // Update selected count preview
+                const selectedCount = getSelectedRequestIds().length;
+                if (selectedCountPreview) {
+                    selectedCountPreview.textContent = selectedCount;
+                }
+
+                // Disable selected option if no items selected
+                if (selectedCount === 0) {
+                    exportSelectedRadio.disabled = true;
+                    document.getElementById('exportAll').checked = true;
+                } else {
+                    exportSelectedRadio.disabled = false;
+                }
+
                 exportModal.show();
             });
 
@@ -554,7 +639,7 @@
                 const exportOption = document.querySelector('input[name="exportOption"]:checked').value;
                 const format = document.getElementById('exportFormat').value;
 
-                exportType.value = format;
+                let requestIdsValue;
 
                 if (exportOption === 'selected') {
                     const selectedIds = getSelectedRequestIds();
@@ -562,105 +647,113 @@
                         alert('Please select at least one request to export.');
                         return;
                     }
-                    exportRequestIds.value = selectedIds.join(',');
+                    requestIdsValue = selectedIds.join(',');
                 } else {
-                    exportRequestIds.value = 'all';
+                    requestIdsValue = 'all';
                 }
-                        // Export functionality
-        const exportBtn = document.getElementById('exportBtn');
-        const exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
-        const confirmExport = document.getElementById('confirmExport');
-        const exportForm = document.getElementById('exportForm');
-        const exportType = document.getElementById('exportType');
-        const exportRequestIds = document.getElementById('exportRequestIds');
-        const selectedCountPreview = document.getElementById('selectedCountPreview');
-        const exportSelectedRadio = document.getElementById('exportSelected');
 
-        exportBtn.addEventListener('click', function (e) {
-            e.preventDefault();
+                // Set the values in the form
+                exportType.value = format || 'excel';
+                exportRequestIds.value = requestIdsValue;
 
-            // Update selected count preview
-            const selectedCount = getSelectedRequestIds().length;
-            selectedCountPreview.textContent = selectedCount;
+                // Hide modal first
+                exportModal.hide();
 
-            // Disable selected option if no items selected
-            if (selectedCount === 0) {
-                exportSelectedRadio.disabled = true;
-                document.getElementById('exportAll').checked = true;
-            } else {
-                exportSelectedRadio.disabled = false;
-            }
+                // Show loading state on the export button
+                const originalText = exportBtn.innerHTML;
+                exportBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Exporting...';
+                exportBtn.disabled = true;
 
-            exportModal.show();
-        });
+                // Create a temporary form for submission to avoid conflicts
+                const tempForm = document.createElement('form');
+                tempForm.method = 'POST';
+                tempForm.action = exportForm.action;
+                tempForm.style.display = 'none';
 
-        confirmExport.addEventListener('click', function () {
-            const exportOption = document.querySelector('input[name="exportOption"]:checked').value;
-            const format = document.getElementById('exportFormat').value;
-
-            exportType.value = format;
-
-            if (exportOption === 'selected') {
-                const selectedIds = getSelectedRequestIds();
-                if (selectedIds.length === 0) {
-                    alert('Please select at least one request to export.');
-                    return;
+                // Add anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenClone = token.cloneNode(true);
+                    tempForm.appendChild(tokenClone);
                 }
-                exportRequestIds.value = selectedIds.join(',');
-            } else {
-                exportRequestIds.value = 'all';
-            }
 
-            // Show loading state
-            const originalText = confirmExport.innerHTML;
-            confirmExport.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Exporting...';
-            confirmExport.disabled = true;
+                // Add export type
+                const typeInput = document.createElement('input');
+                typeInput.type = 'hidden';
+                typeInput.name = 'exportType';
+                typeInput.value = exportType.value;
+                tempForm.appendChild(typeInput);
 
-            setTimeout(() => {
-                exportForm.submit();
-                confirmExport.innerHTML = originalText;
-                confirmExport.disabled = false;
-            }, 500);
+                // Add request IDs
+                const idsInput = document.createElement('input');
+                idsInput.type = 'hidden';
+                idsInput.name = 'requestIds';
+                idsInput.value = exportRequestIds.value;
+                tempForm.appendChild(idsInput);
 
-            exportModal.hide();
-        });
+                // Add to document and submit
+                document.body.appendChild(tempForm);
+                tempForm.submit();
 
-        // Update export preview when selection changes
-        function updateSelectedCount() {
-            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-            selectedCount.textContent = `${checkedCount} request${checkedCount !== 1 ? 's' : ''} selected`;
-            bulkActions.style.display = checkedCount > 0 ? 'block' : 'none';
+                // Clean up and restore button state
+                setTimeout(() => {
+                    if (document.body.contains(tempForm)) {
+                        document.body.removeChild(tempForm);
+                    }
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                }, 5000);
+            });
 
-            // Update select all checkbox state
-            const visibleRows = Array.from(document.querySelectorAll('.request-row'))
-                .filter(row => row.style.display !== 'none');
-            const visibleChecked = visibleRows.filter(row =>
-                row.querySelector('.row-checkbox')?.checked
-            ).length;
-
-            selectAll.checked = visibleChecked > 0 && visibleChecked === visibleRows.length;
-            selectAll.indeterminate = visibleChecked > 0 && visibleChecked < visibleRows.length;
-
-            // Update export preview if modal is open
-            if (selectedCountPreview) {
-                selectedCountPreview.textContent = checkedCount;
-            }
-        }
-            // View details modal
+            // View details modal with AJAX
             document.querySelectorAll('.view-details').forEach(button => {
                 button.addEventListener('click', function () {
                     const requestId = this.getAttribute('data-request-id');
-                    // Implement AJAX call to load details
-                    console.log('View details for request:', requestId);
                     const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+                    const modalBody = document.getElementById('detailsModalBody');
+
+                    // Show loading state
+                    modalBody.innerHTML = `
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading request details...</p>
+                        </div>
+                    `;
+
+                    // Load details via AJAX
+                    fetch(`/Replacement/GetReplacementDetails/${requestId}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.text();
+                        })
+                        .then(html => {
+                            modalBody.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error loading details:', error);
+                            modalBody.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    Error loading request details. Please try again.
+                                </div>
+                            `;
+                        });
+
                     modal.show();
                 });
             });
 
             // Refresh button
             document.getElementById('refreshBtn')?.addEventListener('click', function () {
+                this.innerHTML = '<i class="bi bi-arrow-clockwise me-2 spinner-border spinner-border-sm"></i>Refreshing...';
+                this.disabled = true;
                 window.location.reload();
             });
+
+            // Initialize table summary
+            filterTable();
         });
     </script>
 }

@@ -42,7 +42,7 @@
                         <label asp-for="ReasonForReplacement" class="control-label">Reason for Replacement *</label>
                         <select asp-for="ReasonForReplacement" class="form-control" required>
                             <option value="">Select Reason</option>
-                            @foreach (var item in (List<SelectListItem>)ViewBag.ReplacementReasons)
+                            @foreach (var item in (List<SelectListItem>)ViewBag.ReasonForReplacements)
                             {
                                 <option value="@item.Value">@item.Text</option>
                             }

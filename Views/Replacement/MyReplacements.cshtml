@@ -1,0 +1,76 @@
+﻿@model IEnumerable<FridgeReplacement>
+@{
+    ViewData["Title"] = "My Replacement Requests";
+}
+
+<div class="container">
+    <h2>My Fridge Replacement Requests</h2>
+
+    <div class="card">
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <p class="text-muted">No replacement requests found.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Request Date</th>
+                                <th>Old Fridge</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>New Fridge</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.RequestDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@item.OldFridgeNo</td>
+                                    <td>@item.ReasonForReplacement</td>
+                                    <td>
+                                        <span class="badge @GetStatusBadge(item.ReplacementStatus)">
+                                            @item.ReplacementStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.ReplacementStatus == SD.Approved && item.NewFridgeInStock != null)
+                                        {
+                                            <span class="text-success">@item.NewFridgeInStock.FridgeNo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ReplacementDetails", new { id = item.FridgeReplacementId })"
+                                           class="btn btn-sm btn-outline-primary">View Details</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            SD.Approved => "bg-success",
+            SD.Rejected => "bg-danger",
+            SD.Pending => "bg-warning",
+            _ => "bg-secondary"
+        };
+    }
+}

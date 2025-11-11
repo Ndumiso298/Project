@@ -16,7 +16,7 @@ namespace Project.Models
         public DateTime LastMaintenanceDate { get; set; }
 
         [Required]
-        public string Condition { get; set; } 
+        public string Condition { get; set; }
 
         [Required]
         public bool IsAvailable { get; set; }
@@ -29,5 +29,8 @@ namespace Project.Models
         public int FridgeId { get; set; }
         [ValidateNever]
         public virtual Fridge Fridge { get; set; }
+
+        public string Status { get; set; } = "Available";
+          
     }
 }

@@ -852,26 +852,28 @@ namespace Project.Data
             var customerFridges = new List<CustomerFridge>();
             var random = new Random();
 
-            // Valid IDs for each foreign key
-            var validFridgeIds = Enumerable.Range(1, 48).ToArray(); // Now 1-48
-            var validFridgeInStockIds = Enumerable.Range(1, 480).ToArray(); // 1-480 (48 fridges × 10 each)
-            var validCustomerIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-            var validRequestDetailIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
-
             for (int i = 1; i <= 25; i++)
             {
                 var reservedDate = DateTime.Now.AddDays(-random.Next(1, 60));
                 var allocatedDate = random.Next(0, 2) == 1 ? reservedDate.AddDays(random.Next(1, 7)) : (DateTime?)null;
+                var needsReplacement = random.Next(0, 5) == 1; // 20% chance of needing replacement
 
                 customerFridges.Add(new CustomerFridge
                 {
                     CustomerFridgeId = i,
-                    FridgeId = validFridgeIds[random.Next(validFridgeIds.Length)],
-                    FridgeInStockId = validFridgeInStockIds[random.Next(validFridgeInStockIds.Length)],
-                    CustomerID = validCustomerIds[random.Next(validCustomerIds.Length)],
+                    FridgeId = random.Next(1, 49),
+                    FridgeInStockId = random.Next(1, 481),
+                    CustomerID = random.Next(1, 13),
                     ReservedDate = reservedDate,
                     AllocatedDate = allocatedDate,
-                    RequestDetailId = validRequestDetailIds[random.Next(validRequestDetailIds.Length)]
+                    RequestDetailId = random.Next(1, 21),
+                    ReasonForReplacement = needsReplacement ? "Frequent breakdowns" : null,
+                    ReplacementNotes = needsReplacement ? "Unit requires replacement due to age" : null,
+                    ReplacementDate = needsReplacement ? reservedDate.AddDays(random.Next(30, 90)) : (DateTime?)null,
+                    ReplacementFridgeInStockId = needsReplacement ? random.Next(1, 481) : null,
+                    ReplacementStatus = needsReplacement ? "Pending" : null,
+                    DeclineReason = null,
+                    TechnicianNotes = needsReplacement ? "Inspected and confirmed replacement needed" : null
                 });
             }
 
@@ -977,41 +979,132 @@ namespace Project.Data
             modelBuilder.Entity<FaultTechnician>().HasData(faultTechnicians);
         }
 
-        private static void SeedFridgeReplacements(ModelBuilder modelBuilder)
-        {
-            var fridgeReplacements = new List<FridgeReplacement>();
-            var random = new Random();
-            var replacementStatuses = new[] { SD.Pending, SD.Approved, SD.Rejected };
-            var reasons = new[] { "Fridge Beyond Repair", "Frequent Breakdowns", "Old Age", "Customer Request" };
+		private static void SeedFridgeReplacements(ModelBuilder modelBuilder)
+		{
+			var fridgeReplacements = new List<FridgeReplacement>();
+			var random = new Random();
+			var replacementStatuses = new[] { SD.Pending, SD.Approved, SD.Rejected };
 
-            // Valid ApplicationUser IDs that exist in the AspNetUsers table
-            var validUserIds = new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25", "26" };
+			// Realistic replacement reasons with more variety
+			var reasons = new[]
+			{
+		"Fridge Beyond Repair - Compressor failure",
+		"Frequent Breakdowns - Multiple service calls in last 3 months",
+		"Old Age - Unit over 10 years old with deteriorating performance",
+		"Customer Request - Customer requested upgrade to newer model",
+		"Irreparable Cooling System - Refrigerant leak cannot be fixed",
+		"Electrical Fault - Mainboard failure, replacement parts unavailable",
+		"Structural Damage - Internal corrosion affecting performance",
+		"Noise Complaint - Excessive noise that cannot be resolved"
+	};
 
-            for (int i = 1; i <= 12; i++)
-            {
-                var requestDate = DateTime.Now.AddDays(-random.Next(1, 60));
-                var replacementDate = requestDate.AddDays(random.Next(1, 30));
+			// Realistic additional notes
+			var additionalNotes = new[]
+			{
+		"Customer reported inconsistent temperature for several weeks.",
+		"Unit making loud grinding noise during compressor operation.",
+		"Fridge not cooling properly despite multiple repairs.",
+		"Customer complains about high electricity consumption.",
+		"Ice buildup in freezer compartment even after defrosting.",
+		"Water leakage from the unit causing floor damage.",
+		"Door seal broken, causing cold air escape.",
+		"Display panel malfunctioning, cannot adjust settings.",
+		"Interior lighting not working, bulbs already replaced.",
+		"Customer requesting energy efficient replacement model."
+	};
 
-                fridgeReplacements.Add(new FridgeReplacement
-                {
-                    FridgeReplacementId = i,
-                    VisitId = random.Next(1, 21),
-                    CustomerID = random.Next(1, 13),
-                    NewFridgeInStockId = random.Next(1, 151),
-                    OldFridgeNo = $"FRG-{random.Next(1, 16):000}-{random.Next(1, 11):000}",
-                    ReasonForReplacement = reasons[random.Next(reasons.Length)],
-                    AdditionalNotes = $"Additional notes for replacement request {i}",
-                    ReplacementDate = replacementDate,
-                    RequestDate = requestDate,
-                    ReplacementStatus = replacementStatuses[random.Next(replacementStatuses.Length)],
-                    ApplicationUserId = validUserIds[random.Next(validUserIds.Length)]
-                });
-            }
+			// Realistic technician notes
+			var technicianNotes = new[]
+			{
+		"Diagnosed compressor failure - replacement cost exceeds unit value.",
+		"Multiple component failures detected during diagnostic testing.",
+		"Unit reached end of service life, recommended replacement.",
+		"Customer satisfied with current model, requesting same replacement.",
+		"Refrigerant leak detected in evaporator coils - uneconomical to repair.",
+		"Main control board fried due to power surge - part discontinued.",
+		"Condenser fan motor seized, causing overheating issues.",
+		"Evaporator fan motor noisy, replacement part no longer available.",
+		"Thermostat calibration off, causing temperature fluctuations.",
+		"Defrost system malfunction leading to ice accumulation."
+	};
 
-            modelBuilder.Entity<FridgeReplacement>().HasData(fridgeReplacements);
-        }
+			// Realistic decline reasons
+			var declineReasons = new[]
+			{
+		"Unit still under warranty, repair recommended instead.",
+		"Replacement request does not meet company policy criteria.",
+		"Customer has outstanding balance on account.",
+		"Unit is only 2 years old, repair is more cost effective.",
+		"Inspection shows unit can be repaired economically.",
+		"Customer did not provide sufficient documentation.",
+		"Replacement stock currently unavailable for this model.",
+		"Unit has cosmetic damage caused by customer misuse."
+	};
 
-        private static void SeedRequestNotes(ModelBuilder modelBuilder)
+			var validUserIds = new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25", "26" };
+
+			// Technician names for ApprovedBy field
+			var technicianNames = new[]
+			{
+		"John Smith", "Maria Garcia", "David Johnson", "Sarah Williams",
+		"Michael Brown", "Lisa Davis", "Robert Miller", "Jennifer Wilson",
+		"William Moore", "Linda Taylor", "James Anderson", "Susan Thomas"
+	};
+
+			// Customer Support/Admin names for ApprovedBy field
+			var adminNames = new[]
+			{
+		"Admin User", "Support Team", "Manager Office", "Customer Service",
+		"Technical Support", "Service Department", "Operations Team"
+	};
+
+			for (int i = 1; i <= 12; i++)
+			{
+				var requestDate = DateTime.Now.AddDays(-random.Next(1, 60));
+				var replacementDate = requestDate.AddDays(random.Next(1, 30));
+				var status = replacementStatuses[random.Next(replacementStatuses.Length)];
+				var isRejected = status == SD.Rejected;
+				var isApproved = status == SD.Approved;
+				var isPending = status == SD.Pending;
+
+				// Realistic decline reason only for rejected requests
+				var declineReason = isRejected ? declineReasons[random.Next(declineReasons.Length)] : null;
+
+				// Action date only for approved/rejected requests
+				var actionDate = !isPending ? replacementDate.AddDays(random.Next(1, 5)) : (DateTime?)null;
+
+				// ActionBy should be technician name for processed requests
+				var actionBy = !isPending ? technicianNames[random.Next(technicianNames.Length)] : null;
+
+				// ApprovedBy should be admin name for approved/rejected requests
+				var approvedBy = !isPending ? adminNames[random.Next(adminNames.Length)] : null;
+
+				fridgeReplacements.Add(new FridgeReplacement
+				{
+					FridgeReplacementId = i,
+					VisitId = random.Next(1, 21),
+					CustomerID = random.Next(1, 13),
+					NewFridgeInStockId = isApproved ? random.Next(1, 151) : null, // Only set if approved
+					OldFridgeNo = $"FRG-{random.Next(1, 16):000}-{random.Next(1, 11):000}",
+					ReasonForReplacement = reasons[random.Next(reasons.Length)],
+					AdditionalNotes = additionalNotes[random.Next(additionalNotes.Length)],
+					ReplacementDate = replacementDate,
+					RequestDate = requestDate,
+					ReplacementStatus = status,
+					ApplicationUserId = validUserIds[random.Next(validUserIds.Length)],
+
+					DeclineReason = declineReason,
+					TechnicianNotes = technicianNotes[random.Next(technicianNotes.Length)],
+					ActionBy = actionBy,
+					ActionDate = actionDate,
+					ApprovedBy = approvedBy  // New field added
+				});
+			}
+
+			modelBuilder.Entity<FridgeReplacement>().HasData(fridgeReplacements);
+		}
+
+		private static void SeedRequestNotes(ModelBuilder modelBuilder)
         {
             var requestNotes = new List<RequestNote>();
             var random = new Random();

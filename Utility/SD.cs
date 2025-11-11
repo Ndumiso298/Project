@@ -23,6 +23,7 @@
         public const string FaultResolved = "Fault Resolved";
         public const string FaultPending = "Fault Pending";
         public const string Pending = "Pending";
+        public const string Replaced = "Replaced";
         public const string Declined = "Decline";
         public const string NotStarted = "Not Started";
         public const string Success = "Success";
