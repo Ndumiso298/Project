@@ -12,7 +12,7 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251111090412_SeedInitialData")]
+    [Migration("20251111093010_SeedInitialData")]
     partial class SeedInitialData
     {
         /// <inheritdoc />
@@ -423,105 +423,105 @@ namespace Project.Migrations
                             AllocationId = 1,
                             Count = 1,
                             CustomerID = 1,
-                            FridgeId = 18
+                            FridgeId = 25
                         },
                         new
                         {
                             AllocationId = 2,
-                            Count = 2,
-                            CustomerID = 10,
-                            FridgeId = 47
+                            Count = 1,
+                            CustomerID = 7,
+                            FridgeId = 21
                         },
                         new
                         {
                             AllocationId = 3,
                             Count = 1,
-                            CustomerID = 7,
-                            FridgeId = 22
+                            CustomerID = 9,
+                            FridgeId = 4
                         },
                         new
                         {
                             AllocationId = 4,
-                            Count = 1,
-                            CustomerID = 7,
-                            FridgeId = 32
+                            Count = 3,
+                            CustomerID = 2,
+                            FridgeId = 4
                         },
                         new
                         {
                             AllocationId = 5,
                             Count = 1,
-                            CustomerID = 9,
-                            FridgeId = 36
+                            CustomerID = 12,
+                            FridgeId = 34
                         },
                         new
                         {
                             AllocationId = 6,
-                            Count = 2,
-                            CustomerID = 1,
-                            FridgeId = 20
+                            Count = 3,
+                            CustomerID = 10,
+                            FridgeId = 32
                         },
                         new
                         {
                             AllocationId = 7,
-                            Count = 1,
-                            CustomerID = 7,
-                            FridgeId = 22
+                            Count = 2,
+                            CustomerID = 11,
+                            FridgeId = 23
                         },
                         new
                         {
                             AllocationId = 8,
-                            Count = 2,
-                            CustomerID = 5,
-                            FridgeId = 6
+                            Count = 1,
+                            CustomerID = 9,
+                            FridgeId = 25
                         },
                         new
                         {
                             AllocationId = 9,
-                            Count = 1,
-                            CustomerID = 2,
-                            FridgeId = 30
+                            Count = 2,
+                            CustomerID = 7,
+                            FridgeId = 10
                         },
                         new
                         {
                             AllocationId = 10,
                             Count = 3,
-                            CustomerID = 11,
-                            FridgeId = 5
+                            CustomerID = 12,
+                            FridgeId = 41
                         },
                         new
                         {
                             AllocationId = 11,
-                            Count = 3,
-                            CustomerID = 12,
-                            FridgeId = 10
+                            Count = 1,
+                            CustomerID = 10,
+                            FridgeId = 3
                         },
                         new
                         {
                             AllocationId = 12,
-                            Count = 1,
-                            CustomerID = 4,
-                            FridgeId = 45
+                            Count = 2,
+                            CustomerID = 2,
+                            FridgeId = 22
                         },
                         new
                         {
                             AllocationId = 13,
                             Count = 2,
-                            CustomerID = 8,
-                            FridgeId = 14
+                            CustomerID = 1,
+                            FridgeId = 16
                         },
                         new
                         {
                             AllocationId = 14,
-                            Count = 2,
-                            CustomerID = 12,
-                            FridgeId = 40
+                            Count = 3,
+                            CustomerID = 4,
+                            FridgeId = 18
                         },
                         new
                         {
                             AllocationId = 15,
                             Count = 1,
-                            CustomerID = 6,
-                            FridgeId = 29
+                            CustomerID = 11,
+                            FridgeId = 26
                         });
                 });
 
@@ -590,7 +590,7 @@ namespace Project.Migrations
                             BusinessType = "Fridge Rental",
                             City = "Johannesburg",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2023, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(163),
+                            CreatedAt = new DateTime(2023, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(966),
                             Email = "info@gmail.com",
                             Industry = "Appliance Rental",
                             PhoneNumber = "0111234567",
@@ -606,7 +606,7 @@ namespace Project.Migrations
                             BusinessType = "Appliance Services",
                             City = "Cape Town",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2024, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(168),
+                            CreatedAt = new DateTime(2024, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(971),
                             Email = "admin@coolsolutions.co.za",
                             Industry = "Maintenance Services",
                             PhoneNumber = "0219876543",
@@ -622,7 +622,7 @@ namespace Project.Migrations
                             BusinessType = "Rental Services",
                             City = "Durban",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2025, 5, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(172),
+                            CreatedAt = new DateTime(2025, 5, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(974),
                             Email = "rentals@fridgedurban.co.za",
                             Industry = "Appliance Rental",
                             PhoneNumber = "0315551234",
@@ -638,7 +638,7 @@ namespace Project.Migrations
                             BusinessType = "HVAC Services",
                             City = "Pretoria",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2024, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(174),
+                            CreatedAt = new DateTime(2024, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(977),
                             Email = "info@pretoriacooling.co.za",
                             Industry = "Cooling Systems",
                             PhoneNumber = "0124445678",
@@ -654,7 +654,7 @@ namespace Project.Migrations
                             BusinessType = "Appliance Retail",
                             City = "Port Elizabeth",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2025, 3, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(177),
+                            CreatedAt = new DateTime(2025, 3, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(979),
                             Email = "sales@ecappliances.co.za",
                             Industry = "Retail",
                             PhoneNumber = "0413337890",
@@ -670,7 +670,7 @@ namespace Project.Migrations
                             BusinessType = "Cooling Solutions",
                             City = "Bloemfontein",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2024, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(180),
+                            CreatedAt = new DateTime(2024, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(984),
                             Email = "contact@fscooling.co.za",
                             Industry = "HVAC Services",
                             PhoneNumber = "0512224567",
@@ -686,7 +686,7 @@ namespace Project.Migrations
                             BusinessType = "Rental Services",
                             City = "Nelspruit",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2025, 7, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(182),
+                            CreatedAt = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(986),
                             Email = "info@mpumalangafridges.co.za",
                             Industry = "Appliance Rental",
                             PhoneNumber = "0131112345",
@@ -702,7 +702,7 @@ namespace Project.Migrations
                             BusinessType = "Technical Services",
                             City = "Polokwane",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2024, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(185),
+                            CreatedAt = new DateTime(2024, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(989),
                             Email = "support@limpopocooling.co.za",
                             Industry = "Cooling Systems",
                             PhoneNumber = "0156667890",
@@ -718,7 +718,7 @@ namespace Project.Migrations
                             BusinessType = "Appliance Sales",
                             City = "Kimberley",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2025, 1, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(187),
+                            CreatedAt = new DateTime(2025, 1, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(991),
                             Email = "sales@ncappliances.co.za",
                             Industry = "Retail",
                             PhoneNumber = "0537771234",
@@ -734,7 +734,7 @@ namespace Project.Migrations
                             BusinessType = "Cooling Services",
                             City = "Rustenburg",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2024, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(190),
+                            CreatedAt = new DateTime(2024, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(994),
                             Email = "info@nwcooling.co.za",
                             Industry = "HVAC Services",
                             PhoneNumber = "0148884567",
@@ -750,7 +750,7 @@ namespace Project.Migrations
                             BusinessType = "Rental Services",
                             City = "Pietermaritzburg",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2025, 8, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(192),
+                            CreatedAt = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(997),
                             Email = "rentals@kznappliances.co.za",
                             Industry = "Appliance Rental",
                             PhoneNumber = "0338885678",
@@ -766,7 +766,7 @@ namespace Project.Migrations
                             BusinessType = "Technical Services",
                             City = "Johannesburg",
                             Country = "South Africa",
-                            CreatedAt = new DateTime(2023, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(195),
+                            CreatedAt = new DateTime(2023, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(999),
                             Email = "service@gautengcooling.co.za",
                             Industry = "Cooling Systems",
                             PhoneNumber = "0119992345",
@@ -944,241 +944,241 @@ namespace Project.Migrations
                         new
                         {
                             CustomerFridgeId = 1,
-                            CustomerID = 2,
-                            FridgeId = 33,
-                            FridgeInStockId = 371,
-                            RequestDetailId = 17,
-                            ReservedDate = new DateTime(2025, 10, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1376)
+                            AllocatedDate = new DateTime(2025, 9, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2541),
+                            CustomerID = 1,
+                            FridgeId = 15,
+                            FridgeInStockId = 335,
+                            RequestDetailId = 11,
+                            ReservedDate = new DateTime(2025, 9, 18, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2541)
                         },
                         new
                         {
                             CustomerFridgeId = 2,
-                            AllocatedDate = new DateTime(2025, 11, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1388),
-                            CustomerID = 1,
-                            FridgeId = 8,
-                            FridgeInStockId = 55,
-                            RequestDetailId = 6,
-                            ReservedDate = new DateTime(2025, 11, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1388)
+                            AllocatedDate = new DateTime(2025, 10, 24, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2556),
+                            CustomerID = 7,
+                            FridgeId = 38,
+                            FridgeInStockId = 391,
+                            RequestDetailId = 2,
+                            ReservedDate = new DateTime(2025, 10, 20, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2556)
                         },
                         new
                         {
                             CustomerFridgeId = 3,
-                            CustomerID = 7,
-                            FridgeId = 44,
-                            FridgeInStockId = 382,
-                            RequestDetailId = 18,
-                            ReservedDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1401)
+                            CustomerID = 5,
+                            FridgeId = 45,
+                            FridgeInStockId = 289,
+                            RequestDetailId = 14,
+                            ReservedDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2558)
                         },
                         new
                         {
                             CustomerFridgeId = 4,
-                            AllocatedDate = new DateTime(2025, 9, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1402),
-                            CustomerID = 1,
-                            FridgeId = 25,
-                            FridgeInStockId = 47,
-                            RequestDetailId = 5,
-                            ReservedDate = new DateTime(2025, 9, 13, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1402)
+                            CustomerID = 8,
+                            FridgeId = 30,
+                            FridgeInStockId = 179,
+                            RequestDetailId = 16,
+                            ReservedDate = new DateTime(2025, 11, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2559)
                         },
                         new
                         {
                             CustomerFridgeId = 5,
-                            AllocatedDate = new DateTime(2025, 9, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1403),
+                            AllocatedDate = new DateTime(2025, 9, 30, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2560),
                             CustomerID = 2,
-                            FridgeId = 36,
-                            FridgeInStockId = 184,
-                            RequestDetailId = 4,
-                            ReservedDate = new DateTime(2025, 9, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1403)
+                            FridgeId = 43,
+                            FridgeInStockId = 148,
+                            RequestDetailId = 16,
+                            ReservedDate = new DateTime(2025, 9, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2560)
                         },
                         new
                         {
                             CustomerFridgeId = 6,
                             CustomerID = 12,
-                            FridgeId = 4,
-                            FridgeInStockId = 379,
-                            RequestDetailId = 18,
-                            ReservedDate = new DateTime(2025, 10, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1406)
+                            FridgeId = 22,
+                            FridgeInStockId = 198,
+                            RequestDetailId = 4,
+                            ReservedDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2562)
                         },
                         new
                         {
                             CustomerFridgeId = 7,
-                            AllocatedDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1407),
-                            CustomerID = 8,
-                            FridgeId = 3,
-                            FridgeInStockId = 117,
-                            RequestDetailId = 6,
-                            ReservedDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1407)
+                            AllocatedDate = new DateTime(2025, 11, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2564),
+                            CustomerID = 10,
+                            FridgeId = 38,
+                            FridgeInStockId = 471,
+                            RequestDetailId = 11,
+                            ReservedDate = new DateTime(2025, 11, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2564)
                         },
                         new
                         {
                             CustomerFridgeId = 8,
-                            AllocatedDate = new DateTime(2025, 11, 3, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1408),
-                            CustomerID = 2,
-                            FridgeId = 4,
-                            FridgeInStockId = 335,
-                            RequestDetailId = 18,
-                            ReservedDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1408)
+                            AllocatedDate = new DateTime(2025, 10, 30, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2565),
+                            CustomerID = 6,
+                            FridgeId = 5,
+                            FridgeInStockId = 176,
+                            RequestDetailId = 8,
+                            ReservedDate = new DateTime(2025, 10, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2565)
                         },
                         new
                         {
                             CustomerFridgeId = 9,
-                            AllocatedDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1409),
-                            CustomerID = 8,
-                            FridgeId = 16,
-                            FridgeInStockId = 373,
-                            RequestDetailId = 16,
-                            ReservedDate = new DateTime(2025, 10, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1409)
+                            CustomerID = 5,
+                            FridgeId = 4,
+                            FridgeInStockId = 85,
+                            RequestDetailId = 8,
+                            ReservedDate = new DateTime(2025, 9, 24, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2567)
                         },
                         new
                         {
                             CustomerFridgeId = 10,
-                            AllocatedDate = new DateTime(2025, 11, 7, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1411),
+                            AllocatedDate = new DateTime(2025, 9, 25, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2569),
                             CustomerID = 10,
-                            FridgeId = 47,
-                            FridgeInStockId = 275,
-                            RequestDetailId = 18,
-                            ReservedDate = new DateTime(2025, 11, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1411)
+                            FridgeId = 14,
+                            FridgeInStockId = 321,
+                            RequestDetailId = 2,
+                            ReservedDate = new DateTime(2025, 9, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2569)
                         },
                         new
                         {
                             CustomerFridgeId = 11,
-                            AllocatedDate = new DateTime(2025, 9, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1413),
-                            CustomerID = 6,
-                            FridgeId = 20,
-                            FridgeInStockId = 210,
-                            RequestDetailId = 11,
-                            ReservedDate = new DateTime(2025, 9, 13, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1413)
+                            AllocatedDate = new DateTime(2025, 9, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2570),
+                            CustomerID = 11,
+                            FridgeId = 29,
+                            FridgeInStockId = 357,
+                            RequestDetailId = 6,
+                            ReservedDate = new DateTime(2025, 9, 19, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2570)
                         },
                         new
                         {
                             CustomerFridgeId = 12,
-                            CustomerID = 10,
-                            FridgeId = 28,
-                            FridgeInStockId = 161,
-                            RequestDetailId = 7,
-                            ReservedDate = new DateTime(2025, 9, 15, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1414)
+                            CustomerID = 2,
+                            FridgeId = 15,
+                            FridgeInStockId = 401,
+                            RequestDetailId = 19,
+                            ReservedDate = new DateTime(2025, 9, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2571)
                         },
                         new
                         {
                             CustomerFridgeId = 13,
-                            CustomerID = 11,
-                            FridgeId = 9,
-                            FridgeInStockId = 133,
-                            RequestDetailId = 14,
-                            ReservedDate = new DateTime(2025, 9, 20, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1415)
+                            CustomerID = 8,
+                            FridgeId = 8,
+                            FridgeInStockId = 286,
+                            RequestDetailId = 6,
+                            ReservedDate = new DateTime(2025, 9, 18, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2572)
                         },
                         new
                         {
                             CustomerFridgeId = 14,
-                            AllocatedDate = new DateTime(2025, 11, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1416),
-                            CustomerID = 1,
-                            FridgeId = 25,
-                            FridgeInStockId = 246,
-                            RequestDetailId = 13,
-                            ReservedDate = new DateTime(2025, 11, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1416)
+                            AllocatedDate = new DateTime(2025, 10, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2574),
+                            CustomerID = 11,
+                            FridgeId = 37,
+                            FridgeInStockId = 176,
+                            RequestDetailId = 2,
+                            ReservedDate = new DateTime(2025, 10, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2574)
                         },
                         new
                         {
                             CustomerFridgeId = 15,
-                            AllocatedDate = new DateTime(2025, 9, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1418),
-                            CustomerID = 1,
-                            FridgeId = 21,
-                            FridgeInStockId = 326,
-                            RequestDetailId = 17,
-                            ReservedDate = new DateTime(2025, 9, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1418)
+                            CustomerID = 9,
+                            FridgeId = 7,
+                            FridgeInStockId = 356,
+                            RequestDetailId = 12,
+                            ReservedDate = new DateTime(2025, 10, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2575)
                         },
                         new
                         {
                             CustomerFridgeId = 16,
-                            CustomerID = 4,
-                            FridgeId = 23,
-                            FridgeInStockId = 4,
-                            RequestDetailId = 11,
-                            ReservedDate = new DateTime(2025, 10, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1419)
+                            CustomerID = 3,
+                            FridgeId = 46,
+                            FridgeInStockId = 144,
+                            RequestDetailId = 4,
+                            ReservedDate = new DateTime(2025, 9, 13, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2576)
                         },
                         new
                         {
                             CustomerFridgeId = 17,
-                            CustomerID = 1,
-                            FridgeId = 26,
-                            FridgeInStockId = 257,
-                            RequestDetailId = 12,
-                            ReservedDate = new DateTime(2025, 10, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1420)
+                            CustomerID = 3,
+                            FridgeId = 11,
+                            FridgeInStockId = 226,
+                            RequestDetailId = 3,
+                            ReservedDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2577)
                         },
                         new
                         {
                             CustomerFridgeId = 18,
-                            CustomerID = 12,
-                            FridgeId = 3,
-                            FridgeInStockId = 364,
-                            RequestDetailId = 9,
-                            ReservedDate = new DateTime(2025, 9, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1422)
+                            AllocatedDate = new DateTime(2025, 10, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2579),
+                            CustomerID = 4,
+                            FridgeId = 15,
+                            FridgeInStockId = 117,
+                            RequestDetailId = 17,
+                            ReservedDate = new DateTime(2025, 10, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2579)
                         },
                         new
                         {
                             CustomerFridgeId = 19,
-                            AllocatedDate = new DateTime(2025, 10, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1423),
-                            CustomerID = 9,
-                            FridgeId = 9,
-                            FridgeInStockId = 393,
-                            RequestDetailId = 5,
-                            ReservedDate = new DateTime(2025, 10, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1423)
+                            AllocatedDate = new DateTime(2025, 10, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2580),
+                            CustomerID = 1,
+                            FridgeId = 42,
+                            FridgeInStockId = 22,
+                            RequestDetailId = 16,
+                            ReservedDate = new DateTime(2025, 10, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2580)
                         },
                         new
                         {
                             CustomerFridgeId = 20,
-                            AllocatedDate = new DateTime(2025, 10, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1424),
-                            CustomerID = 7,
-                            FridgeId = 39,
-                            FridgeInStockId = 91,
-                            RequestDetailId = 4,
-                            ReservedDate = new DateTime(2025, 10, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1424)
+                            AllocatedDate = new DateTime(2025, 11, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2581),
+                            CustomerID = 1,
+                            FridgeId = 31,
+                            FridgeInStockId = 316,
+                            RequestDetailId = 17,
+                            ReservedDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2581)
                         },
                         new
                         {
                             CustomerFridgeId = 21,
-                            AllocatedDate = new DateTime(2025, 9, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1425),
-                            CustomerID = 4,
-                            FridgeId = 41,
-                            FridgeInStockId = 142,
-                            RequestDetailId = 9,
-                            ReservedDate = new DateTime(2025, 9, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1425)
+                            AllocatedDate = new DateTime(2025, 10, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2582),
+                            CustomerID = 8,
+                            FridgeId = 24,
+                            FridgeInStockId = 477,
+                            RequestDetailId = 6,
+                            ReservedDate = new DateTime(2025, 10, 2, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2582)
                         },
                         new
                         {
                             CustomerFridgeId = 22,
-                            CustomerID = 2,
-                            FridgeId = 18,
-                            FridgeInStockId = 13,
-                            RequestDetailId = 10,
-                            ReservedDate = new DateTime(2025, 10, 19, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1426)
+                            CustomerID = 7,
+                            FridgeId = 33,
+                            FridgeInStockId = 358,
+                            RequestDetailId = 11,
+                            ReservedDate = new DateTime(2025, 10, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2584)
                         },
                         new
                         {
                             CustomerFridgeId = 23,
-                            CustomerID = 5,
-                            FridgeId = 30,
-                            FridgeInStockId = 15,
-                            RequestDetailId = 16,
-                            ReservedDate = new DateTime(2025, 11, 9, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1428)
+                            AllocatedDate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2592),
+                            CustomerID = 10,
+                            FridgeId = 39,
+                            FridgeInStockId = 118,
+                            RequestDetailId = 9,
+                            ReservedDate = new DateTime(2025, 11, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2592)
                         },
                         new
                         {
                             CustomerFridgeId = 24,
-                            CustomerID = 3,
-                            FridgeId = 1,
-                            FridgeInStockId = 102,
-                            RequestDetailId = 7,
-                            ReservedDate = new DateTime(2025, 9, 13, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1429)
+                            CustomerID = 9,
+                            FridgeId = 31,
+                            FridgeInStockId = 382,
+                            RequestDetailId = 8,
+                            ReservedDate = new DateTime(2025, 9, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2593)
                         },
                         new
                         {
                             CustomerFridgeId = 25,
-                            AllocatedDate = new DateTime(2025, 9, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1430),
-                            CustomerID = 5,
-                            FridgeId = 12,
-                            FridgeInStockId = 242,
-                            RequestDetailId = 11,
-                            ReservedDate = new DateTime(2025, 9, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1430)
+                            AllocatedDate = new DateTime(2025, 11, 13, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2594),
+                            CustomerID = 6,
+                            FridgeId = 42,
+                            FridgeInStockId = 350,
+                            RequestDetailId = 18,
+                            ReservedDate = new DateTime(2025, 11, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2594)
                         });
                 });
 
@@ -1342,227 +1342,227 @@ namespace Project.Migrations
                         new
                         {
                             FaultReportId = 1,
-                            CustomerId = 9,
+                            CustomerId = 7,
                             Description = "Fault description for report 1. Issue requires attention.",
-                            FaultType = "Water Leakage",
-                            FridgeInStockId = 85,
+                            FaultType = "Electrical Issues",
+                            FridgeInStockId = 121,
                             ImageUrl = "/Images/Faults/fault-1.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = false,
+                            IsReplacementRequested = true,
                             Priority = "Critical",
-                            ReportedDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1699),
-                            RequestReplacement = true,
-                            Status = "In Progress"
+                            ReportedDate = new DateTime(2025, 10, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3085),
+                            RequestReplacement = false,
+                            Status = "Reported"
                         },
                         new
                         {
                             FaultReportId = 2,
-                            CustomerId = 10,
+                            CustomerId = 8,
                             Description = "Fault description for report 2. Issue requires attention.",
-                            FaultType = "Electrical Issues",
-                            FridgeInStockId = 77,
+                            FaultType = "Not Cooling",
+                            FridgeInStockId = 86,
                             ImageUrl = "/Images/Faults/fault-2.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = false,
+                            IsReplacementRequested = true,
                             Priority = "Low",
-                            ReportedDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1719),
+                            ReportedDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3104),
                             RequestReplacement = true,
-                            Status = "Reported"
+                            Status = "In Progress"
                         },
                         new
                         {
                             FaultReportId = 3,
-                            CustomerId = 11,
+                            CustomerId = 8,
                             Description = "Fault description for report 3. Issue requires attention.",
                             FaultType = "Electrical Issues",
-                            FridgeInStockId = 69,
+                            FridgeInStockId = 13,
                             ImageUrl = "/Images/Faults/fault-3.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = false,
-                            Priority = "High",
-                            ReportedDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1724),
-                            RequestReplacement = false,
-                            Status = "In Progress"
+                            IsReplacementRequested = true,
+                            Priority = "Medium",
+                            ReportedDate = new DateTime(2025, 10, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3108),
+                            RequestReplacement = true,
+                            Status = "Declined"
                         },
                         new
                         {
                             FaultReportId = 4,
-                            CustomerId = 3,
+                            CustomerId = 9,
                             Description = "Fault description for report 4. Issue requires attention.",
-                            FaultType = "Strange Noises",
-                            FridgeInStockId = 106,
+                            FaultType = "Water Leakage",
+                            FridgeInStockId = 95,
                             ImageUrl = "/Images/Faults/fault-4.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = true,
-                            Priority = "Low",
-                            ReportedDate = new DateTime(2025, 10, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1728),
+                            Priority = "Medium",
+                            ReportedDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3112),
                             RequestReplacement = false,
-                            Status = "Reported"
+                            Status = "Declined"
                         },
                         new
                         {
                             FaultReportId = 5,
-                            CustomerId = 9,
+                            CustomerId = 2,
                             Description = "Fault description for report 5. Issue requires attention.",
-                            FaultType = "Water Leakage",
-                            FridgeInStockId = 39,
+                            FaultType = "Strange Noises",
+                            FridgeInStockId = 50,
                             ImageUrl = "/Images/Faults/fault-5.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = true,
-                            Priority = "Medium",
-                            ReportedDate = new DateTime(2025, 10, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1732),
+                            IsReplacementRequested = false,
+                            Priority = "High",
+                            ReportedDate = new DateTime(2025, 11, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3116),
                             RequestReplacement = false,
-                            Status = "Resolved"
+                            Status = "Declined"
                         },
                         new
                         {
                             FaultReportId = 6,
-                            CustomerId = 2,
+                            CustomerId = 3,
                             Description = "Fault description for report 6. Issue requires attention.",
                             FaultType = "Electrical Issues",
-                            FridgeInStockId = 47,
+                            FridgeInStockId = 75,
                             ImageUrl = "/Images/Faults/fault-6.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = true,
-                            Priority = "Low",
-                            ReportedDate = new DateTime(2025, 9, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1737),
-                            RequestReplacement = false,
-                            Status = "In Progress"
+                            Priority = "Critical",
+                            ReportedDate = new DateTime(2025, 10, 31, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3121),
+                            RequestReplacement = true,
+                            Status = "Resolved"
                         },
                         new
                         {
                             FaultReportId = 7,
-                            CustomerId = 12,
+                            CustomerId = 9,
                             Description = "Fault description for report 7. Issue requires attention.",
-                            FaultType = "Door Problems",
-                            FridgeInStockId = 104,
+                            FaultType = "Strange Noises",
+                            FridgeInStockId = 81,
                             ImageUrl = "/Images/Faults/fault-7.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = true,
                             Priority = "Medium",
-                            ReportedDate = new DateTime(2025, 10, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1741),
+                            ReportedDate = new DateTime(2025, 10, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3125),
                             RequestReplacement = true,
                             Status = "Reported"
                         },
                         new
                         {
                             FaultReportId = 8,
-                            CustomerId = 12,
+                            CustomerId = 8,
                             Description = "Fault description for report 8. Issue requires attention.",
-                            FaultType = "Strange Noises",
-                            FridgeInStockId = 129,
+                            FaultType = "Not Cooling",
+                            FridgeInStockId = 58,
                             ImageUrl = "/Images/Faults/fault-8.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = true,
+                            IsReplacementRequested = false,
                             Priority = "High",
-                            ReportedDate = new DateTime(2025, 10, 20, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1745),
+                            ReportedDate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3129),
                             RequestReplacement = true,
-                            Status = "Reported"
+                            Status = "Declined"
                         },
                         new
                         {
                             FaultReportId = 9,
-                            CustomerId = 2,
+                            CustomerId = 3,
                             Description = "Fault description for report 9. Issue requires attention.",
                             FaultType = "Door Problems",
-                            FridgeInStockId = 89,
+                            FridgeInStockId = 106,
                             ImageUrl = "/Images/Faults/fault-9.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = true,
-                            Priority = "High",
-                            ReportedDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1749),
+                            IsReplacementRequested = false,
+                            Priority = "Low",
+                            ReportedDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3133),
                             RequestReplacement = true,
                             Status = "Declined"
                         },
                         new
                         {
                             FaultReportId = 10,
-                            CustomerId = 7,
+                            CustomerId = 3,
                             Description = "Fault description for report 10. Issue requires attention.",
-                            FaultType = "Strange Noises",
-                            FridgeInStockId = 80,
+                            FaultType = "Water Leakage",
+                            FridgeInStockId = 42,
                             ImageUrl = "/Images/Faults/fault-10.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = false,
-                            Priority = "Low",
-                            ReportedDate = new DateTime(2025, 10, 12, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1754),
+                            Priority = "Medium",
+                            ReportedDate = new DateTime(2025, 10, 30, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3138),
                             RequestReplacement = true,
-                            Status = "Reported"
+                            Status = "In Progress"
                         },
                         new
                         {
                             FaultReportId = 11,
-                            CustomerId = 3,
+                            CustomerId = 1,
                             Description = "Fault description for report 11. Issue requires attention.",
-                            FaultType = "Not Cooling",
-                            FridgeInStockId = 139,
+                            FaultType = "Electrical Issues",
+                            FridgeInStockId = 129,
                             ImageUrl = "/Images/Faults/fault-11.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = false,
-                            Priority = "Critical",
-                            ReportedDate = new DateTime(2025, 10, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1758),
-                            RequestReplacement = false,
-                            Status = "Reported"
+                            Priority = "High",
+                            ReportedDate = new DateTime(2025, 10, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3143),
+                            RequestReplacement = true,
+                            Status = "Resolved"
                         },
                         new
                         {
                             FaultReportId = 12,
-                            CustomerId = 12,
+                            CustomerId = 3,
                             Description = "Fault description for report 12. Issue requires attention.",
-                            FaultType = "Strange Noises",
-                            FridgeInStockId = 108,
+                            FaultType = "Door Problems",
+                            FridgeInStockId = 105,
                             ImageUrl = "/Images/Faults/fault-12.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = true,
-                            Priority = "Medium",
-                            ReportedDate = new DateTime(2025, 10, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1763),
-                            RequestReplacement = false,
-                            Status = "Reported"
+                            Priority = "Low",
+                            ReportedDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3147),
+                            RequestReplacement = true,
+                            Status = "Resolved"
                         },
                         new
                         {
                             FaultReportId = 13,
                             CustomerId = 2,
                             Description = "Fault description for report 13. Issue requires attention.",
-                            FaultType = "Electrical Issues",
-                            FridgeInStockId = 150,
+                            FaultType = "Water Leakage",
+                            FridgeInStockId = 83,
                             ImageUrl = "/Images/Faults/fault-13.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = false,
-                            Priority = "Low",
-                            ReportedDate = new DateTime(2025, 10, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1767),
+                            Priority = "Critical",
+                            ReportedDate = new DateTime(2025, 10, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3151),
                             RequestReplacement = false,
                             Status = "Resolved"
                         },
                         new
                         {
                             FaultReportId = 14,
-                            CustomerId = 1,
+                            CustomerId = 11,
                             Description = "Fault description for report 14. Issue requires attention.",
-                            FaultType = "Strange Noises",
-                            FridgeInStockId = 50,
+                            FaultType = "Electrical Issues",
+                            FridgeInStockId = 109,
                             ImageUrl = "/Images/Faults/fault-14.jpg",
                             IsRelaunched = false,
-                            IsReplacementRequested = true,
-                            Priority = "High",
-                            ReportedDate = new DateTime(2025, 10, 3, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1771),
-                            RequestReplacement = true,
-                            Status = "Declined"
+                            IsReplacementRequested = false,
+                            Priority = "Critical",
+                            ReportedDate = new DateTime(2025, 10, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3155),
+                            RequestReplacement = false,
+                            Status = "In Progress"
                         },
                         new
                         {
                             FaultReportId = 15,
-                            CustomerId = 8,
+                            CustomerId = 7,
                             Description = "Fault description for report 15. Issue requires attention.",
-                            FaultType = "Strange Noises",
-                            FridgeInStockId = 18,
+                            FaultType = "Electrical Issues",
+                            FridgeInStockId = 121,
                             ImageUrl = "/Images/Faults/fault-15.jpg",
                             IsRelaunched = false,
                             IsReplacementRequested = true,
-                            Priority = "Critical",
-                            ReportedDate = new DateTime(2025, 11, 6, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1775),
+                            Priority = "Medium",
+                            ReportedDate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3159),
                             RequestReplacement = true,
-                            Status = "Resolved"
+                            Status = "Declined"
                         });
                 });
 
@@ -1630,227 +1630,223 @@ namespace Project.Migrations
                         new
                         {
                             FaultId = 1,
-                            CreatedDate = new DateTime(2025, 10, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1841),
-                            CustomerBookingStatus = "Decline",
+                            CreatedDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3230),
+                            CustomerBookingStatus = "Pending",
                             FaultDescription = "Fault description for technician assignment 1",
-                            FaultReportId = 9,
+                            FaultReportId = 5,
                             FaultType = "Technical Fault",
                             Priority = "Medium",
-                            RepairStatus = "Scrapped",
-                            ReportDate = new DateTime(2025, 10, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1841),
-                            TechnicianAssigned = "Patricia White",
-                            VisitId = 3
+                            RepairStatus = "In Progress",
+                            ReportDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3230),
+                            TechnicianAssigned = "James Miller",
+                            VisitId = 16
                         },
                         new
                         {
                             FaultId = 2,
-                            CreatedDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1866),
-                            CustomerBookingStatus = "Pending",
+                            CreatedDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3251),
+                            CustomerBookingStatus = "Decline",
                             FaultDescription = "Fault description for technician assignment 2",
-                            FaultReportId = 13,
+                            FaultReportId = 6,
                             FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "Completed",
-                            ReportDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1866),
-                            ResolutionNotes = "Resolution notes for fault 2",
-                            TechnicianAssigned = "James Miller",
-                            VisitId = 9
+                            Priority = "High",
+                            RepairStatus = "In Progress",
+                            ReportDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3251),
+                            TechnicianAssigned = "Robert Davis",
+                            VisitId = 1
                         },
                         new
                         {
                             FaultId = 3,
-                            Bookingate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1878),
-                            CreatedDate = new DateTime(2025, 10, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1878),
-                            CustomerBookingStatus = "Decline",
+                            CreatedDate = new DateTime(2025, 10, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3255),
+                            CustomerBookingStatus = "Approved",
                             FaultDescription = "Fault description for technician assignment 3",
-                            FaultReportId = 12,
+                            FaultReportId = 6,
                             FaultType = "Technical Fault",
                             Priority = "High",
-                            RepairStatus = "Resolved",
-                            ReportDate = new DateTime(2025, 10, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1878),
+                            RepairStatus = "Scrapped",
+                            ReportDate = new DateTime(2025, 10, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3255),
                             ResolutionNotes = "Resolution notes for fault 3",
-                            TechnicianAssigned = "Robert Davis",
-                            VisitId = 9
-                        },
-                        new
-                        {
-                            FaultId = 4,
-                            CreatedDate = new DateTime(2025, 10, 14, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1883),
-                            CustomerBookingStatus = "Approved",
-                            FaultDescription = "Fault description for technician assignment 4",
-                            FaultReportId = 4,
-                            FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "In Progress",
-                            ReportDate = new DateTime(2025, 10, 14, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1883),
-                            ResolutionNotes = "Resolution notes for fault 4",
-                            TechnicianAssigned = "Jennifer Martin",
-                            VisitId = 13
-                        },
-                        new
-                        {
-                            FaultId = 5,
-                            Bookingate = new DateTime(2025, 10, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1888),
-                            CreatedDate = new DateTime(2025, 10, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1888),
-                            CustomerBookingStatus = "Decline",
-                            FaultDescription = "Fault description for technician assignment 5",
-                            FaultReportId = 2,
-                            FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "In Progress",
-                            ReportDate = new DateTime(2025, 10, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1888),
-                            ResolutionNotes = "Resolution notes for fault 5",
-                            TechnicianAssigned = "Patricia White",
-                            VisitId = 11
-                        },
-                        new
-                        {
-                            FaultId = 6,
-                            CreatedDate = new DateTime(2025, 10, 14, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1893),
-                            CustomerBookingStatus = "Decline",
-                            FaultDescription = "Fault description for technician assignment 6",
-                            FaultReportId = 1,
-                            FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "Completed",
-                            ReportDate = new DateTime(2025, 10, 14, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1893),
-                            ResolutionNotes = "Resolution notes for fault 6",
                             TechnicianAssigned = "Patricia White",
                             VisitId = 5
                         },
                         new
                         {
-                            FaultId = 7,
-                            CreatedDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1898),
-                            CustomerBookingStatus = "Approved",
-                            FaultDescription = "Fault description for technician assignment 7",
-                            FaultReportId = 8,
+                            FaultId = 4,
+                            CreatedDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3260),
+                            CustomerBookingStatus = "Pending",
+                            FaultDescription = "Fault description for technician assignment 4",
+                            FaultReportId = 5,
+                            FaultType = "Technical Fault",
+                            Priority = "Medium",
+                            RepairStatus = "Resolved",
+                            ReportDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3260),
+                            TechnicianAssigned = "Robert Davis",
+                            VisitId = 12
+                        },
+                        new
+                        {
+                            FaultId = 5,
+                            Bookingate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3263),
+                            CreatedDate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3263),
+                            CustomerBookingStatus = "Pending",
+                            FaultDescription = "Fault description for technician assignment 5",
+                            FaultReportId = 11,
+                            FaultType = "Technical Fault",
+                            Priority = "High",
+                            RepairStatus = "Not Started",
+                            ReportDate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3263),
+                            ResolutionNotes = "Resolution notes for fault 5",
+                            TechnicianAssigned = "Jennifer Martin",
+                            VisitId = 14
+                        },
+                        new
+                        {
+                            FaultId = 6,
+                            CreatedDate = new DateTime(2025, 10, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3269),
+                            CustomerBookingStatus = "Decline",
+                            FaultDescription = "Fault description for technician assignment 6",
+                            FaultReportId = 5,
                             FaultType = "Technical Fault",
                             Priority = "Medium",
                             RepairStatus = "In Progress",
-                            ReportDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1898),
-                            TechnicianAssigned = "James Miller",
-                            VisitId = 20
-                        },
-                        new
-                        {
-                            FaultId = 8,
-                            Bookingate = new DateTime(2025, 11, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1901),
-                            CreatedDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1901),
-                            CustomerBookingStatus = "Pending",
-                            FaultDescription = "Fault description for technician assignment 8",
-                            FaultReportId = 12,
-                            FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "Resolved",
-                            ReportDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1901),
-                            TechnicianAssigned = "James Miller",
-                            VisitId = 9
-                        },
-                        new
-                        {
-                            FaultId = 9,
-                            CreatedDate = new DateTime(2025, 11, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1905),
-                            CustomerBookingStatus = "Approved",
-                            FaultDescription = "Fault description for technician assignment 9",
-                            FaultReportId = 14,
-                            FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "Resolved",
-                            ReportDate = new DateTime(2025, 11, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1905),
+                            ReportDate = new DateTime(2025, 10, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3269),
                             TechnicianAssigned = "Robert Davis",
                             VisitId = 18
                         },
                         new
                         {
-                            FaultId = 10,
-                            Bookingate = new DateTime(2025, 11, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1909),
-                            CreatedDate = new DateTime(2025, 11, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1909),
+                            FaultId = 7,
+                            Bookingate = new DateTime(2025, 11, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3273),
+                            CreatedDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3273),
                             CustomerBookingStatus = "Approved",
-                            FaultDescription = "Fault description for technician assignment 10",
-                            FaultReportId = 3,
+                            FaultDescription = "Fault description for technician assignment 7",
+                            FaultReportId = 11,
                             FaultType = "Technical Fault",
                             Priority = "High",
-                            RepairStatus = "Resolved",
-                            ReportDate = new DateTime(2025, 11, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1909),
-                            ResolutionNotes = "Resolution notes for fault 10",
-                            TechnicianAssigned = "Patricia White",
-                            VisitId = 3
-                        },
-                        new
-                        {
-                            FaultId = 11,
-                            CreatedDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1914),
-                            CustomerBookingStatus = "Pending",
-                            FaultDescription = "Fault description for technician assignment 11",
-                            FaultReportId = 6,
-                            FaultType = "Technical Fault",
-                            Priority = "Medium",
-                            RepairStatus = "Completed",
-                            ReportDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1914),
-                            ResolutionNotes = "Resolution notes for fault 11",
-                            TechnicianAssigned = "James Miller",
+                            RepairStatus = "In Progress",
+                            ReportDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3273),
+                            TechnicianAssigned = "Jennifer Martin",
                             VisitId = 11
                         },
                         new
                         {
-                            FaultId = 12,
-                            Bookingate = new DateTime(2025, 11, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1919),
-                            CreatedDate = new DateTime(2025, 10, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1919),
+                            FaultId = 8,
+                            CreatedDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3276),
+                            CustomerBookingStatus = "Pending",
+                            FaultDescription = "Fault description for technician assignment 8",
+                            FaultReportId = 6,
+                            FaultType = "Technical Fault",
+                            Priority = "Medium",
+                            RepairStatus = "In Progress",
+                            ReportDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3276),
+                            ResolutionNotes = "Resolution notes for fault 8",
+                            TechnicianAssigned = "James Miller",
+                            VisitId = 4
+                        },
+                        new
+                        {
+                            FaultId = 9,
+                            CreatedDate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3281),
                             CustomerBookingStatus = "Decline",
-                            FaultDescription = "Fault description for technician assignment 12",
-                            FaultReportId = 13,
+                            FaultDescription = "Fault description for technician assignment 9",
+                            FaultReportId = 3,
+                            FaultType = "Technical Fault",
+                            Priority = "Medium",
+                            RepairStatus = "Scrapped",
+                            ReportDate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3281),
+                            TechnicianAssigned = "Patricia White",
+                            VisitId = 15
+                        },
+                        new
+                        {
+                            FaultId = 10,
+                            Bookingate = new DateTime(2025, 10, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3286),
+                            CreatedDate = new DateTime(2025, 10, 21, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3286),
+                            CustomerBookingStatus = "Approved",
+                            FaultDescription = "Fault description for technician assignment 10",
+                            FaultReportId = 14,
                             FaultType = "Technical Fault",
                             Priority = "High",
-                            RepairStatus = "Scrapped",
-                            ReportDate = new DateTime(2025, 10, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1919),
-                            ResolutionNotes = "Resolution notes for fault 12",
+                            RepairStatus = "Not Started",
+                            ReportDate = new DateTime(2025, 10, 21, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3286),
+                            ResolutionNotes = "Resolution notes for fault 10",
                             TechnicianAssigned = "James Miller",
                             VisitId = 14
                         },
                         new
                         {
-                            FaultId = 13,
-                            CreatedDate = new DateTime(2025, 10, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1923),
-                            CustomerBookingStatus = "Decline",
-                            FaultDescription = "Fault description for technician assignment 13",
-                            FaultReportId = 6,
+                            FaultId = 11,
+                            Bookingate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3291),
+                            CreatedDate = new DateTime(2025, 10, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3291),
+                            CustomerBookingStatus = "Approved",
+                            FaultDescription = "Fault description for technician assignment 11",
+                            FaultReportId = 15,
                             FaultType = "Technical Fault",
                             Priority = "Medium",
-                            RepairStatus = "In Progress",
-                            ReportDate = new DateTime(2025, 10, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1923),
-                            TechnicianAssigned = "Patricia White",
-                            VisitId = 14
+                            RepairStatus = "Not Started",
+                            ReportDate = new DateTime(2025, 10, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3291),
+                            TechnicianAssigned = "Jennifer Martin",
+                            VisitId = 20
+                        },
+                        new
+                        {
+                            FaultId = 12,
+                            CreatedDate = new DateTime(2025, 11, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3294),
+                            CustomerBookingStatus = "Pending",
+                            FaultDescription = "Fault description for technician assignment 12",
+                            FaultReportId = 4,
+                            FaultType = "Technical Fault",
+                            Priority = "High",
+                            RepairStatus = "Not Started",
+                            ReportDate = new DateTime(2025, 11, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3294),
+                            ResolutionNotes = "Resolution notes for fault 12",
+                            TechnicianAssigned = "Jennifer Martin",
+                            VisitId = 11
+                        },
+                        new
+                        {
+                            FaultId = 13,
+                            CreatedDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3298),
+                            CustomerBookingStatus = "Pending",
+                            FaultDescription = "Fault description for technician assignment 13",
+                            FaultReportId = 13,
+                            FaultType = "Technical Fault",
+                            Priority = "High",
+                            RepairStatus = "Scrapped",
+                            ReportDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3298),
+                            TechnicianAssigned = "Jennifer Martin",
+                            VisitId = 13
                         },
                         new
                         {
                             FaultId = 14,
-                            Bookingate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1926),
-                            CreatedDate = new DateTime(2025, 10, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1926),
+                            Bookingate = new DateTime(2025, 10, 31, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3302),
+                            CreatedDate = new DateTime(2025, 10, 25, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3302),
                             CustomerBookingStatus = "Pending",
                             FaultDescription = "Fault description for technician assignment 14",
-                            FaultReportId = 11,
+                            FaultReportId = 9,
                             FaultType = "Technical Fault",
-                            Priority = "Medium",
+                            Priority = "High",
                             RepairStatus = "Scrapped",
-                            ReportDate = new DateTime(2025, 10, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1926),
+                            ReportDate = new DateTime(2025, 10, 25, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3302),
                             TechnicianAssigned = "Robert Davis",
                             VisitId = 13
                         },
                         new
                         {
                             FaultId = 15,
-                            Bookingate = new DateTime(2025, 11, 7, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1930),
-                            CreatedDate = new DateTime(2025, 11, 3, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1930),
+                            CreatedDate = new DateTime(2025, 10, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3305),
                             CustomerBookingStatus = "Approved",
                             FaultDescription = "Fault description for technician assignment 15",
-                            FaultReportId = 6,
+                            FaultReportId = 13,
                             FaultType = "Technical Fault",
-                            Priority = "High",
-                            RepairStatus = "Completed",
-                            ReportDate = new DateTime(2025, 11, 3, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1930),
-                            TechnicianAssigned = "Patricia White",
-                            VisitId = 1
+                            Priority = "Medium",
+                            RepairStatus = "Not Started",
+                            ReportDate = new DateTime(2025, 10, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3305),
+                            ResolutionNotes = "Resolution notes for fault 15",
+                            TechnicianAssigned = "James Miller",
+                            VisitId = 2
                         });
                 });
 
@@ -2571,12 +2567,12 @@ namespace Project.Migrations
                         new
                         {
                             FridgeInStockId = 1,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7143),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(7949),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -2586,30 +2582,30 @@ namespace Project.Migrations
                             FridgeId = 1,
                             FridgeNo = "FRG-001-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7237),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(7989),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 3,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7269),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(7993),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 4,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7278),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8009),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -2619,8 +2615,8 @@ namespace Project.Migrations
                             FridgeId = 1,
                             FridgeNo = "FRG-001-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7282),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8013),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -2630,8 +2626,8 @@ namespace Project.Migrations
                             FridgeId = 1,
                             FridgeNo = "FRG-001-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7289),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8018),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -2640,42 +2636,42 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7293),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8023),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 8,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7298),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8027),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 9,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7302),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8031),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 10,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 1,
                             FridgeNo = "FRG-001-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7308),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8037),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -2684,86 +2680,86 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7313),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8041),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 12,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7317),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8045),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 13,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7322),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8050),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 14,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7326),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8054),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 15,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7384),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8111),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 16,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7398),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8123),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 17,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7403),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8127),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 18,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7408),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8131),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -2773,8 +2769,8 @@ namespace Project.Migrations
                             FridgeId = 2,
                             FridgeNo = "FRG-002-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7413),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8136),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -2783,31 +2779,31 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 2,
                             FridgeNo = "FRG-002-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7417),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8140),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 21,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7422),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8145),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 22,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7426),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8149),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -2816,42 +2812,42 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7430),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8153),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 24,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7434),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8157),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 25,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7439),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8161),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 26,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7443),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8165),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -2860,31 +2856,31 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7447),
-                            Location = "Durban Warehouse",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 28,
-                            Condition = "Excellent",
-                            FridgeId = 3,
-                            FridgeNo = "FRG-003-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7452),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8169),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 28,
+                            Condition = "Good",
+                            FridgeId = 3,
+                            FridgeNo = "FRG-003-008",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8173),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 29,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7456),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8177),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -2893,8 +2889,8 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 3,
                             FridgeNo = "FRG-003-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7483),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8218),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
@@ -2905,95 +2901,95 @@ namespace Project.Migrations
                             FridgeId = 4,
                             FridgeNo = "FRG-004-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7508),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8235),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 32,
-                            Condition = "Excellent",
-                            FridgeId = 4,
-                            FridgeNo = "FRG-004-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7513),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 33,
                             Condition = "Good",
                             FridgeId = 4,
-                            FridgeNo = "FRG-004-003",
+                            FridgeNo = "FRG-004-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7517),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8239),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 33,
+                            Condition = "Very Good",
+                            FridgeId = 4,
+                            FridgeNo = "FRG-004-003",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8244),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 34,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 4,
                             FridgeNo = "FRG-004-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7522),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8249),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 35,
-                            Condition = "Very Good",
-                            FridgeId = 4,
-                            FridgeNo = "FRG-004-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7526),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 36,
                             Condition = "Excellent",
                             FridgeId = 4,
-                            FridgeNo = "FRG-004-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7530),
+                            FridgeNo = "FRG-004-005",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8253),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 37,
-                            Condition = "Excellent",
+                            FridgeInStockId = 36,
+                            Condition = "Very Good",
                             FridgeId = 4,
-                            FridgeNo = "FRG-004-007",
+                            FridgeNo = "FRG-004-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7535),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 38,
-                            Condition = "Good",
-                            FridgeId = 4,
-                            FridgeNo = "FRG-004-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7539),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8257),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 39,
+                            FridgeInStockId = 37,
+                            Condition = "Good",
+                            FridgeId = 4,
+                            FridgeNo = "FRG-004-007",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8261),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 38,
                             Condition = "Excellent",
+                            FridgeId = 4,
+                            FridgeNo = "FRG-004-008",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8265),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 39,
+                            Condition = "Very Good",
                             FridgeId = 4,
                             FridgeNo = "FRG-004-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7544),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8269),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
@@ -3003,9 +2999,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 4,
                             FridgeNo = "FRG-004-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7548),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8273),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -3015,29 +3011,29 @@ namespace Project.Migrations
                             FridgeId = 5,
                             FridgeNo = "FRG-005-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7552),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8278),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 42,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 5,
                             FridgeNo = "FRG-005-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7556),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8282),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 43,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 5,
                             FridgeNo = "FRG-005-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7561),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8286),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
@@ -3048,30 +3044,30 @@ namespace Project.Migrations
                             FridgeId = 5,
                             FridgeNo = "FRG-005-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7565),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8290),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 45,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 5,
                             FridgeNo = "FRG-005-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7569),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8294),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 46,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 5,
                             FridgeNo = "FRG-005-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7573),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8298),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -3080,42 +3076,42 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 5,
                             FridgeNo = "FRG-005-007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7578),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8302),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 48,
-                            Condition = "Good",
-                            FridgeId = 5,
-                            FridgeNo = "FRG-005-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7582),
-                            Location = "Port Elizabeth Depot",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 49,
                             Condition = "Very Good",
                             FridgeId = 5,
-                            FridgeNo = "FRG-005-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7586),
+                            FridgeNo = "FRG-005-008",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8307),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 50,
+                            FridgeInStockId = 49,
                             Condition = "Excellent",
+                            FridgeId = 5,
+                            FridgeNo = "FRG-005-009",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8311),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 50,
+                            Condition = "Good",
                             FridgeId = 5,
                             FridgeNo = "FRG-005-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7591),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8315),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -3124,20 +3120,20 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7608),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8320),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 52,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7612),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8324),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -3146,20 +3142,20 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7616),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8328),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 54,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-004",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7620),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8332),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3169,18 +3165,18 @@ namespace Project.Migrations
                             FridgeId = 6,
                             FridgeNo = "FRG-006-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7625),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8336),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 56,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7629),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8340),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -3191,30 +3187,30 @@ namespace Project.Migrations
                             FridgeId = 6,
                             FridgeNo = "FRG-006-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7633),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8344),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 58,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7637),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8348),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 59,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 6,
                             FridgeNo = "FRG-006-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7642),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8352),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3224,74 +3220,74 @@ namespace Project.Migrations
                             FridgeId = 6,
                             FridgeNo = "FRG-006-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7646),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8357),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 61,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7651),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8361),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 62,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7655),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8365),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 63,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7659),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8369),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 64,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7663),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8373),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 65,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7668),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8377),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 66,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7673),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8382),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3300,9 +3296,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 7,
                             FridgeNo = "FRG-007-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7677),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8386),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3312,96 +3308,96 @@ namespace Project.Migrations
                             FridgeId = 7,
                             FridgeNo = "FRG-007-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7682),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 69,
-                            Condition = "Excellent",
-                            FridgeId = 7,
-                            FridgeNo = "FRG-007-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7686),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8390),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 70,
-                            Condition = "Excellent",
+                            FridgeInStockId = 69,
+                            Condition = "Very Good",
                             FridgeId = 7,
-                            FridgeNo = "FRG-007-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7690),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 71,
-                            Condition = "Very Good",
-                            FridgeId = 8,
-                            FridgeNo = "FRG-008-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7695),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 72,
-                            Condition = "Very Good",
-                            FridgeId = 8,
-                            FridgeNo = "FRG-008-002",
+                            FridgeNo = "FRG-007-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7699),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8394),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 73,
+                            FridgeInStockId = 70,
                             Condition = "Good",
+                            FridgeId = 7,
+                            FridgeNo = "FRG-007-010",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8399),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 71,
+                            Condition = "Excellent",
+                            FridgeId = 8,
+                            FridgeNo = "FRG-008-001",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8403),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 72,
+                            Condition = "Excellent",
+                            FridgeId = 8,
+                            FridgeNo = "FRG-008-002",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8407),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 73,
+                            Condition = "Very Good",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7703),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8411),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 74,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7707),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8415),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 75,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7712),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8419),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 76,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7716),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8423),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3411,41 +3407,41 @@ namespace Project.Migrations
                             FridgeId = 8,
                             FridgeNo = "FRG-008-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7720),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8427),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 78,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7725),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8431),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 79,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7729),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8436),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 80,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 8,
                             FridgeNo = "FRG-008-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7734),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8440),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -3455,30 +3451,30 @@ namespace Project.Migrations
                             FridgeId = 9,
                             FridgeNo = "FRG-009-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7738),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8444),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 82,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 9,
                             FridgeNo = "FRG-009-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7742),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8448),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 83,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 9,
                             FridgeNo = "FRG-009-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7747),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8452),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -3487,9 +3483,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 9,
                             FridgeNo = "FRG-009-004",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7751),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8456),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -3499,8 +3495,8 @@ namespace Project.Migrations
                             FridgeId = 9,
                             FridgeNo = "FRG-009-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7755),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8460),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -3509,19 +3505,19 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 9,
                             FridgeNo = "FRG-009-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7760),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8470),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 87,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 9,
                             FridgeNo = "FRG-009-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7765),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8474),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -3532,8 +3528,8 @@ namespace Project.Migrations
                             FridgeId = 9,
                             FridgeNo = "FRG-009-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7769),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8478),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -3543,52 +3539,52 @@ namespace Project.Migrations
                             FridgeId = 9,
                             FridgeNo = "FRG-009-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7773),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 90,
-                            Condition = "Good",
-                            FridgeId = 9,
-                            FridgeNo = "FRG-009-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7777),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 91,
-                            Condition = "Good",
-                            FridgeId = 10,
-                            FridgeNo = "FRG-010-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7782),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8482),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 92,
+                            FridgeInStockId = 90,
+                            Condition = "Very Good",
+                            FridgeId = 9,
+                            FridgeNo = "FRG-009-010",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8487),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 91,
                             Condition = "Excellent",
                             FridgeId = 10,
-                            FridgeNo = "FRG-010-002",
+                            FridgeNo = "FRG-010-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7787),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8491),
+                            Location = "Pretoria Facility",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 92,
+                            Condition = "Very Good",
+                            FridgeId = 10,
+                            FridgeNo = "FRG-010-002",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8495),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 93,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7791),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8499),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -3598,30 +3594,30 @@ namespace Project.Migrations
                             FridgeId = 10,
                             FridgeNo = "FRG-010-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7795),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8503),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 95,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7799),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8507),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 96,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7804),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8512),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -3630,20 +3626,20 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7808),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8516),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 98,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7812),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8520),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -3652,20 +3648,20 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7816),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8524),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 100,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 10,
                             FridgeNo = "FRG-010-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7821),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8528),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3675,19 +3671,19 @@ namespace Project.Migrations
                             FridgeId = 11,
                             FridgeNo = "FRG-011-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7825),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8532),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 102,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7830),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8536),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -3696,20 +3692,20 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7834),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8541),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 104,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7838),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8545),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -3718,20 +3714,20 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7843),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8549),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 106,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7847),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8553),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3740,9 +3736,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7851),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8557),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -3752,30 +3748,30 @@ namespace Project.Migrations
                             FridgeId = 11,
                             FridgeNo = "FRG-011-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7855),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8561),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 109,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7860),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8565),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 110,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 11,
                             FridgeNo = "FRG-011-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7870),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8570),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -3785,29 +3781,29 @@ namespace Project.Migrations
                             FridgeId = 12,
                             FridgeNo = "FRG-012-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7875),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 112,
-                            Condition = "Very Good",
-                            FridgeId = 12,
-                            FridgeNo = "FRG-012-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7880),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8574),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 113,
+                            FridgeInStockId = 112,
                             Condition = "Good",
+                            FridgeId = 12,
+                            FridgeNo = "FRG-012-002",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8578),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 113,
+                            Condition = "Very Good",
                             FridgeId = 12,
                             FridgeNo = "FRG-012-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7884),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8582),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
@@ -3818,41 +3814,41 @@ namespace Project.Migrations
                             FridgeId = 12,
                             FridgeNo = "FRG-012-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7888),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8586),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 115,
-                            Condition = "Excellent",
-                            FridgeId = 12,
-                            FridgeNo = "FRG-012-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7892),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 116,
                             Condition = "Good",
                             FridgeId = 12,
-                            FridgeNo = "FRG-012-006",
+                            FridgeNo = "FRG-012-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7897),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8590),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 116,
+                            Condition = "Excellent",
+                            FridgeId = 12,
+                            FridgeNo = "FRG-012-006",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8595),
+                            Location = "Pretoria Facility",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 117,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 12,
                             FridgeNo = "FRG-012-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7901),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8599),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -3861,52 +3857,52 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 12,
                             FridgeNo = "FRG-012-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7906),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8603),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 119,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 12,
                             FridgeNo = "FRG-012-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7910),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 120,
-                            Condition = "Excellent",
-                            FridgeId = 12,
-                            FridgeNo = "FRG-012-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7914),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8607),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 121,
+                            FridgeInStockId = 120,
                             Condition = "Good",
+                            FridgeId = 12,
+                            FridgeNo = "FRG-012-010",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8611),
+                            Location = "Pretoria Facility",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 121,
+                            Condition = "Very Good",
                             FridgeId = 13,
                             FridgeNo = "FRG-013-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7919),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8615),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 122,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 13,
                             FridgeNo = "FRG-013-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7923),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8619),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -3917,8 +3913,8 @@ namespace Project.Migrations
                             FridgeId = 13,
                             FridgeNo = "FRG-013-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7927),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8624),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -3928,8 +3924,8 @@ namespace Project.Migrations
                             FridgeId = 13,
                             FridgeNo = "FRG-013-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7932),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8628),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -3938,86 +3934,86 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 13,
                             FridgeNo = "FRG-013-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7936),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 126,
-                            Condition = "Excellent",
-                            FridgeId = 13,
-                            FridgeNo = "FRG-013-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7940),
-                            Location = "Port Elizabeth Depot",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 127,
-                            Condition = "Very Good",
-                            FridgeId = 13,
-                            FridgeNo = "FRG-013-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7944),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8632),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 126,
+                            Condition = "Good",
+                            FridgeId = 13,
+                            FridgeNo = "FRG-013-006",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8636),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 127,
+                            Condition = "Good",
+                            FridgeId = 13,
+                            FridgeNo = "FRG-013-007",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8640),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 128,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 13,
                             FridgeNo = "FRG-013-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7948),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8645),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 129,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 13,
                             FridgeNo = "FRG-013-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7953),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8649),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 130,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 13,
                             FridgeNo = "FRG-013-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7958),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 131,
-                            Condition = "Good",
-                            FridgeId = 14,
-                            FridgeNo = "FRG-014-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7962),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8654),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 132,
+                            FridgeInStockId = 131,
                             Condition = "Very Good",
                             FridgeId = 14,
-                            FridgeNo = "FRG-014-002",
+                            FridgeNo = "FRG-014-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7967),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8658),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 132,
+                            Condition = "Good",
+                            FridgeId = 14,
+                            FridgeNo = "FRG-014-002",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8662),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -4026,52 +4022,52 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7971),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8666),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 134,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7975),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8670),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 135,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7979),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8674),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 136,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7984),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8679),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 137,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7988),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8688),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
@@ -4081,9 +4077,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7992),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8693),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4093,41 +4089,41 @@ namespace Project.Migrations
                             FridgeId = 14,
                             FridgeNo = "FRG-014-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(7997),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8705),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 140,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 14,
                             FridgeNo = "FRG-014-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8001),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8709),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 141,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8006),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8714),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 142,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8010),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8718),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -4137,8 +4133,8 @@ namespace Project.Migrations
                             FridgeId = 15,
                             FridgeNo = "FRG-015-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8014),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8722),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -4147,9 +4143,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8019),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8726),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -4159,19 +4155,19 @@ namespace Project.Migrations
                             FridgeId = 15,
                             FridgeNo = "FRG-015-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8023),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8730),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 146,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8027),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8734),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -4180,8 +4176,8 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8032),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8738),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
@@ -4191,63 +4187,63 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8036),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8742),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 149,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8040),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8746),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 150,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 15,
                             FridgeNo = "FRG-015-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8045),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8750),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 151,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8049),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8755),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 152,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8054),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8759),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 153,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8058),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8763),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
@@ -4258,63 +4254,63 @@ namespace Project.Migrations
                             FridgeId = 16,
                             FridgeNo = "FRG-016-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8063),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8775),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 155,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8067),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8786),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 156,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8071),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8791),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 157,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8075),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8795),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 158,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8079),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8799),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 159,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8084),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8803),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -4323,53 +4319,53 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 16,
                             FridgeNo = "FRG-016-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8088),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8807),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 161,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8100),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8812),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 162,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8105),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8816),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 163,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8117),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8820),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 164,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8121),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8824),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -4379,8 +4375,8 @@ namespace Project.Migrations
                             FridgeId = 17,
                             FridgeNo = "FRG-017-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8126),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8836),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4390,30 +4386,30 @@ namespace Project.Migrations
                             FridgeId = 17,
                             FridgeNo = "FRG-017-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8130),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8840),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 167,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8134),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8844),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 168,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8138),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8848),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4422,9 +4418,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 17,
                             FridgeNo = "FRG-017-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8142),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8852),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4434,7 +4430,7 @@ namespace Project.Migrations
                             FridgeId = 17,
                             FridgeNo = "FRG-017-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8147),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8856),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -4445,41 +4441,41 @@ namespace Project.Migrations
                             FridgeId = 18,
                             FridgeNo = "FRG-018-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8151),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8861),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 172,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8156),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8865),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 173,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8160),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8869),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 174,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-004",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8164),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8873),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -4488,9 +4484,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8168),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8886),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -4499,53 +4495,53 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8172),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8890),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 177,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8177),
-                            Location = "Durban Warehouse",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 178,
-                            Condition = "Excellent",
-                            FridgeId = 18,
-                            FridgeNo = "FRG-018-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8189),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8894),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 178,
+                            Condition = "Very Good",
+                            FridgeId = 18,
+                            FridgeNo = "FRG-018-008",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8898),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 179,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8200),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8902),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 180,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 18,
                             FridgeNo = "FRG-018-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8205),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8907),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -4555,8 +4551,8 @@ namespace Project.Migrations
                             FridgeId = 19,
                             FridgeNo = "FRG-019-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8209),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8911),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -4566,19 +4562,19 @@ namespace Project.Migrations
                             FridgeId = 19,
                             FridgeNo = "FRG-019-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8213),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8915),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 183,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8218),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8919),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -4587,9 +4583,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8222),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8930),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -4598,64 +4594,64 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8226),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8934),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 186,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8231),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8938),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 187,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8235),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8942),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 188,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8239),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8946),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 189,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8251),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8950),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 190,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 19,
                             FridgeNo = "FRG-019-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8256),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8955),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -4665,8 +4661,8 @@ namespace Project.Migrations
                             FridgeId = 20,
                             FridgeNo = "FRG-020-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8260),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8959),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -4676,8 +4672,8 @@ namespace Project.Migrations
                             FridgeId = 20,
                             FridgeNo = "FRG-020-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8265),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8963),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -4686,86 +4682,86 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8269),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8974),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 194,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-004",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8273),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8979),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 195,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8278),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8983),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 196,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8282),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8987),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 197,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8286),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8991),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 198,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8291),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8995),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 199,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8302),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(8999),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 200,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 20,
                             FridgeNo = "FRG-020-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8306),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9003),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4774,9 +4770,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8311),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9007),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4786,19 +4782,19 @@ namespace Project.Migrations
                             FridgeId = 21,
                             FridgeNo = "FRG-021-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8315),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9019),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 203,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8319),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9023),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4808,8 +4804,8 @@ namespace Project.Migrations
                             FridgeId = 21,
                             FridgeNo = "FRG-021-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8324),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9027),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -4819,29 +4815,29 @@ namespace Project.Migrations
                             FridgeId = 21,
                             FridgeNo = "FRG-021-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8328),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9041),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 206,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8333),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9045),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 207,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8345),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9049),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -4851,64 +4847,64 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8349),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9053),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 209,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8354),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9064),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 210,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 21,
                             FridgeNo = "FRG-021-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8358),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9069),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 211,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8362),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9073),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 212,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8366),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9077),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 213,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8371),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9081),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -4918,30 +4914,30 @@ namespace Project.Migrations
                             FridgeId = 22,
                             FridgeNo = "FRG-022-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8375),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9085),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 215,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8379),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9089),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 216,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8384),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9094),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -4951,51 +4947,51 @@ namespace Project.Migrations
                             FridgeId = 22,
                             FridgeNo = "FRG-022-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8396),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9098),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 218,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8400),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9102),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 219,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8404),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9113),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 220,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 22,
                             FridgeNo = "FRG-022-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8409),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9118),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 221,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8413),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9122),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
@@ -5005,19 +5001,19 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8417),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9126),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 223,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8421),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9130),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -5028,29 +5024,29 @@ namespace Project.Migrations
                             FridgeId = 23,
                             FridgeNo = "FRG-023-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8426),
-                            Location = "Durban Warehouse",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 225,
-                            Condition = "Good",
-                            FridgeId = 23,
-                            FridgeNo = "FRG-023-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8430),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9134),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 225,
+                            Condition = "Very Good",
+                            FridgeId = 23,
+                            FridgeNo = "FRG-023-005",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9138),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 226,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8442),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9142),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -5060,19 +5056,19 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8446),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9146),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 228,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8451),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9158),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -5082,20 +5078,20 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8455),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9162),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 230,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 23,
                             FridgeNo = "FRG-023-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8465),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9166),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -5104,20 +5100,20 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 24,
                             FridgeNo = "FRG-024-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8470),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9170),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 232,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 24,
                             FridgeNo = "FRG-024-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8475),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9175),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -5127,8 +5123,8 @@ namespace Project.Migrations
                             FridgeId = 24,
                             FridgeNo = "FRG-024-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8487),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9179),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -5138,52 +5134,52 @@ namespace Project.Migrations
                             FridgeId = 24,
                             FridgeNo = "FRG-024-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8491),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9183),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 235,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 24,
                             FridgeNo = "FRG-024-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8496),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 236,
-                            Condition = "Good",
-                            FridgeId = 24,
-                            FridgeNo = "FRG-024-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8500),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 237,
-                            Condition = "Good",
-                            FridgeId = 24,
-                            FridgeNo = "FRG-024-007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8504),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9187),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 236,
+                            Condition = "Excellent",
+                            FridgeId = 24,
+                            FridgeNo = "FRG-024-006",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9191),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 237,
+                            Condition = "Excellent",
+                            FridgeId = 24,
+                            FridgeNo = "FRG-024-007",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9195),
+                            Location = "Pretoria Facility",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 238,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 24,
                             FridgeNo = "FRG-024-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8509),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9199),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -5193,41 +5189,41 @@ namespace Project.Migrations
                             FridgeId = 24,
                             FridgeNo = "FRG-024-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8513),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9203),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 240,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 24,
                             FridgeNo = "FRG-024-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8517),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9207),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 241,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8521),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9211),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 242,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8526),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9216),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -5236,20 +5232,20 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8537),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9220),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 244,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8542),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9224),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -5258,30 +5254,30 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8546),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9228),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 246,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8550),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9239),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 247,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8554),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9243),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
@@ -5292,19 +5288,19 @@ namespace Project.Migrations
                             FridgeId = 25,
                             FridgeNo = "FRG-025-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8558),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9247),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 249,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8563),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9251),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -5313,20 +5309,20 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 25,
                             FridgeNo = "FRG-025-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8567),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9255),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 251,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 26,
                             FridgeNo = "FRG-026-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8572),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9260),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -5336,107 +5332,107 @@ namespace Project.Migrations
                             FridgeId = 26,
                             FridgeNo = "FRG-026-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8586),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9264),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 253,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 26,
                             FridgeNo = "FRG-026-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8590),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9268),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 254,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 26,
                             FridgeNo = "FRG-026-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8594),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 255,
-                            Condition = "Excellent",
-                            FridgeId = 26,
-                            FridgeNo = "FRG-026-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8598),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 256,
-                            Condition = "Very Good",
-                            FridgeId = 26,
-                            FridgeNo = "FRG-026-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8603),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9272),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 255,
+                            Condition = "Very Good",
+                            FridgeId = 26,
+                            FridgeNo = "FRG-026-005",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9277),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 256,
+                            Condition = "Good",
+                            FridgeId = 26,
+                            FridgeNo = "FRG-026-006",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9281),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 257,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 26,
                             FridgeNo = "FRG-026-007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8607),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9285),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 258,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 26,
                             FridgeNo = "FRG-026-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8613),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9299),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 259,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 26,
                             FridgeNo = "FRG-026-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8618),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 260,
-                            Condition = "Good",
-                            FridgeId = 26,
-                            FridgeNo = "FRG-026-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8622),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9303),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 260,
+                            Condition = "Excellent",
+                            FridgeId = 26,
+                            FridgeNo = "FRG-026-010",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9308),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 261,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 27,
                             FridgeNo = "FRG-027-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8626),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9312),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -5446,8 +5442,8 @@ namespace Project.Migrations
                             FridgeId = 27,
                             FridgeNo = "FRG-027-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8631),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9316),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -5457,85 +5453,85 @@ namespace Project.Migrations
                             FridgeId = 27,
                             FridgeNo = "FRG-027-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8635),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 264,
-                            Condition = "Excellent",
-                            FridgeId = 27,
-                            FridgeNo = "FRG-027-004",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8645),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 265,
-                            Condition = "Very Good",
-                            FridgeId = 27,
-                            FridgeNo = "FRG-027-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8649),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9320),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 266,
+                            FridgeInStockId = 264,
+                            Condition = "Good",
+                            FridgeId = 27,
+                            FridgeNo = "FRG-027-004",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9324),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 265,
                             Condition = "Excellent",
                             FridgeId = 27,
-                            FridgeNo = "FRG-027-006",
+                            FridgeNo = "FRG-027-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8661),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9328),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 266,
+                            Condition = "Good",
+                            FridgeId = 27,
+                            FridgeNo = "FRG-027-006",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9332),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 267,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 27,
                             FridgeNo = "FRG-027-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8665),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9337),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 268,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 27,
                             FridgeNo = "FRG-027-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8669),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9340),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 269,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 27,
                             FridgeNo = "FRG-027-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8673),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9345),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 270,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 27,
                             FridgeNo = "FRG-027-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8678),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9350),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -5545,30 +5541,30 @@ namespace Project.Migrations
                             FridgeId = 28,
                             FridgeNo = "FRG-028-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8682),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9354),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 272,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 28,
                             FridgeNo = "FRG-028-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8686),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9358),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 273,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 28,
                             FridgeNo = "FRG-028-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8691),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9362),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -5577,42 +5573,42 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 28,
                             FridgeNo = "FRG-028-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8695),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9367),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 275,
-                            Condition = "Very Good",
-                            FridgeId = 28,
-                            FridgeNo = "FRG-028-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8699),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 276,
                             Condition = "Excellent",
                             FridgeId = 28,
-                            FridgeNo = "FRG-028-006",
+                            FridgeNo = "FRG-028-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8704),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9371),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 276,
+                            Condition = "Very Good",
+                            FridgeId = 28,
+                            FridgeNo = "FRG-028-006",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9375),
+                            Location = "Pretoria Facility",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 277,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 28,
                             FridgeNo = "FRG-028-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8709),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9380),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -5622,30 +5618,30 @@ namespace Project.Migrations
                             FridgeId = 28,
                             FridgeNo = "FRG-028-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8714),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9384),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 279,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 28,
                             FridgeNo = "FRG-028-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8718),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9389),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 280,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 28,
                             FridgeNo = "FRG-028-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8723),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9394),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -5654,74 +5650,74 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8727),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9398),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 282,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8731),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9402),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 283,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8736),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9407),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 284,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-004",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8741),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9410),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 285,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8745),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9415),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 286,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8750),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9420),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 287,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8754),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9424),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
@@ -5732,30 +5728,30 @@ namespace Project.Migrations
                             FridgeId = 29,
                             FridgeNo = "FRG-029-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8759),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9429),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 289,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8763),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9433),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 290,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 29,
                             FridgeNo = "FRG-029-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8768),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9438),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -5765,19 +5761,19 @@ namespace Project.Migrations
                             FridgeId = 30,
                             FridgeNo = "FRG-030-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8773),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9442),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 292,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8777),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9446),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -5786,31 +5782,31 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8782),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9450),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 294,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8787),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9455),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 295,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8791),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9459),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -5820,7 +5816,7 @@ namespace Project.Migrations
                             FridgeId = 30,
                             FridgeNo = "FRG-030-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8795),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9463),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -5831,7 +5827,7 @@ namespace Project.Migrations
                             FridgeId = 30,
                             FridgeNo = "FRG-030-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8800),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9467),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -5841,64 +5837,64 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8804),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9472),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 299,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8809),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9475),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 300,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 30,
                             FridgeNo = "FRG-030-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8814),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9480),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 301,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 31,
                             FridgeNo = "FRG-031-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8819),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9485),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 302,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 31,
                             FridgeNo = "FRG-031-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8823),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9489),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 303,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 31,
                             FridgeNo = "FRG-031-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8828),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9494),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -5908,8 +5904,8 @@ namespace Project.Migrations
                             FridgeId = 31,
                             FridgeNo = "FRG-031-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8832),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9497),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -5918,9 +5914,9 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 31,
                             FridgeNo = "FRG-031-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8836),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9501),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -5930,8 +5926,8 @@ namespace Project.Migrations
                             FridgeId = 31,
                             FridgeNo = "FRG-031-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8841),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9506),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -5941,19 +5937,19 @@ namespace Project.Migrations
                             FridgeId = 31,
                             FridgeNo = "FRG-031-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8845),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9515),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 308,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 31,
                             FridgeNo = "FRG-031-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8850),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9519),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -5963,40 +5959,40 @@ namespace Project.Migrations
                             FridgeId = 31,
                             FridgeNo = "FRG-031-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8854),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9523),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 310,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 31,
                             FridgeNo = "FRG-031-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8859),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9527),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 311,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 32,
                             FridgeNo = "FRG-032-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8863),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9532),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 312,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 32,
                             FridgeNo = "FRG-032-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8868),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9536),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
@@ -6006,53 +6002,53 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 32,
                             FridgeNo = "FRG-032-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8872),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9539),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 314,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 32,
                             FridgeNo = "FRG-032-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8877),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 315,
-                            Condition = "Good",
-                            FridgeId = 32,
-                            FridgeNo = "FRG-032-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8881),
-                            Location = "Durban Warehouse",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 316,
-                            Condition = "Very Good",
-                            FridgeId = 32,
-                            FridgeNo = "FRG-032-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8886),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9544),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 317,
+                            FridgeInStockId = 315,
+                            Condition = "Excellent",
+                            FridgeId = 32,
+                            FridgeNo = "FRG-032-005",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9548),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 316,
                             Condition = "Good",
+                            FridgeId = 32,
+                            FridgeNo = "FRG-032-006",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9552),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 317,
+                            Condition = "Excellent",
                             FridgeId = 32,
                             FridgeNo = "FRG-032-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8890),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9556),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -6062,8 +6058,8 @@ namespace Project.Migrations
                             FridgeId = 32,
                             FridgeNo = "FRG-032-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8895),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9560),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -6073,40 +6069,40 @@ namespace Project.Migrations
                             FridgeId = 32,
                             FridgeNo = "FRG-032-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8899),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9564),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 320,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 32,
                             FridgeNo = "FRG-032-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8903),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9568),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 321,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8908),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9572),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 322,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8912),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9576),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
@@ -6116,42 +6112,42 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8916),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9580),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 324,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8920),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9584),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 325,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8925),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9588),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 326,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8929),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9592),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6161,8 +6157,8 @@ namespace Project.Migrations
                             FridgeId = 33,
                             FridgeNo = "FRG-033-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8933),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9596),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -6171,9 +6167,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 33,
                             FridgeNo = "FRG-033-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8937),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9599),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6183,8 +6179,8 @@ namespace Project.Migrations
                             FridgeId = 33,
                             FridgeNo = "FRG-033-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8941),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9603),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6194,7 +6190,7 @@ namespace Project.Migrations
                             FridgeId = 33,
                             FridgeNo = "FRG-033-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8945),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9607),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
@@ -6204,9 +6200,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8950),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9611),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -6216,84 +6212,84 @@ namespace Project.Migrations
                             FridgeId = 34,
                             FridgeNo = "FRG-034-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8960),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9615),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 333,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8965),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9619),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 334,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8969),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9623),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 335,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8974),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 336,
-                            Condition = "Very Good",
-                            FridgeId = 34,
-                            FridgeNo = "FRG-034-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8978),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9627),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 336,
+                            Condition = "Good",
+                            FridgeId = 34,
+                            FridgeNo = "FRG-034-006",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9631),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 337,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8982),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9635),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 338,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8986),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9638),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 339,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 34,
                             FridgeNo = "FRG-034-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8990),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9642),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -6304,19 +6300,19 @@ namespace Project.Migrations
                             FridgeId = 34,
                             FridgeNo = "FRG-034-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8995),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9646),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 341,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 35,
                             FridgeNo = "FRG-035-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(8999),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9650),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -6325,108 +6321,108 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 35,
                             FridgeNo = "FRG-035-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9003),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9654),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 343,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 35,
                             FridgeNo = "FRG-035-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9007),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9658),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 344,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 35,
                             FridgeNo = "FRG-035-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9011),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9661),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 345,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 35,
                             FridgeNo = "FRG-035-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9015),
-                            Location = "Port Elizabeth Depot",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 346,
-                            Condition = "Good",
-                            FridgeId = 35,
-                            FridgeNo = "FRG-035-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9019),
-                            Location = "Port Elizabeth Depot",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 347,
-                            Condition = "Very Good",
-                            FridgeId = 35,
-                            FridgeNo = "FRG-035-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9023),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9665),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 348,
-                            Condition = "Good",
-                            FridgeId = 35,
-                            FridgeNo = "FRG-035-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9027),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 349,
+                            FridgeInStockId = 346,
                             Condition = "Very Good",
                             FridgeId = 35,
-                            FridgeNo = "FRG-035-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9031),
+                            FridgeNo = "FRG-035-006",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9669),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 350,
+                            FridgeInStockId = 347,
                             Condition = "Good",
                             FridgeId = 35,
-                            FridgeNo = "FRG-035-010",
+                            FridgeNo = "FRG-035-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9035),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9673),
+                            Location = "Pretoria Facility",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 348,
+                            Condition = "Excellent",
+                            FridgeId = 35,
+                            FridgeNo = "FRG-035-008",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9677),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 349,
+                            Condition = "Excellent",
+                            FridgeId = 35,
+                            FridgeNo = "FRG-035-009",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9680),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 350,
+                            Condition = "Very Good",
+                            FridgeId = 35,
+                            FridgeNo = "FRG-035-010",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9684),
                             Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 351,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9039),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9688),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -6435,42 +6431,42 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9043),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9692),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 353,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9047),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9696),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 354,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9051),
-                            Location = "Johannesburg Main",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9700),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 355,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9055),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9704),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6480,96 +6476,96 @@ namespace Project.Migrations
                             FridgeId = 36,
                             FridgeNo = "FRG-036-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9059),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9708),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 357,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9063),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9712),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 358,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9067),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9715),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 359,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9071),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9719),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 360,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 36,
                             FridgeNo = "FRG-036-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9075),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9723),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 361,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9079),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9727),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 362,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9083),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9731),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 363,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9087),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9735),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 364,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9091),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9739),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6578,19 +6574,19 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9095),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9742),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 366,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9099),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9746),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -6601,8 +6597,8 @@ namespace Project.Migrations
                             FridgeId = 37,
                             FridgeNo = "FRG-037-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9103),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9750),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6611,108 +6607,108 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9107),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9754),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 369,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9111),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9758),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 370,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 37,
                             FridgeNo = "FRG-037-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9115),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9762),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 371,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 38,
                             FridgeNo = "FRG-038-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9119),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9766),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 372,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 38,
                             FridgeNo = "FRG-038-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9123),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 373,
-                            Condition = "Good",
-                            FridgeId = 38,
-                            FridgeNo = "FRG-038-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9127),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 374,
-                            Condition = "Excellent",
-                            FridgeId = 38,
-                            FridgeNo = "FRG-038-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9131),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9770),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 375,
-                            Condition = "Excellent",
+                            FridgeInStockId = 373,
+                            Condition = "Very Good",
                             FridgeId = 38,
-                            FridgeNo = "FRG-038-005",
+                            FridgeNo = "FRG-038-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9135),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9774),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 376,
-                            Condition = "Good",
+                            FridgeInStockId = 374,
+                            Condition = "Very Good",
                             FridgeId = 38,
-                            FridgeNo = "FRG-038-006",
+                            FridgeNo = "FRG-038-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9139),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9777),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 375,
+                            Condition = "Good",
+                            FridgeId = 38,
+                            FridgeNo = "FRG-038-005",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9782),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 376,
+                            Condition = "Excellent",
+                            FridgeId = 38,
+                            FridgeNo = "FRG-038-006",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9792),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 377,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 38,
                             FridgeNo = "FRG-038-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9143),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9795),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -6721,64 +6717,64 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 38,
                             FridgeNo = "FRG-038-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9147),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9799),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 379,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 38,
                             FridgeNo = "FRG-038-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9151),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9803),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 380,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 38,
                             FridgeNo = "FRG-038-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9155),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9807),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 381,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9159),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9811),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 382,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9163),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9815),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 383,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9167),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9819),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -6788,30 +6784,30 @@ namespace Project.Migrations
                             FridgeId = 39,
                             FridgeNo = "FRG-039-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9171),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9823),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 385,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9175),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9827),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 386,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9179),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9831),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -6821,40 +6817,40 @@ namespace Project.Migrations
                             FridgeId = 39,
                             FridgeNo = "FRG-039-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9183),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9835),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 388,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9187),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9839),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 389,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9191),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9842),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 390,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 39,
                             FridgeNo = "FRG-039-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9195),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9846),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
@@ -6864,20 +6860,20 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9199),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9850),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 392,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9203),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9854),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -6886,20 +6882,20 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9207),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9858),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 394,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9211),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9862),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -6909,8 +6905,8 @@ namespace Project.Migrations
                             FridgeId = 40,
                             FridgeNo = "FRG-040-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9216),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9865),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -6920,19 +6916,19 @@ namespace Project.Migrations
                             FridgeId = 40,
                             FridgeNo = "FRG-040-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9220),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9870),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 397,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9224),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9873),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -6942,41 +6938,41 @@ namespace Project.Migrations
                             FridgeId = 40,
                             FridgeNo = "FRG-040-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9228),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9877),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 399,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9232),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9881),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 400,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 40,
                             FridgeNo = "FRG-040-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9243),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9911),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 401,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9247),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9916),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -6986,30 +6982,30 @@ namespace Project.Migrations
                             FridgeId = 41,
                             FridgeNo = "FRG-041-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9251),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9920),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 403,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9255),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9923),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 404,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9259),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9928),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -7018,31 +7014,31 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9263),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9931),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 406,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9267),
-                            Location = "Pretoria Facility",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9935),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 407,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-007",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9271),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9939),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -7052,8 +7048,8 @@ namespace Project.Migrations
                             FridgeId = 41,
                             FridgeNo = "FRG-041-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9275),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9943),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -7062,9 +7058,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9279),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9947),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -7073,9 +7069,9 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 41,
                             FridgeNo = "FRG-041-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9284),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9951),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -7085,30 +7081,30 @@ namespace Project.Migrations
                             FridgeId = 42,
                             FridgeNo = "FRG-042-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9288),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9955),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 412,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9292),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9958),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 413,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-003",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9296),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9962),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -7118,84 +7114,84 @@ namespace Project.Migrations
                             FridgeId = 42,
                             FridgeNo = "FRG-042-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9300),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9966),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 415,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9304),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9970),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 416,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-006",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9308),
-                            Location = "Johannesburg Main",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9974),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 417,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9312),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9978),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 418,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9316),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9981),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 419,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-009",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9320),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9985),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 420,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 42,
                             FridgeNo = "FRG-042-010",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9324),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9989),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 421,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9328),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9993),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
@@ -7205,86 +7201,86 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9332),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 619, DateTimeKind.Local).AddTicks(9997),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 423,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-003",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9336),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(1),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 424,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9340),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(5),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 425,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9344),
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(8),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 426,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9348),
-                            Location = "Cape Town Storage",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 427,
-                            Condition = "Excellent",
-                            FridgeId = 43,
-                            FridgeNo = "FRG-043-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9353),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 428,
-                            Condition = "Very Good",
-                            FridgeId = 43,
-                            FridgeNo = "FRG-043-008",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9357),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(12),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 427,
+                            Condition = "Very Good",
+                            FridgeId = 43,
+                            FridgeNo = "FRG-043-007",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(16),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 428,
+                            Condition = "Excellent",
+                            FridgeId = 43,
+                            FridgeNo = "FRG-043-008",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(20),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 429,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9361),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(24),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -7293,86 +7289,86 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 43,
                             FridgeNo = "FRG-043-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9365),
-                            Location = "Pretoria Facility",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 431,
-                            Condition = "Excellent",
-                            FridgeId = 44,
-                            FridgeNo = "FRG-044-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9369),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(28),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 431,
+                            Condition = "Very Good",
+                            FridgeId = 44,
+                            FridgeNo = "FRG-044-001",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(32),
+                            Location = "Durban Warehouse",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 432,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-002",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9373),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(36),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 433,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9377),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(39),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 434,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-004",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9381),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(43),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 435,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-005",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9385),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(47),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 436,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9389),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(51),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 437,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9393),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(55),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -7382,19 +7378,19 @@ namespace Project.Migrations
                             FridgeId = 44,
                             FridgeNo = "FRG-044-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9397),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(59),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 439,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9401),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(62),
+                            Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
@@ -7403,9 +7399,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 44,
                             FridgeNo = "FRG-044-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9405),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(66),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -7415,41 +7411,41 @@ namespace Project.Migrations
                             FridgeId = 45,
                             FridgeNo = "FRG-045-001",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9409),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(70),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 442,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 45,
                             FridgeNo = "FRG-045-002",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9413),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(74),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 443,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 45,
                             FridgeNo = "FRG-045-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9417),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(78),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 444,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 45,
                             FridgeNo = "FRG-045-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9421),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(87),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -7458,53 +7454,53 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 45,
                             FridgeNo = "FRG-045-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9425),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(92),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 446,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 45,
                             FridgeNo = "FRG-045-006",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9429),
-                            Location = "Port Elizabeth Depot",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 447,
-                            Condition = "Good",
-                            FridgeId = 45,
-                            FridgeNo = "FRG-045-007",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9433),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(96),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
-                            FridgeInStockId = 448,
+                            FridgeInStockId = 447,
                             Condition = "Excellent",
                             FridgeId = 45,
+                            FridgeNo = "FRG-045-007",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(99),
+                            Location = "Johannesburg Main",
+                            Quantity = 1
+                        },
+                        new
+                        {
+                            FridgeInStockId = 448,
+                            Condition = "Very Good",
+                            FridgeId = 45,
                             FridgeNo = "FRG-045-008",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9437),
-                            Location = "Pretoria Facility",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(103),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 449,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 45,
                             FridgeNo = "FRG-045-009",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9441),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(107),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -7514,85 +7510,85 @@ namespace Project.Migrations
                             FridgeId = 45,
                             FridgeNo = "FRG-045-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9445),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(111),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 451,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-001",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9449),
-                            Location = "Pretoria Facility",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(115),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 452,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9453),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 453,
-                            Condition = "Excellent",
-                            FridgeId = 46,
-                            FridgeNo = "FRG-046-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9457),
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(119),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 453,
+                            Condition = "Very Good",
+                            FridgeId = 46,
+                            FridgeNo = "FRG-046-003",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(123),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 454,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-004",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9461),
-                            Location = "Port Elizabeth Depot",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(127),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 455,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-005",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9466),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(130),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 456,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9470),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(134),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 457,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-007",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9474),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(138),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
@@ -7602,19 +7598,19 @@ namespace Project.Migrations
                             FridgeId = 46,
                             FridgeNo = "FRG-046-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9478),
-                            Location = "Johannesburg Main",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(142),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 459,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-009",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9482),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(146),
+                            Location = "Durban Warehouse",
                             Quantity = 1
                         },
                         new
@@ -7623,31 +7619,31 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 46,
                             FridgeNo = "FRG-046-010",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9486),
-                            Location = "Johannesburg Main",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 461,
-                            Condition = "Excellent",
-                            FridgeId = 47,
-                            FridgeNo = "FRG-047-001",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9490),
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(150),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 461,
+                            Condition = "Very Good",
+                            FridgeId = 47,
+                            FridgeNo = "FRG-047-001",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(153),
+                            Location = "Cape Town Storage",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 462,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-002",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9494),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(157),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -7656,19 +7652,19 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-003",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9498),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(161),
                             Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 464,
-                            Condition = "Very Good",
+                            Condition = "Excellent",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9502),
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(165),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
@@ -7679,19 +7675,19 @@ namespace Project.Migrations
                             FridgeId = 47,
                             FridgeNo = "FRG-047-005",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9506),
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(169),
                             Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 466,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-006",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9510),
-                            Location = "Durban Warehouse",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(173),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -7700,9 +7696,9 @@ namespace Project.Migrations
                             Condition = "Good",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9514),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(176),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -7712,19 +7708,19 @@ namespace Project.Migrations
                             FridgeId = 47,
                             FridgeNo = "FRG-047-008",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9518),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(180),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 469,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9528),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(184),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -7733,9 +7729,9 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 47,
                             FridgeNo = "FRG-047-010",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9533),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(188),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
@@ -7744,64 +7740,64 @@ namespace Project.Migrations
                             Condition = "Very Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-001",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9537),
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(192),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 472,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-002",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9541),
-                            Location = "Durban Warehouse",
-                            Quantity = 1
-                        },
-                        new
-                        {
-                            FridgeInStockId = 473,
-                            Condition = "Excellent",
-                            FridgeId = 48,
-                            FridgeNo = "FRG-048-003",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9545),
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(196),
                             Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
                         {
+                            FridgeInStockId = 473,
+                            Condition = "Good",
+                            FridgeId = 48,
+                            FridgeNo = "FRG-048-003",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(199),
+                            Location = "Port Elizabeth Depot",
+                            Quantity = 1
+                        },
+                        new
+                        {
                             FridgeInStockId = 474,
-                            Condition = "Excellent",
+                            Condition = "Very Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-004",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9549),
-                            Location = "Durban Warehouse",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(203),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 475,
-                            Condition = "Good",
+                            Condition = "Very Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-005",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9553),
-                            Location = "Cape Town Storage",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 6, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(207),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 476,
-                            Condition = "Very Good",
+                            Condition = "Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-006",
                             IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9557),
-                            Location = "Cape Town Storage",
+                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(211),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         },
                         new
@@ -7810,42 +7806,42 @@ namespace Project.Migrations
                             Condition = "Excellent",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-007",
-                            IsAvailable = false,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9561),
-                            Location = "Cape Town Storage",
+                            IsAvailable = true,
+                            LastMaintenanceDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(215),
+                            Location = "Port Elizabeth Depot",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 478,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-008",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9565),
+                            LastMaintenanceDate = new DateTime(2025, 8, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(219),
                             Location = "Pretoria Facility",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 479,
-                            Condition = "Good",
+                            Condition = "Excellent",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-009",
-                            IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 9, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9569),
-                            Location = "Durban Warehouse",
+                            IsAvailable = false,
+                            LastMaintenanceDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(223),
+                            Location = "Cape Town Storage",
                             Quantity = 1
                         },
                         new
                         {
                             FridgeInStockId = 480,
-                            Condition = "Excellent",
+                            Condition = "Good",
                             FridgeId = 48,
                             FridgeNo = "FRG-048-010",
                             IsAvailable = true,
-                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 4, 11, 703, DateTimeKind.Local).AddTicks(9573),
-                            Location = "Port Elizabeth Depot",
+                            LastMaintenanceDate = new DateTime(2025, 7, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(227),
+                            Location = "Johannesburg Main",
                             Quantity = 1
                         });
                 });
@@ -7910,169 +7906,169 @@ namespace Project.Migrations
                         {
                             FridgeReplacementId = 1,
                             AdditionalNotes = "Additional notes for replacement request 1",
-                            ApplicationUserId = "15",
-                            CustomerID = 7,
-                            NewFridgeInStockId = 76,
-                            OldFridgeNo = "FRG-009-004",
-                            ReasonForReplacement = "Frequent Breakdowns",
-                            ReplacementDate = new DateTime(2025, 12, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1997),
-                            ReplacementStatus = "Rejected",
-                            RequestDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1997),
-                            VisitId = 1
+                            ApplicationUserId = "16",
+                            CustomerID = 3,
+                            NewFridgeInStockId = 54,
+                            OldFridgeNo = "FRG-002-009",
+                            ReasonForReplacement = "Old Age",
+                            ReplacementDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3382),
+                            ReplacementStatus = "Approved",
+                            RequestDate = new DateTime(2025, 10, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3382),
+                            VisitId = 2
                         },
                         new
                         {
                             FridgeReplacementId = 2,
                             AdditionalNotes = "Additional notes for replacement request 2",
-                            ApplicationUserId = "7",
+                            ApplicationUserId = "3",
                             CustomerID = 8,
-                            NewFridgeInStockId = 53,
-                            OldFridgeNo = "FRG-003-008",
-                            ReasonForReplacement = "Old Age",
-                            ReplacementDate = new DateTime(2025, 11, 21, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2027),
+                            NewFridgeInStockId = 146,
+                            OldFridgeNo = "FRG-003-009",
+                            ReasonForReplacement = "Customer Request",
+                            ReplacementDate = new DateTime(2025, 10, 31, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3416),
                             ReplacementStatus = "Pending",
-                            RequestDate = new DateTime(2025, 11, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2027),
-                            VisitId = 8
+                            RequestDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3416),
+                            VisitId = 4
                         },
                         new
                         {
                             FridgeReplacementId = 3,
                             AdditionalNotes = "Additional notes for replacement request 3",
-                            ApplicationUserId = "14",
+                            ApplicationUserId = "9",
                             CustomerID = 4,
-                            NewFridgeInStockId = 130,
-                            OldFridgeNo = "FRG-001-010",
+                            NewFridgeInStockId = 28,
+                            OldFridgeNo = "FRG-013-003",
                             ReasonForReplacement = "Old Age",
-                            ReplacementDate = new DateTime(2025, 10, 31, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2033),
-                            ReplacementStatus = "Approved",
-                            RequestDate = new DateTime(2025, 10, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2033),
-                            VisitId = 6
+                            ReplacementDate = new DateTime(2025, 10, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3423),
+                            ReplacementStatus = "Pending",
+                            RequestDate = new DateTime(2025, 10, 2, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3423),
+                            VisitId = 12
                         },
                         new
                         {
                             FridgeReplacementId = 4,
                             AdditionalNotes = "Additional notes for replacement request 4",
-                            ApplicationUserId = "3",
-                            CustomerID = 8,
-                            NewFridgeInStockId = 5,
-                            OldFridgeNo = "FRG-011-008",
-                            ReasonForReplacement = "Fridge Beyond Repair",
-                            ReplacementDate = new DateTime(2025, 11, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2039),
-                            ReplacementStatus = "Approved",
-                            RequestDate = new DateTime(2025, 10, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2039),
-                            VisitId = 20
+                            ApplicationUserId = "11",
+                            CustomerID = 3,
+                            NewFridgeInStockId = 46,
+                            OldFridgeNo = "FRG-003-009",
+                            ReasonForReplacement = "Frequent Breakdowns",
+                            ReplacementDate = new DateTime(2025, 11, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3429),
+                            ReplacementStatus = "Rejected",
+                            RequestDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3429),
+                            VisitId = 15
                         },
                         new
                         {
                             FridgeReplacementId = 5,
                             AdditionalNotes = "Additional notes for replacement request 5",
-                            ApplicationUserId = "24",
-                            CustomerID = 12,
-                            NewFridgeInStockId = 111,
-                            OldFridgeNo = "FRG-015-001",
-                            ReasonForReplacement = "Customer Request",
-                            ReplacementDate = new DateTime(2025, 9, 19, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2045),
-                            ReplacementStatus = "Pending",
-                            RequestDate = new DateTime(2025, 9, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2045),
-                            VisitId = 18
+                            ApplicationUserId = "23",
+                            CustomerID = 1,
+                            NewFridgeInStockId = 10,
+                            OldFridgeNo = "FRG-001-009",
+                            ReasonForReplacement = "Old Age",
+                            ReplacementDate = new DateTime(2025, 10, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3442),
+                            ReplacementStatus = "Approved",
+                            RequestDate = new DateTime(2025, 9, 19, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3442),
+                            VisitId = 14
                         },
                         new
                         {
                             FridgeReplacementId = 6,
                             AdditionalNotes = "Additional notes for replacement request 6",
-                            ApplicationUserId = "16",
-                            CustomerID = 12,
-                            NewFridgeInStockId = 86,
-                            OldFridgeNo = "FRG-013-005",
+                            ApplicationUserId = "8",
+                            CustomerID = 8,
+                            NewFridgeInStockId = 41,
+                            OldFridgeNo = "FRG-010-006",
                             ReasonForReplacement = "Customer Request",
-                            ReplacementDate = new DateTime(2025, 11, 13, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2052),
+                            ReplacementDate = new DateTime(2025, 11, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3448),
                             ReplacementStatus = "Rejected",
-                            RequestDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2052),
-                            VisitId = 4
+                            RequestDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3448),
+                            VisitId = 1
                         },
                         new
                         {
                             FridgeReplacementId = 7,
                             AdditionalNotes = "Additional notes for replacement request 7",
-                            ApplicationUserId = "3",
-                            CustomerID = 8,
-                            NewFridgeInStockId = 45,
-                            OldFridgeNo = "FRG-012-005",
-                            ReasonForReplacement = "Customer Request",
-                            ReplacementDate = new DateTime(2025, 10, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2057),
-                            ReplacementStatus = "Rejected",
-                            RequestDate = new DateTime(2025, 9, 21, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2057),
-                            VisitId = 2
+                            ApplicationUserId = "11",
+                            CustomerID = 10,
+                            NewFridgeInStockId = 127,
+                            OldFridgeNo = "FRG-009-007",
+                            ReasonForReplacement = "Frequent Breakdowns",
+                            ReplacementDate = new DateTime(2025, 10, 20, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3455),
+                            ReplacementStatus = "Pending",
+                            RequestDate = new DateTime(2025, 10, 13, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3455),
+                            VisitId = 6
                         },
                         new
                         {
                             FridgeReplacementId = 8,
                             AdditionalNotes = "Additional notes for replacement request 8",
-                            ApplicationUserId = "25",
-                            CustomerID = 10,
-                            NewFridgeInStockId = 118,
-                            OldFridgeNo = "FRG-014-002",
-                            ReasonForReplacement = "Frequent Breakdowns",
-                            ReplacementDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2069),
+                            ApplicationUserId = "8",
+                            CustomerID = 1,
+                            NewFridgeInStockId = 138,
+                            OldFridgeNo = "FRG-008-009",
+                            ReasonForReplacement = "Fridge Beyond Repair",
+                            ReplacementDate = new DateTime(2025, 11, 19, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3461),
                             ReplacementStatus = "Approved",
-                            RequestDate = new DateTime(2025, 9, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2069),
-                            VisitId = 3
+                            RequestDate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3461),
+                            VisitId = 5
                         },
                         new
                         {
                             FridgeReplacementId = 9,
                             AdditionalNotes = "Additional notes for replacement request 9",
-                            ApplicationUserId = "12",
-                            CustomerID = 10,
-                            NewFridgeInStockId = 50,
-                            OldFridgeNo = "FRG-007-005",
-                            ReasonForReplacement = "Fridge Beyond Repair",
-                            ReplacementDate = new DateTime(2025, 11, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2075),
-                            ReplacementStatus = "Rejected",
-                            RequestDate = new DateTime(2025, 10, 31, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2075),
-                            VisitId = 20
+                            ApplicationUserId = "5",
+                            CustomerID = 4,
+                            NewFridgeInStockId = 70,
+                            OldFridgeNo = "FRG-014-007",
+                            ReasonForReplacement = "Old Age",
+                            ReplacementDate = new DateTime(2025, 11, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3466),
+                            ReplacementStatus = "Pending",
+                            RequestDate = new DateTime(2025, 11, 2, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3466),
+                            VisitId = 10
                         },
                         new
                         {
                             FridgeReplacementId = 10,
                             AdditionalNotes = "Additional notes for replacement request 10",
-                            ApplicationUserId = "2",
-                            CustomerID = 3,
+                            ApplicationUserId = "16",
+                            CustomerID = 2,
                             NewFridgeInStockId = 16,
-                            OldFridgeNo = "FRG-012-008",
+                            OldFridgeNo = "FRG-008-001",
                             ReasonForReplacement = "Old Age",
-                            ReplacementDate = new DateTime(2025, 11, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2082),
-                            ReplacementStatus = "Pending",
-                            RequestDate = new DateTime(2025, 11, 7, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2082),
-                            VisitId = 6
+                            ReplacementDate = new DateTime(2025, 11, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3473),
+                            ReplacementStatus = "Rejected",
+                            RequestDate = new DateTime(2025, 10, 13, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3473),
+                            VisitId = 15
                         },
                         new
                         {
                             FridgeReplacementId = 11,
                             AdditionalNotes = "Additional notes for replacement request 11",
-                            ApplicationUserId = "4",
-                            CustomerID = 12,
-                            NewFridgeInStockId = 36,
-                            OldFridgeNo = "FRG-009-006",
-                            ReasonForReplacement = "Frequent Breakdowns",
-                            ReplacementDate = new DateTime(2025, 11, 9, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2088),
+                            ApplicationUserId = "9",
+                            CustomerID = 4,
+                            NewFridgeInStockId = 105,
+                            OldFridgeNo = "FRG-014-002",
+                            ReasonForReplacement = "Fridge Beyond Repair",
+                            ReplacementDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3479),
                             ReplacementStatus = "Approved",
-                            RequestDate = new DateTime(2025, 10, 12, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2088),
-                            VisitId = 17
+                            RequestDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3479),
+                            VisitId = 4
                         },
                         new
                         {
                             FridgeReplacementId = 12,
                             AdditionalNotes = "Additional notes for replacement request 12",
                             ApplicationUserId = "25",
-                            CustomerID = 7,
-                            NewFridgeInStockId = 39,
-                            OldFridgeNo = "FRG-009-005",
-                            ReasonForReplacement = "Fridge Beyond Repair",
-                            ReplacementDate = new DateTime(2025, 10, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2094),
+                            CustomerID = 2,
+                            NewFridgeInStockId = 75,
+                            OldFridgeNo = "FRG-009-002",
+                            ReasonForReplacement = "Old Age",
+                            ReplacementDate = new DateTime(2025, 10, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3484),
                             ReplacementStatus = "Pending",
-                            RequestDate = new DateTime(2025, 9, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2094),
-                            VisitId = 15
+                            RequestDate = new DateTime(2025, 9, 17, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3484),
+                            VisitId = 9
                         });
                 });
 
@@ -8126,260 +8122,260 @@ namespace Project.Migrations
                         {
                             VisitId = 1,
                             CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 10, 14, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1528),
-                            CustomerApproval = "Approved",
+                            CreatedDate = new DateTime(2025, 10, 21, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2910),
+                            CustomerApproval = "Pending",
                             Notes = "Visit notes for service 1. Checkup completed with status: Not Started",
-                            RequestHeaderId = 4,
+                            RequestHeaderId = 11,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 10, 15, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1528),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2910),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 2,
                             CheckupStatus = "Failed",
-                            CreatedDate = new DateTime(2025, 10, 21, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1557),
-                            CustomerApproval = "Approved",
+                            CreatedDate = new DateTime(2025, 10, 30, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2942),
+                            CustomerApproval = "Pending",
                             Notes = "Visit notes for service 2. Checkup completed with status: Failed",
                             RequestHeaderId = 14,
                             Status = "Pending",
                             TechnicianName = "Patricia White",
-                            VisitDate = new DateTime(2025, 10, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1557),
+                            VisitDate = new DateTime(2025, 10, 31, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2942),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 3,
-                            CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 11, 5, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1561),
+                            CheckupStatus = "Passed",
+                            CreatedDate = new DateTime(2025, 10, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2946),
                             CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 3. Checkup completed with status: Not Started",
-                            RequestHeaderId = 10,
+                            Notes = "Visit notes for service 3. Checkup completed with status: Passed",
+                            RequestHeaderId = 11,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 11, 6, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1561),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 10, 28, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2946),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 4,
-                            CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 10, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1565),
-                            CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 4. Checkup completed with status: Not Started",
-                            RequestHeaderId = 1,
+                            CheckupStatus = "Passed",
+                            CreatedDate = new DateTime(2025, 10, 18, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2950),
+                            CustomerApproval = "Approved",
+                            Notes = "Visit notes for service 4. Checkup completed with status: Passed",
+                            RequestHeaderId = 9,
                             Status = "Pending",
                             TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 10, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1565),
+                            VisitDate = new DateTime(2025, 10, 19, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2950),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 5,
-                            CheckupStatus = "Passed",
-                            CreatedDate = new DateTime(2025, 11, 3, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1568),
+                            CheckupStatus = "In Progress",
+                            CreatedDate = new DateTime(2025, 10, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2953),
                             CustomerApproval = "Approved",
-                            Notes = "Visit notes for service 5. Checkup completed with status: Passed",
-                            RequestHeaderId = 13,
+                            Notes = "Visit notes for service 5. Checkup completed with status: In Progress",
+                            RequestHeaderId = 2,
                             Status = "Pending",
                             TechnicianName = "James Miller",
-                            VisitDate = new DateTime(2025, 11, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1568),
+                            VisitDate = new DateTime(2025, 10, 16, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2953),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 6,
                             CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1572),
-                            CustomerApproval = "Pending",
+                            CreatedDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2958),
+                            CustomerApproval = "Approved",
                             Notes = "Visit notes for service 6. Checkup completed with status: Not Started",
-                            RequestHeaderId = 5,
+                            RequestHeaderId = 12,
                             Status = "Pending",
                             TechnicianName = "Patricia White",
-                            VisitDate = new DateTime(2025, 10, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1572),
+                            VisitDate = new DateTime(2025, 11, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2958),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 7,
-                            CheckupStatus = "Passed",
-                            CreatedDate = new DateTime(2025, 10, 12, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1575),
-                            CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 7. Checkup completed with status: Passed",
-                            RequestHeaderId = 3,
+                            CheckupStatus = "Failed",
+                            CreatedDate = new DateTime(2025, 10, 24, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2961),
+                            CustomerApproval = "Approved",
+                            Notes = "Visit notes for service 7. Checkup completed with status: Failed",
+                            RequestHeaderId = 15,
                             Status = "Pending",
-                            TechnicianName = "James Miller",
-                            VisitDate = new DateTime(2025, 10, 13, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1575),
+                            TechnicianName = "Patricia White",
+                            VisitDate = new DateTime(2025, 10, 25, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2961),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 8,
-                            CheckupStatus = "Passed",
-                            CreatedDate = new DateTime(2025, 10, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1579),
+                            CheckupStatus = "Not Started",
+                            CreatedDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2964),
                             CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 8. Checkup completed with status: Passed",
-                            RequestHeaderId = 9,
+                            Notes = "Visit notes for service 8. Checkup completed with status: Not Started",
+                            RequestHeaderId = 3,
                             Status = "Pending",
-                            TechnicianName = "James Miller",
-                            VisitDate = new DateTime(2025, 10, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1579),
+                            TechnicianName = "Jennifer Martin",
+                            VisitDate = new DateTime(2025, 11, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2964),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 9,
-                            CheckupStatus = "In Progress",
-                            CreatedDate = new DateTime(2025, 10, 31, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1582),
+                            CheckupStatus = "Not Started",
+                            CreatedDate = new DateTime(2025, 10, 13, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2968),
                             CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 9. Checkup completed with status: In Progress",
-                            RequestHeaderId = 4,
+                            Notes = "Visit notes for service 9. Checkup completed with status: Not Started",
+                            RequestHeaderId = 9,
                             Status = "Pending",
-                            TechnicianName = "Patricia White",
-                            VisitDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1582),
+                            TechnicianName = "James Miller",
+                            VisitDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2968),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 10,
-                            CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 10, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1586),
+                            CheckupStatus = "Passed",
+                            CreatedDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2972),
                             CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 10. Checkup completed with status: Not Started",
-                            RequestHeaderId = 8,
+                            Notes = "Visit notes for service 10. Checkup completed with status: Passed",
+                            RequestHeaderId = 7,
                             Status = "Pending",
                             TechnicianName = "Patricia White",
-                            VisitDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1586),
+                            VisitDate = new DateTime(2025, 10, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2972),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 11,
-                            CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1589),
+                            CheckupStatus = "In Progress",
+                            CreatedDate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2975),
                             CustomerApproval = "Approved",
-                            Notes = "Visit notes for service 11. Checkup completed with status: Not Started",
-                            RequestHeaderId = 4,
+                            Notes = "Visit notes for service 11. Checkup completed with status: In Progress",
+                            RequestHeaderId = 9,
                             Status = "Pending",
-                            TechnicianName = "James Miller",
-                            VisitDate = new DateTime(2025, 11, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1589),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2975),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 12,
-                            CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 10, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1593),
-                            CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 12. Checkup completed with status: Not Started",
-                            RequestHeaderId = 7,
+                            CheckupStatus = "Passed",
+                            CreatedDate = new DateTime(2025, 11, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2978),
+                            CustomerApproval = "Approved",
+                            Notes = "Visit notes for service 12. Checkup completed with status: Passed",
+                            RequestHeaderId = 6,
                             Status = "Pending",
-                            TechnicianName = "Patricia White",
-                            VisitDate = new DateTime(2025, 10, 27, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1593),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2978),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 13,
                             CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 11, 6, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1596),
-                            CustomerApproval = "Approved",
+                            CreatedDate = new DateTime(2025, 10, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2981),
+                            CustomerApproval = "Pending",
                             Notes = "Visit notes for service 13. Checkup completed with status: Not Started",
-                            RequestHeaderId = 6,
+                            RequestHeaderId = 13,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 11, 7, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1596),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 10, 16, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2981),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 14,
                             CheckupStatus = "In Progress",
-                            CreatedDate = new DateTime(2025, 10, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1599),
-                            CustomerApproval = "Pending",
+                            CreatedDate = new DateTime(2025, 10, 28, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2985),
+                            CustomerApproval = "Approved",
                             Notes = "Visit notes for service 14. Checkup completed with status: In Progress",
-                            RequestHeaderId = 14,
+                            RequestHeaderId = 10,
                             Status = "Pending",
-                            TechnicianName = "Patricia White",
-                            VisitDate = new DateTime(2025, 10, 31, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1599),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 10, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2985),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 15,
-                            CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 11, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1602),
+                            CheckupStatus = "Failed",
+                            CreatedDate = new DateTime(2025, 11, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2988),
                             CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 15. Checkup completed with status: Not Started",
-                            RequestHeaderId = 12,
+                            Notes = "Visit notes for service 15. Checkup completed with status: Failed",
+                            RequestHeaderId = 3,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 11, 5, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1602),
+                            TechnicianName = "James Miller",
+                            VisitDate = new DateTime(2025, 11, 8, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2988),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 16,
                             CheckupStatus = "Not Started",
-                            CreatedDate = new DateTime(2025, 10, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1608),
+                            CreatedDate = new DateTime(2025, 10, 21, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2993),
                             CustomerApproval = "Pending",
                             Notes = "Visit notes for service 16. Checkup completed with status: Not Started",
-                            RequestHeaderId = 3,
+                            RequestHeaderId = 11,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 10, 23, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1608),
+                            TechnicianName = "James Miller",
+                            VisitDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2993),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 17,
-                            CheckupStatus = "Failed",
-                            CreatedDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1612),
+                            CheckupStatus = "In Progress",
+                            CreatedDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2997),
                             CustomerApproval = "Approved",
-                            Notes = "Visit notes for service 17. Checkup completed with status: Failed",
-                            RequestHeaderId = 9,
+                            Notes = "Visit notes for service 17. Checkup completed with status: In Progress",
+                            RequestHeaderId = 3,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 11, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1612),
+                            TechnicianName = "Robert Davis",
+                            VisitDate = new DateTime(2025, 10, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2997),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 18,
-                            CheckupStatus = "In Progress",
-                            CreatedDate = new DateTime(2025, 10, 13, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1616),
-                            CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 18. Checkup completed with status: In Progress",
-                            RequestHeaderId = 15,
+                            CheckupStatus = "Passed",
+                            CreatedDate = new DateTime(2025, 11, 2, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3001),
+                            CustomerApproval = "Approved",
+                            Notes = "Visit notes for service 18. Checkup completed with status: Passed",
+                            RequestHeaderId = 3,
                             Status = "Pending",
-                            TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 10, 14, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1616),
+                            TechnicianName = "James Miller",
+                            VisitDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3001),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 19,
-                            CheckupStatus = "In Progress",
-                            CreatedDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1619),
+                            CheckupStatus = "Not Started",
+                            CreatedDate = new DateTime(2025, 11, 5, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3004),
                             CustomerApproval = "Pending",
-                            Notes = "Visit notes for service 19. Checkup completed with status: In Progress",
-                            RequestHeaderId = 8,
+                            Notes = "Visit notes for service 19. Checkup completed with status: Not Started",
+                            RequestHeaderId = 7,
                             Status = "Pending",
-                            TechnicianName = "Robert Davis",
-                            VisitDate = new DateTime(2025, 10, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1619),
+                            TechnicianName = "Jennifer Martin",
+                            VisitDate = new DateTime(2025, 11, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3004),
                             VisitType = "Maintenance Check"
                         },
                         new
                         {
                             VisitId = 20,
                             CheckupStatus = "In Progress",
-                            CreatedDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1622),
-                            CustomerApproval = "Approved",
+                            CreatedDate = new DateTime(2025, 10, 22, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3007),
+                            CustomerApproval = "Pending",
                             Notes = "Visit notes for service 20. Checkup completed with status: In Progress",
-                            RequestHeaderId = 13,
+                            RequestHeaderId = 14,
                             Status = "Pending",
                             TechnicianName = "Jennifer Martin",
-                            VisitDate = new DateTime(2025, 11, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1622),
+                            VisitDate = new DateTime(2025, 10, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3007),
                             VisitType = "Maintenance Check"
                         });
                 });
@@ -8417,87 +8413,87 @@ namespace Project.Migrations
                         {
                             RequestDetailId = 1,
                             Count = 1,
-                            FridgeId = 20,
-                            Price = 510.0,
+                            FridgeId = 33,
+                            Price = 505.0,
                             RequestHeaderId = 2
                         },
                         new
                         {
                             RequestDetailId = 2,
-                            Count = 3,
-                            FridgeId = 46,
-                            Price = 653.0,
+                            Count = 1,
+                            FridgeId = 25,
+                            Price = 602.0,
                             RequestHeaderId = 3
                         },
                         new
                         {
                             RequestDetailId = 3,
-                            Count = 3,
-                            FridgeId = 29,
-                            Price = 444.0,
+                            Count = 2,
+                            FridgeId = 25,
+                            Price = 686.0,
                             RequestHeaderId = 4
                         },
                         new
                         {
                             RequestDetailId = 4,
-                            Count = 3,
-                            FridgeId = 36,
-                            Price = 546.0,
+                            Count = 2,
+                            FridgeId = 18,
+                            Price = 711.0,
                             RequestHeaderId = 5
                         },
                         new
                         {
                             RequestDetailId = 5,
-                            Count = 2,
-                            FridgeId = 11,
-                            Price = 668.0,
+                            Count = 1,
+                            FridgeId = 41,
+                            Price = 628.0,
                             RequestHeaderId = 6
                         },
                         new
                         {
                             RequestDetailId = 6,
                             Count = 2,
-                            FridgeId = 34,
-                            Price = 774.0,
+                            FridgeId = 1,
+                            Price = 694.0,
                             RequestHeaderId = 7
                         },
                         new
                         {
                             RequestDetailId = 7,
-                            Count = 1,
-                            FridgeId = 18,
-                            Price = 447.0,
+                            Count = 3,
+                            FridgeId = 9,
+                            Price = 633.0,
                             RequestHeaderId = 8
                         },
                         new
                         {
                             RequestDetailId = 8,
                             Count = 3,
-                            FridgeId = 40,
-                            Price = 762.0,
+                            FridgeId = 1,
+                            Price = 512.0,
                             RequestHeaderId = 9
                         },
                         new
                         {
                             RequestDetailId = 9,
                             Count = 2,
-                            FridgeId = 46,
-                            Price = 425.0,
+                            FridgeId = 21,
+                            Price = 422.0,
                             RequestHeaderId = 10
                         },
                         new
                         {
                             RequestDetailId = 10,
                             Count = 1,
-                            FridgeId = 14,
-                            Price = 569.0,
+                            FridgeId = 23,
+                            Price = 505.0,
                             RequestHeaderId = 11
                         },
                         new
                         {
                             RequestDetailId = 11,
-                            Count = 2,
-                            FridgeId = 24,
+                            Count = 1,
+                            FridgeId = 14,
                             Price = 409.0,
                             RequestHeaderId = 12
                         },
@@ -8505,72 +8501,72 @@ namespace Project.Migrations
                         {
                             RequestDetailId = 12,
                             Count = 3,
-                            FridgeId = 9,
-                            Price = 504.0,
+                            FridgeId = 27,
+                            Price = 740.0,
                             RequestHeaderId = 13
                         },
                         new
                         {
                             RequestDetailId = 13,
-                            Count = 1,
-                            FridgeId = 2,
-                            Price = 667.0,
+                            Count = 2,
+                            FridgeId = 47,
+                            Price = 427.0,
                             RequestHeaderId = 14
                         },
                         new
                         {
                             RequestDetailId = 14,
-                            Count = 1,
-                            FridgeId = 26,
-                            Price = 793.0,
+                            Count = 3,
+                            FridgeId = 38,
+                            Price = 470.0,
                             RequestHeaderId = 15
                         },
                         new
                         {
                             RequestDetailId = 15,
-                            Count = 2,
-                            FridgeId = 32,
-                            Price = 456.0,
+                            Count = 3,
+                            FridgeId = 29,
+                            Price = 613.0,
                             RequestHeaderId = 1
                         },
                         new
                         {
                             RequestDetailId = 16,
                             Count = 2,
-                            FridgeId = 21,
-                            Price = 427.0,
+                            FridgeId = 12,
+                            Price = 430.0,
                             RequestHeaderId = 2
                         },
                         new
                         {
                             RequestDetailId = 17,
                             Count = 3,
-                            FridgeId = 6,
-                            Price = 631.0,
+                            FridgeId = 30,
+                            Price = 629.0,
                             RequestHeaderId = 3
                         },
                         new
                         {
                             RequestDetailId = 18,
                             Count = 2,
-                            FridgeId = 6,
-                            Price = 724.0,
+                            FridgeId = 19,
+                            Price = 748.0,
                             RequestHeaderId = 4
                         },
                         new
                         {
                             RequestDetailId = 19,
                             Count = 2,
-                            FridgeId = 18,
-                            Price = 753.0,
+                            FridgeId = 3,
+                            Price = 517.0,
                             RequestHeaderId = 5
                         },
                         new
                         {
                             RequestDetailId = 20,
                             Count = 3,
-                            FridgeId = 25,
-                            Price = 767.0,
+                            FridgeId = 32,
+                            Price = 457.0,
                             RequestHeaderId = 6
                         });
                 });
@@ -8665,271 +8661,277 @@ namespace Project.Migrations
                         new
                         {
                             RequestHeaderId = 1,
-                            CellNumber = "0593562404",
-                            City = "Pretoria",
+                            CellNumber = "0124445678",
+                            City = "Johannesburg",
                             CustomerID = 2,
-                            EmployeeID = 12,
-                            FirstName = "Customer1",
+                            EmployeeID = 10,
+                            FirstName = "Lisa",
                             IsRelaunched = false,
-                            LastName = "LastName1",
-                            PostalCode = "2197",
-                            RequestDate = new DateTime(2025, 8, 21, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(269),
-                            RequestTotal = 678.0,
+                            LastName = "Brown",
+                            PostalCode = "2592",
+                            RequestDate = new DateTime(2025, 9, 18, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(1211),
+                            RequestTotal = 1386.0,
                             State = "Province",
                             Status = "Approved",
-                            StreetAddress = "296 Main Street"
+                            StreetAddress = "163 Business Avenue"
                         },
                         new
                         {
                             RequestHeaderId = 2,
-                            CellNumber = "0515331717",
-                            City = "Cape Town",
+                            CellNumber = "0413337890",
+                            City = "Port Elizabeth",
                             CustomerID = 3,
-                            EmployeeID = 2,
-                            FirstName = "Customer2",
+                            DeliveryDate = new DateTime(2025, 10, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2125),
+                            EmployeeID = 5,
+                            FirstName = "David",
                             IsRelaunched = false,
-                            LastName = "LastName2",
-                            PostalCode = "6826",
-                            RequestDate = new DateTime(2025, 11, 5, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(938),
-                            RequestTotal = 892.0,
+                            LastName = "Jackson",
+                            PaymentDueDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2125),
+                            PostalCode = "4654",
+                            RequestDate = new DateTime(2025, 10, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2125),
+                            RequestTotal = 880.0,
                             State = "Province",
-                            Status = "Approved",
-                            StreetAddress = "533 Service Road"
+                            Status = "Closed",
+                            StreetAddress = "54 Commerce Road"
                         },
                         new
                         {
                             RequestHeaderId = 3,
-                            CellNumber = "0353621158",
-                            City = "Durban",
+                            CellNumber = "0512224567",
+                            City = "Bloemfontein",
                             CustomerID = 4,
-                            DeliveryDate = new DateTime(2025, 10, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(951),
-                            EmployeeID = 12,
-                            FirstName = "Customer3",
+                            EmployeeID = 10,
+                            FirstName = "Emma",
                             IsRelaunched = false,
-                            LastName = "LastName3",
-                            PaymentDueDate = new DateTime(2025, 11, 5, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(951),
-                            PostalCode = "8446",
-                            RequestDate = new DateTime(2025, 10, 6, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(951),
-                            RequestTotal = 1305.0,
+                            LastName = "Davis",
+                            PostalCode = "9261",
+                            RequestDate = new DateTime(2025, 9, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2138),
+                            RequestTotal = 1278.0,
                             State = "Province",
-                            Status = "Shipped",
-                            StreetAddress = "505 Service Road"
+                            Status = "Approved",
+                            StreetAddress = "542 Trade Street"
                         },
                         new
                         {
                             RequestHeaderId = 4,
-                            CellNumber = "0149406231",
-                            City = "Johannesburg",
+                            CellNumber = "0131112345",
+                            City = "Pretoria",
                             CustomerID = 5,
-                            EmployeeID = 10,
-                            FirstName = "Customer4",
+                            DeliveryDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2144),
+                            EmployeeID = 8,
+                            FirstName = "Robert",
                             IsRelaunched = false,
-                            LastName = "LastName4",
-                            PostalCode = "2819",
-                            RequestDate = new DateTime(2025, 8, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(961),
-                            RequestTotal = 1014.0,
+                            LastName = "Miller",
+                            PaymentDueDate = new DateTime(2025, 11, 25, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2144),
+                            PostalCode = "9467",
+                            RequestDate = new DateTime(2025, 10, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2144),
+                            RequestTotal = 1201.0,
                             State = "Province",
-                            Status = "Pending",
-                            StreetAddress = "706 Service Road"
+                            Status = "Closed",
+                            StreetAddress = "223 Service Road"
                         },
                         new
                         {
                             RequestHeaderId = 5,
-                            CellNumber = "0983501609",
-                            City = "Durban",
+                            CellNumber = "0156667890",
+                            City = "Port Elizabeth",
                             CustomerID = 6,
                             EmployeeID = 2,
-                            FirstName = "Customer5",
+                            FirstName = "Sophia",
                             IsRelaunched = false,
-                            LastName = "LastName5",
-                            PostalCode = "4527",
-                            RequestDate = new DateTime(2025, 9, 11, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(970),
-                            RequestTotal = 1329.0,
+                            LastName = "Garcia",
+                            PostalCode = "4674",
+                            RequestDate = new DateTime(2025, 11, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2149),
+                            RequestTotal = 619.0,
                             State = "Province",
-                            Status = "Approved",
-                            StreetAddress = "658 Service Road"
+                            Status = "Pending",
+                            StreetAddress = "490 Trade Street"
                         },
                         new
                         {
                             RequestHeaderId = 6,
-                            CellNumber = "0339412082",
-                            City = "Johannesburg",
+                            CellNumber = "0537771234",
+                            City = "Cape Town",
                             CustomerID = 7,
-                            EmployeeID = 8,
-                            FirstName = "Customer6",
+                            EmployeeID = 11,
+                            FirstName = "James",
                             IsRelaunched = false,
-                            LastName = "LastName6",
-                            PostalCode = "8066",
-                            RequestDate = new DateTime(2025, 9, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(990),
-                            RequestTotal = 1211.0,
+                            LastName = "Anderson",
+                            PostalCode = "1717",
+                            RequestDate = new DateTime(2025, 10, 20, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2160),
+                            RequestTotal = 736.0,
                             State = "Province",
-                            Status = "Approved",
-                            StreetAddress = "944 Commerce Road"
+                            Status = "Pending",
+                            StreetAddress = "600 Business Avenue"
                         },
                         new
                         {
                             RequestHeaderId = 7,
-                            CellNumber = "0558657658",
+                            CellNumber = "0148884567",
                             City = "Port Elizabeth",
                             CustomerID = 8,
+                            DeliveryDate = new DateTime(2025, 11, 15, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2166),
                             EmployeeID = 12,
-                            FirstName = "Customer7",
+                            FirstName = "Olivia",
                             IsRelaunched = false,
-                            LastName = "LastName7",
-                            PostalCode = "4010",
-                            RequestDate = new DateTime(2025, 11, 5, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1007),
-                            RequestTotal = 627.0,
+                            LastName = "Martinez",
+                            PaymentDueDate = new DateTime(2025, 12, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2166),
+                            PostalCode = "2497",
+                            RequestDate = new DateTime(2025, 11, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2166),
+                            RequestTotal = 1010.0,
                             State = "Province",
-                            Status = "Pending",
-                            StreetAddress = "556 Main Street"
+                            Status = "Shipped",
+                            StreetAddress = "867 Commerce Road"
                         },
                         new
                         {
                             RequestHeaderId = 8,
-                            CellNumber = "0849840381",
-                            City = "Johannesburg",
+                            CellNumber = "0439991234",
+                            City = "Pretoria",
                             CustomerID = 9,
-                            EmployeeID = 8,
-                            FirstName = "Customer8",
+                            EmployeeID = 2,
+                            FirstName = "William",
                             IsRelaunched = false,
-                            LastName = "LastName8",
-                            PostalCode = "3549",
-                            RejectionDate = new DateTime(2025, 10, 10, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1016),
-                            RejectionReason = "Incomplete business documentation provided",
-                            RequestDate = new DateTime(2025, 10, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1016),
-                            RequestTotal = 1301.0,
+                            LastName = "Thomas",
+                            PostalCode = "2657",
+                            RejectionDate = new DateTime(2025, 9, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2171),
+                            RejectionReason = "Payment method not approved",
+                            RequestDate = new DateTime(2025, 9, 7, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2171),
+                            RequestTotal = 836.0,
                             State = "Province",
                             Status = "Rejected",
-                            StreetAddress = "71 Business Avenue"
+                            StreetAddress = "138 Commerce Road"
                         },
                         new
                         {
                             RequestHeaderId = 9,
-                            CellNumber = "0587805290",
-                            City = "Durban",
+                            CellNumber = "0338885678",
+                            City = "Cape Town",
                             CustomerID = 10,
-                            DeliveryDate = new DateTime(2025, 9, 6, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1026),
-                            EmployeeID = 3,
-                            FirstName = "Customer9",
+                            EmployeeID = 9,
+                            FirstName = "Ava",
                             IsRelaunched = false,
-                            LastName = "LastName9",
-                            PaymentDueDate = new DateTime(2025, 9, 30, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1026),
-                            PostalCode = "7067",
-                            RequestDate = new DateTime(2025, 8, 31, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1026),
-                            RequestTotal = 652.0,
+                            LastName = "Robinson",
+                            PostalCode = "3838",
+                            RejectionDate = new DateTime(2025, 9, 4, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2177),
+                            RejectionReason = "Business type not supported",
+                            RequestDate = new DateTime(2025, 9, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2177),
+                            RequestTotal = 732.0,
                             State = "Province",
-                            Status = "Shipped",
-                            StreetAddress = "672 Trade Street"
+                            Status = "Rejected",
+                            StreetAddress = "47 Service Road"
                         },
                         new
                         {
                             RequestHeaderId = 10,
-                            CellNumber = "0252604306",
-                            City = "Johannesburg",
+                            CellNumber = "0577779012",
+                            City = "Pretoria",
                             CustomerID = 11,
-                            DeliveryDate = new DateTime(2025, 8, 19, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1034),
                             EmployeeID = 4,
-                            FirstName = "Customer10",
+                            FirstName = "Noah",
                             IsRelaunched = false,
-                            LastName = "LastName10",
-                            PaymentDueDate = new DateTime(2025, 9, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1034),
-                            PostalCode = "3593",
-                            RequestDate = new DateTime(2025, 8, 17, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1034),
-                            RequestTotal = 1342.0,
+                            LastName = "Clark",
+                            PostalCode = "9984",
+                            RejectionDate = new DateTime(2025, 11, 6, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2183),
+                            RejectionReason = "Business registration not valid",
+                            RequestDate = new DateTime(2025, 11, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2183),
+                            RequestTotal = 854.0,
                             State = "Province",
-                            Status = "Closed",
-                            StreetAddress = "38 Trade Street"
+                            Status = "Rejected",
+                            StreetAddress = "564 Trade Street"
                         },
                         new
                         {
                             RequestHeaderId = 11,
-                            CellNumber = "0842616112",
-                            City = "Port Elizabeth",
+                            CellNumber = "0136663456",
+                            City = "Durban",
                             CustomerID = 12,
-                            DeliveryDate = new DateTime(2025, 10, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1043),
-                            EmployeeID = 9,
-                            FirstName = "Customer11",
+                            EmployeeID = 2,
+                            FirstName = "Isabella",
                             IsRelaunched = false,
-                            LastName = "LastName11",
-                            PaymentDueDate = new DateTime(2025, 11, 20, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1043),
-                            PostalCode = "6045",
-                            RequestDate = new DateTime(2025, 10, 21, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1043),
-                            RequestTotal = 1201.0,
+                            LastName = "Rodriguez",
+                            PostalCode = "6572",
+                            RejectionDate = new DateTime(2025, 10, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2188),
+                            RejectionReason = "Credit check failed",
+                            RequestDate = new DateTime(2025, 9, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2188),
+                            RequestTotal = 410.0,
                             State = "Province",
-                            Status = "Shipped",
-                            StreetAddress = "226 Main Street"
+                            Status = "Rejected",
+                            StreetAddress = "523 Service Road"
                         },
                         new
                         {
                             RequestHeaderId = 12,
-                            CellNumber = "0824352236",
+                            CellNumber = "0315551234",
                             City = "Johannesburg",
                             CustomerID = 1,
-                            DeliveryDate = new DateTime(2025, 10, 4, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1051),
+                            DeliveryDate = new DateTime(2025, 9, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2193),
                             EmployeeID = 9,
-                            FirstName = "Customer12",
+                            FirstName = "Mike",
                             IsRelaunched = false,
-                            LastName = "LastName12",
-                            PaymentDueDate = new DateTime(2025, 11, 1, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1051),
-                            PostalCode = "3204",
-                            RequestDate = new DateTime(2025, 10, 2, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1051),
-                            RequestTotal = 1225.0,
+                            LastName = "Wilson",
+                            PaymentDueDate = new DateTime(2025, 10, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2193),
+                            PostalCode = "9042",
+                            RequestDate = new DateTime(2025, 9, 3, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2193),
+                            RequestTotal = 1353.0,
                             State = "Province",
-                            Status = "Closed",
-                            StreetAddress = "882 Commerce Road"
+                            Status = "Shipped",
+                            StreetAddress = "760 Commerce Road"
                         },
                         new
                         {
                             RequestHeaderId = 13,
-                            CellNumber = "0371098818",
-                            City = "Cape Town",
+                            CellNumber = "0124445678",
+                            City = "Durban",
                             CustomerID = 2,
-                            EmployeeID = 9,
-                            FirstName = "Customer13",
+                            DeliveryDate = new DateTime(2025, 8, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2198),
+                            EmployeeID = 6,
+                            FirstName = "Lisa",
                             IsRelaunched = false,
-                            LastName = "LastName13",
-                            PostalCode = "9920",
-                            RequestDate = new DateTime(2025, 8, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1060),
-                            RequestTotal = 419.0,
+                            LastName = "Brown",
+                            PaymentDueDate = new DateTime(2025, 9, 26, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2198),
+                            PostalCode = "2701",
+                            RequestDate = new DateTime(2025, 8, 27, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2198),
+                            RequestTotal = 968.0,
                             State = "Province",
-                            Status = "Approved",
-                            StreetAddress = "98 Business Avenue"
+                            Status = "Closed",
+                            StreetAddress = "887 Service Road"
                         },
                         new
                         {
                             RequestHeaderId = 14,
-                            CellNumber = "0899310059",
-                            City = "Johannesburg",
+                            CellNumber = "0413337890",
+                            City = "Pretoria",
                             CustomerID = 3,
+                            DeliveryDate = new DateTime(2025, 10, 31, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2203),
                             EmployeeID = 6,
-                            FirstName = "Customer14",
+                            FirstName = "David",
                             IsRelaunched = false,
-                            LastName = "LastName14",
-                            PostalCode = "8682",
-                            RequestDate = new DateTime(2025, 8, 15, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1068),
-                            RequestTotal = 1433.0,
+                            LastName = "Jackson",
+                            PaymentDueDate = new DateTime(2025, 11, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2203),
+                            PostalCode = "5735",
+                            RequestDate = new DateTime(2025, 10, 24, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2203),
+                            RequestTotal = 615.0,
                             State = "Province",
-                            Status = "Approved",
-                            StreetAddress = "747 Trade Street"
+                            Status = "Shipped",
+                            StreetAddress = "123 Service Road"
                         },
                         new
                         {
                             RequestHeaderId = 15,
-                            CellNumber = "0356954042",
-                            City = "Port Elizabeth",
+                            CellNumber = "0512224567",
+                            City = "Johannesburg",
                             CustomerID = 4,
-                            DeliveryDate = new DateTime(2025, 10, 31, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1077),
-                            EmployeeID = 4,
-                            FirstName = "Customer15",
+                            EmployeeID = 9,
+                            FirstName = "Emma",
                             IsRelaunched = false,
-                            LastName = "LastName15",
-                            PaymentDueDate = new DateTime(2025, 11, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1077),
-                            PostalCode = "7278",
-                            RequestDate = new DateTime(2025, 10, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(1077),
-                            RequestTotal = 683.0,
+                            LastName = "Davis",
+                            PostalCode = "8259",
+                            RequestDate = new DateTime(2025, 11, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(2223),
+                            RequestTotal = 1281.0,
                             State = "Province",
-                            Status = "Shipped",
-                            StreetAddress = "708 Commerce Road"
+                            Status = "Pending",
+                            StreetAddress = "676 Main Street"
                         });
                 });
 
@@ -8966,162 +8968,162 @@ namespace Project.Migrations
                         new
                         {
                             RequestNoteId = 1,
-                            CreatedDate = new DateTime(2025, 11, 5, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2174),
+                            CreatedDate = new DateTime(2025, 8, 20, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3617),
                             NoteContent = "Note content for request 1. This is an important note regarding the service.",
-                            NoteType = "Internal",
-                            RequestHeaderId = 12
+                            NoteType = "Administrative",
+                            RequestHeaderId = 5
                         },
                         new
                         {
                             RequestNoteId = 2,
-                            CreatedDate = new DateTime(2025, 8, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2188),
+                            CreatedDate = new DateTime(2025, 10, 31, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3634),
                             NoteContent = "Note content for request 2. This is an important note regarding the service.",
-                            NoteType = "Customer",
-                            RequestHeaderId = 15
+                            NoteType = "Administrative",
+                            RequestHeaderId = 2
                         },
                         new
                         {
                             RequestNoteId = 3,
-                            CreatedDate = new DateTime(2025, 9, 22, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2190),
+                            CreatedDate = new DateTime(2025, 8, 21, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3637),
                             NoteContent = "Note content for request 3. This is an important note regarding the service.",
-                            NoteType = "Internal",
-                            RequestHeaderId = 15
+                            NoteType = "Customer",
+                            RequestHeaderId = 4
                         },
                         new
                         {
                             RequestNoteId = 4,
-                            CreatedDate = new DateTime(2025, 9, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2193),
+                            CreatedDate = new DateTime(2025, 10, 14, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3639),
                             NoteContent = "Note content for request 4. This is an important note regarding the service.",
-                            NoteType = "Customer",
-                            RequestHeaderId = 3
+                            NoteType = "Administrative",
+                            RequestHeaderId = 8
                         },
                         new
                         {
                             RequestNoteId = 5,
-                            CreatedDate = new DateTime(2025, 9, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2195),
+                            CreatedDate = new DateTime(2025, 11, 10, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3642),
                             NoteContent = "Note content for request 5. This is an important note regarding the service.",
                             NoteType = "Technical",
-                            RequestHeaderId = 15
+                            RequestHeaderId = 5
                         },
                         new
                         {
                             RequestNoteId = 6,
-                            CreatedDate = new DateTime(2025, 8, 29, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2199),
+                            CreatedDate = new DateTime(2025, 9, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3645),
                             NoteContent = "Note content for request 6. This is an important note regarding the service.",
-                            NoteType = "Customer",
-                            RequestHeaderId = 15
+                            NoteType = "Internal",
+                            RequestHeaderId = 2
                         },
                         new
                         {
                             RequestNoteId = 7,
-                            CreatedDate = new DateTime(2025, 11, 6, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2201),
+                            CreatedDate = new DateTime(2025, 11, 2, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3647),
                             NoteContent = "Note content for request 7. This is an important note regarding the service.",
                             NoteType = "Internal",
-                            RequestHeaderId = 14
+                            RequestHeaderId = 4
                         },
                         new
                         {
                             RequestNoteId = 8,
-                            CreatedDate = new DateTime(2025, 10, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2204),
+                            CreatedDate = new DateTime(2025, 8, 19, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3650),
                             NoteContent = "Note content for request 8. This is an important note regarding the service.",
-                            NoteType = "Technical",
-                            RequestHeaderId = 7
+                            NoteType = "Administrative",
+                            RequestHeaderId = 1
                         },
                         new
                         {
                             RequestNoteId = 9,
-                            CreatedDate = new DateTime(2025, 9, 26, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2206),
+                            CreatedDate = new DateTime(2025, 9, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3653),
                             NoteContent = "Note content for request 9. This is an important note regarding the service.",
-                            NoteType = "Administrative",
-                            RequestHeaderId = 13
+                            NoteType = "Technical",
+                            RequestHeaderId = 8
                         },
                         new
                         {
                             RequestNoteId = 10,
-                            CreatedDate = new DateTime(2025, 8, 19, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2210),
+                            CreatedDate = new DateTime(2025, 9, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3656),
                             NoteContent = "Note content for request 10. This is an important note regarding the service.",
-                            NoteType = "Technical",
-                            RequestHeaderId = 13
+                            NoteType = "Internal",
+                            RequestHeaderId = 6
                         },
                         new
                         {
                             RequestNoteId = 11,
-                            CreatedDate = new DateTime(2025, 10, 28, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2213),
+                            CreatedDate = new DateTime(2025, 10, 28, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3659),
                             NoteContent = "Note content for request 11. This is an important note regarding the service.",
-                            NoteType = "Administrative",
+                            NoteType = "Internal",
                             RequestHeaderId = 8
                         },
                         new
                         {
                             RequestNoteId = 12,
-                            CreatedDate = new DateTime(2025, 10, 16, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2215),
+                            CreatedDate = new DateTime(2025, 10, 20, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3661),
                             NoteContent = "Note content for request 12. This is an important note regarding the service.",
-                            NoteType = "Administrative",
-                            RequestHeaderId = 15
+                            NoteType = "Internal",
+                            RequestHeaderId = 11
                         },
                         new
                         {
                             RequestNoteId = 13,
-                            CreatedDate = new DateTime(2025, 9, 25, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2218),
+                            CreatedDate = new DateTime(2025, 8, 18, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3664),
                             NoteContent = "Note content for request 13. This is an important note regarding the service.",
-                            NoteType = "Customer",
-                            RequestHeaderId = 2
+                            NoteType = "Internal",
+                            RequestHeaderId = 8
                         },
                         new
                         {
                             RequestNoteId = 14,
-                            CreatedDate = new DateTime(2025, 9, 15, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2220),
+                            CreatedDate = new DateTime(2025, 9, 1, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3666),
                             NoteContent = "Note content for request 14. This is an important note regarding the service.",
-                            NoteType = "Internal",
-                            RequestHeaderId = 14
-                        },
-                        new
-                        {
-                            RequestNoteId = 15,
-                            CreatedDate = new DateTime(2025, 10, 15, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2223),
-                            NoteContent = "Note content for request 15. This is an important note regarding the service.",
-                            NoteType = "Technical",
-                            RequestHeaderId = 10
-                        },
-                        new
-                        {
-                            RequestNoteId = 16,
-                            CreatedDate = new DateTime(2025, 8, 24, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2225),
-                            NoteContent = "Note content for request 16. This is an important note regarding the service.",
                             NoteType = "Administrative",
                             RequestHeaderId = 4
                         },
                         new
                         {
+                            RequestNoteId = 15,
+                            CreatedDate = new DateTime(2025, 8, 28, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3669),
+                            NoteContent = "Note content for request 15. This is an important note regarding the service.",
+                            NoteType = "Administrative",
+                            RequestHeaderId = 13
+                        },
+                        new
+                        {
+                            RequestNoteId = 16,
+                            CreatedDate = new DateTime(2025, 9, 29, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3671),
+                            NoteContent = "Note content for request 16. This is an important note regarding the service.",
+                            NoteType = "Internal",
+                            RequestHeaderId = 12
+                        },
+                        new
+                        {
                             RequestNoteId = 17,
-                            CreatedDate = new DateTime(2025, 9, 3, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2228),
+                            CreatedDate = new DateTime(2025, 10, 23, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3673),
                             NoteContent = "Note content for request 17. This is an important note regarding the service.",
-                            NoteType = "Technical",
-                            RequestHeaderId = 8
+                            NoteType = "Internal",
+                            RequestHeaderId = 4
                         },
                         new
                         {
                             RequestNoteId = 18,
-                            CreatedDate = new DateTime(2025, 9, 15, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2231),
+                            CreatedDate = new DateTime(2025, 10, 2, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3683),
                             NoteContent = "Note content for request 18. This is an important note regarding the service.",
                             NoteType = "Technical",
-                            RequestHeaderId = 15
+                            RequestHeaderId = 7
                         },
                         new
                         {
                             RequestNoteId = 19,
-                            CreatedDate = new DateTime(2025, 10, 18, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2234),
+                            CreatedDate = new DateTime(2025, 10, 11, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3686),
                             NoteContent = "Note content for request 19. This is an important note regarding the service.",
-                            NoteType = "Internal",
-                            RequestHeaderId = 3
+                            NoteType = "Customer",
+                            RequestHeaderId = 7
                         },
                         new
                         {
                             RequestNoteId = 20,
-                            CreatedDate = new DateTime(2025, 9, 8, 11, 4, 11, 704, DateTimeKind.Local).AddTicks(2236),
+                            CreatedDate = new DateTime(2025, 11, 9, 11, 30, 9, 620, DateTimeKind.Local).AddTicks(3688),
                             NoteContent = "Note content for request 20. This is an important note regarding the service.",
-                            NoteType = "Customer",
-                            RequestHeaderId = 14
+                            NoteType = "Administrative",
+                            RequestHeaderId = 5
                         });
                 });
 
@@ -9172,15 +9174,15 @@ namespace Project.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "14aef516-b916-4aa4-b80f-1aa446e8d215",
+                            ConcurrencyStamp = "cf221007-1667-42ac-8218-dfa6aaff2cfa",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENebnSyk+PuK5kon0zoiV2f6jA3JeMglSCd1BpMrmuhNB/pXmvpwuinTuetd5IELrQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGxcMWNgpupuJ3Fo0ECCXYrjZAFh3q//7hc5XrxipMZTmCiQRL8YxX21NKg7eDy18g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ec884ea3-0363-4116-b037-7fe065341df3",
+                            SecurityStamp = "93537393-f6c3-4b5b-8752-f368d6002873",
                             TwoFactorEnabled = false,
                             UserName = "admin@gmail.com",
                             CellNumber = "0111234567",
@@ -9197,15 +9199,15 @@ namespace Project.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "30047f0d-4d66-4bcc-b44b-5fcbe1b1419e",
+                            ConcurrencyStamp = "445a32d6-12b7-48bd-90a4-e0b7b400ed3a",
                             Email = "sarah.johnson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SARAH.JOHNSON@GMAIL.COM",
                             NormalizedUserName = "SARAH.JOHNSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE5WMxm1On3fkSPm5HgzU+/4zWs+PCTbM6ZWlab0yQyCKaWPM24hYsyZgNf04H2TlA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOoDBcWoSnqyUOTfosdMpI+VpfjL5NsxiPTTvh6UwT7G3UE1sZrlWqxwFlZSSxPb5w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "573c10df-f09b-42bc-8f86-fe3bba78523c",
+                            SecurityStamp = "b0230457-e49e-4269-8a4f-6a77e7bd8363",
                             TwoFactorEnabled = false,
                             UserName = "sarah.johnson@gmail.com",
                             CellNumber = "0219876543",
@@ -9222,15 +9224,15 @@ namespace Project.Migrations
                         {
                             Id = "3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "21759a6d-c372-4773-967e-52a3737e7a07",
+                            ConcurrencyStamp = "1fe361cf-703d-400a-8196-30d9a48773a4",
                             Email = "mike.wilson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "MIKE.WILSON@GMAIL.COM",
                             NormalizedUserName = "MIKE.WILSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOiuz1v/rzK+AjYQrb+QlFlcqiSVQDZAn5vYrG173IFkbJEvxVN9En6IG3ua3ut1QQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECdWbqNl/rju3PkcvnZY6jDWBto9+iRzWMO1mRIOH/FJnvWASFYPlgbQozKaN1IH5A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "95e33ea0-41d1-44f0-9931-9b1ff1201416",
+                            SecurityStamp = "4ee63b4b-e7ff-4fe1-8d6f-f0c83b136322",
                             TwoFactorEnabled = false,
                             UserName = "mike.wilson@gmail.com",
                             CellNumber = "0315551234",
@@ -9247,15 +9249,15 @@ namespace Project.Migrations
                         {
                             Id = "4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "38912588-85ee-430b-8eb0-57e740239591",
+                            ConcurrencyStamp = "de152ace-2420-46b4-87b9-1e161cfd8626",
                             Email = "lisa.brown@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "LISA.BROWN@GMAIL.COM",
                             NormalizedUserName = "LISA.BROWN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH9wCv3QIO0hRsppVFUDWGTqWTyNNrjqdEAgQtW6G/d1PA19MvrICfC4GekF+qZ4cQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEv6buQ+J5Q0xpAJymikijKbRlduacZVYm5paZnbJOctRmVKnfdJ+jpsetWoJsS8Vw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1231e87c-cabd-4d49-932b-e09a85f78f69",
+                            SecurityStamp = "79553f44-3e4b-4c24-8876-93d8b91920a8",
                             TwoFactorEnabled = false,
                             UserName = "lisa.brown@gmail.com",
                             CellNumber = "0124445678",
@@ -9272,15 +9274,15 @@ namespace Project.Migrations
                         {
                             Id = "5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "52afb843-bbab-4e13-9d88-167f6e3d4a0a",
+                            ConcurrencyStamp = "1992272f-5985-43f0-9fee-5d4f4a402c87",
                             Email = "david.jackson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID.JACKSON@GMAIL.COM",
                             NormalizedUserName = "DAVID.JACKSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPbO9OgtypIFanlWtF6jFecu3Q1+C0NB0Rk4M9QhNnHj4G5YRRtAXxOV+At9Fco3Gg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGja5fazGh88bmPpUuo19d9164Zb19pdYvmQYJW3NnnBVWkVjFLuUCbhjoYGAywMRg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3b0902ee-5465-4c38-8a64-31849f429e22",
+                            SecurityStamp = "09138177-500d-4264-8dd6-be9badf618f4",
                             TwoFactorEnabled = false,
                             UserName = "david.jackson@gmail.com",
                             CellNumber = "0413337890",
@@ -9297,15 +9299,15 @@ namespace Project.Migrations
                         {
                             Id = "6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ba0b9896-e3f4-45aa-8cdf-a8fbe0fd98c7",
+                            ConcurrencyStamp = "9e56a471-b290-4692-96a6-dc0edf1f072d",
                             Email = "emma.davis@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "EMMA.DAVIS@GMAIL.COM",
                             NormalizedUserName = "EMMA.DAVIS@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKDrzu78hQl9CAwOUAdfpqmFOFBtQsM9oOGGhLvf/nQPuZ7lM9sOmBe2e0f0DC1cwg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBpmkeGWz3jLsVc81/86E6ecLrYjPTLchSeAJjBZGveqwpD0VnH2bMw6vG6s0OHTWQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f7a64005-f327-4fe4-a022-21c14f086174",
+                            SecurityStamp = "31d38a9d-2b40-4635-8d44-37e6824809c3",
                             TwoFactorEnabled = false,
                             UserName = "emma.davis@gmail.com",
                             CellNumber = "0512224567",
@@ -9322,15 +9324,15 @@ namespace Project.Migrations
                         {
                             Id = "7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3ea48748-30f3-4f25-9546-eaa63ba79055",
+                            ConcurrencyStamp = "71166a88-0e58-466e-8ad1-c55c521294c8",
                             Email = "robert.miller@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ROBERT.MILLER@GMAIL.COM",
                             NormalizedUserName = "ROBERT.MILLER@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJww3XB1wYr8et1GWbf9Fx9zs7RlBKJgGqJsOuYKHvLpkdO2EhYWPn3jDy9rs1Jl5A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEl3W+MxzJhIb7muIS+tMZh6wkxlOhJXFQvf2MK7h6ACEVSB+s9RFZEOc92o83ZeEg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "02e6ebf7-0d58-4ad2-b90a-211ae9112a4e",
+                            SecurityStamp = "abbf8b5c-7171-430e-9296-97595998de79",
                             TwoFactorEnabled = false,
                             UserName = "robert.miller@gmail.com",
                             CellNumber = "0131112345",
@@ -9347,15 +9349,15 @@ namespace Project.Migrations
                         {
                             Id = "8",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "51d835b7-2c4a-4f39-9cf2-c70a63697987",
+                            ConcurrencyStamp = "3903bce8-b84e-4c47-bb8c-33fca8df4e3d",
                             Email = "sophia.garcia@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SOPHIA.GARCIA@GMAIL.COM",
                             NormalizedUserName = "SOPHIA.GARCIA@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENgGRLP8YxZo1MMAGOVI7sKJb0Z5jEmX1eka/fZTl6eFSExCW5qIdzUQpadrIriVew==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGy/va4uDB58zPtirO4dINQ0boD4iHOuwpRbaWB4NePE6kiudLx/0PzmXAHj7jXcjA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "51309301-7a99-4160-8332-f03b9a3aa8aa",
+                            SecurityStamp = "0cae70b1-9edd-45bd-922b-49444b15d745",
                             TwoFactorEnabled = false,
                             UserName = "sophia.garcia@gmail.com",
                             CellNumber = "0156667890",
@@ -9372,15 +9374,15 @@ namespace Project.Migrations
                         {
                             Id = "9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4efe4b33-f230-4ed9-93ca-920814513e88",
+                            ConcurrencyStamp = "9812db87-2320-4671-ae6c-72da2fe211bb",
                             Email = "james.anderson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JAMES.ANDERSON@GMAIL.COM",
                             NormalizedUserName = "JAMES.ANDERSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELPGKieTf05YUA77/JMEx6Oe2URxn1bp4Xlj1qsxrXaZ6ihFa9fdGEgPBFe2f1D/2g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEN+kIMUY0X0Cafq1g3Ij5mvKhaOr+LGm4QOrF6Uyfbv9ERdQxV7dGaReinrumW/IoQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6738e4a9-1cb6-4b98-a283-70ca4cb92477",
+                            SecurityStamp = "85bc1c12-150b-46f4-9d08-49298b01b165",
                             TwoFactorEnabled = false,
                             UserName = "james.anderson@gmail.com",
                             CellNumber = "0537771234",
@@ -9397,15 +9399,15 @@ namespace Project.Migrations
                         {
                             Id = "10",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8115eb73-1731-4a54-ad65-53d14860323f",
+                            ConcurrencyStamp = "938f1c20-b5e0-4a5d-8070-766084b44853",
                             Email = "olivia.martinez@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "OLIVIA.MARTINEZ@GMAIL.COM",
                             NormalizedUserName = "OLIVIA.MARTINEZ@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHs4Q9ENIWhqNCxJZ46DZmiD3nBtAhUMxCFoPJ5gMHks65sDkX3z2T6LOw+n0V9sfg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMSZ45JDv4+exaNs0NryDio4TzfPY6mHANC3Ab1Ymty5LZ1Z41PGlNfIyTj3KKnoMg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "54778b14-c0e0-4f2f-a7df-f599ee540b35",
+                            SecurityStamp = "52ef9eec-d3bf-4876-92c6-a66de7902f26",
                             TwoFactorEnabled = false,
                             UserName = "olivia.martinez@gmail.com",
                             CellNumber = "0148884567",
@@ -9422,15 +9424,15 @@ namespace Project.Migrations
                         {
                             Id = "21",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "64db4a84-0f89-4401-80dc-ed6d4a506230",
+                            ConcurrencyStamp = "1cd02f9e-9108-493a-8ae3-7c23955fcdb1",
                             Email = "william.thomas@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "WILLIAM.THOMAS@GMAIL.COM",
                             NormalizedUserName = "WILLIAM.THOMAS@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFMP7HAozyp1dF0IcX8l74FRQNmI9lhGNR7tIq6dfa+8tk7tIDCWfdVtBI7/D6SfKQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHwOU+doMySCtOU0QWFL+lQHE87W5/wFK2ww8qJKFklhaUeGljaHi4ruwsXAaqU2pg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0e102f49-6a57-4667-928e-f6b56ef159fb",
+                            SecurityStamp = "3d6b6f34-abf3-4542-90db-f5292b2734ed",
                             TwoFactorEnabled = false,
                             UserName = "william.thomas@gmail.com",
                             CellNumber = "0439991234",
@@ -9447,15 +9449,15 @@ namespace Project.Migrations
                         {
                             Id = "22",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1ae7fc29-3dc7-4a02-a2fe-925a1fc112d8",
+                            ConcurrencyStamp = "28bd9419-8154-4b56-b1c1-0f23281e6d0b",
                             Email = "ava.robinson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "AVA.ROBINSON@GMAIL.COM",
                             NormalizedUserName = "AVA.ROBINSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGV8p1DCI0h1li6F/rxPOD2DWcgRBr4Z5GF+BEvSDinEn1cNBMa32PpJNnVhYxFPwQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEF/YTXml6kuGUa6w5knOcQeT55JYGG0tYq8WgdZH2D1/JFyvWlCoP+kzJRqzYXXWDA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c26e31fe-669a-4f18-822f-9861653cd391",
+                            SecurityStamp = "32e623b6-ed0d-4e9c-ad76-1c2339f3dca1",
                             TwoFactorEnabled = false,
                             UserName = "ava.robinson@gmail.com",
                             CellNumber = "0338885678",
@@ -9472,15 +9474,15 @@ namespace Project.Migrations
                         {
                             Id = "23",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4bf0704c-2f13-4052-bc19-27bf39711588",
+                            ConcurrencyStamp = "fb433ca3-92bc-458f-a2eb-8dffe62eae6f",
                             Email = "noah.clark@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "NOAH.CLARK@GMAIL.COM",
                             NormalizedUserName = "NOAH.CLARK@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEN4fkuDSdwqhfSS6BL51liTP6KIb0Il47DTCsdrC2dJxCNXT9iB/AjlvU0i/jYwxyQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFyb8uw4KMKTYmZgGAMFr24pgePmv+LZDekeXDBQ1YY3C39BUkm024a1KPS3QtIiQw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d8e9a9dc-564a-4b03-97a3-d8e72e22aabb",
+                            SecurityStamp = "1b5f4349-8654-4862-9e0c-1780c0906013",
                             TwoFactorEnabled = false,
                             UserName = "noah.clark@gmail.com",
                             CellNumber = "0577779012",
@@ -9497,15 +9499,15 @@ namespace Project.Migrations
                         {
                             Id = "24",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "23043d3c-c979-43e8-befc-aaaf3059477a",
+                            ConcurrencyStamp = "e795177b-910b-4fc7-b6a6-fad5f5c0243c",
                             Email = "isabella.rodriguez@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ISABELLA.RODRIGUEZ@GMAIL.COM",
                             NormalizedUserName = "ISABELLA.RODRIGUEZ@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMd4qXZZAi/2XxBtelz14VWF8MEeKiMNErIXmMwwZ4nYFmfGRFfRheYp4LNSPa5CfQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJcqqHDRkXAM+SeYyCLraQ31Wf67TraIYaJjbP8cm2Yw6X8qdheXLB/74b024vBXSw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9760c81f-a0d8-4aa4-aa36-591d2c767a70",
+                            SecurityStamp = "c79c3b19-14bd-43d2-beab-f79fdc301901",
                             TwoFactorEnabled = false,
                             UserName = "isabella.rodriguez@gmail.com",
                             CellNumber = "0136663456",
@@ -9522,15 +9524,15 @@ namespace Project.Migrations
                         {
                             Id = "11",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0b271645-fee6-40d1-a3bb-298fcbb8ffab",
+                            ConcurrencyStamp = "2337b30f-8631-49ba-937b-66529e86823e",
                             Email = "emily.wilson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "EMILY.WILSON@GMAIL.COM",
                             NormalizedUserName = "EMILY.WILSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGLzq4QYRo+lixgaX9sMZTp413PuXFBG8Jwj8zIUxNWUSKlcj8l3iHE/76bqoJCEmw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBydqbS0ztRwNgva7otCOr3FZOIqaiM8/XHH2uFhd37+7NKIcZJEeNnFSuPbDQGKiA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f82fcaaf-aea1-428c-9fd9-dfdaf286a2a3",
+                            SecurityStamp = "cf2d4723-66f2-4ad8-9a2e-f7c35275e9ca",
                             TwoFactorEnabled = false,
                             UserName = "emily.wilson@gmail.com",
                             CellNumber = "0315551234",
@@ -9547,15 +9549,15 @@ namespace Project.Migrations
                         {
                             Id = "12",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f3b7bdc3-2d79-4cf9-9145-5991f9f481cb",
+                            ConcurrencyStamp = "ef14aa14-7ad2-4020-8b47-c399d24ce06d",
                             Email = "michael.brown@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "MICHAEL.BROWN@GMAIL.COM",
                             NormalizedUserName = "MICHAEL.BROWN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP9nZztID4QfmCGiu8rZYBMhfPszSmnzX1NPHTYWa3BZt0JjpTNsAu2FkaeMv5N81Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENnqeD+pM5gJjBwSBy04AlMgBwJEkYwybFuFq+ZaPvD7P+aHj2grIxE90INcsKnzaQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a7d4bedd-cf7f-47c5-adf8-38028d73143a",
+                            SecurityStamp = "048e4fab-2257-489f-8e92-4c08abf65660",
                             TwoFactorEnabled = false,
                             UserName = "michael.brown@gmail.com",
                             CellNumber = "0124445678",
@@ -9572,15 +9574,15 @@ namespace Project.Migrations
                         {
                             Id = "13",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7d81bd78-a95d-401f-82f4-984eed9269a6",
+                            ConcurrencyStamp = "20172b75-88b0-4d4e-aed4-1c61380d002c",
                             Email = "david.taylor@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID.TAYLOR@GMAIL.COM",
                             NormalizedUserName = "DAVID.TAYLOR@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELOJ2KVATAS5rfpfIQ9R5M5lMgyT/gDn1DvJXxNVeMDIEpAe4ZLC5PY7jfsBq6vQOQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGaVqqXVTJJXy/5HxojQHjN2+VStD0OQ4DBO01imeAeVqGZ7OiTgVT+03BSaLzu8Og==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e012ff2b-3b09-48ff-b6a9-9729d3af40b9",
+                            SecurityStamp = "f83bcd46-5bf5-4ff8-b9be-26ef0ccdef86",
                             TwoFactorEnabled = false,
                             UserName = "david.taylor@gmail.com",
                             CellNumber = "0113337890",
@@ -9597,15 +9599,15 @@ namespace Project.Migrations
                         {
                             Id = "14",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "905e1f8a-0ab0-42c8-988b-8666a13952aa",
+                            ConcurrencyStamp = "01981482-614a-4c7f-9fa3-205556f7e9de",
                             Email = "sarah.anderson@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SARAH.ANDERSON@GMAIL.COM",
                             NormalizedUserName = "SARAH.ANDERSON@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEK4ZP59iJNH14qS2aqQz1uGg9KHXrMpfMFp57mDfZsBpBFuh32OIqO+tAAgxaDR1A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENEVr4Zklg4XOVQhHGOHprNoF3GB9OPzqir82GTu8KaTMHnS0a1EOrlZo75Vo5cOEg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e09828bb-8328-4b0d-8d2b-650733a2c836",
+                            SecurityStamp = "7f7d184c-3fdc-4ebd-9d69-39984e32a14f",
                             TwoFactorEnabled = false,
                             UserName = "sarah.anderson@gmail.com",
                             CellNumber = "0216667890",
@@ -9622,15 +9624,15 @@ namespace Project.Migrations
                         {
                             Id = "15",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "75303422-5892-4148-ae9e-d5126be6547a",
+                            ConcurrencyStamp = "c3c71740-afdf-4730-b339-ff910f981c1d",
                             Email = "robert.davis@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ROBERT.DAVIS@GMAIL.COM",
                             NormalizedUserName = "ROBERT.DAVIS@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMFM4WS9WfwtyE0zf6qw5NuklOPkIAaCUghB3HfEZZR2OWCeWtJA6zwjVjeZ+DHMIA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEp8+cENsyb1Nsx80nSbYrMOsEutLljHB6In0CoGMgrtxSILZ6Oy9b5fBmmQIbL47Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0f0b9835-6f5d-4ab0-bd0f-0f313585d6a3",
+                            SecurityStamp = "cfb5a599-a0c9-421c-ae39-816cea4aed8d",
                             TwoFactorEnabled = false,
                             UserName = "robert.davis@gmail.com",
                             CellNumber = "0212224567",
@@ -9647,15 +9649,15 @@ namespace Project.Migrations
                         {
                             Id = "16",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "17e7be01-0ca2-49bd-b8e1-08656ed1e1b8",
+                            ConcurrencyStamp = "4396fdca-75ba-4c87-b144-a34cad5e96f9",
                             Email = "jennifer.martin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JENNIFER.MARTIN@GMAIL.COM",
                             NormalizedUserName = "JENNIFER.MARTIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFQhnoURfNzKHVBTI7ZeXLJBHJvujp0DDlKyzqGR4bjkC1aVUiAmDcyDBJLlYrNYKQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEANWJmznzlOSJGZTod4/oM7wYqE15ziTt1i/6aJgcBtu28FIRJwbPOwQ2ijYV4RbcQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e9f09c95-90f9-46ec-8823-c37bc929622d",
+                            SecurityStamp = "7653d95f-d7ce-4e2e-a216-af6c6f537bab",
                             TwoFactorEnabled = false,
                             UserName = "jennifer.martin@gmail.com",
                             CellNumber = "0317778901",
@@ -9672,15 +9674,15 @@ namespace Project.Migrations
                         {
                             Id = "17",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "585daca8-26b9-4d3b-8213-5a1c8241d7ae",
+                            ConcurrencyStamp = "b1fde62e-1d89-4151-b67b-ae994991a1cd",
                             Email = "james.miller@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JAMES.MILLER@GMAIL.COM",
                             NormalizedUserName = "JAMES.MILLER@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOGWImjG0fwjA5kmOaeZN0YgL/Es+FUxF4KQMaLvrhjyIJPLONFYvMx7/20c8nFSMA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDOUCc4K8ASQQoAzHoG5eeXuIiVxRptPbS+A+20D5xI5FHRBOMXbuOg2ZG/CPliV1w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ee36fe2d-361d-46c9-a093-342ccfe8537e",
+                            SecurityStamp = "ab516331-63a6-4cf4-ba69-69375e30640b",
                             TwoFactorEnabled = false,
                             UserName = "james.miller@gmail.com",
                             CellNumber = "0118881234",
@@ -9697,15 +9699,15 @@ namespace Project.Migrations
                         {
                             Id = "18",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5435828a-58d4-47d5-8b43-9a9a4631ad44",
+                            ConcurrencyStamp = "0e14b7c3-987d-4cc6-a193-3b97e28551be",
                             Email = "patricia.white@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "PATRICIA.WHITE@GMAIL.COM",
                             NormalizedUserName = "PATRICIA.WHITE@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDWHru8+LpO0DOPpfu+iHSVv7bjQHnIhMIDwr88phYepBN8Ax5K9JUU1KFBkZI5HJw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGYojG4ZALGa+4HwGTulx+9QZIyVSC3Z/7zHELqH67ZGOVmzJfRaRhOfV2soybwmZQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "52f74e5e-6b7d-40a3-bee7-c5c792490864",
+                            SecurityStamp = "963a831e-503c-42d2-a4b9-27a88a34045a",
                             TwoFactorEnabled = false,
                             UserName = "patricia.white@gmail.com",
                             CellNumber = "0129994567",
@@ -9722,15 +9724,15 @@ namespace Project.Migrations
                         {
                             Id = "25",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "22e488d1-e498-41ca-bf47-ce59d984d654",
+                            ConcurrencyStamp = "b0b6ef56-2a7b-4b94-a19b-45da817508d9",
                             Email = "daniel.moore@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "DANIEL.MOORE@GMAIL.COM",
                             NormalizedUserName = "DANIEL.MOORE@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH3sV32FORp2cVNTrpS0X8PJe5oFp1+3kX0DSOJdR9hVVN35oOWlg/Yipvn9YwmD5g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAFIlfBhGHxGL6yT2wMoLLhi2s1qSFi2EEqsvddJ//KC+yuBLN95FUByuLrT+CqYTw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4c84d27c-2308-47f9-97de-a991fed485b0",
+                            SecurityStamp = "e810ed42-1639-4eb1-9d13-3736414f0670",
                             TwoFactorEnabled = false,
                             UserName = "daniel.moore@gmail.com",
                             CellNumber = "0117772345",
@@ -9747,15 +9749,15 @@ namespace Project.Migrations
                         {
                             Id = "26",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cd1934db-937a-44be-8d73-15aa5b0edf9e",
+                            ConcurrencyStamp = "aca490da-2727-4874-b15d-d8d4758b4339",
                             Email = "susan.lee@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SUSAN.LEE@GMAIL.COM",
                             NormalizedUserName = "SUSAN.LEE@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECYsU8uZB/V7xYoKmWC3V9ON+7GOx1xIuTRGTHHOERnl3uBKOy+liP8T+iCrjFLLKQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG5lD+R3BFInjqJLFdI9gRX0c48Nlt2vZhy6SKUavuXsS2sDIfntSG9ky1vp4FSpMQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1fc9619a-880c-4f30-b4d6-82a838533bfe",
+                            SecurityStamp = "cab3f556-2de6-4e1f-a246-70fe7a00a67c",
                             TwoFactorEnabled = false,
                             UserName = "susan.lee@gmail.com",
                             CellNumber = "0215556789",

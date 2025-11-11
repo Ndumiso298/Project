@@ -757,24 +757,42 @@ namespace Project.Data
             var random = new Random();
             var statuses = new[] { SD.Pending, SD.Approved, SD.Rejected, SD.Shipped, SD.Closed };
             var rejectionReasons = new[] {
-                "Incomplete business documentation provided",
-                "Credit check failed",
-                "Required additional verification documents",
-                "Business registration not valid",
-                "Payment method not approved",
-                "Customer history requires review",
-                "Document verification pending",
-                "Business type not supported"
-            };
+        "Incomplete business documentation provided",
+        "Credit check failed",
+        "Required additional verification documents",
+        "Business registration not valid",
+        "Payment method not approved",
+        "Customer history requires review",
+        "Document verification pending",
+        "Business type not supported"
+    };
             var cities = new[] { "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein" };
             var streets = new[] { "Main Street", "Service Road", "Business Avenue", "Commerce Road", "Trade Street" };
 
             // Valid Employee IDs (1-12)
             var validEmployeeIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
+            // Map CustomerID to actual customer names from your ApplicationUsers
+            var customerNames = new Dictionary<int, (string FirstName, string LastName, string CellNumber, string Email)>
+    {
+        { 1, ("Mike", "Wilson", "0315551234", "mike.wilson@gmail.com") },
+        { 2, ("Lisa", "Brown", "0124445678", "lisa.brown@gmail.com") },
+        { 3, ("David", "Jackson", "0413337890", "david.jackson@gmail.com") },
+        { 4, ("Emma", "Davis", "0512224567", "emma.davis@gmail.com") },
+        { 5, ("Robert", "Miller", "0131112345", "robert.miller@gmail.com") },
+        { 6, ("Sophia", "Garcia", "0156667890", "sophia.garcia@gmail.com") },
+        { 7, ("James", "Anderson", "0537771234", "james.anderson@gmail.com") },
+        { 8, ("Olivia", "Martinez", "0148884567", "olivia.martinez@gmail.com") },
+        { 9, ("William", "Thomas", "0439991234", "william.thomas@gmail.com") },
+        { 10, ("Ava", "Robinson", "0338885678", "ava.robinson@gmail.com") },
+        { 11, ("Noah", "Clark", "0577779012", "noah.clark@gmail.com") },
+        { 12, ("Isabella", "Rodriguez", "0136663456", "isabella.rodriguez@gmail.com") }
+    };
+
             for (int i = 1; i <= 15; i++)
             {
                 var customerId = (i % 12) + 1;
+                var customerInfo = customerNames[customerId];
                 var status = statuses[random.Next(statuses.Length)];
                 var requestDate = DateTime.Now.AddDays(-random.Next(1, 90));
                 var isRejected = status == SD.Rejected;
@@ -788,13 +806,13 @@ namespace Project.Data
                     EmployeeID = validEmployeeIds[random.Next(validEmployeeIds.Length)],
                     RequestDate = requestDate,
                     RequestTotal = random.Next(400, 1500),
-                    FirstName = $"Customer{i}",
-                    LastName = $"LastName{i}",
+                    FirstName = customerInfo.FirstName,
+                    LastName = customerInfo.LastName,
                     StreetAddress = $"{random.Next(1, 999)} {streets[random.Next(streets.Length)]}",
                     City = cities[random.Next(cities.Length)],
                     State = "Province",
                     PostalCode = $"{random.Next(1000, 9999)}",
-                    CellNumber = $"0{random.Next(10, 99)}{random.Next(1000000, 9999999)}",
+                    CellNumber = customerInfo.CellNumber,
                     Status = status,
                     DeliveryDate = status == SD.Shipped || status == SD.Closed ? requestDate.AddDays(random.Next(1, 10)) : null,
                     PaymentDueDate = status == SD.Shipped || status == SD.Closed ? requestDate.AddDays(30) : null,
@@ -805,7 +823,6 @@ namespace Project.Data
 
             modelBuilder.Entity<RequestHeader>().HasData(requestHeaders);
         }
-
         private static void SeedRequestDetails(ModelBuilder modelBuilder)
         {
             var requestDetails = new List<RequestDetails>();
