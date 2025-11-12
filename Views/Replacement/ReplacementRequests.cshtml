@@ -1,71 +1,141 @@
-﻿@model IEnumerable<Project.Models.FridgeReplacement>
+﻿@model Project.Models.ViewModel.FridgeReplacementViewModel
+
 @{
-    ViewData["Title"] = "My Replacement Requests";
-    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Request Fridge Replacement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container py-4">
-    <h2 class="fw-bold text-primary mb-4">My Replacement Requests</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Fault Technician</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Faults</a></li>
+                        <li class="breadcrumb-item active">Request Replacement</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Request Fridge Replacement</h4>
+            </div>
+        </div>
+    </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">Replacement Request Details</h4>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">You have not submitted any replacement requests yet.</div>
-    }
-    else
-    {
-        <table class="table table-striped table-hover">
-            <thead class="table-primary">
-                <tr>
-                    <th>#</th>
-                    <th>Old Fridge No</th>
-                    <th>Fridge Model</th>
-                    <th>Reason</th>
-                    <th>Request Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var r in Model)
-                {
-                    <tr>
-                        <td>@r.FridgeReplacementId</td>
-                        <td>@r.OldFridgeNo</td>
-                        <td>@r.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model ?? "N/A"</td>
-                        <td>@r.ReasonForReplacement</td>
-                        <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            @if (r.ReplacementStatus == Project.Utility.SD.Pending)
-                            {
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            }
-                            else if (r.ReplacementStatus == Project.Utility.SD.Approved)
-                            {
-                                <span class="badge bg-success">Approved</span>
-                            }
-                            else if (r.ReplacementStatus == Project.Utility.SD.Rejected)
-                            {
-                                <span class="badge bg-danger">Rejected</span>
-                            }
-                        </td>
-                        <td>
-                            <a asp-action="ReplacementDetails" asp-route-id="@r.FridgeReplacementId"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i> View
+                    <form asp-action="RequestReplacement" method="post" id="replacementForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="VisitId" />
+                        <input type="hidden" asp-for="CustomerID" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CustomerName" class="form-label"></label>
+                                    <input asp-for="CustomerName" class="form-control" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="OldFridgeNo" class="form-label"></label>
+                                    <input asp-for="OldFridgeNo" class="form-control" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FridgeModel" class="form-label"></label>
+                                    <input asp-for="FridgeModel" class="form-control" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ReplacementDate" class="form-label"></label>
+                                    <input asp-for="ReplacementDate" type="date" class="form-control" />
+                                    <span asp-validation-for="ReplacementDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ReasonForReplacement" class="form-label"></label>
+                            <select asp-for="ReasonForReplacement" class="form-select" required>
+                                <option value="">Select Replacement Reason</option>
+                                @foreach (var reason in ViewBag.ReplacementReasons)
+                                {
+                                    <option value="@reason.Value">@reason.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ReasonForReplacement" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AdditionalNotes" class="form-label"></label>
+                            <textarea asp-for="AdditionalNotes" class="form-control" rows="3"
+                                      placeholder="Provide additional details about the replacement need..."></textarea>
+                            <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TechnicianNotes" class="form-label">Technician Assessment Notes</label>
+                            <textarea asp-for="TechnicianNotes" class="form-control" rows="4"
+                                      placeholder="Document your technical assessment, findings, and why replacement is necessary..."></textarea>
+                            <span asp-validation-for="TechnicianNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-paper-plane me-1"></i> Submit Replacement Request
+                            </button>
+                            <a asp-action="Index" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Faults
                             </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Replacement Process</h5>
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">Process Overview:</h6>
+                        <ul class="mb-0 ps-3">
+                            <li>Submit replacement request</li>
+                            <li>Customer Support reviews request</li>
+                            <li>New fridge allocation</li>
+                            <li>Old fridge scrapping process</li>
+                            <li>Customer notification</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-3">
+                        <h6>Customer Information:</h6>
+                        <p class="mb-1"><strong>Name:</strong> @Model.CustomerName</p>
+                        <p class="mb-1"><strong>Phone:</strong> @Model.CustomerPhone</p>
+                        <p class="mb-0"><strong>Email:</strong> @Model.CustomerEmail</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Set minimum date to today
+            var today = new Date().toISOString().split('T')[0];
+            $('#ReplacementDate').attr('min', today);
+        });
+    </script>
+}

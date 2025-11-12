@@ -1,6 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Project.Models
 {
@@ -9,20 +9,32 @@ namespace Project.Models
         [Key]
         public int FaultReportId { get; set; }
 
-        public int? CustomerId { get; set; }
+        [Required]
+        public int CustomerId { get; set; }
+
+        [ForeignKey("CustomerId")]
+        [ValidateNever]
+        public virtual Customer? Customer { get; set; }
 
         public int? FridgeInStockId { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string FaultType { get; set; } = string.Empty;
+        [ForeignKey("FridgeInStockId")]
+        [ValidateNever]
+        public virtual FridgeInStock? FridgeInStock { get; set; }
 
         [Required]
-        public string Description { get; set; } = string.Empty;
+        [StringLength(100)]
+        public string? FaultType { get; set; }
+
+        [Required]
+        public string? Description { get; set; }
 
         [StringLength(20)]
         public string? Priority { get; set; } = "Medium";
 
+        public bool RequestReplacement { get; set; }
+
+        [Required]
         [StringLength(50)]
         public string? Status { get; set; } = "Reported";
 
@@ -30,24 +42,16 @@ namespace Project.Models
 
         public string? ImageUrl { get; set; }
 
-        public bool RequestReplacement { get; set; }
+        // Add TechnicianNotes property
+        public string? TechnicianNotes { get; set; }
 
-        // Add these missing properties
         public bool IsReplacementRequested { get; set; }
 
+        [StringLength(500)]
         public string? DeclineReason { get; set; }
 
         public bool IsRelaunched { get; set; }
 
         public int? OriginalFaultReportId { get; set; }
-
-        // Navigation properties
-        [ForeignKey("CustomerId")]
-        public virtual Customer? Customer { get; set; }
-
-        [ForeignKey("FridgeInStockId")]
-        public virtual FridgeInStock? FridgeInStock { get; set; }
-
-        public virtual ICollection<FaultTechnician>? FaultTechnicians { get; set; }
     }
 }

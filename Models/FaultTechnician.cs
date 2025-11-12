@@ -1,5 +1,4 @@
 ﻿using Project.Utility;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,6 +10,8 @@ namespace Project.Models
         public int FaultId { get; set; }
 
         public int? VisitId { get; set; }
+        [ForeignKey("VisitId")]
+        public virtual FridgeVisit? FridgeVisit { get; set; }
 
         [StringLength(100)]
         public string? FaultType { get; set; }
@@ -32,8 +33,9 @@ namespace Project.Models
 
         public DateTime? Bookingate { get; set; }
 
-        // Add these missing properties
         public int? FaultReportId { get; set; }
+        [ForeignKey("FaultReportId")]
+        public virtual FaultReport? FaultReport { get; set; }
 
         [StringLength(20)]
         public string? Priority { get; set; }
@@ -42,11 +44,13 @@ namespace Project.Models
 
         public DateTime? Completion { get; set; }
 
-        // Navigation properties
-        [ForeignKey("VisitId")]
-        public virtual FridgeVisit? FridgeVisit { get; set; }
+        // Replacement tracking
+        public int? ReplacementRequestId { get; set; }
+        [ForeignKey("ReplacementRequestId")]
+        public virtual FridgeReplacement? ReplacementRequest { get; set; }
 
-        [ForeignKey("FaultReportId")]
-        public virtual FaultReport? FaultReport { get; set; }
+        // Scrapping tracking
+        public bool IsScrapped { get; set; } = false;
+        public DateTime? ScrappedDate { get; set; }
     }
 }

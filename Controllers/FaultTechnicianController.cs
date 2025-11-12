@@ -17,11 +17,13 @@ namespace Project.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<FaultTechnicianController> _logger;
 
-        public FaultTechnicianController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
+        public FaultTechnicianController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment, ILogger<FaultTechnicianController> logger)
         {
             _db = db;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
 
         // ===================================================================
@@ -76,15 +78,15 @@ namespace Project.Controllers
             return new List<SelectListItem>
             {
                 new() { Value = "", Text = "-- Select Fault Type --", Disabled = true, Selected = true },
-                new() { Value = "Not Cooling", Text = "❄️ Not Cooling" },
-                new() { Value = "Noisy", Text = "🔊 Noisy Operation" },
-                new() { Value = "Door Seal", Text = "🚪 Door Not Sealing" },
-                new() { Value = "Frost", Text = "🧊 Frost Build-up" },
-                new() { Value = "Light", Text = "💡 Light Not Working" },
-                new() { Value = "Leak", Text = "💧 Water Leak" },
-                new() { Value = "Display", Text = "📱 Display Issues" },
-                new() { Value = "Temperature", Text = "🌡️ Temperature Fluctuation" },
-                new() { Value = "Other", Text = "🔧 Other Issue" }
+                new() { Value = "Not Cooling", Text = "Not Cooling" },
+                new() { Value = "Noisy", Text = "Noisy Operation" },
+                new() { Value = "Door Seal", Text = "Door Not Sealing" },
+                new() { Value = "Frost", Text = "Frost Build-up" },
+                new() { Value = "Light", Text = "Light Not Working" },
+                new() { Value = "Leak", Text = "Water Leak" },
+                new() { Value = "Display", Text = "Display Issues" },
+                new() { Value = "Temperature", Text = "Temperature Fluctuation" },
+                new() { Value = "Other", Text = "Other Issue" }
             };
         }
 
@@ -739,35 +741,60 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 14. CUSTOMER: FAULT DETAILS
+        // TECHNICIAN: FAULT DETAILS FOR PROCESSING
         // ===================================================================
-        [Authorize(Roles = SD.CustomerRole)]
+        [Authorize(Roles = SD.FaultTechnician)]
         public async Task<IActionResult> FaultDetails(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var customer = await _db.tblCustomer
-                .FirstOrDefaultAsync(c => c.ApplicationUserId == userId);
-
-            if (customer == null)
+            try
             {
-                TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction(nameof(ViewFaultStatus));
+                var fault = await _db.tblFaultReports
+                    .Include(fr => fr.Customer)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(fr => fr.FridgeInStock)
+                        .ThenInclude(fis => fis.Fridge)
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
+
+                if (fault == null)
+                {
+                    TempData[SD.Error] = "Fault report not found";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(fault);
             }
-
-            var fault = await _db.tblFaultReports
-                .Include(fr => fr.FridgeInStock)
-                    .ThenInclude(fis => fis.Fridge)
-                .FirstOrDefaultAsync(fr => fr.FaultReportId == id && fr.CustomerId == customer.CustomerID);
-
-            if (fault == null)
+            catch (Exception ex)
             {
-                TempData[SD.Error] = "Fault report not found.";
-                return RedirectToAction(nameof(ViewFaultStatus));
+                _logger.LogError(ex, "Error loading fault details {FaultId}", id);
+                TempData[SD.Error] = "An error occurred while loading fault details";
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(fault);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.FaultTechnician)]
+        public async Task<IActionResult> UpdateFaultNotes(int id, string technicianNotes)
+        {
+            try
+            {
+                var fault = await _db.tblFaultReports.FindAsync(id);
+                if (fault == null)
+                {
+                    return NotFound();
+                }
+
+                fault.TechnicianNotes = technicianNotes;
+                await _db.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating fault notes {FaultId}", id);
+                return StatusCode(500, "Error updating notes");
+            }
+        }
         // ===================================================================
         // 15. CUSTOMER: RELAUNCH FAULT
         // ===================================================================
