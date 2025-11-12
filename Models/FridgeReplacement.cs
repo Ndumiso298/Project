@@ -66,5 +66,9 @@ namespace Project.Models
 
         [StringLength(500)]
         public string? ScrappingReason { get; set; }
+
+        public int? FaultReportId { get; set; }
+        [ForeignKey("FaultReportId")]
+        public virtual FaultReport? FaultReport { get; set; }
     }
 }

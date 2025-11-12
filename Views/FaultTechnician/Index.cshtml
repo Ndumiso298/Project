@@ -181,19 +181,12 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
-                                            @if (fault.Status == SD.Reported)
-                                            {
-                                                <a asp-action="AssignToFault" asp-route-faultId="@fault.FaultReportId"
-                                                   class="btn btn-sm btn-success rounded-3 me-2 px-3"
-                                                   title="Assign to Me">
-                                                    <i class="fas fa-user-check me-1"></i> Assign
-                                                </a>
-                                            }
-                                            <a asp-action="FaultDetails" asp-route-id="@fault.FaultReportId"
+                                            <a asp-action="ProcessFault" asp-route-id="@fault.FaultReportId"
                                                class="btn btn-sm btn-outline-primary rounded-3 px-3"
                                                title="Process Fault">
                                                 <i class="fas fa-cogs me-1"></i> Process
                                             </a>
+                                            
                                         </div>
                                     </td>
                                 </tr>

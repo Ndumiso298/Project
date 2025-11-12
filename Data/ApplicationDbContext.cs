@@ -28,6 +28,8 @@ namespace Project.Data
         public DbSet<BusinessInfo> tblBusinessInfo { get; set; }
         public DbSet<FridgeReplacement> tblFridgeReplacements { get; set; }
         public DbSet<RequestNote> tblRequestNotes { get; set; }
+        public DbSet<FaultComment> tblFaultComments { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

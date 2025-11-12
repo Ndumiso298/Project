@@ -554,6 +554,7 @@ namespace Project.Controllers
             return RedirectToAction("ManageReplacements");
         }
 
+
         // ===================================================================
         // STOCK CONTROLLER: VIEW SCRAPPED FRIDGES
         // ===================================================================

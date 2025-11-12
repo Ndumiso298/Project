@@ -64,9 +64,7 @@ namespace Project.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return 0;
 
-            var customer = _db.tblCustomer
-                .FirstOrDefault(c => c.ApplicationUserId == userId);
-
+            var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
             return customer?.CustomerID ?? 0;
         }
 
@@ -78,15 +76,15 @@ namespace Project.Controllers
             return new List<SelectListItem>
             {
                 new() { Value = "", Text = "-- Select Fault Type --", Disabled = true, Selected = true },
-                new() { Value = "Not Cooling", Text = "Not Cooling" },
-                new() { Value = "Noisy", Text = "Noisy Operation" },
-                new() { Value = "Door Seal", Text = "Door Not Sealing" },
-                new() { Value = "Frost", Text = "Frost Build-up" },
-                new() { Value = "Light", Text = "Light Not Working" },
-                new() { Value = "Leak", Text = "Water Leak" },
-                new() { Value = "Display", Text = "Display Issues" },
-                new() { Value = "Temperature", Text = "Temperature Fluctuation" },
-                new() { Value = "Other", Text = "Other Issue" }
+                new() { Value = "Not Cooling", Text = "❄️ Not Cooling" },
+                new() { Value = "Noisy", Text = "🔊 Noisy Operation" },
+                new() { Value = "Door Seal", Text = "🚪 Door Not Sealing" },
+                new() { Value = "Frost", Text = "🧊 Frost Build-up" },
+                new() { Value = "Light", Text = "💡 Light Not Working" },
+                new() { Value = "Leak", Text = "💧 Water Leak" },
+                new() { Value = "Display", Text = "📱 Display Issues" },
+                new() { Value = "Temperature", Text = "🌡️ Temperature Fluctuation" },
+                new() { Value = "Other", Text = "🔧 Other Issue" }
             };
         }
 
@@ -294,7 +292,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 5. CUSTOMER: CREATE FAULT REPORT - FIXED VERSION
+        // 5. CUSTOMER: CREATE FAULT REPORT
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         [HttpGet]
@@ -304,7 +302,7 @@ namespace Project.Controllers
             if (customerId == 0)
             {
                 TempData[SD.Error] = "Please log in to report faults";
-                return RedirectToAction("Login", "Account");
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
 
             var customer = await _db.tblCustomer
@@ -314,7 +312,7 @@ namespace Project.Controllers
             if (customer == null)
             {
                 TempData[SD.Error] = "Customer profile not found.";
-                return RedirectToAction("Login", "Account");
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
 
             // If no fridge is specified, redirect to selection page
@@ -357,7 +355,7 @@ namespace Project.Controllers
             if (customerId == 0)
             {
                 TempData[SD.Error] = "Please log in to report faults.";
-                return RedirectToAction("Login", "Account");
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
 
             // Validate required fields
@@ -462,13 +460,11 @@ namespace Project.Controllers
         // ===================================================================
         // 6. CUSTOMER: VIEW MY FAULT REPORTS
         // ===================================================================
-        // ===================================================================
-        // 6. CUSTOMER: VIEW MY FAULT REPORTS
-        // ===================================================================
+        [Authorize(Roles = SD.CustomerRole)]
         public IActionResult CustomerFaultReports()
         {
             var customerId = GetCurrentCustomerId();
-            if (customerId == 0) return RedirectToAction("Login", "Account");
+            if (customerId == 0) return RedirectToPage("/Account/Login", new { area = "Identity" });
 
             var reports = _db.tblFaultReports
                 .Include(fr => fr.Customer)
@@ -482,69 +478,8 @@ namespace Project.Controllers
             return View(reports);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult CustomerFaultReport(CustomerFaultReportViewModel vm)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.FaultTypes = GetFaultTypesSelectList();
-                return View(vm);
-            }
-
-            var customerId = GetCurrentCustomerId();
-            var requestHeader = _db.tblRequestHeaders
-                .FirstOrDefault(rh => rh.RequestHeaderId == vm.RequestHeaderId &&
-                                     rh.CustomerID == customerId &&
-                                     rh.Status == SD.Approved);
-
-            if (requestHeader == null)
-            {
-                TempData[SD.Error] = "Request not found or not approved";
-                return RedirectToAction("Index", "Request");
-            }
-
-            try
-            {
-                var fridgeVisit = new FridgeVisit
-                {
-                    RequestHeaderId = vm.RequestHeaderId,
-                    VisitDate = DateTime.Now,
-                    CheckupStatus = "Fault Reported",
-                    Notes = $"Customer reported: {vm.FaultType}",
-                    TechnicianName = "Not Assigned"
-                };
-
-                _db.tblFridgeVisits.Add(fridgeVisit);
-                _db.SaveChanges();
-
-                var faultReport = new FaultTechnician
-                {
-                    VisitId = fridgeVisit.VisitId,
-                    FaultType = vm.FaultType ?? "Unknown",
-                    FaultDescription = vm.FaultDescription ?? "",
-                    ResolutionNotes = vm.AdditionalNotes,
-                    ReportDate = DateTime.Now,
-                    RepairStatus = "Reported",
-                    TechnicianAssigned = null,
-                    CustomerBookingStatus = SD.Pending
-                };
-
-                _db.tblFaultTechnicians.Add(faultReport);
-                _db.SaveChanges();
-
-                TempData[SD.Success] = "Fault reported successfully!";
-                return RedirectToAction(nameof(CustomerFaultReports));
-            }
-            catch (DbUpdateException)
-            {
-                TempData[SD.Error] = "Error reporting fault. Please try again or contact support.";
-                return RedirectToAction(nameof(CustomerFaultReport), new { requestHeaderId = vm.RequestHeaderId });
-            }
-        }
-
         // ===================================================================
-        // 8. CUSTOMER: FAULT SELECTION
+        // 7. CUSTOMER: FAULT SELECTION
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> CreateFaultSelection()
@@ -557,7 +492,7 @@ namespace Project.Controllers
             if (customer == null)
             {
                 TempData[SD.Error] = "Customer profile not found. Please complete your registration.";
-                return RedirectToAction("Register", "Account");
+                return RedirectToPage("/Account/Register", new { area = "Identity" });
             }
 
             var customerFridges = await _db.tblCustomerFridge
@@ -582,7 +517,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 9. TECHNICIAN: VIEW PENDING CUSTOMER FAULTS
+        // 8. TECHNICIAN: VIEW PENDING CUSTOMER FAULTS
         // ===================================================================
         public IActionResult PendingCustomerFaults()
         {
@@ -602,7 +537,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 10. TECHNICIAN: ASSIGN SELF TO FAULT
+        // 9. TECHNICIAN: ASSIGN SELF TO FAULT
         // ===================================================================
         public IActionResult AssignToFault(int faultId)
         {
@@ -623,7 +558,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 11. SUPPORT: VIEW ALL FAULT REPORTS
+        // 10. SUPPORT: VIEW ALL FAULT REPORTS
         // ===================================================================
         [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
         public async Task<IActionResult> AllFaults(string statusFilter = null)
@@ -644,31 +579,129 @@ namespace Project.Controllers
             ViewBag.TotalReported = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Reported");
             ViewBag.TotalInProgress = await _db.tblFaultReports.CountAsync(fr => fr.Status == "In Progress");
             ViewBag.TotalResolved = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Resolved");
+            ViewBag.TotalScrapped = await _db.tblFaultReports.CountAsync(fr => fr.Status == "Scrapped");
 
             return View(faults);
         }
 
         // ===================================================================
-        // 12. SUPPORT: UPDATE FAULT STATUS
+        // 11. TECHNICIAN: UPDATE FAULT STATUS (INCLUDES SCRAPPED)
         // ===================================================================
-        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateFaultStatus(int id, string status, string technicianNotes = null)
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> UpdateFaultStatus(int id, string status, string? technicianNotes = null)
         {
-            var fault = await _db.tblFaultReports
-                .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
-
-            if (fault == null)
+            try
             {
-                return NotFound();
+                var fault = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
+
+                if (fault == null)
+                {
+                    return NotFound();
+                }
+
+                // Update status and corresponding date
+                fault.Status = status;
+                fault.TechnicianNotes = technicianNotes;
+
+                switch (status)
+                {
+                    case SD.InProgress:
+                        fault.InProgressDate = DateTime.Now;
+                        break;
+                    case SD.FaultResolved:
+                        fault.ResolvedDate = DateTime.Now;
+                        break;
+                    case "Scrapped":
+                        fault.ScrappedDate = DateTime.Now;
+                        // Automatically create replacement request for scrapped fridges
+                        await CreateReplacementRequestForScrappedFridge(fault);
+                        break;
+                }
+
+                // Add technician comment for status change
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _db.AppUser.FindAsync(userId);
+
+                var comment = new FaultComment
+                {
+                    FaultReportId = id,
+                    Comment = $"Status changed to: {status}" + (string.IsNullOrEmpty(technicianNotes) ? "" : $". Notes: {technicianNotes}"),
+                    CommentBy = "Technician",
+                    UserId = userId!,
+                    UserName = $"{user?.FirstName} {user?.LastName}",
+                    CommentDate = DateTime.Now,
+                    IsInternalNote = false
+                };
+
+                _db.tblFaultComments.Add(comment);
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = $"Fault status updated to {status} successfully.";
+                return RedirectToAction(nameof(AllFaults));
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating fault status {FaultId} to {Status}", id, status);
+                TempData[SD.Error] = $"Error updating fault status: {ex.Message}";
+                return RedirectToAction(nameof(AllFaults));
+            }
+        }
 
-            fault.Status = status;
-            await _db.SaveChangesAsync();
+        // ===================================================================
+        // 12. TECHNICIAN: CREATE REPLACEMENT FOR SCRAPPED FRIDGE
+        // ===================================================================
+        private async Task CreateReplacementRequestForScrappedFridge(FaultReport fault)
+        {
+            if (fault.FridgeInStockId == null) return;
 
-            TempData[SD.Success] = $"Fault status updated to {status} successfully.";
-            return RedirectToAction(nameof(AllFaults));
+            try
+            {
+                var fridge = await _db.tblFridgeInStocks
+                    .Include(f => f.Fridge)
+                    .FirstOrDefaultAsync(f => f.FridgeInStockId == fault.FridgeInStockId);
+
+                if (fridge == null) return;
+
+                // Check if replacement already exists
+                var existingReplacement = await _db.tblFridgeReplacements
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == fault.FaultReportId);
+
+                if (existingReplacement != null) return;
+
+                var replacement = new FridgeReplacement
+                {
+                    FaultReportId = fault.FaultReportId,
+                    CustomerID = fault.CustomerId,
+                    OldFridgeNo = fridge.FridgeNo,
+                    ReasonForReplacement = $"Fridge scrapped due to: {fault.FaultType}",
+                    ReplacementDate = DateTime.Now.AddDays(7), // Schedule replacement in 7 days
+                    RequestDate = DateTime.Now,
+                    ReplacementStatus = SD.Pending,
+                    ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                };
+
+                _db.tblFridgeReplacements.Add(replacement);
+                await _db.SaveChangesAsync();
+
+                // Link replacement to fault
+                fault.ReplacementRequestId = replacement.FridgeReplacementId;
+                fault.IsReplacementRequested = true;
+
+                // Mark fridge as pending scrapping
+                fridge.Status = "Pending Scrapping";
+                fridge.IsAvailable = false;
+
+                await _db.SaveChangesAsync();
+
+                _logger.LogInformation("Auto-created replacement request for scrapped fridge {FridgeNo}", fridge.FridgeNo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating replacement request for scrapped fridge in fault {FaultId}", fault.FaultReportId);
+            }
         }
 
         // ===================================================================
@@ -741,11 +774,18 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // TECHNICIAN: FAULT DETAILS FOR PROCESSING
+        // 14. CUSTOMER: FAULT DETAILS WITH TIMELINE AND COMMENTS
         // ===================================================================
-        [Authorize(Roles = SD.FaultTechnician)]
+        [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> FaultDetails(int id)
         {
+            var customerId = GetCurrentCustomerId();
+            if (customerId == 0)
+            {
+                TempData[SD.Error] = "Please log in to view fault details";
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
             try
             {
                 var fault = await _db.tblFaultReports
@@ -753,48 +793,96 @@ namespace Project.Controllers
                         .ThenInclude(c => c.ApplicationUser)
                     .Include(fr => fr.FridgeInStock)
                         .ThenInclude(fis => fis.Fridge)
-                    .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
+                    .Include(fr => fr.FaultComments.Where(fc => !fc.IsInternalNote))
+                    .Include(fr => fr.ReplacementRequest)
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == id && fr.CustomerId == customerId);
 
                 if (fault == null)
                 {
-                    TempData[SD.Error] = "Fault report not found";
-                    return RedirectToAction(nameof(Index));
+                    TempData[SD.Error] = "Fault report not found or you don't have permission to view it";
+                    return RedirectToAction(nameof(CustomerFaultReports));
                 }
 
-                return View(fault);
+                var timelineEvents = GenerateTimelineEvents(fault);
+                var comments = fault.FaultComments.OrderBy(c => c.CommentDate).ToList();
+
+                var viewModel = new FaultDetailsViewModel
+                {
+                    FaultReport = fault,
+                    Comments = comments,
+                    TimelineEvents = timelineEvents
+                };
+
+                return View("CustomerFaultDetails", viewModel);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading fault details {FaultId}", id);
+                _logger.LogError(ex, "Error loading fault details {FaultId} for customer {CustomerId}", id, customerId);
                 TempData[SD.Error] = "An error occurred while loading fault details";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(CustomerFaultReports));
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.FaultTechnician)]
-        public async Task<IActionResult> UpdateFaultNotes(int id, string technicianNotes)
+        [Authorize(Roles = SD.CustomerRole)]
+        public async Task<IActionResult> AddComment(int faultReportId, string newComment)
         {
+            var customerId = GetCurrentCustomerId();
+            if (customerId == 0)
+            {
+                return Json(new { success = false, message = "Please log in to add comments" });
+            }
+
+            if (string.IsNullOrWhiteSpace(newComment))
+            {
+                return Json(new { success = false, message = "Comment cannot be empty" });
+            }
+
             try
             {
-                var fault = await _db.tblFaultReports.FindAsync(id);
+                var fault = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId && fr.CustomerId == customerId);
+
                 if (fault == null)
                 {
-                    return NotFound();
+                    return Json(new { success = false, message = "Fault report not found" });
                 }
 
-                fault.TechnicianNotes = technicianNotes;
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _db.AppUser.FindAsync(userId);
+
+                var comment = new FaultComment
+                {
+                    FaultReportId = faultReportId,
+                    Comment = newComment.Trim(),
+                    CommentBy = "Customer",
+                    UserId = userId!,
+                    UserName = $"{user?.FirstName} {user?.LastName}",
+                    CommentDate = DateTime.Now,
+                    IsInternalNote = false
+                };
+
+                _db.tblFaultComments.Add(comment);
                 await _db.SaveChangesAsync();
 
-                return Ok();
+                return Json(new
+                {
+                    success = true,
+                    message = "Comment added successfully",
+                    commentId = comment.FaultCommentId,
+                    userName = comment.UserName,
+                    commentDate = comment.CommentDate.ToString("MMM dd, yyyy HH:mm"),
+                    commentText = comment.Comment
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating fault notes {FaultId}", id);
-                return StatusCode(500, "Error updating notes");
+                _logger.LogError(ex, "Error adding comment to fault {FaultId} by customer {CustomerId}", faultReportId, customerId);
+                return Json(new { success = false, message = "Error adding comment" });
             }
         }
+
         // ===================================================================
         // 15. CUSTOMER: RELAUNCH FAULT
         // ===================================================================
@@ -824,9 +912,9 @@ namespace Project.Controllers
                     return RedirectToAction(nameof(ViewFaultStatus));
                 }
 
-                if (originalFault.Status != "Declined")
+                if (originalFault.Status != "Scrapped")
                 {
-                    TempData[SD.Error] = "Only declined requests can be relaunched.";
+                    TempData[SD.Error] = "Only scrapped requests can be relaunched.";
                     return RedirectToAction(nameof(ViewFaultStatus));
                 }
 
@@ -900,6 +988,211 @@ namespace Project.Controllers
             return fridgeInfo == null
                 ? Json(new { success = false, message = "Fridge not found" })
                 : Json(fridgeInfo);
+        }
+        // ===================================================================
+        // TECHNICIAN: PROCESS FAULT DETAILS
+        // ===================================================================
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> ProcessFault(int id)
+        {
+            try
+            {
+                var fault = await _db.tblFaultReports
+                    .Include(fr => fr.Customer)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(fr => fr.FridgeInStock)
+                        .ThenInclude(fis => fis.Fridge)
+                    .Include(fr => fr.FaultComments.Where(fc => !fc.IsInternalNote))
+                    .Include(fr => fr.ReplacementRequest)
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == id);
+
+                if (fault == null)
+                {
+                    TempData[SD.Error] = "Fault report not found";
+                    return RedirectToAction(nameof(AllFaults));
+                }
+
+                var timelineEvents = GenerateTimelineEvents(fault);
+                var comments = fault.FaultComments.OrderBy(c => c.CommentDate).ToList();
+
+                var viewModel = new FaultDetailsViewModel
+                {
+                    FaultReport = fault,
+                    Comments = comments,
+                    TimelineEvents = timelineEvents
+                };
+
+                return View("TechnicianFaultDetails", viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading fault details {FaultId} for processing", id);
+                TempData[SD.Error] = "An error occurred while loading fault details";
+                return RedirectToAction(nameof(AllFaults));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> AddTechnicianComment(int faultReportId, string comment, string? technicianNotes = null)
+        {
+            try
+            {
+                var fault = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId);
+
+                if (fault == null)
+                {
+                    return Json(new { success = false, message = "Fault report not found" });
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _db.AppUser.FindAsync(userId);
+
+                // Update technician notes if provided
+                if (!string.IsNullOrEmpty(technicianNotes))
+                {
+                    fault.TechnicianNotes = technicianNotes;
+                }
+
+                // Add comment
+                var faultComment = new FaultComment
+                {
+                    FaultReportId = faultReportId,
+                    Comment = comment.Trim(),
+                    CommentBy = "Technician",
+                    UserId = userId!,
+                    UserName = $"{user?.FirstName} {user?.LastName}",
+                    CommentDate = DateTime.Now,
+                    IsInternalNote = false
+                };
+
+                _db.tblFaultComments.Add(faultComment);
+                await _db.SaveChangesAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Comment added successfully",
+                    commentId = faultComment.FaultCommentId,
+                    userName = faultComment.UserName,
+                    commentDate = faultComment.CommentDate.ToString("MMM dd, yyyy HH:mm"),
+                    commentText = faultComment.Comment
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding technician comment to fault {FaultId}", faultReportId);
+                return Json(new { success = false, message = "Error adding comment" });
+            }
+        }
+        // ===================================================================
+        // PRIVATE HELPER METHODS
+        // ===================================================================
+        private List<FaultTimelineEvent> GenerateTimelineEvents(FaultReport fault)
+        {
+            var events = new List<FaultTimelineEvent>();
+
+            // Status change events
+            events.Add(new FaultTimelineEvent
+            {
+                EventType = "Reported",
+                Description = "Fault reported by customer",
+                EventDate = fault.ReportedDate,
+                Icon = "fas fa-flag",
+                Color = "primary"
+            });
+
+            // In Progress status
+            if (fault.InProgressDate.HasValue)
+            {
+                events.Add(new FaultTimelineEvent
+                {
+                    EventType = "In Progress",
+                    Description = "Technician started working on the fault",
+                    EventDate = fault.InProgressDate.Value,
+                    Icon = "fas fa-tools",
+                    Color = "warning"
+                });
+            }
+
+            // Resolved status
+            if (fault.ResolvedDate.HasValue)
+            {
+                events.Add(new FaultTimelineEvent
+                {
+                    EventType = "Resolved",
+                    Description = "Fault has been resolved successfully",
+                    EventDate = fault.ResolvedDate.Value,
+                    Icon = "fas fa-check-circle",
+                    Color = "success"
+                });
+            }
+
+            // Scrapped status
+            if (fault.ScrappedDate.HasValue)
+            {
+                events.Add(new FaultTimelineEvent
+                {
+                    EventType = "Scrapped",
+                    Description = "Fridge marked for replacement due to irreparable fault",
+                    EventDate = fault.ScrappedDate.Value,
+                    Icon = "fas fa-recycle",
+                    Color = "danger"
+                });
+
+                // Add replacement request event if exists
+                if (fault.ReplacementRequest != null)
+                {
+                    events.Add(new FaultTimelineEvent
+                    {
+                        EventType = "Replacement Requested",
+                        Description = $"Replacement requested: {fault.ReplacementRequest.ReasonForReplacement}",
+                        EventDate = fault.ReplacementRequest.RequestDate,
+                        Icon = "fas fa-exchange-alt",
+                        Color = "warning"
+                    });
+
+                    if (fault.ReplacementRequest.ReplacementStatus == SD.Approved)
+                    {
+                        events.Add(new FaultTimelineEvent
+                        {
+                            EventType = "Replacement Approved",
+                            Description = $"New fridge allocated: {fault.ReplacementRequest.NewFridgeInStock?.FridgeNo ?? "Pending"}",
+                            EventDate = fault.ReplacementRequest.ActionDate ?? DateTime.Now,
+                            Icon = "fas fa-check-double",
+                            Color = "success"
+                        });
+                    }
+                    else if (fault.ReplacementRequest.ReplacementStatus == SD.Rejected)
+                    {
+                        events.Add(new FaultTimelineEvent
+                        {
+                            EventType = "Replacement Rejected",
+                            Description = $"Replacement request rejected: {fault.ReplacementRequest.DeclineReason}",
+                            EventDate = fault.ReplacementRequest.ActionDate ?? DateTime.Now,
+                            Icon = "fas fa-times-circle",
+                            Color = "danger"
+                        });
+                    }
+                }
+            }
+
+            // Add comment events
+            foreach (var comment in fault.FaultComments.Where(c => !c.IsInternalNote).OrderBy(c => c.CommentDate))
+            {
+                events.Add(new FaultTimelineEvent
+                {
+                    EventType = comment.CommentBy == "Customer" ? "Customer Comment" : "Technician Update",
+                    Description = comment.Comment,
+                    EventDate = comment.CommentDate,
+                    Icon = comment.CommentBy == "Customer" ? "fas fa-comment" : "fas fa-clipboard-check",
+                    Color = comment.CommentBy == "Customer" ? "secondary" : "info"
+                });
+            }
+
+            return events.OrderBy(e => e.EventDate).ToList();
         }
     }
 }

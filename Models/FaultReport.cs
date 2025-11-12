@@ -42,7 +42,6 @@ namespace Project.Models
 
         public string? ImageUrl { get; set; }
 
-        // Add TechnicianNotes property
         public string? TechnicianNotes { get; set; }
 
         public bool IsReplacementRequested { get; set; }
@@ -53,5 +52,19 @@ namespace Project.Models
         public bool IsRelaunched { get; set; }
 
         public int? OriginalFaultReportId { get; set; }
+
+        // Timeline dates
+        public DateTime? AssignedDate { get; set; }
+        public DateTime? InProgressDate { get; set; }
+        public DateTime? ResolvedDate { get; set; }
+        public DateTime? ScrappedDate { get; set; }
+
+        // Navigation property for comments
+        public virtual ICollection<FaultComment> FaultComments { get; set; } = new List<FaultComment>();
+
+        // Replacement tracking
+        public int? ReplacementRequestId { get; set; }
+        [ForeignKey("ReplacementRequestId")]
+        public virtual FridgeReplacement? ReplacementRequest { get; set; }
     }
 }
