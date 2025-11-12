@@ -25,6 +25,8 @@
         public const string Pending = "Pending";
         public const string Replaced = "Replaced";
         public const string Declined = "Decline";
+        public const string Reported = "Reported";
+        public const string InProgress = "In Progress";
         public const string NotStarted = "Not Started";
         public const string Success = "Success";
         public const string Error = "Error";

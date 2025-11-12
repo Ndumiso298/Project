@@ -68,6 +68,26 @@ namespace Project.Controllers
             return customer?.CustomerID ?? 0;
         }
 
+        // -----------------------------------------------------------------
+        // Helper: Fault Types Dropdown
+        // -----------------------------------------------------------------
+        private List<SelectListItem> GetFaultTypesSelectList()
+        {
+            return new List<SelectListItem>
+            {
+                new() { Value = "", Text = "-- Select Fault Type --", Disabled = true, Selected = true },
+                new() { Value = "Not Cooling", Text = "❄️ Not Cooling" },
+                new() { Value = "Noisy", Text = "🔊 Noisy Operation" },
+                new() { Value = "Door Seal", Text = "🚪 Door Not Sealing" },
+                new() { Value = "Frost", Text = "🧊 Frost Build-up" },
+                new() { Value = "Light", Text = "💡 Light Not Working" },
+                new() { Value = "Leak", Text = "💧 Water Leak" },
+                new() { Value = "Display", Text = "📱 Display Issues" },
+                new() { Value = "Temperature", Text = "🌡️ Temperature Fluctuation" },
+                new() { Value = "Other", Text = "🔧 Other Issue" }
+            };
+        }
+
         // ===================================================================
         // 1. TECHNICIAN DASHBOARD
         // ===================================================================
@@ -135,11 +155,14 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 3. LIST OF FAILED VISITS (Technician View)
+        // 3. LIST OF ALL FAULTS (Technician View - Both Maintenance and Customer Reported)
         // ===================================================================
-        public IActionResult Index()
+        public IActionResult Index(string faultTypeFilter = "all")
         {
-            var failedVisits = _db.tblFridgeVisits
+            var viewModel = new TechnicianFaultsViewModel();
+
+            // Get maintenance faults (failed visits)
+            var maintenanceFaults = _db.tblFridgeVisits
                 .Include(u => u.RequestHeader)
                     .ThenInclude(u => u.Customer.ApplicationUser)
                 .Include(u => u.RequestHeader)
@@ -149,19 +172,49 @@ namespace Project.Controllers
                 .OrderByDescending(u => u.VisitDate)
                 .ToList();
 
-            var serviceIds = failedVisits.Select(u => u.VisitId).ToList();
-            var repairs = _db.tblFaultTechnicians
+            var serviceIds = maintenanceFaults.Select(u => u.VisitId).ToList();
+            var maintenanceRepairs = _db.tblFaultTechnicians
                 .Where(u => serviceIds.Contains((int)u.VisitId))
                 .ToList();
 
-            foreach (var visit in failedVisits)
+            foreach (var visit in maintenanceFaults)
             {
-                visit.FaultTechnicians = repairs.Where(u => u.VisitId == visit.VisitId).ToList();
+                visit.FaultTechnicians = maintenanceRepairs.Where(u => u.VisitId == visit.VisitId).ToList();
             }
 
-            return View(failedVisits);
-        }
+            viewModel.MaintenanceFaults = maintenanceFaults;
 
+            // Get customer-reported faults
+            var customerFaults = _db.tblFaultReports
+                .Include(fr => fr.Customer)
+                    .ThenInclude(c => c.ApplicationUser)
+                .Include(fr => fr.FridgeInStock)
+                    .ThenInclude(fis => fis.Fridge)
+                .Where(fr => fr.Status == SD.Reported || fr.Status == SD.InProgress)
+                .OrderByDescending(fr => fr.ReportedDate)
+                .ToList();
+
+            viewModel.CustomerReportedFaults = customerFaults;
+
+            // Apply filters if needed
+            if (!string.IsNullOrEmpty(faultTypeFilter) && faultTypeFilter != "all")
+            {
+                if (faultTypeFilter == "maintenance")
+                {
+                    viewModel.CustomerReportedFaults = new List<FaultReport>();
+                }
+                else if (faultTypeFilter == "customer")
+                {
+                    viewModel.MaintenanceFaults = new List<FridgeVisit>();
+                }
+            }
+
+            ViewBag.FaultTypeFilter = faultTypeFilter;
+            ViewBag.TotalMaintenanceFaults = maintenanceFaults.Count;
+            ViewBag.TotalCustomerFaults = customerFaults.Count;
+
+            return View(viewModel);
+        }
         // ===================================================================
         // 4. BOOK FAULT VISIT (Technician)
         // ===================================================================
@@ -270,6 +323,7 @@ namespace Project.Controllers
             }).ToList();
 
             ViewBag.FridgeList = fridgeItems;
+            ViewBag.FaultTypes = GetFaultTypesSelectList();
 
             return View(new FaultReportVM());
         }
@@ -277,64 +331,78 @@ namespace Project.Controllers
         [Authorize(Roles = SD.CustomerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFault(FaultReportVM faultReportVM)
+        public async Task<IActionResult> CreateFault(FaultReportVM vm, List<IFormFile> FaultImages)
         {
             var customerId = GetCurrentCustomerId();
             if (customerId == 0)
             {
-                TempData[SD.Error] = "Please log in to report faults";
+                TempData[SD.Error] = "Please log in to report faults.";
                 return RedirectToAction("Login", "Account");
             }
 
-            // Verify fridge belongs to customer
-            var isFridgeAllocated = await _db.tblCustomerFridge
-                .AnyAsync(cf => cf.CustomerID == customerId &&
-                               cf.FridgeInStockId == faultReportVM.FridgeInStockId);
+            // -----------------------------------------------------------------
+            // 1. SECURITY: Verify the fridge belongs to the logged-in customer
+            // -----------------------------------------------------------------
+            var isAllocated = await _db.tblCustomerFridge
+                .AnyAsync(cf => cf.CustomerID == customerId && cf.FridgeInStockId == vm.FridgeInStockId);
 
-            if (!isFridgeAllocated)
-            {
+            if (!isAllocated)
                 ModelState.AddModelError("FridgeInStockId", "You can only report faults for your allocated fridges.");
-            }
 
+            // -----------------------------------------------------------------
+            // 2. VALIDATION FAILED → RE-DISPLAY FORM WITH ALL DATA
+            // -----------------------------------------------------------------
             if (!ModelState.IsValid)
             {
-                var customerFridges = await _db.tblCustomerFridge
+                // Re-populate FridgeInfo (so the card on the left shows the right fridge)
+                var fridgeInStock = await _db.tblFridgeInStocks
+                    .Include(f => f.Fridge)
+                    .FirstOrDefaultAsync(f => f.FridgeInStockId == vm.FridgeInStockId);
+
+                vm.FridgeInfo = fridgeInStock?.Fridge;
+                vm.CustomerID = customerId;
+                vm.CustomerName = await _db.tblCustomer
+                    .Include(c => c.ApplicationUser)
+                    .Where(c => c.CustomerID == customerId)
+                    .Select(c => $"{c.ApplicationUser.FirstName} {c.ApplicationUser.LastName}")
+                    .FirstOrDefaultAsync();
+
+                // Re-populate ViewBag
+                ViewBag.FaultTypes = GetFaultTypesSelectList();
+                ViewBag.FridgeList = await _db.tblCustomerFridge
                     .Where(cf => cf.CustomerID == customerId)
                     .Include(cf => cf.FridgeInStock)
                         .ThenInclude(fis => fis.Fridge)
+                    .Select(f => new SelectListItem
+                    {
+                        Value = f.FridgeInStockId.ToString(),
+                        Text = $"{f.FridgeInStock.Fridge.Brand} - {f.FridgeInStock.FridgeNo}"
+                    })
                     .ToListAsync();
 
-                var fridgeItems = customerFridges.Select(f => new SelectListItem
-                {
-                    Value = f.FridgeInStockId.ToString(),
-                    Text = $"{f.FridgeInStock?.Fridge?.Brand} - {f.FridgeInStock?.FridgeNo}"
-                }).ToList();
-
-                ViewBag.FridgeList = fridgeItems;
-                return View(faultReportVM);
+                return View(vm);
             }
 
+            // -----------------------------------------------------------------
+            // 3. SUCCESS: Save fault report
+            // -----------------------------------------------------------------
             try
             {
-                // Handle image upload
                 string? imageUrls = null;
-                if (faultReportVM.FaultImages != null && faultReportVM.FaultImages.Count > 0)
-                {
-                    imageUrls = await SaveFaultImages(faultReportVM.FaultImages);
-                }
+                if (FaultImages?.Count > 0)
+                    imageUrls = await SaveFaultImages(FaultImages);
 
-                // Create fault report
                 var fault = new FaultReport
                 {
                     CustomerId = customerId,
-                    FridgeInStockId = faultReportVM.FridgeInStockId,
-                    FaultType = faultReportVM.FaultType ?? "Unknown",
-                    Description = faultReportVM.Description ?? "",
-                    Priority = faultReportVM.Priority ?? "Medium",
-                    Status = "Reported",
+                    FridgeInStockId = vm.FridgeInStockId,
+                    FaultType = vm.FaultType ?? "Unknown",
+                    Description = vm.Description ?? "",
+                    Priority = vm.Priority ?? "Medium",
+                    RequestReplacement = false, // Set to false since we removed this feature
+                    Status = SD.Reported,
                     ReportedDate = DateTime.Now,
-                    ImageUrl = imageUrls,
-                    RequestReplacement = faultReportVM.RequestReplacement
+                    ImageUrl = imageUrls
                 };
 
                 _db.tblFaultReports.Add(fault);
@@ -343,10 +411,24 @@ namespace Project.Controllers
                 TempData[SD.Success] = "Fault reported successfully! A technician will contact you soon.";
                 return RedirectToAction(nameof(CustomerFaultReports));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData[SD.Error] = "An error occurred while reporting the fault. Please try again.";
-                return RedirectToAction(nameof(CreateFault));
+                TempData[SD.Error] = "An error occurred while saving the fault. Please try again.";
+
+                // Re-populate ViewBag on error
+                ViewBag.FaultTypes = GetFaultTypesSelectList();
+                ViewBag.FridgeList = await _db.tblCustomerFridge
+                    .Where(cf => cf.CustomerID == customerId)
+                    .Include(cf => cf.FridgeInStock)
+                        .ThenInclude(fis => fis.Fridge)
+                    .Select(f => new SelectListItem
+                    {
+                        Value = f.FridgeInStockId.ToString(),
+                        Text = $"{f.FridgeInStock.Fridge.Brand} - {f.FridgeInStock.FridgeNo}"
+                    })
+                    .ToListAsync();
+
+                return View(vm);
             }
         }
 
@@ -415,16 +497,7 @@ namespace Project.Controllers
                 ReportDate = DateTime.Now
             };
 
-            ViewBag.FaultTypes = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "-- Select Fault Type --", Value = "" },
-                new SelectListItem { Text = "Not Cooling", Value = "Not Cooling" },
-                new SelectListItem { Text = "Strange Noises", Value = "Strange Noises" },
-                new SelectListItem { Text = "Water Leakage", Value = "Water Leakage" },
-                new SelectListItem { Text = "Electrical Issues", Value = "Electrical Issues" },
-                new SelectListItem { Text = "Door Problems", Value = "Door Problems" },
-                new SelectListItem { Text = "Other", Value = "Other" }
-            };
+            ViewBag.FaultTypes = GetFaultTypesSelectList();
 
             return View(vm);
         }
@@ -435,16 +508,7 @@ namespace Project.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.FaultTypes = new List<SelectListItem>
-                {
-                    new SelectListItem { Text = "-- Select Fault Type --", Value = "" },
-                    new SelectListItem { Text = "Not Cooling", Value = "Not Cooling" },
-                    new SelectListItem { Text = "Strange Noises", Value = "Strange Noises" },
-                    new SelectListItem { Text = "Water Leakage", Value = "Water Leakage" },
-                    new SelectListItem { Text = "Electrical Issues", Value = "Electrical Issues" },
-                    new SelectListItem { Text = "Door Problems", Value = "Door Problems" },
-                    new SelectListItem { Text = "Other", Value = "Other" }
-                };
+                ViewBag.FaultTypes = GetFaultTypesSelectList();
                 return View(vm);
             }
 
@@ -468,7 +532,7 @@ namespace Project.Controllers
                     VisitDate = DateTime.Now,
                     CheckupStatus = "Fault Reported",
                     Notes = $"Customer reported: {vm.FaultType}",
-                    TechnicianName = "Not Assigned" // This is the required field
+                    TechnicianName = "Not Assigned"
                 };
 
                 _db.tblFridgeVisits.Add(fridgeVisit);
@@ -621,6 +685,11 @@ namespace Project.Controllers
             }
 
             fault.Status = status;
+            if (!string.IsNullOrEmpty(technicianNotes))
+            {
+                // If you have a technician notes field, update it here
+                // fault.TechnicianNotes = technicianNotes;
+            }
 
             await _db.SaveChangesAsync();
 
@@ -680,7 +749,6 @@ namespace Project.Controllers
                 _ => faults.OrderByDescending(fr => fr.ReportedDate)
             };
 
-            // Simple pagination without PaginatedList class
             int pageSize = 10;
             int pageNumber = page ?? 1;
             var totalItems = await faults.CountAsync();
@@ -770,11 +838,11 @@ namespace Project.Controllers
                     FaultType = originalFault.FaultType ?? "Unknown",
                     Description = originalFault.Description + (string.IsNullOrEmpty(additionalInfo) ? "" : $"\n\nAdditional Info: {additionalInfo}"),
                     ReportedDate = DateTime.Now,
-                    Status = originalFault.RequestReplacement ? "Replacement Requested" : "Reported",
-                    Priority = originalFault.RequestReplacement ? "High" : originalFault.Priority,
+                    Status = "Reported",
+                    Priority = originalFault.Priority,
                     ImageUrl = originalFault.ImageUrl,
-                    RequestReplacement = originalFault.RequestReplacement,
-                    IsReplacementRequested = originalFault.RequestReplacement,
+                    RequestReplacement = false,
+                    IsReplacementRequested = false,
                     DeclineReason = null,
                     IsRelaunched = true,
                     OriginalFaultReportId = faultReportId
@@ -824,14 +892,12 @@ namespace Project.Controllers
             {
                 if (action == "approve")
                 {
-                    // Verify the customer exists and has the necessary data
                     if (fault.Customer == null || !fault.CustomerId.HasValue)
                     {
                         TempData[SD.Error] = "Customer not found for this fault report.";
                         return RedirectToAction(nameof(AllFaults));
                     }
 
-                    // Create a new request for replacement
                     var replacementRequest = new RequestHeader
                     {
                         CustomerID = fault.CustomerId.Value,
@@ -846,13 +912,11 @@ namespace Project.Controllers
                         CellNumber = fault.Customer.ApplicationUser?.PhoneNumber ?? "",
                         Status = SD.Approved,
                         PaymentDueDate = DateTime.Now.AddDays(30),
-                       
                     };
 
                     _db.tblRequestHeaders.Add(replacementRequest);
                     await _db.SaveChangesAsync();
 
-                    // Add fridge to request
                     if (fault.FridgeInStock?.FridgeId != null)
                     {
                         var fridge = await _db.tblFridges.FindAsync(fault.FridgeInStock.FridgeId);

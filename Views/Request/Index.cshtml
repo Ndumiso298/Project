@@ -30,9 +30,11 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="statusFilterDropdown">
                             <li><a class="dropdown-item filter-option" href="#" data-filter="all">All Orders</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Pending">Pending</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Approved">Approved</a></li>
-                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Rejected">Rejected</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Pending.ToLower()">Pending</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Approved.ToLower()">Approved</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Shipped.ToLower()">Shipped</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Closed.ToLower()">Closed</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Rejected.ToLower()">Rejected</a></li>
                             <li><a class="dropdown-item filter-option" href="#" data-filter="relaunched">Relaunched</a></li>
                         </ul>
                     </div>
@@ -59,10 +61,16 @@
                                 <span class="fw-bold text-success">Approved: @Model.Count(r => r.Status == SD.Approved)</span>
                             </div>
                             <div class="col">
+                                <span class="fw-bold text-info">Shipped: @Model.Count(r => r.Status == SD.Shipped)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-dark">Closed: @Model.Count(r => r.Status == SD.Closed)</span>
+                            </div>
+                            <div class="col">
                                 <span class="fw-bold text-danger">Rejected: @Model.Count(r => r.Status == SD.Rejected)</span>
                             </div>
                             <div class="col">
-                                <span class="fw-bold text-info">Relaunched: @Model.Count(r => r.IsRelaunched)</span>
+                                <span class="fw-bold text-secondary">Relaunched: @Model.Count(r => r.IsRelaunched)</span>
                             </div>
                         </div>
                     </div>
@@ -142,6 +150,18 @@
                                             <i class="bi bi-check-circle-fill me-1"></i>Approved
                                         </span>
                                     }
+                                    else if (item.Status == SD.Shipped)
+                                    {
+                                        <span class="fw-bold text-info">
+                                            <i class="bi bi-truck me-1"></i>Shipped
+                                        </span>
+                                    }
+                                    else if (item.Status == SD.Closed)
+                                    {
+                                        <span class="fw-bold text-dark">
+                                            <i class="bi bi-check-circle me-1"></i>Closed
+                                        </span>
+                                    }
                                     else if (item.Status == SD.Rejected)
                                     {
                                         <span class="fw-bold text-danger">
@@ -183,20 +203,7 @@
                                             </a>
                                         }
 
-                                        <!-- Fault Report Button - CUSTOMER ONLY -->
-                                        @if (isCustomer && item.Status == SD.Approved)
-                                        {
-                                            <a asp-controller="FaultTechnician"
-                                               asp-action="CustomerFaultReport"
-                                               asp-route-requestHeaderId="@item.RequestHeaderId"
-                                               class="btn btn-sm btn-outline-warning rounded-3 me-2 px-3"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-title="Report Equipment Issue">
-                                                <i class="bi bi-exclamation-triangle me-1"></i> Report Issue
-                                            </a>
-                                        }
-
-                                        <!-- Customer Support Actions - Only Manage Button -->
+                                        <!-- Customer Support Actions -->
                                         @if (isCustomerSupport)
                                         {
                                             <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
@@ -229,29 +236,6 @@
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        .card {
-            border: none;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .border-start-4 {
-            border-left-width: 4px !important;
-        }
-
-        .table > :not(caption) > * > * {
-            padding: 1rem 0.75rem;
-        }
-
-        .order-row:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-1px);
-            transition: all 0.2s ease;
-        }
-    </style>
-}
 
 @section Scripts {
     <script>
@@ -306,7 +290,6 @@
                         'Filter: ' + this.textContent;
                 });
             });
-
 
             // Initialize tooltips
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

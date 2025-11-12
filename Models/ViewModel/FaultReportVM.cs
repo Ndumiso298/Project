@@ -13,6 +13,7 @@ namespace Project.Models.ViewModel
 
         [Required(ErrorMessage = "Please select a fault type")]
         public string? FaultType { get; set; }
+        public Fridge? FridgeInfo { get; set; }
 
         [Required(ErrorMessage = "Please describe the fault")]
         public string? Description { get; set; }

@@ -46,6 +46,7 @@ namespace Project.Models
         public string? AdditionalDocumentPath { get; set; }
         public string? AdditionalDescription { get; set; }
         public bool IsRelaunched { get; set; } = false;
+        public bool IsReplacement { get; set; } = false;
         public int? OriginalRequestId { get; set; }
 
 

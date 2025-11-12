@@ -1,19 +1,38 @@
-﻿
-@inject ApplicationDbContext _db
+﻿@inject ApplicationDbContext _db
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
 @using Project.Data
+@using Project.Utility
 @{
     var claimsIdentity = (ClaimsIdentity)User.Identity;
     var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
     var hasRequestedItems = _db.tblRequestHeaders.Any(r => r.Customer.ApplicationUserId == userId);
-
     var cartCount = _db.tblAllocations.Count(a => a.Customer.ApplicationUserId == userId);
+    var hasFridgeBookings = _db.tblFridgeVisits.Any(v => v.RequestHeader.Customer.ApplicationUserId == userId);
 
+    // Check if customer has any allocated fridges (for Report Issue navlink)
+    var hasAllocatedFridges = false;
+    // Check if customer has any fault reports (for My Fault Reports navlink)
+    var hasFaultReports = false;
+    // Check if customer has any replacement requests (for My Replacements navlink)
+    var hasReplacementRequests = false;
 
-    var hasFridgeBookings = _db.tblFridgeVisits
-        .Any(v => v.RequestHeader.Customer.ApplicationUserId == userId);
+    if (User.IsInRole(SD.CustomerRole))
+    {
+        var customer = _db.tblCustomer.FirstOrDefault(c => c.ApplicationUserId == userId);
+        if (customer != null)
+        {
+            hasAllocatedFridges = _db.tblCustomerFridge.Any(cf => cf.CustomerID == customer.CustomerID);
+            hasFaultReports = _db.tblFaultReports.Any(fr => fr.CustomerId == customer.CustomerID);
+
+            // Check if customer has any replacement requests created by technicians
+            hasReplacementRequests = _db.tblRequestHeaders.Any(rh =>
+                rh.CustomerID == customer.CustomerID &&
+                rh.Status == SD.Approved &&
+                rh.IsReplacement == true);
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -363,12 +382,37 @@
                                     Report Issue
                                 </a>
                             }
+                            @if (hasAllocatedFridges)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="FaultTechnician" asp-action="CreateFaultSelection">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Report Issue
+                                    </a>
+                                </li>
+                            }
+
+                            @if (hasFaultReports)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="FaultTechnician" asp-action="CustomerFaultReports">
+                                        <i class="bi bi-clipboard-check me-1"></i>My Fault Reports
+                                    </a>
+                                </li>
+                            }
                            
                             @if (hasFridgeBookings)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-white" asp-area="" asp-controller="AllocatedFridges" asp-action="CustomerBookings">
                                         Fridge Checkups
+                                    </a>
+                                </li>
+                            }
+                            @if (hasReplacementRequests)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="Replacement" asp-action="MyReplacements">
+                                        <i class="bi bi-arrow-repeat me-1"></i>My Replacements
                                     </a>
                                 </li>
                             }
