@@ -623,7 +623,7 @@ namespace Project.Controllers
         // ===================================================================
         // 11. SUPPORT: VIEW ALL FAULT REPORTS
         // ===================================================================
-        [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
         public async Task<IActionResult> AllFaults(string statusFilter = null)
         {
             var query = _db.tblFaultReports
@@ -649,7 +649,7 @@ namespace Project.Controllers
         // ===================================================================
         // 12. SUPPORT: UPDATE FAULT STATUS
         // ===================================================================
-        [Authorize(Roles = $"{SD.CustomerSupport},{SD.AdminRole}")]
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateFaultStatus(int id, string status, string technicianNotes = null)

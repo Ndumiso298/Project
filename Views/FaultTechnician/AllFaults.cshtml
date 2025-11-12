@@ -1,0 +1,384 @@
+﻿@model IEnumerable<Project.Models.FaultReport>
+@{
+    ViewData["Title"] = "All Fault Reports";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-4 rounded-top-4">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="h4 mb-0">
+                                <i class="fas fa-list-alt me-2"></i>All Fault Reports
+                            </h2>
+                            <p class="mb-0 opacity-75">Manage all customer fault reports</p>
+                        </div>
+                        <div class="col-auto">
+                            <!-- Status Filter -->
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="statusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-filter me-2"></i>
+                                    @(string.IsNullOrEmpty(ViewBag.StatusFilter) ? "All Status" : ViewBag.StatusFilter)
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="statusFilterDropdown">
+                                    <li><a class="dropdown-item" href="@Url.Action("AllFaults")">All Status</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("AllFaults", new { statusFilter = "Reported" })">Reported</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("AllFaults", new { statusFilter = "In Progress" })">In Progress</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("AllFaults", new { statusFilter = "Resolved" })">Resolved</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("AllFaults", new { statusFilter = "Declined" })">Declined</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-start-4 border-start-primary shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Reports</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.Count()</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-start-4 border-start-warning shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Reported</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800">@ViewBag.TotalReported</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-start-4 border-start-info shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs fw-bold text-info text-uppercase mb-1">In Progress</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800">@ViewBag.TotalInProgress</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-start-4 border-start-success shadow-sm h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Resolved</div>
+                                            <div class="h5 mb-0 fw-bold text-gray-800">@ViewBag.TotalResolved</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Fault Reports</h4>
+                            <p class="text-muted">There are currently no fault reports to display.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4 fw-semibold text-muted small text-uppercase">Customer & Fridge</th>
+                                        <th class="fw-semibold text-muted small text-uppercase">Fault Type</th>
+                                        <th class="fw-semibold text-muted small text-uppercase">Description</th>
+                                        <th class="fw-semibold text-muted small text-uppercase">Priority</th>
+                                        <th class="fw-semibold text-muted small text-uppercase">Status</th>
+                                        <th class="fw-semibold text-muted small text-uppercase">Reported Date</th>
+                                        <th class="text-end pe-4 fw-semibold text-muted small text-uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var fault in Model)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-light rounded-2 p-2 me-3">
+                                                        <i class="fas fa-refrigerator text-primary fs-5"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="fw-bold text-dark mb-0">@fault.Customer?.ApplicationUser?.FirstName @fault.Customer?.ApplicationUser?.LastName</h6>
+                                                        <small class="text-muted">@fault.FridgeInStock?.Fridge?.Brand @fault.FridgeInStock?.Fridge?.Model</small>
+                                                        <br>
+                                                        <small class="text-muted">Fridge #: @fault.FridgeInStock?.FridgeNo</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@fault.FaultType</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-truncate" style="max-width: 200px;" title="@fault.Description">
+                                                    @fault.Description
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var priorityClass = fault.Priority?.ToLower() switch
+                                                    {
+                                                        "urgent" => "danger",
+                                                        "high" => "warning",
+                                                        "medium" => "info",
+                                                        "low" => "secondary",
+                                                        _ => "secondary"
+                                                    };
+                                                }
+                                                <span class="badge bg-@priorityClass">@fault.Priority</span>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var statusClass = fault.Status?.ToLower() switch
+                                                    {
+                                                        "reported" => "warning",
+                                                        "in progress" => "info",
+                                                        "resolved" => "success",
+                                                        "declined" => "danger",
+                                                        _ => "secondary"
+                                                    };
+                                                }
+                                                <span class="badge bg-@statusClass">@fault.Status</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span class="fw-semibold text-dark">@fault.ReportedDate.ToString("MMM dd, yyyy")</span>
+                                                    <small class="text-muted">@fault.ReportedDate.ToString("hh:mm tt")</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <!-- Status Update Dropdown -->
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-edit me-1"></i>Status
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <form method="post" asp-action="UpdateFaultStatus" class="d-inline">
+                                                                    @Html.AntiForgeryToken()
+                                                                    <input type="hidden" name="id" value="@fault.FaultReportId" />
+                                                                    <input type="hidden" name="status" value="Reported" />
+                                                                    <button type="submit" class="dropdown-item">Mark as Reported</button>
+                                                                </form>
+                                                            </li>
+                                                            <li>
+                                                                <form method="post" asp-action="UpdateFaultStatus" class="d-inline">
+                                                                    @Html.AntiForgeryToken()
+                                                                    <input type="hidden" name="id" value="@fault.FaultReportId" />
+                                                                    <input type="hidden" name="status" value="In Progress" />
+                                                                    <button type="submit" class="dropdown-item">Mark as In Progress</button>
+                                                                </form>
+                                                            </li>
+                                                            <li>
+                                                                <form method="post" asp-action="UpdateFaultStatus" class="d-inline">
+                                                                    @Html.AntiForgeryToken()
+                                                                    <input type="hidden" name="id" value="@fault.FaultReportId" />
+                                                                    <input type="hidden" name="status" value="Resolved" />
+                                                                    <button type="submit" class="dropdown-item">Mark as Resolved</button>
+                                                                </form>
+                                                            </li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form method="post" asp-action="UpdateFaultStatus" class="d-inline">
+                                                                    @Html.AntiForgeryToken()
+                                                                    <input type="hidden" name="id" value="@fault.FaultReportId" />
+                                                                    <input type="hidden" name="status" value="Declined" />
+                                                                    <button type="submit" class="dropdown-item text-danger">Mark as Declined</button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- View Details Button -->
+                                                    <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#detailsModal@(fault.FaultReportId)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+
+                                                <!-- Details Modal -->
+                                                <div class="modal fade" id="detailsModal@(fault.FaultReportId)" tabindex="-1">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Fault Report Details</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <h6>Customer Information</h6>
+                                                                        <p><strong>Name:</strong> @fault.Customer?.ApplicationUser?.FirstName @fault.Customer?.ApplicationUser?.LastName</p>
+                                                                        <p><strong>Email:</strong> @fault.Customer?.ApplicationUser?.Email</p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <h6>Fridge Information</h6>
+                                                                        <p><strong>Brand:</strong> @fault.FridgeInStock?.Fridge?.Brand</p>
+                                                                        <p><strong>Model:</strong> @fault.FridgeInStock?.Fridge?.Model</p>
+                                                                        <p><strong>Fridge #:</strong> @fault.FridgeInStock?.FridgeNo</p>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <h6>Fault Details</h6>
+                                                                        <p><strong>Type:</strong> @fault.FaultType</p>
+                                                                        <p><strong>Priority:</strong> <span class="badge bg-@priorityClass">@fault.Priority</span></p>
+                                                                        <p><strong>Description:</strong></p>
+                                                                        <div class="card bg-light">
+                                                                            <div class="card-body">
+                                                                                @fault.Description
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                @if (!string.IsNullOrEmpty(fault.ImageUrl))
+                                                                {
+                                                                    <hr>
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <h6>Attached Images</h6>
+                                                                            <div class="row g-2">
+                                                                                @foreach (var imageUrl in fault.ImageUrl.Split(','))
+                                                                                {
+                                                                                    <div class="col-auto">
+                                                                                        <img src="@imageUrl" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" alt="Fault image" />
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-start-4 {
+        border-left-width: 4px !important;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+    }
+
+    tr:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+
+    .badge {
+        font-size: 0.75em;
+    }
+
+    .dropdown-menu form {
+        margin: 0;
+    }
+
+    .dropdown-menu button.dropdown-item {
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        padding: 0.375rem 1rem;
+    }
+
+        .dropdown-menu button.dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize tooltips if Bootstrap is available
+        if (typeof bootstrap !== 'undefined') {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        // Add confirmation for status changes
+        const statusForms = document.querySelectorAll('form[action*="UpdateFaultStatus"]');
+        statusForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const status = this.querySelector('input[name="status"]').value;
+                if (!confirm(`Are you sure you want to change the status to "${status}"?`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Auto-close dropdown after form submission
+        const dropdownButtons = document.querySelectorAll('.dropdown-toggle');
+        dropdownButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const dropdownMenu = this.nextElementSibling;
+                const forms = dropdownMenu.querySelectorAll('form');
+                forms.forEach(form => {
+                    form.addEventListener('submit', function () {
+                        const dropdownInstance = bootstrap.Dropdown.getInstance(button);
+                        if (dropdownInstance) {
+                            dropdownInstance.hide();
+                        }
+                    });
+                });
+            });
+        });
+    });
+</script>
