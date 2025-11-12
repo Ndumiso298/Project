@@ -24,6 +24,7 @@ namespace Project.Models.ViewModel
 
         public List<IFormFile>? FaultImages { get; set; }
 
+
         public List<CustomerFridge>? AvailableFridges { get; set; }
     }
 }

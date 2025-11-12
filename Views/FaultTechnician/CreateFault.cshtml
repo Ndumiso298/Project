@@ -9,7 +9,7 @@
         <div class="col-12 col-lg-10 col-xl-8">
             <!-- Header Card -->
             <div class="card shadow-lg border-0 rounded-4 mb-4">
-                <div class="card-header bg-gradient-primary text-white py-4 rounded-top-4">
+                <div class="card-header bg-primary text-white py-4 rounded-top-4">
                     <div class="row align-items-center">
                         <div class="col">
                             <h2 class="h4 mb-0">
@@ -24,15 +24,38 @@
                                     @Model.FridgeInfo.Brand @Model.FridgeInfo.Model
                                 </span>
                             }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark fs-6">
+                                    Fridge Information Missing
+                                </span>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4">
-                <!-- Fridge Information -->
-                @if (Model.FridgeInfo != null)
-                {
+            <!-- Error Alert if FridgeInfo is null -->
+            @if (Model.FridgeInfo == null)
+            {
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                    <div>
+                        <h5 class="alert-heading">Fridge Information Not Available</h5>
+                        <p class="mb-0">We couldn't retrieve the fridge information. Please go back and select a fridge again.</p>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a asp-action="CreateFaultSelection" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Fridge Selection
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    <!-- Fridge Information -->
                     <div class="col-12 col-lg-4">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-header bg-light py-3">
@@ -80,144 +103,127 @@
                             </div>
                         </div>
                     </div>
-                }
 
-                <!-- Fault Report Form -->
-                <div class="col-12 @(Model.FridgeInfo != null ? "col-lg-8" : "col-lg-12")">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-light py-3">
-                            <h5 class="card-title mb-0 text-dark">
-                                <i class="fas fa-tools me-2"></i>Fault Details
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <form asp-action="CreateFault" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" asp-for="FridgeInStockId" />
-                                <input type="hidden" asp-for="CustomerID" />
-                                <input type="hidden" asp-for="CustomerName" />
+                    <!-- Fault Report Form -->
+                    <div class="col-12 col-lg-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light py-3">
+                                <h5 class="card-title mb-0 text-dark">
+                                    <i class="fas fa-tools me-2"></i>Fault Details
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="faultForm" asp-action="CreateFault" method="post" enctype="multipart/form-data">
+                                    @Html.AntiForgeryToken()
 
-                                <div class="row g-3">
-                                    <!-- Fault Type -->
-                                    <div class="col-12">
-                                        <label asp-for="FaultType" class="form-label fw-semibold required-field">
-                                            <i class="fas fa-tag me-1"></i>Fault Type
-                                        </label>
-                                        <select asp-for="FaultType" class="form-select form-select-lg" required>
-                                            <option value="">-- Select the type of fault --</option>
-                                            @foreach (var faultType in ViewBag.FaultTypes)
-                                            {
-                                                <option value="@faultType.Value">@faultType.Text</option>
-                                            }
-                                        </select>
-                                        <span asp-validation-for="FaultType" class="text-danger small"></span>
-                                        <div class="form-text">Please select the category that best describes the issue</div>
-                                    </div>
+                                    <input type="hidden" asp-for="CustomerID" />
+                                    <input type="hidden" asp-for="CustomerName" />
+                                    <input type="hidden" asp-for="FridgeInStockId" />
 
-                                    <!-- Fault Description -->
-                                    <div class="col-12">
-                                        <label asp-for="Description" class="form-label fw-semibold required-field">
-                                            <i class="fas fa-comment-alt me-1"></i>Fault Description
-                                        </label>
-                                        <textarea asp-for="Description" class="form-control" rows="5"
-                                                  placeholder="Please describe the issue in detail. Include when it started, any error messages, and how it affects the fridge's performance..."
-                                                  required></textarea>
-                                        <span asp-validation-for="Description" class="text-danger small"></span>
-                                        <div class="form-text">Be as specific as possible to help us diagnose the problem quickly</div>
-                                    </div>
-
-                                    <!-- Priority -->
-                                    <div class="col-12 col-md-6">
-                                        <label asp-for="Priority" class="form-label fw-semibold">
-                                            <i class="fas fa-flag me-1"></i>Priority
-                                        </label>
-                                        <select asp-for="Priority" class="form-select">
-                                            <option value="Low">Low</option>
-                                            <option value="Medium" selected>Medium</option>
-                                            <option value="High">High</option>
-                                            <option value="Urgent">Urgent</option>
-                                        </select>
-                                        <div class="form-text">How urgent is this repair?</div>
-                                    </div>
-
-                                    <!-- Request Replacement -->
-                                    <div class="col-12 col-md-6">
-                                        <label class="form-label fw-semibold">
-                                            <i class="fas fa-exchange-alt me-1"></i>Replacement Request
-                                        </label>
-                                        <div class="form-check form-switch mt-2">
-                                            <input asp-for="RequestReplacement" class="form-check-input" type="checkbox" role="switch">
-                                            <label class="form-check-label" asp-for="RequestReplacement">
-                                                Request fridge replacement
+                                    <div class="row g-3">
+                                        <!-- Fault Type -->
+                                        <div class="col-12">
+                                            <label asp-for="FaultType" class="form-label fw-semibold">
+                                                Fault Type <span class="text-danger">*</span>
                                             </label>
+                                            <select asp-for="FaultType" class="form-select" required>
+                                                <option value="">-- Select the type of fault --</option>
+                                                @if (ViewBag.FaultTypes != null)
+                                                {
+                                                    foreach (var item in ViewBag.FaultTypes)
+                                                    {
+                                                        if (item is SelectListItem selectItem && !selectItem.Disabled && !string.IsNullOrEmpty(selectItem.Value))
+                                                        {
+                                                            <option value="@selectItem.Value">@selectItem.Text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="FaultType" class="text-danger small"></span>
                                         </div>
-                                        <div class="form-text">Check if you need a replacement fridge</div>
-                                    </div>
 
-                                    <!-- Fault Images -->
-                                    <div class="col-12">
-                                        <label asp-for="FaultImages" class="form-label fw-semibold">
-                                            <i class="fas fa-camera me-1"></i>Upload Images
-                                        </label>
-                                        <input asp-for="FaultImages" type="file" class="form-control" multiple
-                                               accept="image/*" />
-                                        <span asp-validation-for="FaultImages" class="text-danger small"></span>
-                                        <div class="form-text">
-                                            Upload images of the fault (optional). Maximum 5MB per image.
-                                            Supported formats: JPG, PNG, GIF
+                                        <!-- Priority -->
+                                        <div class="col-12">
+                                            <label asp-for="Priority" class="form-label fw-semibold">
+                                                Priority Level
+                                            </label>
+                                            <select asp-for="Priority" class="form-select">
+                                                <option value="Low">Low - Minor issue</option>
+                                                <option value="Medium" selected>Medium - Affects functionality</option>
+                                                <option value="High">High - Significantly affects usage</option>
+                                                <option value="Urgent">Urgent - Fridge is unusable</option>
+                                            </select>
                                         </div>
-                                    </div>
 
-                                    <!-- Information Alert -->
-                                    <div class="col-12">
-                                        <div class="alert alert-info border-0">
-                                            <div class="d-flex">
-                                                <i class="fas fa-info-circle me-3 fs-5 text-info"></i>
-                                                <div>
-                                                    <h6 class="alert-heading mb-2">What happens next?</h6>
-                                                    <ul class="mb-0 ps-3">
-                                                        <li>Our technicians will review your report within 24 hours</li>
-                                                        <li>You'll receive updates on the repair status</li>
-                                                        <li>A technician may contact you for additional information</li>
-                                                        <li>Repair scheduling will be coordinated based on urgency</li>
-                                                    </ul>
+                                        <!-- Fault Description -->
+                                        <div class="col-12">
+                                            <label asp-for="Description" class="form-label fw-semibold">
+                                                Fault Description <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea asp-for="Description" class="form-control" rows="4"
+                                                      placeholder="Describe the issue in detail. Include when it started, what you observe, and how it affects the fridge's performance..."
+                                                      required></textarea>
+                                            <span asp-validation-for="Description" class="text-danger small"></span>
+                                            <div class="form-text">Please provide detailed information to help us diagnose the issue quickly.</div>
+                                        </div>
+
+                                        <!-- Fault Images -->
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Upload Images (Optional)</label>
+                                            <input type="file" name="FaultImages" class="form-control" multiple
+                                                   accept="image/jpeg,image/png,image/gif" id="imageUpload" />
+
+                                            <!-- Image Preview Container -->
+                                            <div id="imagePreview" class="mt-3 row g-2 d-none">
+                                                <!-- Preview images will be added here dynamically -->
+                                            </div>
+                                            <div class="form-text">
+                                                Maximum 5MB per image. Supported formats: JPG, PNG, GIF
+                                            </div>
+                                        </div>
+
+                                        <!-- Information Alert -->
+                                        <div class="col-12">
+                                            <div class="alert alert-info border-0">
+                                                <div class="d-flex">
+                                                    <i class="fas fa-info-circle me-3 fs-5 text-info"></i>
+                                                    <div>
+                                                        <h6 class="alert-heading mb-2">What happens next?</h6>
+                                                        <ul class="mb-0 ps-3">
+                                                            <li>Our technicians will review your report within 24 hours</li>
+                                                            <li>You'll receive updates on the repair status</li>
+                                                            <li>A technician may contact you for additional information</li>
+                                                            <li>Repair scheduling will be coordinated based on urgency</li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Action Buttons -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                                            <a asp-action="CreateFaultSelection" class="btn btn-outline-secondary px-4">
-                                                <i class="fas fa-arrow-left me-2"></i>Back to Fridge Selection
-                                            </a>
-                                            <button type="submit" class="btn btn-primary px-4">
-                                                <i class="fas fa-paper-plane me-2"></i>Submit Fault Report
-                                            </button>
+                                        <!-- Action Buttons -->
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                                <a asp-action="CreateFaultSelection" class="btn btn-outline-secondary px-4">
+                                                    <i class="fas fa-arrow-left me-2"></i>Back to Selection
+                                                </a>
+                                                <button type="submit" class="btn btn-primary px-5" id="submitBtn">
+                                                    <i class="fas fa-paper-plane me-2"></i>Submit Fault Report
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
 
 @section Styles {
     <style>
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .required-field::after {
-            content: " *";
-            color: #dc3545;
-        }
-
         .card {
             transition: transform 0.2s ease-in-out;
         }
@@ -226,13 +232,8 @@
                 transform: translateY(-2px);
             }
 
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
             border: none;
             padding: 0.75rem 2rem;
             font-weight: 600;
@@ -240,12 +241,46 @@
 
             .btn-primary:hover {
                 transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
             }
 
-        .form-check-input:checked {
-            background-color: #667eea;
-            border-color: #667eea;
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+        }
+
+        .is-valid {
+            border-color: #198754;
         }
     </style>
 }
@@ -255,105 +290,156 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const form = document.querySelector('.needs-validation');
-            const descriptionTextarea = document.querySelector('#Description');
-            const fileInput = document.querySelector('#FaultImages');
+            // Only initialize if the form exists (when FridgeInfo is not null)
+            const form = document.getElementById('faultForm');
+            if (!form) return;
 
-            // Character counter for description
-            const descriptionCounter = document.createElement('div');
-            descriptionCounter.className = 'form-text text-end mt-1';
-            descriptionTextarea.parentElement.appendChild(descriptionCounter);
+            const imageUpload = document.getElementById('imageUpload');
+            const imagePreview = document.getElementById('imagePreview');
+            const submitBtn = document.getElementById('submitBtn');
 
-            function updateCharacterCount() {
-                const length = descriptionTextarea.value.length;
-                descriptionCounter.textContent = `${length} characters`;
+            // Image preview functionality
+            imageUpload.addEventListener('change', function(event) {
+                const files = event.target.files;
+                imagePreview.innerHTML = '';
 
-                if (length < 10) {
-                    descriptionCounter.classList.add('text-danger');
-                    descriptionCounter.classList.remove('text-success');
-                } else if (length < 50) {
-                    descriptionCounter.classList.remove('text-danger', 'text-success');
-                } else {
-                    descriptionCounter.classList.add('text-success');
-                    descriptionCounter.classList.remove('text-danger');
-                }
-            }
-
-            descriptionTextarea.addEventListener('input', updateCharacterCount);
-            updateCharacterCount(); // Initial count
-
-            // File input validation
-            if (fileInput) {
-                fileInput.addEventListener('change', function() {
-                    const files = this.files;
-                    const maxSize = 5 * 1024 * 1024; // 5MB
-                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (files.length > 0) {
+                    imagePreview.classList.remove('d-none');
 
                     for (let i = 0; i < files.length; i++) {
                         const file = files[i];
 
-                        if (file.size > maxSize) {
-                            alert(`File "${file.name}" is too large. Maximum size is 5MB.`);
-                            this.value = '';
-                            return;
-                        }
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
 
-                        if (!allowedTypes.includes(file.type)) {
-                            alert(`File "${file.name}" is not a supported image format. Please use JPG, PNG, or GIF.`);
-                            this.value = '';
-                            return;
+                            reader.onload = function(e) {
+                                const col = document.createElement('div');
+                                col.className = 'col-auto';
+
+                                const previewContainer = document.createElement('div');
+                                previewContainer.className = 'image-preview-container';
+
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = 'image-preview';
+                                img.alt = 'Preview';
+
+                                const removeBtn = document.createElement('button');
+                                removeBtn.type = 'button';
+                                removeBtn.className = 'remove-image';
+                                removeBtn.innerHTML = '×';
+                                removeBtn.title = 'Remove image';
+                                removeBtn.onclick = function() {
+                                    removeImagePreview(previewContainer, i);
+                                };
+
+                                previewContainer.appendChild(img);
+                                previewContainer.appendChild(removeBtn);
+                                col.appendChild(previewContainer);
+                                imagePreview.appendChild(col);
+                            };
+
+                            reader.readAsDataURL(file);
                         }
                     }
-                });
-            }
+                } else {
+                    imagePreview.classList.add('d-none');
+                }
+            });
 
-            // Form validation
-            form.addEventListener('submit', function (e) {
-                if (!form.checkValidity()) {
-                    e.preventDefault();
-                    e.stopPropagation();
+            function removeImagePreview(container, index) {
+                container.remove();
 
-                    // Add shake animation to invalid fields
-                    const invalidFields = form.querySelectorAll(':invalid');
-                    invalidFields.forEach(field => {
-                        field.classList.add('is-invalid');
-                        field.parentElement.classList.add('was-validated');
-                    });
+                // Update the file input
+                const dt = new DataTransfer();
+                const files = imageUpload.files;
 
-                    // Scroll to first invalid field
-                    const firstInvalid = form.querySelector(':invalid');
-                    if (firstInvalid) {
-                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        firstInvalid.focus();
+                for (let i = 0; i < files.length; i++) {
+                    if (i !== index) {
+                        dt.items.add(files[i]);
                     }
                 }
 
-                form.classList.add('was-validated');
+                imageUpload.files = dt.files;
+
+                // Hide preview if no images left
+                if (dt.files.length === 0) {
+                    imagePreview.classList.add('d-none');
+                }
+            }
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Basic validation
+                const faultType = document.querySelector('#FaultType').value;
+                const description = document.querySelector('#Description').value.trim();
+
+                if (!faultType) {
+                    alert('Please select a fault type.');
+                    document.querySelector('#FaultType').focus();
+                    return;
+                }
+
+                if (!description) {
+                    alert('Please describe the fault.');
+                    document.querySelector('#Description').focus();
+                    return;
+                }
+
+                if (description.length < 10) {
+                    alert('Please provide a more detailed description (at least 10 characters).');
+                    document.querySelector('#Description').focus();
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.innerHTML = `
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    Submitting Report...
+                `;
+                submitBtn.disabled = true;
+
+                // Submit the form normally (not via AJAX)
+                form.submit();
             });
 
-            // Real-time validation for required fields
+            // Real-time validation
             const requiredFields = form.querySelectorAll('[required]');
             requiredFields.forEach(field => {
                 field.addEventListener('blur', function() {
-                    if (this.checkValidity()) {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
-                    } else {
-                        this.classList.remove('is-valid');
-                        this.classList.add('is-invalid');
-                    }
+                    validateField(this);
+                });
+
+                field.addEventListener('input', function() {
+                    validateField(this);
                 });
             });
 
-            // Loading state for submit button
-            const submitButton = form.querySelector('button[type="submit"]');
-            form.addEventListener('submit', function() {
-                if (form.checkValidity()) {
-                    submitButton.innerHTML = `
-                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                        Submitting...
-                    `;
-                    submitButton.disabled = true;
+            function validateField(field) {
+                if (field.value.trim() === '') {
+                    field.classList.add('is-invalid');
+                    field.classList.remove('is-valid');
+                } else {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                }
+            }
+
+            // File size validation
+            imageUpload.addEventListener('change', function() {
+                const files = this.files;
+                const maxSize = 5 * 1024 * 1024; // 5MB
+
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > maxSize) {
+                        alert(`File "${files[i].name}" is too large. Maximum size is 5MB.`);
+                        this.value = '';
+                        imagePreview.classList.add('d-none');
+                        imagePreview.innerHTML = '';
+                        break;
+                    }
                 }
             });
         });

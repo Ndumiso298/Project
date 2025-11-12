@@ -44,7 +44,7 @@ namespace Project.Data
         {
             var hasher = new PasswordHasher<IdentityUser>();
 
-            // Admin Users
+            // Admin User
             modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
@@ -64,277 +64,16 @@ namespace Project.Data
                     PostalCode = "2000",
                     CellNumber = "0111234567",
                     IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "2",
-                    UserName = "sarah.johnson@gmail.com",
-                    NormalizedUserName = "SARAH.JOHNSON@GMAIL.COM",
-                    Email = "sarah.johnson@gmail.com",
-                    NormalizedEmail = "SARAH.JOHNSON@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Admin123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Sarah",
-                    LastName = "Johnson",
-                    StreetAddress = "456 Management Ave",
-                    City = "Cape Town",
-                    State = "Western Cape",
-                    PostalCode = "8001",
-                    CellNumber = "0219876543",
-                    IsApproved = true,
-                    Status = "Approved"
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
                 }
             );
 
-            // Customer Users
+            // Customer Support Team
             modelBuilder.Entity<ApplicationUser>().HasData(
-                new ApplicationUser
-                {
-                    Id = "3",
-                    UserName = "mike.wilson@gmail.com",
-                    NormalizedUserName = "MIKE.WILSON@GMAIL.COM",
-                    Email = "mike.wilson@gmail.com",
-                    NormalizedEmail = "MIKE.WILSON@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Mike",
-                    LastName = "Wilson",
-                    StreetAddress = "789 Customer Road",
-                    City = "Durban",
-                    State = "KwaZulu-Natal",
-                    PostalCode = "4001",
-                    CellNumber = "0315551234",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "4",
-                    UserName = "lisa.brown@gmail.com",
-                    NormalizedUserName = "LISA.BROWN@GMAIL.COM",
-                    Email = "lisa.brown@gmail.com",
-                    NormalizedEmail = "LISA.BROWN@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Lisa",
-                    LastName = "Brown",
-                    StreetAddress = "321 Business Street",
-                    City = "Pretoria",
-                    State = "Gauteng",
-                    PostalCode = "0002",
-                    CellNumber = "0124445678",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "5",
-                    UserName = "david.jackson@gmail.com",
-                    NormalizedUserName = "DAVID.JACKSON@GMAIL.COM",
-                    Email = "david.jackson@gmail.com",
-                    NormalizedEmail = "DAVID.JACKSON@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "David",
-                    LastName = "Jackson",
-                    StreetAddress = "654 Retail Avenue",
-                    City = "Port Elizabeth",
-                    State = "Eastern Cape",
-                    PostalCode = "6001",
-                    CellNumber = "0413337890",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "6",
-                    UserName = "emma.davis@gmail.com",
-                    NormalizedUserName = "EMMA.DAVIS@GMAIL.COM",
-                    Email = "emma.davis@gmail.com",
-                    NormalizedEmail = "EMMA.DAVIS@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Emma",
-                    LastName = "Davis",
-                    StreetAddress = "987 Commerce Road",
-                    City = "Bloemfontein",
-                    State = "Free State",
-                    PostalCode = "9301",
-                    CellNumber = "0512224567",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "7",
-                    UserName = "robert.miller@gmail.com",
-                    NormalizedUserName = "ROBERT.MILLER@GMAIL.COM",
-                    Email = "robert.miller@gmail.com",
-                    NormalizedEmail = "ROBERT.MILLER@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Robert",
-                    LastName = "Miller",
-                    StreetAddress = "147 Trade Street",
-                    City = "Nelspruit",
-                    State = "Mpumalanga",
-                    PostalCode = "1200",
-                    CellNumber = "0131112345",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "8",
-                    UserName = "sophia.garcia@gmail.com",
-                    NormalizedUserName = "SOPHIA.GARCIA@GMAIL.COM",
-                    Email = "sophia.garcia@gmail.com",
-                    NormalizedEmail = "SOPHIA.GARCIA@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Sophia",
-                    LastName = "Garcia",
-                    StreetAddress = "258 Market Lane",
-                    City = "Polokwane",
-                    State = "Limpopo",
-                    PostalCode = "0700",
-                    CellNumber = "0156667890",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "9",
-                    UserName = "james.anderson@gmail.com",
-                    NormalizedUserName = "JAMES.ANDERSON@GMAIL.COM",
-                    Email = "james.anderson@gmail.com",
-                    NormalizedEmail = "JAMES.ANDERSON@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "James",
-                    LastName = "Anderson",
-                    StreetAddress = "369 Industry Road",
-                    City = "Kimberley",
-                    State = "Northern Cape",
-                    PostalCode = "8301",
-                    CellNumber = "0537771234",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "10",
-                    UserName = "olivia.martinez@gmail.com",
-                    NormalizedUserName = "OLIVIA.MARTINEZ@GMAIL.COM",
-                    Email = "olivia.martinez@gmail.com",
-                    NormalizedEmail = "OLIVIA.MARTINEZ@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Olivia",
-                    LastName = "Martinez",
-                    StreetAddress = "741 Commercial Ave",
-                    City = "Rustenburg",
-                    State = "North West",
-                    PostalCode = "2999",
-                    CellNumber = "0148884567",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "21",
-                    UserName = "william.thomas@gmail.com",
-                    NormalizedUserName = "WILLIAM.THOMAS@GMAIL.COM",
-                    Email = "william.thomas@gmail.com",
-                    NormalizedEmail = "WILLIAM.THOMAS@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "William",
-                    LastName = "Thomas",
-                    StreetAddress = "852 Enterprise Street",
-                    City = "East London",
-                    State = "Eastern Cape",
-                    PostalCode = "5201",
-                    CellNumber = "0439991234",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "22",
-                    UserName = "ava.robinson@gmail.com",
-                    NormalizedUserName = "AVA.ROBINSON@GMAIL.COM",
-                    Email = "ava.robinson@gmail.com",
-                    NormalizedEmail = "AVA.ROBINSON@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Ava",
-                    LastName = "Robinson",
-                    StreetAddress = "963 Corporate Road",
-                    City = "Pietermaritzburg",
-                    State = "KwaZulu-Natal",
-                    PostalCode = "3201",
-                    CellNumber = "0338885678",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "23",
-                    UserName = "noah.clark@gmail.com",
-                    NormalizedUserName = "NOAH.CLARK@GMAIL.COM",
-                    Email = "noah.clark@gmail.com",
-                    NormalizedEmail = "NOAH.CLARK@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Noah",
-                    LastName = "Clark",
-                    StreetAddress = "159 Business Park",
-                    City = "Welkom",
-                    State = "Free State",
-                    PostalCode = "9460",
-                    CellNumber = "0577779012",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "24",
-                    UserName = "isabella.rodriguez@gmail.com",
-                    NormalizedUserName = "ISABELLA.RODRIGUEZ@GMAIL.COM",
-                    Email = "isabella.rodriguez@gmail.com",
-                    NormalizedEmail = "ISABELLA.RODRIGUEZ@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Customer123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Isabella",
-                    LastName = "Rodriguez",
-                    StreetAddress = "753 Industrial Area",
-                    City = "Witbank",
-                    State = "Mpumalanga",
-                    PostalCode = "1035",
-                    CellNumber = "0136663456",
-                    IsApproved = true,
-                    Status = "Approved"
-                }
-            );
-
-            // Employee Users
-            modelBuilder.Entity<ApplicationUser>().HasData(
-                // Customer Support Team
                 new ApplicationUser
                 {
                     Id = "11",
@@ -353,7 +92,11 @@ namespace Project.Data
                     PostalCode = "4001",
                     CellNumber = "0315551234",
                     IsApproved = true,
-                    Status = "Approved"
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
                 },
                 new ApplicationUser
                 {
@@ -373,9 +116,16 @@ namespace Project.Data
                     PostalCode = "0002",
                     CellNumber = "0124445678",
                     IsApproved = true,
-                    Status = "Approved"
-                },
-                // Stock Control Team
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
+                }
+            );
+
+            // Stock Control Team
+            modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
                     Id = "13",
@@ -394,7 +144,11 @@ namespace Project.Data
                     PostalCode = "2001",
                     CellNumber = "0113337890",
                     IsApproved = true,
-                    Status = "Approved"
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
                 },
                 new ApplicationUser
                 {
@@ -414,9 +168,16 @@ namespace Project.Data
                     PostalCode = "8001",
                     CellNumber = "0216667890",
                     IsApproved = true,
-                    Status = "Approved"
-                },
-                // Maintenance Technicians
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
+                }
+            );
+
+            // Maintenance Technicians
+            modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
                     Id = "15",
@@ -435,7 +196,11 @@ namespace Project.Data
                     PostalCode = "8001",
                     CellNumber = "0212224567",
                     IsApproved = true,
-                    Status = "Approved"
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
                 },
                 new ApplicationUser
                 {
@@ -455,9 +220,16 @@ namespace Project.Data
                     PostalCode = "4001",
                     CellNumber = "0317778901",
                     IsApproved = true,
-                    Status = "Approved"
-                },
-                // Fault Technicians
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
+                }
+            );
+
+            // Fault Technicians
+            modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
                     Id = "17",
@@ -476,7 +248,11 @@ namespace Project.Data
                     PostalCode = "2001",
                     CellNumber = "0118881234",
                     IsApproved = true,
-                    Status = "Approved"
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
                 },
                 new ApplicationUser
                 {
@@ -496,60 +272,85 @@ namespace Project.Data
                     PostalCode = "0002",
                     CellNumber = "0129994567",
                     IsApproved = true,
-                    Status = "Approved"
-                },
-                // Additional Employees
-                new ApplicationUser
-                {
-                    Id = "25",
-                    UserName = "daniel.moore@gmail.com",
-                    NormalizedUserName = "DANIEL.MOORE@GMAIL.COM",
-                    Email = "daniel.moore@gmail.com",
-                    NormalizedEmail = "DANIEL.MOORE@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Support123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Daniel",
-                    LastName = "Moore",
-                    StreetAddress = "456 Service Lane",
-                    City = "Johannesburg",
-                    State = "Gauteng",
-                    PostalCode = "2001",
-                    CellNumber = "0117772345",
-                    IsApproved = true,
-                    Status = "Approved"
-                },
-                new ApplicationUser
-                {
-                    Id = "26",
-                    UserName = "susan.lee@gmail.com",
-                    NormalizedUserName = "SUSAN.LEE@GMAIL.COM",
-                    Email = "susan.lee@gmail.com",
-                    NormalizedEmail = "SUSAN.LEE@GMAIL.COM",
-                    EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "Stock123!"),
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    FirstName = "Susan",
-                    LastName = "Lee",
-                    StreetAddress = "789 Stock Avenue",
-                    City = "Cape Town",
-                    State = "Western Cape",
-                    PostalCode = "8001",
-                    CellNumber = "0215556789",
-                    IsApproved = true,
-                    Status = "Approved"
+                    Status = "Approved",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false
                 }
             );
+
+            // Business Customers (12 customers)
+            var businessCustomers = new[]
+            {
+                new { Id = "3", FirstName = "Mike", LastName = "Wilson", Email = "mike.wilson@gmail.com", City = "Durban", Cell = "0315551234" },
+                new { Id = "4", FirstName = "Lisa", LastName = "Brown", Email = "lisa.brown@gmail.com", City = "Pretoria", Cell = "0124445678" },
+                new { Id = "5", FirstName = "David", LastName = "Jackson", Email = "david.jackson@gmail.com", City = "Port Elizabeth", Cell = "0413337890" },
+                new { Id = "6", FirstName = "Emma", LastName = "Davis", Email = "emma.davis@gmail.com", City = "Bloemfontein", Cell = "0512224567" },
+                new { Id = "7", FirstName = "Robert", LastName = "Miller", Email = "robert.miller@gmail.com", City = "Nelspruit", Cell = "0131112345" },
+                new { Id = "8", FirstName = "Sophia", LastName = "Garcia", Email = "sophia.garcia@gmail.com", City = "Polokwane", Cell = "0156667890" },
+                new { Id = "9", FirstName = "James", LastName = "Anderson", Email = "james.anderson@gmail.com", City = "Kimberley", Cell = "0537771234" },
+                new { Id = "10", FirstName = "Olivia", LastName = "Martinez", Email = "olivia.martinez@gmail.com", City = "Rustenburg", Cell = "0148884567" },
+                new { Id = "21", FirstName = "William", LastName = "Thomas", Email = "william.thomas@gmail.com", City = "East London", Cell = "0439991234" },
+                new { Id = "22", FirstName = "Ava", LastName = "Robinson", Email = "ava.robinson@gmail.com", City = "Pietermaritzburg", Cell = "0338885678" },
+                new { Id = "23", FirstName = "Noah", LastName = "Clark", Email = "noah.clark@gmail.com", City = "Welkom", Cell = "0577779012" },
+                new { Id = "24", FirstName = "Isabella", LastName = "Rodriguez", Email = "isabella.rodriguez@gmail.com", City = "Witbank", Cell = "0136663456" }
+            };
+
+            foreach (var customer in businessCustomers)
+            {
+                modelBuilder.Entity<ApplicationUser>().HasData(
+                    new ApplicationUser
+                    {
+                        Id = customer.Id,
+                        UserName = customer.Email,
+                        NormalizedUserName = customer.Email.ToUpper(),
+                        Email = customer.Email,
+                        NormalizedEmail = customer.Email.ToUpper(),
+                        EmailConfirmed = true,
+                        PasswordHash = hasher.HashPassword(null, "Customer123!"),
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        StreetAddress = $"{new Random().Next(100, 999)} Business Street",
+                        City = customer.City,
+                        State = GetProvince(customer.City),
+                        PostalCode = GetPostalCode(customer.City),
+                        CellNumber = customer.Cell,
+                        IsApproved = true,
+                        Status = "Approved",
+                        LockoutEnabled = false,
+                        AccessFailedCount = 0,
+                        PhoneNumberConfirmed = false,
+                        TwoFactorEnabled = false
+                    }
+                );
+            }
         }
 
         private static void SeedUserRoles(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(
-                // Admin roles
+                // Admin role
                 new IdentityUserRole<string> { UserId = "1", RoleId = "1" },
-                new IdentityUserRole<string> { UserId = "2", RoleId = "1" },
 
-                // Customer roles
+                // Customer Support roles
+                new IdentityUserRole<string> { UserId = "11", RoleId = "3" },
+                new IdentityUserRole<string> { UserId = "12", RoleId = "3" },
+
+                // Stock Controller roles
+                new IdentityUserRole<string> { UserId = "13", RoleId = "4" },
+                new IdentityUserRole<string> { UserId = "14", RoleId = "4" },
+
+                // Maintenance Technician roles
+                new IdentityUserRole<string> { UserId = "15", RoleId = "5" },
+                new IdentityUserRole<string> { UserId = "16", RoleId = "5" },
+
+                // Fault Technician roles
+                new IdentityUserRole<string> { UserId = "17", RoleId = "6" },
+                new IdentityUserRole<string> { UserId = "18", RoleId = "6" },
+
+                // Business Customer roles
                 new IdentityUserRole<string> { UserId = "3", RoleId = "2" },
                 new IdentityUserRole<string> { UserId = "4", RoleId = "2" },
                 new IdentityUserRole<string> { UserId = "5", RoleId = "2" },
@@ -561,31 +362,13 @@ namespace Project.Data
                 new IdentityUserRole<string> { UserId = "21", RoleId = "2" },
                 new IdentityUserRole<string> { UserId = "22", RoleId = "2" },
                 new IdentityUserRole<string> { UserId = "23", RoleId = "2" },
-                new IdentityUserRole<string> { UserId = "24", RoleId = "2" },
-
-                // Customer Support roles
-                new IdentityUserRole<string> { UserId = "11", RoleId = "3" },
-                new IdentityUserRole<string> { UserId = "12", RoleId = "3" },
-                new IdentityUserRole<string> { UserId = "25", RoleId = "3" },
-
-                // Stock Controller roles
-                new IdentityUserRole<string> { UserId = "13", RoleId = "4" },
-                new IdentityUserRole<string> { UserId = "14", RoleId = "4" },
-                new IdentityUserRole<string> { UserId = "26", RoleId = "4" },
-
-                // Maintenance Technician roles
-                new IdentityUserRole<string> { UserId = "15", RoleId = "5" },
-                new IdentityUserRole<string> { UserId = "16", RoleId = "5" },
-
-                // Fault Technician roles
-                new IdentityUserRole<string> { UserId = "17", RoleId = "6" },
-                new IdentityUserRole<string> { UserId = "18", RoleId = "6" }
+                new IdentityUserRole<string> { UserId = "24", RoleId = "2" }
             );
         }
 
         private static void SeedCustomers(ModelBuilder modelBuilder)
         {
-            // Create sample document data (simulating small PDF files)
+            // Create sample document data (PDF header bytes)
             var sampleDocumentData = new byte[] {
                 0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34, 0x0A, 0x25,
                 0xE2, 0xE3, 0xCF, 0xD3, 0x0A, 0x31, 0x20, 0x30, 0x20, 0x6F,
@@ -612,119 +395,60 @@ namespace Project.Data
         {
             modelBuilder.Entity<Employee>().HasData(
                 new Employee { EmployeeID = 1, ApplicationUserId = "1", EmployeeNumber = "EMP001" },
-                new Employee { EmployeeID = 2, ApplicationUserId = "2", EmployeeNumber = "EMP002" },
-                new Employee { EmployeeID = 3, ApplicationUserId = "11", EmployeeNumber = "EMP003" },
-                new Employee { EmployeeID = 4, ApplicationUserId = "12", EmployeeNumber = "EMP004" },
-                new Employee { EmployeeID = 5, ApplicationUserId = "13", EmployeeNumber = "EMP005" },
-                new Employee { EmployeeID = 6, ApplicationUserId = "14", EmployeeNumber = "EMP006" },
-                new Employee { EmployeeID = 7, ApplicationUserId = "15", EmployeeNumber = "EMP007" },
-                new Employee { EmployeeID = 8, ApplicationUserId = "16", EmployeeNumber = "EMP008" },
-                new Employee { EmployeeID = 9, ApplicationUserId = "17", EmployeeNumber = "EMP009" },
-                new Employee { EmployeeID = 10, ApplicationUserId = "18", EmployeeNumber = "EMP010" },
-                new Employee { EmployeeID = 11, ApplicationUserId = "25", EmployeeNumber = "EMP011" },
-                new Employee { EmployeeID = 12, ApplicationUserId = "26", EmployeeNumber = "EMP012" }
+                new Employee { EmployeeID = 2, ApplicationUserId = "11", EmployeeNumber = "EMP002" },
+                new Employee { EmployeeID = 3, ApplicationUserId = "12", EmployeeNumber = "EMP003" },
+                new Employee { EmployeeID = 4, ApplicationUserId = "13", EmployeeNumber = "EMP004" },
+                new Employee { EmployeeID = 5, ApplicationUserId = "14", EmployeeNumber = "EMP005" },
+                new Employee { EmployeeID = 6, ApplicationUserId = "15", EmployeeNumber = "EMP006" },
+                new Employee { EmployeeID = 7, ApplicationUserId = "16", EmployeeNumber = "EMP007" },
+                new Employee { EmployeeID = 8, ApplicationUserId = "17", EmployeeNumber = "EMP008" },
+                new Employee { EmployeeID = 9, ApplicationUserId = "18", EmployeeNumber = "EMP009" }
             );
         }
 
         private static void SeedFridges(ModelBuilder modelBuilder)
         {
-            var fridgeImages = new[]
+            var fridgeData = new List<Fridge>
             {
-        "/Images/Fridges/fridge1.jpg", "/Images/Fridges/fridge2.jpg", "/Images/Fridges/fridge3.jpg",
-        "/Images/Fridges/fridge4.jpg", "/Images/Fridges/fridge5.jpg", "/Images/Fridges/fridge6.jpg",
-        "/Images/Fridges/fridge7.jpg", "/Images/Fridges/fridge8.jpg", "/Images/Fridges/fridge9.jpg",
-        "/Images/Fridges/fridge10.jpg", "/Images/Fridges/fridge11.jpg", "/Images/Fridges/fridge12.jpg",
-        "/Images/Fridges/fridge13.jpg", "/Images/Fridges/fridge14.jpg", "/Images/Fridges/fridge15.jpg",
-        "/Images/Fridges/fridge16.jpg", "/Images/Fridges/fridge17.jpg", "/Images/Fridges/fridge18.jpg",
-        "/Images/Fridges/fridge19.jpg", "/Images/Fridges/fridge20.jpg", "/Images/Fridges/fridge21.jpg",
-        "/Images/Fridges/fridge22.jpg", "/Images/Fridges/fridge23.jpg", "/Images/Fridges/fridge24.jpg",
-        "/Images/Fridges/fridge25.jpg", "/Images/Fridges/fridge26.jpg", "/Images/Fridges/fridge27.jpg",
-        "/Images/Fridges/fridge28.jpg", "/Images/Fridges/fridge29.jpg", "/Images/Fridges/fridge30.jpg",
-        "/Images/Fridges/fridge31.jpg", "/Images/Fridges/fridge32.jpg", "/Images/Fridges/fridge33.jpg",
-        "/Images/Fridges/fridge34.jpg", "/Images/Fridges/fridge35.jpg", "/Images/Fridges/fridge36.jpg",
-        "/Images/Fridges/fridge37.jpg", "/Images/Fridges/fridge38.jpg", "/Images/Fridges/fridge39.jpg",
-        "/Images/Fridges/fridge40.jpg", "/Images/Fridges/fridge41.jpg", "/Images/Fridges/fridge42.jpg",
-        "/Images/Fridges/fridge43.jpg", "/Images/Fridges/fridge44.jpg", "/Images/Fridges/fridge45.jpg",
-        "/Images/Fridges/fridge46.jpg", "/Images/Fridges/fridge47.jpg", "/Images/Fridges/fridge48.jpg"
-    };
+                new Fridge { FridgeId = 1, Brand = "Samsung", Model = "RT28A", CapacityLiters = 250, Type = "Double Door", Description = "Energy efficient fridge with frost-free technology and digital inverter compressor", RentalPricePerMonth = 450.0, ImageUrl = "/Images/Fridges/fridge1.jpg", AvailabilityStatus = "Available", Location = "Durban" },
+                new Fridge { FridgeId = 2, Brand = "LG", Model = "GL-T292", CapacityLiters = 260, Type = "Top Freezer", Description = "Smart inverter compressor for energy savings with multi-air flow system", RentalPricePerMonth = 480.0, ImageUrl = "/Images/Fridges/fridge2.jpg", AvailabilityStatus = "Available", Location = "Johannesburg" },
+                new Fridge { FridgeId = 3, Brand = "Hisense", Model = "H370BI", CapacityLiters = 320, Type = "Bottom Freezer", Description = "Spacious design with humidity control and LED lighting", RentalPricePerMonth = 520.0, ImageUrl = "/Images/Fridges/fridge3.jpg", AvailabilityStatus = "Rented", Location = "Cape Town" },
+                new Fridge { FridgeId = 4, Brand = "Defy", Model = "DAC621", CapacityLiters = 350, Type = "Combi Fridge", Description = "A+ energy rated with multi-airflow system and glass shelves", RentalPricePerMonth = 550.0, ImageUrl = "/Images/Fridges/fridge4.jpg", AvailabilityStatus = "Available", Location = "Pretoria" },
+                new Fridge { FridgeId = 5, Brand = "Whirlpool", Model = "WDE205", CapacityLiters = 200, Type = "Single Door", Description = "Compact and efficient single door fridge perfect for small spaces", RentalPricePerMonth = 400.0, ImageUrl = "/Images/Fridges/fridge5.jpg", AvailabilityStatus = "Available", Location = "Durban" },
+                new Fridge { FridgeId = 6, Brand = "Bosch", Model = "KDN42", CapacityLiters = 350, Type = "Frost Free", Description = "No frost cooling with LED lighting and VitaFresh technology", RentalPricePerMonth = 600.0, ImageUrl = "/Images/Fridges/fridge6.jpg", AvailabilityStatus = "Rented", Location = "Port Elizabeth" },
+                new Fridge { FridgeId = 7, Brand = "Smeg", Model = "FAB28", CapacityLiters = 270, Type = "Retro Style", Description = "Stylish retro fridge with adjustable shelves and modern cooling", RentalPricePerMonth = 650.0, ImageUrl = "/Images/Fridges/fridge7.jpg", AvailabilityStatus = "Available", Location = "Johannesburg" },
+                new Fridge { FridgeId = 8, Brand = "Kelvinator", Model = "KRF265", CapacityLiters = 265, Type = "Top Mount", Description = "Affordable fridge with efficient cooling and durable design", RentalPricePerMonth = 430.0, ImageUrl = "/Images/Fridges/fridge8.jpg", AvailabilityStatus = "Available", Location = "Cape Town" },
+                new Fridge { FridgeId = 9, Brand = "Siemens", Model = "KG36N", CapacityLiters = 360, Type = "Bottom Freezer", Description = "No frost with multi-airflow system and hyperFresh technology", RentalPricePerMonth = 590.0, ImageUrl = "/Images/Fridges/fridge9.jpg", AvailabilityStatus = "Rented", Location = "Pretoria" },
+                new Fridge { FridgeId = 10, Brand = "Haier", Model = "HRF290", CapacityLiters = 290, Type = "Double Door", Description = "Toughened glass shelves and energy efficient with HCS technology", RentalPricePerMonth = 470.0, ImageUrl = "/Images/Fridges/fridge10.jpg", AvailabilityStatus = "Available", Location = "Durban" }
+            };
 
-            modelBuilder.Entity<Fridge>().HasData(
-                new Fridge { FridgeId = 1, Brand = "Samsung", Model = "RT28A", CapacityLiters = 250, Type = "Double Door", Description = "Energy efficient fridge with frost-free technology", RentalPricePerMonth = 450.0, ImageUrl = fridgeImages[0], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 2, Brand = "LG", Model = "GL-T292", CapacityLiters = 260, Type = "Top Freezer", Description = "Smart inverter compressor for energy savings", RentalPricePerMonth = 480.0, ImageUrl = fridgeImages[1], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 3, Brand = "Hisense", Model = "H370BI", CapacityLiters = 320, Type = "Bottom Freezer", Description = "Spacious design with humidity control", RentalPricePerMonth = 520.0, ImageUrl = fridgeImages[2], AvailabilityStatus = "Rented", Location = "Cape Town" },
-                new Fridge { FridgeId = 4, Brand = "Defy", Model = "DAC621", CapacityLiters = 350, Type = "Combi Fridge", Description = "A+ energy rated with multi-airflow system", RentalPricePerMonth = 550.0, ImageUrl = fridgeImages[3], AvailabilityStatus = "Available", Location = "Pretoria" },
-                new Fridge { FridgeId = 5, Brand = "Whirlpool", Model = "WDE205", CapacityLiters = 200, Type = "Single Door", Description = "Compact and efficient single door fridge", RentalPricePerMonth = 400.0, ImageUrl = fridgeImages[4], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 6, Brand = "Bosch", Model = "KDN42", CapacityLiters = 350, Type = "Frost Free", Description = "No frost cooling with LED lighting", RentalPricePerMonth = 600.0, ImageUrl = fridgeImages[5], AvailabilityStatus = "Rented", Location = "Port Elizabeth" },
-                new Fridge { FridgeId = 7, Brand = "Smeg", Model = "FAB28", CapacityLiters = 270, Type = "Retro Style", Description = "Stylish retro fridge with adjustable shelves", RentalPricePerMonth = 650.0, ImageUrl = fridgeImages[6], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 8, Brand = "Kelvinator", Model = "KRF265", CapacityLiters = 265, Type = "Top Mount", Description = "Affordable fridge with efficient cooling", RentalPricePerMonth = 430.0, ImageUrl = fridgeImages[7], AvailabilityStatus = "Available", Location = "Cape Town" },
-                new Fridge { FridgeId = 9, Brand = "Siemens", Model = "KG36N", CapacityLiters = 360, Type = "Bottom Freezer", Description = "No frost with multi-airflow system", RentalPricePerMonth = 590.0, ImageUrl = fridgeImages[8], AvailabilityStatus = "Rented", Location = "Pretoria" },
-                new Fridge { FridgeId = 10, Brand = "Haier", Model = "HRF290", CapacityLiters = 290, Type = "Double Door", Description = "Toughened glass shelves and energy efficient", RentalPricePerMonth = 470.0, ImageUrl = fridgeImages[9], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 11, Brand = "Hisense", Model = "H310BI", CapacityLiters = 310, Type = "Top Freezer", Description = "Low noise and efficient compressor", RentalPricePerMonth = 500.0, ImageUrl = fridgeImages[10], AvailabilityStatus = "Available", Location = "Bloemfontein" },
-                new Fridge { FridgeId = 12, Brand = "Defy", Model = "DAC700", CapacityLiters = 420, Type = "Side by Side", Description = "LED display and water dispenser", RentalPricePerMonth = 700.0, ImageUrl = fridgeImages[11], AvailabilityStatus = "Rented", Location = "Cape Town" },
-                new Fridge { FridgeId = 13, Brand = "LG", Model = "GL-Q282", CapacityLiters = 282, Type = "Smart Inverter", Description = "Smart cooling with WiFi control", RentalPricePerMonth = 530.0, ImageUrl = fridgeImages[12], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 14, Brand = "Samsung", Model = "RT34A", CapacityLiters = 340, Type = "Top Freezer", Description = "Twin cooling system for freshness", RentalPricePerMonth = 560.0, ImageUrl = fridgeImages[13], AvailabilityStatus = "Rented", Location = "Pretoria" },
-                new Fridge { FridgeId = 15, Brand = "Whirlpool", Model = "WDE520", CapacityLiters = 500, Type = "Double Door", Description = "High capacity with 6th sense technology", RentalPricePerMonth = 750.0, ImageUrl = fridgeImages[14], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 16, Brand = "Samsung", Model = "RT38A", CapacityLiters = 380, Type = "French Door", Description = "Flexible storage with external water dispenser", RentalPricePerMonth = 680.0, ImageUrl = fridgeImages[15], AvailabilityStatus = "Available", Location = "Cape Town" },
-                new Fridge { FridgeId = 17, Brand = "LG", Model = "GL-B422", CapacityLiters = 422, Type = "Bottom Freezer", Description = "Door cooling+ technology for even cooling", RentalPricePerMonth = 620.0, ImageUrl = fridgeImages[16], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 18, Brand = "Hisense", Model = "H450BI", CapacityLiters = 450, Type = "Side by Side", Description = "Premium cooling with smart features", RentalPricePerMonth = 720.0, ImageUrl = fridgeImages[17], AvailabilityStatus = "Rented", Location = "Johannesburg" },
-                new Fridge { FridgeId = 19, Brand = "Defy", Model = "DAC800", CapacityLiters = 520, Type = "Double Door", Description = "Large capacity with eco-friendly refrigerant", RentalPricePerMonth = 580.0, ImageUrl = fridgeImages[18], AvailabilityStatus = "Available", Location = "Pretoria" },
-                new Fridge { FridgeId = 20, Brand = "Whirlpool", Model = "WDE350", CapacityLiters = 350, Type = "Top Freezer", Description = "6th sense technology with adaptive cooling", RentalPricePerMonth = 520.0, ImageUrl = fridgeImages[19], AvailabilityStatus = "Available", Location = "Port Elizabeth" },
-                new Fridge { FridgeId = 21, Brand = "Bosch", Model = "KDN56", CapacityLiters = 540, Type = "Frost Free", Description = "VitaFresh technology for longer freshness", RentalPricePerMonth = 780.0, ImageUrl = fridgeImages[20], AvailabilityStatus = "Rented", Location = "Cape Town" },
-                new Fridge { FridgeId = 22, Brand = "Smeg", Model = "FAB32", CapacityLiters = 320, Type = "Retro Style", Description = "50s style retro design with modern features", RentalPricePerMonth = 850.0, ImageUrl = fridgeImages[21], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 23, Brand = "Kelvinator", Model = "KRF320", CapacityLiters = 320, Type = "Top Mount", Description = "Energy efficient with glass shelves", RentalPricePerMonth = 460.0, ImageUrl = fridgeImages[22], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 24, Brand = "Siemens", Model = "KG49", CapacityLiters = 410, Type = "Bottom Freezer", Description = "NoFrost technology with hyperFresh", RentalPricePerMonth = 690.0, ImageUrl = fridgeImages[23], AvailabilityStatus = "Rented", Location = "Pretoria" },
-                new Fridge { FridgeId = 25, Brand = "Haier", Model = "HRF520", CapacityLiters = 520, Type = "French Door", Description = "Triple cooling system with humidity control", RentalPricePerMonth = 720.0, ImageUrl = fridgeImages[24], AvailabilityStatus = "Available", Location = "Cape Town" },
-                new Fridge { FridgeId = 26, Brand = "Hisense", Model = "H280BI", CapacityLiters = 280, Type = "Single Door", Description = "Compact design perfect for small spaces", RentalPricePerMonth = 380.0, ImageUrl = fridgeImages[25], AvailabilityStatus = "Available", Location = "Bloemfontein" },
-                new Fridge { FridgeId = 27, Brand = "Defy", Model = "DAC300", CapacityLiters = 300, Type = "Top Freezer", Description = "Economical and reliable performance", RentalPricePerMonth = 420.0, ImageUrl = fridgeImages[26], AvailabilityStatus = "Rented", Location = "Durban" },
-                new Fridge { FridgeId = 28, Brand = "LG", Model = "GL-S282", CapacityLiters = 282, Type = "Single Door", Description = "Smart inverter with door cooling", RentalPricePerMonth = 490.0, ImageUrl = fridgeImages[27], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 29, Brand = "Samsung", Model = "RT22A", CapacityLiters = 220, Type = "Single Door", Description = "Compact fridge with digital inverter", RentalPricePerMonth = 410.0, ImageUrl = fridgeImages[28], AvailabilityStatus = "Available", Location = "Pretoria" },
-                new Fridge { FridgeId = 30, Brand = "Whirlpool", Model = "WDE280", CapacityLiters = 280, Type = "Top Freezer", Description = "6th sense technology in compact size", RentalPricePerMonth = 440.0, ImageUrl = fridgeImages[29], AvailabilityStatus = "Rented", Location = "Cape Town" },
-                new Fridge { FridgeId = 31, Brand = "Bosch", Model = "KDN32", CapacityLiters = 320, Type = "Frost Free", Description = "VitaFresh pro for optimal food storage", RentalPricePerMonth = 580.0, ImageUrl = fridgeImages[30], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 32, Brand = "Smeg", Model = "FAB50", CapacityLiters = 500, Type = "Retro Style", Description = "Large capacity retro fridge", RentalPricePerMonth = 920.0, ImageUrl = fridgeImages[31], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 33, Brand = "Kelvinator", Model = "KRF400", CapacityLiters = 400, Type = "Bottom Freezer", Description = "Spacious design with efficient cooling", RentalPricePerMonth = 540.0, ImageUrl = fridgeImages[32], AvailabilityStatus = "Rented", Location = "Pretoria" },
-                new Fridge { FridgeId = 34, Brand = "Siemens", Model = "KG42", CapacityLiters = 385, Type = "Bottom Freezer", Description = "hyperFresh plus with NoFrost", RentalPricePerMonth = 670.0, ImageUrl = fridgeImages[33], AvailabilityStatus = "Available", Location = "Cape Town" },
-                new Fridge { FridgeId = 35, Brand = "Haier", Model = "HRF380", CapacityLiters = 380, Type = "Double Door", Description = "Triple cooling with HCS technology", RentalPricePerMonth = 590.0, ImageUrl = fridgeImages[34], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 36, Brand = "Hisense", Model = "H520BI", CapacityLiters = 520, Type = "French Door", Description = "Smart cooling with WiFi connectivity", RentalPricePerMonth = 780.0, ImageUrl = fridgeImages[35], AvailabilityStatus = "Rented", Location = "Johannesburg" },
-                new Fridge { FridgeId = 37, Brand = "Defy", Model = "DAC450", CapacityLiters = 450, Type = "Side by Side", Description = "Water and ice dispenser with LED display", RentalPricePerMonth = 650.0, ImageUrl = fridgeImages[36], AvailabilityStatus = "Available", Location = "Pretoria" },
-                new Fridge { FridgeId = 38, Brand = "LG", Model = "GL-F422", CapacityLiters = 422, Type = "French Door", Description = "InstaView door-in-door technology", RentalPricePerMonth = 820.0, ImageUrl = fridgeImages[37], AvailabilityStatus = "Available", Location = "Cape Town" },
-                new Fridge { FridgeId = 39, Brand = "Samsung", Model = "RT45A", CapacityLiters = 450, Type = "French Door", Description = "Twin cooling plus with metal cooling", RentalPricePerMonth = 760.0, ImageUrl = fridgeImages[38], AvailabilityStatus = "Rented", Location = "Durban" },
-                new Fridge { FridgeId = 40, Brand = "Whirlpool", Model = "WDE600", CapacityLiters = 600, Type = "French Door", Description = "Large capacity with 6th sense dual cool", RentalPricePerMonth = 880.0, ImageUrl = fridgeImages[39], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 41, Brand = "Bosch", Model = "KDN86", CapacityLiters = 635, Type = "Side by Side", Description = "VitaFresh pro with dual compressors", RentalPricePerMonth = 950.0, ImageUrl = fridgeImages[40], AvailabilityStatus = "Available", Location = "Pretoria" },
-                new Fridge { FridgeId = 42, Brand = "Smeg", Model = "FAB36", CapacityLiters = 360, Type = "Retro Style", Description = "Classic design with modern features", RentalPricePerMonth = 780.0, ImageUrl = fridgeImages[41], AvailabilityStatus = "Rented", Location = "Cape Town" },
-                new Fridge { FridgeId = 43, Brand = "Kelvinator", Model = "KRF280", CapacityLiters = 280, Type = "Top Mount", Description = "Compact and energy efficient", RentalPricePerMonth = 420.0, ImageUrl = fridgeImages[42], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 44, Brand = "Siemens", Model = "KG56", CapacityLiters = 530, Type = "Bottom Freezer", Description = "hyperFresh with perfect results", RentalPricePerMonth = 740.0, ImageUrl = fridgeImages[43], AvailabilityStatus = "Available", Location = "Johannesburg" },
-                new Fridge { FridgeId = 45, Brand = "Haier", Model = "HRF260", CapacityLiters = 260, Type = "Single Door", Description = "Compact design with HCS technology", RentalPricePerMonth = 380.0, ImageUrl = fridgeImages[44], AvailabilityStatus = "Rented", Location = "Pretoria" },
-                new Fridge { FridgeId = 46, Brand = "Hisense", Model = "H380BI", CapacityLiters = 380, Type = "Bottom Freezer", Description = "Smart features with efficient cooling", RentalPricePerMonth = 550.0, ImageUrl = fridgeImages[45], AvailabilityStatus = "Available", Location = "Cape Town" },
-                new Fridge { FridgeId = 47, Brand = "Defy", Model = "DAC550", CapacityLiters = 550, Type = "French Door", Description = "Premium cooling with advanced features", RentalPricePerMonth = 720.0, ImageUrl = fridgeImages[46], AvailabilityStatus = "Available", Location = "Durban" },
-                new Fridge { FridgeId = 48, Brand = "LG", Model = "GL-M422", CapacityLiters = 422, Type = "Bottom Freezer", Description = "Door cooling+ with linear cooling", RentalPricePerMonth = 680.0, ImageUrl = fridgeImages[47], AvailabilityStatus = "Rented", Location = "Johannesburg" }
-            );
+            modelBuilder.Entity<Fridge>().HasData(fridgeData);
         }
 
         private static void SeedFridgeInStocks(ModelBuilder modelBuilder)
         {
             var fridgeInStocks = new List<FridgeInStock>();
-            var fridgeIds = Enumerable.Range(1, 48).ToArray(); // Now includes 1-48
-            var conditions = new[] { "Excellent", "Good", "Very Good", "Excellent", "Good" };
-            var locations = new[] { "Durban Warehouse", "Johannesburg Main", "Cape Town Storage", "Pretoria Facility", "Port Elizabeth Depot" };
+            var random = new Random();
+            var conditions = new[] { "Excellent", "Good", "Very Good" };
+            var locations = new[] { "Johannesburg Main Warehouse", "Cape Town Storage", "Durban Distribution", "Pretoria Facility", "Port Elizabeth Depot" };
 
             var idCounter = 1;
-            var random = new Random();
-
-            foreach (var fridgeId in fridgeIds)
+            for (int fridgeId = 1; fridgeId <= 10; fridgeId++)
             {
-                for (int i = 1; i <= 10; i++)
+                for (int i = 1; i <= 8; i++)
                 {
-                    var isAvailable = random.Next(0, 2) == 1;
+                    var isAvailable = random.Next(0, 4) != 0; // 75% available
                     fridgeInStocks.Add(new FridgeInStock
                     {
                         FridgeInStockId = idCounter,
                         FridgeNo = $"FRG-{fridgeId:000}-{i:000}",
-                        LastMaintenanceDate = DateTime.Now.AddMonths(-random.Next(0, 6)),
+                        LastMaintenanceDate = DateTime.Now.AddMonths(-random.Next(0, 8)),
                         Condition = conditions[random.Next(conditions.Length)],
                         IsAvailable = isAvailable,
                         Quantity = 1,
                         Location = locations[random.Next(locations.Length)],
-                        FridgeId = fridgeId
+                        FridgeId = fridgeId,
+                        Status = isAvailable ? "Available" : "Maintenance"
                     });
                     idCounter++;
                 }
@@ -736,414 +460,173 @@ namespace Project.Data
         private static void SeedBusinessInfo(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BusinessInfo>().HasData(
-                new BusinessInfo { BusinessID = 1, BusinessName = "FridgeHub Enterprises", RegistrationNumber = "2024FH001", BusinessType = "Fridge Rental", Industry = "Appliance Rental", Email = "info@gmail.com", PhoneNumber = "0111234567", Website = "www.fridgehub.com", Address = "123 Main Street", City = "Johannesburg", Country = "South Africa", PostalCode = "2000", CreatedAt = DateTime.Now.AddYears(-2) },
-                new BusinessInfo { BusinessID = 2, BusinessName = "Cool Solutions SA", RegistrationNumber = "2023CS002", BusinessType = "Appliance Services", Industry = "Maintenance Services", Email = "admin@coolsolutions.co.za", PhoneNumber = "0219876543", Website = "www.coolsolutions.co.za", Address = "456 Service Road", City = "Cape Town", Country = "South Africa", PostalCode = "8001", CreatedAt = DateTime.Now.AddYears(-1) },
-                new BusinessInfo { BusinessID = 3, BusinessName = "Fridge Rentals Durban", RegistrationNumber = "2024FR003", BusinessType = "Rental Services", Industry = "Appliance Rental", Email = "rentals@fridgedurban.co.za", PhoneNumber = "0315551234", Website = "www.fridgedurban.co.za", Address = "789 Coastal Road", City = "Durban", Country = "South Africa", PostalCode = "4001", CreatedAt = DateTime.Now.AddMonths(-6) },
-                new BusinessInfo { BusinessID = 4, BusinessName = "Pretoria Cooling Systems", RegistrationNumber = "2023PCS004", BusinessType = "HVAC Services", Industry = "Cooling Systems", Email = "info@pretoriacooling.co.za", PhoneNumber = "0124445678", Website = "www.pretoriacooling.co.za", Address = "321 Capital Avenue", City = "Pretoria", Country = "South Africa", PostalCode = "0002", CreatedAt = DateTime.Now.AddYears(-1) },
-                new BusinessInfo { BusinessID = 5, BusinessName = "Eastern Cape Appliances", RegistrationNumber = "2024ECA005", BusinessType = "Appliance Retail", Industry = "Retail", Email = "sales@ecappliances.co.za", PhoneNumber = "0413337890", Website = "www.ecappliances.co.za", Address = "654 Ocean View", City = "Port Elizabeth", Country = "South Africa", PostalCode = "6001", CreatedAt = DateTime.Now.AddMonths(-8) },
-                new BusinessInfo { BusinessID = 6, BusinessName = "Free State Cooling", RegistrationNumber = "2023FSC006", BusinessType = "Cooling Solutions", Industry = "HVAC Services", Email = "contact@fscooling.co.za", PhoneNumber = "0512224567", Website = "www.fscooling.co.za", Address = "987 Central Street", City = "Bloemfontein", Country = "South Africa", PostalCode = "9301", CreatedAt = DateTime.Now.AddYears(-1) },
-                new BusinessInfo { BusinessID = 7, BusinessName = "Mpumalanga Fridge Rentals", RegistrationNumber = "2024MFR007", BusinessType = "Rental Services", Industry = "Appliance Rental", Email = "info@mpumalangafridges.co.za", PhoneNumber = "0131112345", Website = "www.mpumalangafridges.co.za", Address = "147 Highlands Road", City = "Nelspruit", Country = "South Africa", PostalCode = "1200", CreatedAt = DateTime.Now.AddMonths(-4) },
-                new BusinessInfo { BusinessID = 8, BusinessName = "Limpopo Cooling Experts", RegistrationNumber = "2023LCE008", BusinessType = "Technical Services", Industry = "Cooling Systems", Email = "support@limpopocooling.co.za", PhoneNumber = "0156667890", Website = "www.limpopocooling.co.za", Address = "258 Bushveld Street", City = "Polokwane", Country = "South Africa", PostalCode = "0700", CreatedAt = DateTime.Now.AddYears(-1) },
-                new BusinessInfo { BusinessID = 9, BusinessName = "Northern Cape Appliances", RegistrationNumber = "2024NCA009", BusinessType = "Appliance Sales", Industry = "Retail", Email = "sales@ncappliances.co.za", PhoneNumber = "0537771234", Website = "www.ncappliances.co.za", Address = "369 Diamond Road", City = "Kimberley", Country = "South Africa", PostalCode = "8301", CreatedAt = DateTime.Now.AddMonths(-10) },
-                new BusinessInfo { BusinessID = 10, BusinessName = "North West Cooling Solutions", RegistrationNumber = "2023NWC010", BusinessType = "Cooling Services", Industry = "HVAC Services", Email = "info@nwcooling.co.za", PhoneNumber = "0148884567", Website = "www.nwcooling.co.za", Address = "741 Platinum Avenue", City = "Rustenburg", Country = "South Africa", PostalCode = "2999", CreatedAt = DateTime.Now.AddYears(-1) },
-                new BusinessInfo { BusinessID = 11, BusinessName = "KZN Appliance Rentals", RegistrationNumber = "2024KZNR011", BusinessType = "Rental Services", Industry = "Appliance Rental", Email = "rentals@kznappliances.co.za", PhoneNumber = "0338885678", Website = "www.kznappliances.co.za", Address = "852 Coastal Highway", City = "Pietermaritzburg", Country = "South Africa", PostalCode = "3201", CreatedAt = DateTime.Now.AddMonths(-3) },
-                new BusinessInfo { BusinessID = 12, BusinessName = "Gauteng Cooling Systems", RegistrationNumber = "2023GCS012", BusinessType = "Technical Services", Industry = "Cooling Systems", Email = "service@gautengcooling.co.za", PhoneNumber = "0119992345", Website = "www.gautengcooling.co.za", Address = "963 Metro Road", City = "Johannesburg", Country = "South Africa", PostalCode = "2001", CreatedAt = DateTime.Now.AddYears(-2) }
+                new BusinessInfo { BusinessID = 1, BusinessName = "FridgeHub Enterprises", RegistrationNumber = "2024FH001", BusinessType = "Fridge Rental", Industry = "Appliance Rental", Email = "info@gmail.com", PhoneNumber = "0111234567", Website = "www.fridgehub.com", Address = "123 Main Street", City = "Johannesburg", Country = "South Africa", PostalCode = "2000", CreatedAt = new DateTime(2023, 11, 12, 10, 28, 47, 510, DateTimeKind.Local).AddTicks(9229) },
+                new BusinessInfo { BusinessID = 2, BusinessName = "Cool Solutions SA", RegistrationNumber = "2023CS002", BusinessType = "Appliance Services", Industry = "Maintenance Services", Email = "admin@coolsolutions.co.za", PhoneNumber = "0219876543", Website = "www.coolsolutions.co.za", Address = "456 Service Road", City = "Cape Town", Country = "South Africa", PostalCode = "8001", CreatedAt = new DateTime(2024, 11, 12, 10, 28, 47, 510, DateTimeKind.Local).AddTicks(9234) },
+                new BusinessInfo { BusinessID = 3, BusinessName = "Fridge Rentals Durban", RegistrationNumber = "2024FR003", BusinessType = "Rental Services", Industry = "Appliance Rental", Email = "rentals@fridgedurban.co.za", PhoneNumber = "0315551234", Website = "www.fridgedurban.co.za", Address = "789 Coastal Road", City = "Durban", Country = "South Africa", PostalCode = "4001", CreatedAt = new DateTime(2025, 5, 12, 10, 28, 47, 510, DateTimeKind.Local).AddTicks(9238) }
             );
         }
 
         private static void SeedRequestHeaders(ModelBuilder modelBuilder)
         {
-            var requestHeaders = new List<RequestHeader>();
-            var random = new Random();
-            var statuses = new[] { SD.Pending, SD.Approved, SD.Rejected, SD.Shipped, SD.Closed };
-            var rejectionReasons = new[] {
-        "Incomplete business documentation provided",
-        "Credit check failed",
-        "Required additional verification documents",
-        "Business registration not valid",
-        "Payment method not approved",
-        "Customer history requires review",
-        "Document verification pending",
-        "Business type not supported"
-    };
-            var cities = new[] { "Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein" };
-            var streets = new[] { "Main Street", "Service Road", "Business Avenue", "Commerce Road", "Trade Street" };
-
-            // Valid Employee IDs (1-12)
-            var validEmployeeIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-
-            // Map CustomerID to actual customer names from your ApplicationUsers
-            var customerNames = new Dictionary<int, (string FirstName, string LastName, string CellNumber, string Email)>
-    {
-        { 1, ("Mike", "Wilson", "0315551234", "mike.wilson@gmail.com") },
-        { 2, ("Lisa", "Brown", "0124445678", "lisa.brown@gmail.com") },
-        { 3, ("David", "Jackson", "0413337890", "david.jackson@gmail.com") },
-        { 4, ("Emma", "Davis", "0512224567", "emma.davis@gmail.com") },
-        { 5, ("Robert", "Miller", "0131112345", "robert.miller@gmail.com") },
-        { 6, ("Sophia", "Garcia", "0156667890", "sophia.garcia@gmail.com") },
-        { 7, ("James", "Anderson", "0537771234", "james.anderson@gmail.com") },
-        { 8, ("Olivia", "Martinez", "0148884567", "olivia.martinez@gmail.com") },
-        { 9, ("William", "Thomas", "0439991234", "william.thomas@gmail.com") },
-        { 10, ("Ava", "Robinson", "0338885678", "ava.robinson@gmail.com") },
-        { 11, ("Noah", "Clark", "0577779012", "noah.clark@gmail.com") },
-        { 12, ("Isabella", "Rodriguez", "0136663456", "isabella.rodriguez@gmail.com") }
-    };
-
-            for (int i = 1; i <= 15; i++)
+            var requestHeaders = new List<RequestHeader>
             {
-                var customerId = (i % 12) + 1;
-                var customerInfo = customerNames[customerId];
-                var status = statuses[random.Next(statuses.Length)];
-                var requestDate = DateTime.Now.AddDays(-random.Next(1, 90));
-                var isRejected = status == SD.Rejected;
-                var rejectionDate = isRejected ? requestDate.AddDays(random.Next(1, 5)) : (DateTime?)null;
-                var rejectionReason = isRejected ? rejectionReasons[random.Next(rejectionReasons.Length)] : null;
-
-                requestHeaders.Add(new RequestHeader
-                {
-                    RequestHeaderId = i,
-                    CustomerID = customerId,
-                    EmployeeID = validEmployeeIds[random.Next(validEmployeeIds.Length)],
-                    RequestDate = requestDate,
-                    RequestTotal = random.Next(400, 1500),
-                    FirstName = customerInfo.FirstName,
-                    LastName = customerInfo.LastName,
-                    StreetAddress = $"{random.Next(1, 999)} {streets[random.Next(streets.Length)]}",
-                    City = cities[random.Next(cities.Length)],
-                    State = "Province",
-                    PostalCode = $"{random.Next(1000, 9999)}",
-                    CellNumber = customerInfo.CellNumber,
-                    Status = status,
-                    DeliveryDate = status == SD.Shipped || status == SD.Closed ? requestDate.AddDays(random.Next(1, 10)) : null,
-                    PaymentDueDate = status == SD.Shipped || status == SD.Closed ? requestDate.AddDays(30) : null,
-                    RejectionReason = rejectionReason,
-                    RejectionDate = rejectionDate
-                });
-            }
+                new RequestHeader { RequestHeaderId = 1, CustomerID = 1, EmployeeID = 2, RequestDate = new DateTime(2025, 10, 17, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(1543), RequestTotal = 1350.0, FirstName = "Mike", LastName = "Wilson", StreetAddress = "857 Trade Street", City = "Port Elizabeth", State = "Eastern Cape", PostalCode = "6001", CellNumber = "0315551234", Status = "Pending" },
+                new RequestHeader { RequestHeaderId = 2, CustomerID = 2, EmployeeID = 3, RequestDate = new DateTime(2025, 10, 17, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2558), RequestTotal = 980.0, FirstName = "Lisa", LastName = "Brown", StreetAddress = "642 Commerce Road", City = "Johannesburg", State = "Gauteng", PostalCode = "2000", CellNumber = "0124445678", Status = "Rejected", RejectionReason = "Required additional verification documents", RejectionDate = new DateTime(2025, 10, 21, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2558) },
+                new RequestHeader { RequestHeaderId = 3, CustomerID = 3, EmployeeID = 4, RequestDate = new DateTime(2025, 11, 10, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2572), RequestTotal = 2200.0, FirstName = "David", LastName = "Jackson", StreetAddress = "358 Commerce Road", City = "Johannesburg", State = "Gauteng", PostalCode = "2001", CellNumber = "0413337890", Status = "Shipped", DeliveryDate = new DateTime(2025, 11, 12, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2572), PaymentDueDate = new DateTime(2025, 12, 10, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2572) },
+                new RequestHeader { RequestHeaderId = 4, CustomerID = 4, EmployeeID = 5, RequestDate = new DateTime(2025, 8, 19, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2578), RequestTotal = 1650.0, FirstName = "Emma", LastName = "Davis", StreetAddress = "720 Trade Street", City = "Bloemfontein", State = "Free State", PostalCode = "9301", CellNumber = "0512224567", Status = "Approved" },
+                new RequestHeader { RequestHeaderId = 5, CustomerID = 5, EmployeeID = 6, RequestDate = new DateTime(2025, 10, 26, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2584), RequestTotal = 1200.0, FirstName = "Robert", LastName = "Miller", StreetAddress = "653 Business Avenue", City = "Durban", State = "KwaZulu-Natal", PostalCode = "4001", CellNumber = "0131112345", Status = "Rejected", RejectionReason = "Credit check failed", RejectionDate = new DateTime(2025, 10, 30, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2584) }
+            };
 
             modelBuilder.Entity<RequestHeader>().HasData(requestHeaders);
         }
+
         private static void SeedRequestDetails(ModelBuilder modelBuilder)
         {
-            var requestDetails = new List<RequestDetails>();
-            var random = new Random();
-
-            for (int i = 1; i <= 20; i++)
+            var requestDetails = new List<RequestDetails>
             {
-                var requestHeaderId = (i % 15) + 1;
-                var fridgeId = random.Next(1, 49); // Now 1-48
-                var count = random.Next(1, 4);
-                var price = random.Next(400, 800);
-
-                requestDetails.Add(new RequestDetails
-                {
-                    RequestDetailId = i,
-                    RequestHeaderId = requestHeaderId,
-                    FridgeId = fridgeId,
-                    Count = count,
-                    Price = price
-                });
-            }
+                new RequestDetails { RequestDetailId = 1, RequestHeaderId = 1, FridgeId = 1, Count = 2, Price = 900.0 },
+                new RequestDetails { RequestDetailId = 2, RequestHeaderId = 1, FridgeId = 5, Count = 1, Price = 450.0 },
+                new RequestDetails { RequestDetailId = 3, RequestHeaderId = 2, FridgeId = 2, Count = 1, Price = 480.0 },
+                new RequestDetails { RequestDetailId = 4, RequestHeaderId = 2, FridgeId = 10, Count = 1, Price = 500.0 },
+                new RequestDetails { RequestDetailId = 5, RequestHeaderId = 3, FridgeId = 4, Count = 2, Price = 1100.0 },
+                new RequestDetails { RequestDetailId = 6, RequestHeaderId = 3, FridgeId = 7, Count = 1, Price = 650.0 },
+                new RequestDetails { RequestDetailId = 7, RequestHeaderId = 3, FridgeId = 8, Count = 1, Price = 450.0 },
+                new RequestDetails { RequestDetailId = 8, RequestHeaderId = 4, FridgeId = 3, Count = 1, Price = 520.0 },
+                new RequestDetails { RequestDetailId = 9, RequestHeaderId = 4, FridgeId = 6, Count = 1, Price = 600.0 },
+                new RequestDetails { RequestDetailId = 10, RequestHeaderId = 4, FridgeId = 9, Count = 1, Price = 530.0 },
+                new RequestDetails { RequestDetailId = 11, RequestHeaderId = 5, FridgeId = 1, Count = 3, Price = 1200.0 }
+            };
 
             modelBuilder.Entity<RequestDetails>().HasData(requestDetails);
         }
+
         private static void SeedCustomerFridges(ModelBuilder modelBuilder)
         {
-            var customerFridges = new List<CustomerFridge>();
-            var random = new Random();
-
-            for (int i = 1; i <= 25; i++)
+            var customerFridges = new List<CustomerFridge>
             {
-                var reservedDate = DateTime.Now.AddDays(-random.Next(1, 60));
-                var allocatedDate = random.Next(0, 2) == 1 ? reservedDate.AddDays(random.Next(1, 7)) : (DateTime?)null;
-                var needsReplacement = random.Next(0, 5) == 1; // 20% chance of needing replacement
-
-                customerFridges.Add(new CustomerFridge
-                {
-                    CustomerFridgeId = i,
-                    FridgeId = random.Next(1, 49),
-                    FridgeInStockId = random.Next(1, 481),
-                    CustomerID = random.Next(1, 13),
-                    ReservedDate = reservedDate,
-                    AllocatedDate = allocatedDate,
-                    RequestDetailId = random.Next(1, 21),
-                    ReasonForReplacement = needsReplacement ? "Frequent breakdowns" : null,
-                    ReplacementNotes = needsReplacement ? "Unit requires replacement due to age" : null,
-                    ReplacementDate = needsReplacement ? reservedDate.AddDays(random.Next(30, 90)) : (DateTime?)null,
-                    ReplacementFridgeInStockId = needsReplacement ? random.Next(1, 481) : null,
-                    ReplacementStatus = needsReplacement ? "Pending" : null,
-                    DeclineReason = null,
-                    TechnicianNotes = needsReplacement ? "Inspected and confirmed replacement needed" : null
-                });
-            }
+                new CustomerFridge { CustomerFridgeId = 1, FridgeId = 1, FridgeInStockId = 5, CustomerID = 1, ReservedDate = new DateTime(2025, 10, 15, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2961), AllocatedDate = new DateTime(2025, 10, 16, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2961), RequestDetailId = 1, IsActive = true },
+                new CustomerFridge { CustomerFridgeId = 2, FridgeId = 5, FridgeInStockId = 41, CustomerID = 1, ReservedDate = new DateTime(2025, 10, 15, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2978), AllocatedDate = new DateTime(2025, 10, 16, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2978), RequestDetailId = 2, IsActive = true },
+                new CustomerFridge { CustomerFridgeId = 3, FridgeId = 4, FridgeInStockId = 29, CustomerID = 3, ReservedDate = new DateTime(2025, 11, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2980), AllocatedDate = new DateTime(2025, 11, 10, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2980), RequestDetailId = 5, IsActive = true },
+                new CustomerFridge { CustomerFridgeId = 4, FridgeId = 7, FridgeInStockId = 53, CustomerID = 3, ReservedDate = new DateTime(2025, 11, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2992), AllocatedDate = new DateTime(2025, 11, 10, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2992), RequestDetailId = 6, IsActive = true },
+                new CustomerFridge { CustomerFridgeId = 5, FridgeId = 8, FridgeInStockId = 61, CustomerID = 3, ReservedDate = new DateTime(2025, 11, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2995), AllocatedDate = new DateTime(2025, 11, 10, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(2995), RequestDetailId = 7, IsActive = true }
+            };
 
             modelBuilder.Entity<CustomerFridge>().HasData(customerFridges);
         }
+
         private static void SeedFridgeVisits(ModelBuilder modelBuilder)
         {
-            var fridgeVisits = new List<FridgeVisit>();
-            var random = new Random();
-            var checkupStatuses = new[] { "Passed", "Failed", "In Progress", "Not Started" };
-            var technicianNames = new[] { "Robert Davis", "Jennifer Martin", "James Miller", "Patricia White" };
-
-            for (int i = 1; i <= 20; i++)
+            var fridgeVisits = new List<FridgeVisit>
             {
-                var visitDate = DateTime.Now.AddDays(-random.Next(1, 30));
-                var checkupStatus = checkupStatuses[random.Next(checkupStatuses.Length)];
-
-                fridgeVisits.Add(new FridgeVisit
-                {
-                    VisitId = i,
-                    VisitDate = visitDate,
-                    TechnicianName = technicianNames[random.Next(technicianNames.Length)],
-                    Notes = $"Visit notes for service {i}. Checkup completed with status: {checkupStatus}",
-                    CustomerApproval = random.Next(0, 2) == 1 ? SD.Approved : SD.Pending,
-                    CheckupStatus = checkupStatus,
-                    RequestHeaderId = random.Next(1, 16),
-                    VisitType = "Maintenance Check",
-                    Status = SD.Pending,
-                    CreatedDate = visitDate.AddDays(-1)
-                });
-            }
+                new FridgeVisit { VisitId = 1, VisitDate = new DateTime(2025, 11, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3132), TechnicianName = "Jennifer Martin", Notes = "Routine maintenance completed. Checked compressor, condenser coils, and door seals. All components functioning normally.", CustomerApproval = "Approved", CheckupStatus = "Passed", RequestHeaderId = 3, VisitType = "Maintenance Check", Status = "Completed", CreatedDate = new DateTime(2025, 11, 8, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3132) },
+                new FridgeVisit { VisitId = 2, VisitDate = new DateTime(2025, 10, 23, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3161), TechnicianName = "Jennifer Martin", Notes = "Customer reported temperature fluctuations. Found faulty thermostat. Replaced thermostat and recalibrated temperature settings.", CustomerApproval = "Approved", CheckupStatus = "Passed", RequestHeaderId = 1, VisitType = "Repair", Status = "Completed", CreatedDate = new DateTime(2025, 10, 22, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3161) },
+                new FridgeVisit { VisitId = 3, VisitDate = new DateTime(2025, 10, 31, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3164), TechnicianName = "James Miller", Notes = "Quarterly preventive maintenance. Cleaned condenser coils, checked refrigerant levels, and verified door seal integrity.", CustomerApproval = "Approved", CheckupStatus = "Passed", RequestHeaderId = 4, VisitType = "Preventive Maintenance", Status = "Completed", CreatedDate = new DateTime(2025, 10, 30, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3164) }
+            };
 
             modelBuilder.Entity<FridgeVisit>().HasData(fridgeVisits);
         }
 
         private static void SeedFaultReports(ModelBuilder modelBuilder)
         {
-            var faultReports = new List<FaultReport>();
-            var random = new Random();
-            var faultTypes = new[] { "Not Cooling", "Strange Noises", "Water Leakage", "Electrical Issues", "Door Problems" };
-            var priorities = new[] { "Low", "Medium", "High", "Critical" };
-            var statuses = new[] { "Reported", "In Progress", "Resolved", "Declined" };
-
-            for (int i = 1; i <= 15; i++)
+            var faultReports = new List<FaultReport>
             {
-                var reportedDate = DateTime.Now.AddDays(-random.Next(1, 45));
-
-                faultReports.Add(new FaultReport
-                {
-                    FaultReportId = i,
-                    CustomerId = random.Next(1, 13),
-                    FridgeInStockId = random.Next(1, 151),
-                    FaultType = faultTypes[random.Next(faultTypes.Length)],
-                    Description = $"Fault description for report {i}. Issue requires attention.",
-                    Priority = priorities[random.Next(priorities.Length)],
-                    Status = statuses[random.Next(statuses.Length)],
-                    ReportedDate = reportedDate,
-                    ImageUrl = $"/Images/Faults/fault-{i}.jpg",
-                    RequestReplacement = random.Next(0, 2) == 1,
-                    IsReplacementRequested = random.Next(0, 2) == 1
-                });
-            }
+                new FaultReport { FaultReportId = 1, CustomerId = 1, FridgeInStockId = 5, FaultType = "Not Cooling", Description = "Fridge not maintaining temperature. Food items spoiling. Compressor running but not cooling properly.", Priority = "Critical", Status = "Resolved", ReportedDate = new DateTime(2025, 10, 12, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3301), ImageUrl = "/Images/Faults/fault-1.jpg", RequestReplacement = false, IsReplacementRequested = false },
+                new FaultReport { FaultReportId = 2, CustomerId = 3, FridgeInStockId = 29, FaultType = "Strange Noises", Description = "Loud grinding noise coming from compressor area. Noise occurs every 15 minutes during cooling cycle.", Priority = "High", Status = "In Progress", ReportedDate = new DateTime(2025, 11, 6, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3319), ImageUrl = "/Images/Faults/fault-2.jpg", RequestReplacement = true, IsReplacementRequested = true },
+                new FaultReport { FaultReportId = 3, CustomerId = 4, FridgeInStockId = 33, FaultType = "Water Leakage", Description = "Water pooling under fridge. Leak appears to be coming from defrost drain tube. Ice buildup in freezer compartment.", Priority = "Medium", Status = "Resolved", ReportedDate = new DateTime(2025, 10, 30, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3323), ImageUrl = "/Images/Faults/fault-3.jpg", RequestReplacement = false, IsReplacementRequested = false }
+            };
 
             modelBuilder.Entity<FaultReport>().HasData(faultReports);
         }
 
         private static void SeedFaultTechnicians(ModelBuilder modelBuilder)
         {
-            var faultTechnicians = new List<FaultTechnician>();
-            var random = new Random();
-            var repairStatuses = new[] { "Not Started", "In Progress", "Completed", "Scrapped", "Resolved" };
-            var technicians = new[] { "James Miller", "Patricia White", "Robert Davis", "Jennifer Martin" };
-            var bookingStatuses = new[] { SD.Pending, SD.Approved, SD.Declined };
-
-            // Valid Visit IDs (1-20)
-            var validVisitIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
-            // Valid FaultReport IDs (1-15)
-            var validFaultReportIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-
-            for (int i = 1; i <= 15; i++)
+            var faultTechnicians = new List<FaultTechnician>
             {
-                var reportDate = DateTime.Now.AddDays(-random.Next(1, 30));
-                var bookingDate = random.Next(0, 2) == 1 ? reportDate.AddDays(random.Next(1, 14)) : (DateTime?)null;
-
-                faultTechnicians.Add(new FaultTechnician
-                {
-                    FaultId = i,
-                    VisitId = validVisitIds[random.Next(validVisitIds.Length)],
-                    FaultType = "Technical Fault",
-                    FaultDescription = $"Fault description for technician assignment {i}",
-                    ResolutionNotes = random.Next(0, 2) == 1 ? $"Resolution notes for fault {i}" : null,
-                    ReportDate = reportDate,
-                    RepairStatus = repairStatuses[random.Next(repairStatuses.Length)],
-                    TechnicianAssigned = technicians[random.Next(technicians.Length)],
-                    CustomerBookingStatus = bookingStatuses[random.Next(bookingStatuses.Length)],
-                    Bookingate = bookingDate,
-                    FaultReportId = validFaultReportIds[random.Next(validFaultReportIds.Length)],
-                    Priority = random.Next(0, 2) == 1 ? "High" : "Medium",
-                    CreatedDate = reportDate
-                });
-            }
+                new FaultTechnician { FaultId = 1, VisitId = 2, FaultType = "Not Cooling", FaultDescription = "Diagnosed faulty compressor relay. Replaced relay and tested system. Temperature now stable at 4°C.", ResolutionNotes = "Compressor relay replacement completed successfully. System cooling efficiently.", ReportDate = new DateTime(2025, 10, 23, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3361), RepairStatus = "Completed", TechnicianAssigned = "Jennifer Martin", CustomerBookingStatus = "Approved", Bookingate = new DateTime(2025, 10, 23, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3361), FaultReportId = 1, Priority = "Critical", CreatedDate = new DateTime(2025, 10, 22, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3361) },
+                new FaultTechnician { FaultId = 2, VisitId = 1, FaultType = "Strange Noises", FaultDescription = "Identified worn compressor mounts causing vibration noise. Requires compressor replacement.", ResolutionNotes = "Compressor mounts worn beyond repair. Replacement scheduled for next week.", ReportDate = new DateTime(2025, 11, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3365), RepairStatus = "In Progress", TechnicianAssigned = "James Miller", CustomerBookingStatus = "Approved", Bookingate = new DateTime(2025, 11, 16, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3365), FaultReportId = 2, Priority = "High", CreatedDate = new DateTime(2025, 11, 8, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3365) }
+            };
 
             modelBuilder.Entity<FaultTechnician>().HasData(faultTechnicians);
         }
 
-		private static void SeedFridgeReplacements(ModelBuilder modelBuilder)
-		{
-			var fridgeReplacements = new List<FridgeReplacement>();
-			var random = new Random();
-			var replacementStatuses = new[] { SD.Pending, SD.Approved, SD.Rejected };
-
-			// Realistic replacement reasons with more variety
-			var reasons = new[]
-			{
-		"Fridge Beyond Repair - Compressor failure",
-		"Frequent Breakdowns - Multiple service calls in last 3 months",
-		"Old Age - Unit over 10 years old with deteriorating performance",
-		"Customer Request - Customer requested upgrade to newer model",
-		"Irreparable Cooling System - Refrigerant leak cannot be fixed",
-		"Electrical Fault - Mainboard failure, replacement parts unavailable",
-		"Structural Damage - Internal corrosion affecting performance",
-		"Noise Complaint - Excessive noise that cannot be resolved"
-	};
-
-			// Realistic additional notes
-			var additionalNotes = new[]
-			{
-		"Customer reported inconsistent temperature for several weeks.",
-		"Unit making loud grinding noise during compressor operation.",
-		"Fridge not cooling properly despite multiple repairs.",
-		"Customer complains about high electricity consumption.",
-		"Ice buildup in freezer compartment even after defrosting.",
-		"Water leakage from the unit causing floor damage.",
-		"Door seal broken, causing cold air escape.",
-		"Display panel malfunctioning, cannot adjust settings.",
-		"Interior lighting not working, bulbs already replaced.",
-		"Customer requesting energy efficient replacement model."
-	};
-
-			// Realistic technician notes
-			var technicianNotes = new[]
-			{
-		"Diagnosed compressor failure - replacement cost exceeds unit value.",
-		"Multiple component failures detected during diagnostic testing.",
-		"Unit reached end of service life, recommended replacement.",
-		"Customer satisfied with current model, requesting same replacement.",
-		"Refrigerant leak detected in evaporator coils - uneconomical to repair.",
-		"Main control board fried due to power surge - part discontinued.",
-		"Condenser fan motor seized, causing overheating issues.",
-		"Evaporator fan motor noisy, replacement part no longer available.",
-		"Thermostat calibration off, causing temperature fluctuations.",
-		"Defrost system malfunction leading to ice accumulation."
-	};
-
-			// Realistic decline reasons
-			var declineReasons = new[]
-			{
-		"Unit still under warranty, repair recommended instead.",
-		"Replacement request does not meet company policy criteria.",
-		"Customer has outstanding balance on account.",
-		"Unit is only 2 years old, repair is more cost effective.",
-		"Inspection shows unit can be repaired economically.",
-		"Customer did not provide sufficient documentation.",
-		"Replacement stock currently unavailable for this model.",
-		"Unit has cosmetic damage caused by customer misuse."
-	};
-
-			var validUserIds = new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25", "26" };
-
-			// Technician names for ApprovedBy field
-			var technicianNames = new[]
-			{
-		"John Smith", "Maria Garcia", "David Johnson", "Sarah Williams",
-		"Michael Brown", "Lisa Davis", "Robert Miller", "Jennifer Wilson",
-		"William Moore", "Linda Taylor", "James Anderson", "Susan Thomas"
-	};
-
-			// Customer Support/Admin names for ApprovedBy field
-			var adminNames = new[]
-			{
-		"Admin User", "Support Team", "Manager Office", "Customer Service",
-		"Technical Support", "Service Department", "Operations Team"
-	};
-
-			for (int i = 1; i <= 12; i++)
-			{
-				var requestDate = DateTime.Now.AddDays(-random.Next(1, 60));
-				var replacementDate = requestDate.AddDays(random.Next(1, 30));
-				var status = replacementStatuses[random.Next(replacementStatuses.Length)];
-				var isRejected = status == SD.Rejected;
-				var isApproved = status == SD.Approved;
-				var isPending = status == SD.Pending;
-
-				// Realistic decline reason only for rejected requests
-				var declineReason = isRejected ? declineReasons[random.Next(declineReasons.Length)] : null;
-
-				// Action date only for approved/rejected requests
-				var actionDate = !isPending ? replacementDate.AddDays(random.Next(1, 5)) : (DateTime?)null;
-
-				// ActionBy should be technician name for processed requests
-				var actionBy = !isPending ? technicianNames[random.Next(technicianNames.Length)] : null;
-
-				// ApprovedBy should be admin name for approved/rejected requests
-				var approvedBy = !isPending ? adminNames[random.Next(adminNames.Length)] : null;
-
-				fridgeReplacements.Add(new FridgeReplacement
-				{
-					FridgeReplacementId = i,
-					VisitId = random.Next(1, 21),
-					CustomerID = random.Next(1, 13),
-					NewFridgeInStockId = isApproved ? random.Next(1, 151) : null, // Only set if approved
-					OldFridgeNo = $"FRG-{random.Next(1, 16):000}-{random.Next(1, 11):000}",
-					ReasonForReplacement = reasons[random.Next(reasons.Length)],
-					AdditionalNotes = additionalNotes[random.Next(additionalNotes.Length)],
-					ReplacementDate = replacementDate,
-					RequestDate = requestDate,
-					ReplacementStatus = status,
-					ApplicationUserId = validUserIds[random.Next(validUserIds.Length)],
-
-					DeclineReason = declineReason,
-					TechnicianNotes = technicianNotes[random.Next(technicianNotes.Length)],
-					ActionBy = actionBy,
-					ActionDate = actionDate,
-					ApprovedBy = approvedBy  // New field added
-				});
-			}
-
-			modelBuilder.Entity<FridgeReplacement>().HasData(fridgeReplacements);
-		}
-
-		private static void SeedRequestNotes(ModelBuilder modelBuilder)
+        private static void SeedFridgeReplacements(ModelBuilder modelBuilder)
         {
-            var requestNotes = new List<RequestNote>();
-            var random = new Random();
-            var noteTypes = new[] { "Internal", "Customer", "Technical", "Administrative" };
-
-            for (int i = 1; i <= 20; i++)
+            var fridgeReplacements = new List<FridgeReplacement>
             {
-                var createdDate = DateTime.Now.AddDays(-random.Next(1, 90));
+                new FridgeReplacement { FridgeReplacementId = 1, VisitId = 1, CustomerID = 3, OldFridgeNo = "FRG-004-005", ReasonForReplacement = "Compressor failure beyond economical repair", AdditionalNotes = "Customer approved replacement with similar capacity model. Old unit has served 7 years.", RequestDate = new DateTime(2025, 11, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3401), ReplacementDate = new DateTime(2025, 11, 16, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3401), ReplacementStatus = "Approved", ApplicationUserId = "3", NewFridgeInStockId = 30, TechnicianNotes = "Compressor seized due to refrigerant leak. Repair cost exceeds 70% of replacement value.", ActionDate = new DateTime(2025, 11, 10, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3401), ActionBy = "James Miller", ApprovedBy = "Emily Wilson" }
+            };
 
-                requestNotes.Add(new RequestNote
-                {
-                    RequestNoteId = i,
-                    RequestHeaderId = random.Next(1, 16),
-                    NoteContent = $"Note content for request {i}. This is an important note regarding the service.",
-                    NoteType = noteTypes[random.Next(noteTypes.Length)],
-                    CreatedDate = createdDate
-                });
-            }
+            modelBuilder.Entity<FridgeReplacement>().HasData(fridgeReplacements);
+        }
+
+        private static void SeedRequestNotes(ModelBuilder modelBuilder)
+        {
+            var requestNotes = new List<RequestNote>
+            {
+                new RequestNote { RequestNoteId = 1, RequestHeaderId = 1, NoteContent = "Customer called to confirm delivery address. Confirmed business hours for delivery between 9 AM - 4 PM.", NoteType = "Customer", CreatedDate = new DateTime(2025, 9, 28, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3817) },
+                new RequestNote { RequestNoteId = 2, RequestHeaderId = 2, NoteContent = "Additional business registration documents requested. Customer to email copies by end of week.", NoteType = "Administrative", CreatedDate = new DateTime(2025, 10, 12, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3832) },
+                new RequestNote { RequestNoteId = 3, RequestHeaderId = 3, NoteContent = "Installation completed successfully. Customer trained on temperature settings and basic maintenance.", NoteType = "Technical", CreatedDate = new DateTime(2025, 10, 9, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3836) },
+                new RequestNote { RequestNoteId = 4, RequestHeaderId = 4, NoteContent = "Credit application approved. Standard rental agreement terms applied.", NoteType = "Internal", CreatedDate = new DateTime(2025, 8, 22, 10, 28, 47, 511, DateTimeKind.Local).AddTicks(3838) }
+            };
 
             modelBuilder.Entity<RequestNote>().HasData(requestNotes);
         }
 
         private static void SeedAllocations(ModelBuilder modelBuilder)
         {
-            var allocations = new List<Allocation>();
-            var random = new Random();
-
-            for (int i = 1; i <= 15; i++)
+            var allocations = new List<Allocation>
             {
-                allocations.Add(new Allocation
-                {
-                    AllocationId = i,
-                    CustomerID = random.Next(1, 13),
-                    FridgeId = random.Next(1, 49), // Now 1-48
-                    Count = random.Next(1, 4)
-                });
-            }
+                new Allocation { AllocationId = 1, CustomerID = 1, FridgeId = 1, Count = 2 },
+                new Allocation { AllocationId = 2, CustomerID = 1, FridgeId = 5, Count = 1 },
+                new Allocation { AllocationId = 3, CustomerID = 3, FridgeId = 4, Count = 2 },
+                new Allocation { AllocationId = 4, CustomerID = 3, FridgeId = 7, Count = 1 },
+                new Allocation { AllocationId = 5, CustomerID = 3, FridgeId = 8, Count = 1 },
+                new Allocation { AllocationId = 6, CustomerID = 4, FridgeId = 3, Count = 1 },
+                new Allocation { AllocationId = 7, CustomerID = 4, FridgeId = 6, Count = 1 },
+                new Allocation { AllocationId = 8, CustomerID = 4, FridgeId = 9, Count = 1 }
+            };
 
             modelBuilder.Entity<Allocation>().HasData(allocations);
+        }
+
+        // Helper methods
+        private static string GetProvince(string city)
+        {
+            return city switch
+            {
+                "Johannesburg" or "Pretoria" or "Witbank" => "Gauteng",
+                "Cape Town" => "Western Cape",
+                "Durban" or "Pietermaritzburg" => "KwaZulu-Natal",
+                "Port Elizabeth" or "East London" => "Eastern Cape",
+                "Bloemfontein" or "Welkom" => "Free State",
+                "Nelspruit" => "Mpumalanga",
+                "Polokwane" => "Limpopo",
+                "Kimberley" => "Northern Cape",
+                "Rustenburg" => "North West",
+                _ => "Gauteng"
+            };
+        }
+
+        private static string GetPostalCode(string city)
+        {
+            return city switch
+            {
+                "Johannesburg" => "2000",
+                "Cape Town" => "8001",
+                "Durban" => "4001",
+                "Pretoria" => "0002",
+                "Port Elizabeth" => "6001",
+                "Bloemfontein" => "9301",
+                "Nelspruit" => "1200",
+                "Polokwane" => "0700",
+                "Kimberley" => "8301",
+                "Rustenburg" => "2999",
+                "East London" => "5201",
+                "Pietermaritzburg" => "3201",
+                "Welkom" => "9460",
+                "Witbank" => "1035",
+                _ => "2000"
+            };
         }
     }
 }
