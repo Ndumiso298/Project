@@ -2,7 +2,7 @@
 @using Project.Utility
 @{
     ViewData["Title"] = "Process Fault";
-    Layout = "_Layout"; // Use technician layout
+    Layout = "_Layout";
 }
 
 <div class="container-fluid py-4">
@@ -114,25 +114,30 @@
                                         </div>
                                     </div>
 
-                                    <!-- Technician Notes Section -->
-                                    <div class="row mt-3">
-                                        <div class="col-12">
-                                            <h6>
-                                                <i class="fas fa-clipboard-check me-2 text-info"></i>Technician Notes
-                                            </h6>
-                                            <form id="technicianNotesForm" method="post">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="faultReportId" value="@Model.FaultReport.FaultReportId" />
-                                                <div class="mb-3">
-                                                    <textarea class="form-control" id="technicianNotes" name="technicianNotes"
-                                                              rows="4" placeholder="Add your assessment, findings, and technical notes...">@Model.FaultReport.TechnicianNotes</textarea>
+                                    <!-- Fault Images Section -->
+                                    @if (!string.IsNullOrEmpty(Model.FaultReport.ImageUrl))
+                                    {
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <h6>
+                                                    <i class="fas fa-images me-2 text-primary"></i>Fault Images
+                                                </h6>
+                                                <div class="row g-3">
+                                                    @foreach (var imageUrl in Model.FaultReport.ImageUrl.Split(','))
+                                                    {
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <div class="card">
+                                                                <img src="@imageUrl" class="card-img-top fault-image"
+                                                                     style="height: 200px; object-fit: cover; cursor: pointer"
+                                                                     alt="Fault image"
+                                                                     onclick="openImageModal('@imageUrl')">
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </div>
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-save me-1"></i> Save Notes
-                                                </button>
-                                            </form>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 </div>
                             </div>
 
@@ -183,30 +188,116 @@
                                 </div>
                             </div>
 
-                            <!-- Timeline Card -->
+                            <!-- Fault Status Timeline Card -->
                             <div class="card mb-4">
                                 <div class="card-header bg-light">
                                     <h5 class="card-title mb-0">
-                                        <i class="fas fa-stream me-2"></i>Fault Timeline
+                                        <i class="fas fa-stream me-2"></i>Fault Status Timeline
                                     </h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="timeline">
-                                        @foreach (var timelineEvent in Model.TimelineEvents.OrderByDescending(t => t.EventDate))
-                                        {
-                                            <div class="timeline-item">
-                                                <div class="timeline-marker bg-@timelineEvent.Color">
-                                                    <i class="@timelineEvent.Icon"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <div class="timeline-header">
-                                                        <h6 class="mb-1">@timelineEvent.EventType</h6>
-                                                        <small class="text-muted">@timelineEvent.EventDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
-                                                    </div>
-                                                    <p class="mb-0 text-muted">@timelineEvent.Description</p>
-                                                </div>
+                                    <div class="status-timeline">
+                                        <!-- Reported Status -->
+                                        <div class="status-step @(Model.FaultReport.ReportedDate != null ? "completed" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-flag"></i>
                                             </div>
-                                        }
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Reported</h6>
+                                                <p class="mb-1 text-muted">Fault reported by customer</p>
+                                                <small class="text-muted">@Model.FaultReport.ReportedDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- In Progress Status -->
+                                        <div class="status-step @(Model.FaultReport.InProgressDate.HasValue ? "completed" : Model.FaultReport.Status == "In Progress" ? "current" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-tools"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">In Progress</h6>
+                                                @if (Model.FaultReport.InProgressDate.HasValue)
+                                                {
+                                                    <p class="mb-1 text-muted">Technician started working on the fault</p>
+                                                    <small class="text-muted">@Model.FaultReport.InProgressDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Awaiting technician action</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+
+                                                @if (Model.CanBeClosed)
+                                                {
+                                                    <form asp-action="CloseFaultReport" method="post" class="d-inline">
+                                                        <input type="hidden" name="faultReportId" value="@Model.FaultReport.FaultReportId" />
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                            <i class="fas fa-check me-1"></i>Mark as @SD.FaultClosed
+                                                        </button>
+                                                    </form>
+                                                }
+
+                                                @if (Model.IsClosed)
+                                                {
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-lock me-2"></i>
+                                                        This fault report has been @SD.FaultClosed.ToLower() and is now read-only.
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Resolution Status -->
+                                        <div class="status-step @(Model.FaultReport.ResolvedDate.HasValue ? "completed" : Model.FaultReport.Status == "Resolved" ? "current" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Resolved</h6>
+                                                @if (Model.FaultReport.ResolvedDate.HasValue)
+                                                {
+                                                    <p class="mb-1 text-muted">Fault has been resolved successfully</p>
+                                                    <small class="text-muted">@Model.FaultReport.ResolvedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Fault resolution pending</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Scrapped Status -->
+                                        <div class="status-step @(Model.FaultReport.ScrappedDate.HasValue ? "completed" : Model.FaultReport.Status == "Scrapped" ? "current" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-recycle"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Scrapped</h6>
+                                                @if (Model.FaultReport.ScrappedDate.HasValue)
+                                                {
+                                                    <p class="mb-1 text-muted">Fridge marked for replacement</p>
+                                                    <small class="text-muted">@Model.FaultReport.ScrappedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                                    @if (Model.FaultReport.ReplacementRequest != null)
+                                                    {
+                                                        <div class="replacement-info mt-2 p-2 bg-light rounded">
+                                                            <small>
+                                                                <strong>Replacement:</strong>
+                                                                <span class="badge bg-@(Model.FaultReport.ReplacementRequest.ReplacementStatus == "Approved" ? "success" : "warning")">
+                                                                    @Model.FaultReport.ReplacementRequest.ReplacementStatus
+                                                                </span>
+                                                            </small>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Fridge replacement pending</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -281,40 +372,140 @@
     </div>
 </div>
 
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fault Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" alt="Fault image" style="max-height: 70vh;">
+            </div>
+        </div>
+    </div>
+</div>
 
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .status-timeline {
+        position: relative;
+        padding-left: 3rem;
+    }
+
+    .status-step {
+        position: relative;
+        padding-bottom: 2.5rem;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .status-indicator {
+        position: absolute;
+        left: -3rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 2;
+    }
+
+    .status-step.completed .status-indicator {
+        background-color: #28a745;
+    }
+
+    .status-step.current .status-indicator {
+        background-color: #007bff;
+        animation: pulse 2s infinite;
+    }
+
+    .status-step:not(.completed):not(.current) .status-indicator {
+        background-color: #6c757d;
+    }
+
+    .status-content {
+        flex: 1;
+    }
+
+    .status-step:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: -2.25rem;
+        top: 2.5rem;
+        bottom: 0;
+        width: 2px;
+        background-color: #e9ecef;
+        z-index: 1;
+    }
+
+    .status-step.completed:not(:last-child)::after {
+        background-color: #28a745;
+    }
+
+    .fault-image {
+        transition: transform 0.2s ease;
+    }
+
+        .fault-image:hover {
+            transform: scale(1.05);
+        }
+
+    .comment-item {
+        border-left: 4px solid;
+    }
+
+        .comment-item.bg-light {
+            border-left-color: #0d6efd;
+        }
+
+        .comment-item.bg-info.bg-opacity-10 {
+            border-left-color: #0dcaf0;
+        }
+
+    .comments-section::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .comments-section::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .comments-section::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+
+        .comments-section::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+    @@keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+        }
+    }
+</style>
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Technician Notes Form
-            const technicianNotesForm = document.getElementById('technicianNotesForm');
-            if (technicianNotesForm) {
-                technicianNotesForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-
-                    const formData = new FormData(this);
-
-                    fetch('@Url.Action("UpdateFaultStatus")', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        }
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            showToast('Technician notes saved successfully!', 'success');
-                        } else {
-                            showToast('Error saving notes', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showToast('Error saving notes', 'error');
-                    });
-                });
-            }
-
             // Technician Comment Form
             const technicianCommentForm = document.getElementById('addTechnicianCommentForm');
             const commentsSection = document.querySelector('.comments-section');
@@ -417,10 +608,13 @@
                 commentsSection.scrollTop = 0;
             }
         });
+
+        // Image modal functionality
+        function openImageModal(imageUrl) {
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageUrl;
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+        }
     </script>
-}
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
 }

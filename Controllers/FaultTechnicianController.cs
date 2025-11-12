@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
 using Project.Utility;
 using Project.ViewModel;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Project.Controllers
 {
@@ -157,7 +158,7 @@ namespace Project.Controllers
         // ===================================================================
         // 3. LIST OF ALL FAULTS (Technician View - Both Maintenance and Customer Reported)
         // ===================================================================
-        public IActionResult Index(string faultTypeFilter = "all")
+        public IActionResult Index(string faultTypeFilter = "all", string statusFilter = "all")
         {
             var viewModel = new TechnicianFaultsViewModel();
 
@@ -184,19 +185,54 @@ namespace Project.Controllers
 
             viewModel.MaintenanceFaults = maintenanceFaults;
 
-            // Get customer-reported faults
-            var customerFaults = _db.tblFaultReports
+            // Get ALL customer-reported faults (including resolved and closed)
+            var allCustomerFaults = _db.tblFaultReports
                 .Include(fr => fr.Customer)
                     .ThenInclude(c => c.ApplicationUser)
                 .Include(fr => fr.FridgeInStock)
                     .ThenInclude(fis => fis.Fridge)
-                .Where(fr => fr.Status == SD.Reported || fr.Status == SD.InProgress)
                 .OrderByDescending(fr => fr.ReportedDate)
                 .ToList();
 
-            viewModel.CustomerReportedFaults = customerFaults;
+            // Apply status filter to customer faults
+            if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "all")
+            {
+                if (statusFilter == "active")
+                {
+                    viewModel.CustomerReportedFaults = allCustomerFaults
+                        .Where(fr => fr.Status == SD.Reported || fr.Status == SD.InProgress)
+                        .ToList();
+                }
+                else if (statusFilter == "resolved")
+                {
+                    viewModel.CustomerReportedFaults = allCustomerFaults
+                        .Where(fr => fr.Status == SD.FaultResolved)
+                        .ToList();
+                }
+                else if (statusFilter == "closed")
+                {
+                    viewModel.CustomerReportedFaults = allCustomerFaults
+                        .Where(fr => fr.Status == SD.Closed)
+                        .ToList();
+                }
+                else if (statusFilter == "scrapped")
+                {
+                    viewModel.CustomerReportedFaults = allCustomerFaults
+                        .Where(fr => fr.Status == SD.FaultScrapped)
+                        .ToList();
+                }
+                else
+                {
+                    viewModel.CustomerReportedFaults = allCustomerFaults;
+                }
+            }
+            else
+            {
+                // Show all faults by default
+                viewModel.CustomerReportedFaults = allCustomerFaults;
+            }
 
-            // Apply filters if needed
+            // Apply fault type filter if needed
             if (!string.IsNullOrEmpty(faultTypeFilter) && faultTypeFilter != "all")
             {
                 if (faultTypeFilter == "maintenance")
@@ -210,12 +246,12 @@ namespace Project.Controllers
             }
 
             ViewBag.FaultTypeFilter = faultTypeFilter;
+            ViewBag.StatusFilter = statusFilter;
             ViewBag.TotalMaintenanceFaults = maintenanceFaults.Count;
-            ViewBag.TotalCustomerFaults = customerFaults.Count;
+            ViewBag.TotalCustomerFaults = allCustomerFaults.Count;
 
             return View(viewModel);
         }
-
         // ===================================================================
         // 4. BOOK FAULT VISIT (Technician)
         // ===================================================================
@@ -640,13 +676,13 @@ namespace Project.Controllers
                 await _db.SaveChangesAsync();
 
                 TempData[SD.Success] = $"Fault status updated to {status} successfully.";
-                return RedirectToAction(nameof(AllFaults));
+                return RedirectToAction(nameof(ProcessFault));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating fault status {FaultId} to {Status}", id, status);
                 TempData[SD.Error] = $"Error updating fault status: {ex.Message}";
-                return RedirectToAction(nameof(AllFaults));
+                return RedirectToAction(nameof(ProcessFault));
             }
         }
 
@@ -810,7 +846,9 @@ namespace Project.Controllers
                 {
                     FaultReport = fault,
                     Comments = comments,
-                    TimelineEvents = timelineEvents
+                    TimelineEvents = timelineEvents,
+                    IsCustomerView = true,
+                    IsTechnicianView = false
                 };
 
                 return View("CustomerFaultDetails", viewModel);
@@ -1019,7 +1057,9 @@ namespace Project.Controllers
                 {
                     FaultReport = fault,
                     Comments = comments,
-                    TimelineEvents = timelineEvents
+                    TimelineEvents = timelineEvents,
+                    IsTechnicianView = true,
+                    IsCustomerView = false
                 };
 
                 return View("TechnicianFaultDetails", viewModel);
@@ -1028,7 +1068,7 @@ namespace Project.Controllers
             {
                 _logger.LogError(ex, "Error loading fault details {FaultId} for processing", id);
                 TempData[SD.Error] = "An error occurred while loading fault details";
-                return RedirectToAction(nameof(AllFaults));
+                return RedirectToAction(nameof(ProcessFault));
             }
         }
 
@@ -1087,6 +1127,55 @@ namespace Project.Controllers
                 return Json(new { success = false, message = "Error adding comment" });
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CloseFaultReport(int faultReportId)
+        {
+            try
+            {
+                var faultReport = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == faultReportId);
+
+                if (faultReport == null)
+                {
+                    TempData[SD.Error] = "Fault report not found";
+                    return RedirectToAction(nameof(AllFaults));
+                }
+
+                // Get resolved status from constants or configuration
+                var resolvedStatus = SD.FaultResolved ?? "Resolved";
+                var closedStatus = SD.FaultClosed ?? "Closed";
+
+                if (faultReport.Status != resolvedStatus)
+                {
+                    TempData[SD.Error] = $"Only {resolvedStatus.ToLower()} fault reports can be closed";
+                    return RedirectToAction(nameof(Details), new { id = faultReportId });
+                }
+
+                faultReport.Status = closedStatus;
+                faultReport.ClosedDate = DateTime.Now;
+
+                await _db.SaveChangesAsync();
+                TempData[SD.Success] = "Fault report closed successfully";
+
+                // Redirect based on user role
+                if (User.IsInRole(SD.CustomerRole))
+                {
+                    return RedirectToAction(nameof(FaultDetails), new { id = faultReportId });
+                }
+                else
+                {
+                    return RedirectToAction(nameof(ProcessFault), new { id = faultReportId });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error closing fault report {FaultId}", faultReportId);
+                TempData[SD.Error] = "An error occurred while closing the fault report";
+                return RedirectToAction(nameof(Details), new { id = faultReportId });
+            }
+        }
         // ===================================================================
         // PRIVATE HELPER METHODS
         // ===================================================================
@@ -1094,10 +1183,10 @@ namespace Project.Controllers
         {
             var events = new List<FaultTimelineEvent>();
 
-            // Status change events
+            // Status change events using constants
             events.Add(new FaultTimelineEvent
             {
-                EventType = "Reported",
+                EventType = SD.Reported,
                 Description = "Fault reported by customer",
                 EventDate = fault.ReportedDate,
                 Icon = "fas fa-flag",
@@ -1109,7 +1198,7 @@ namespace Project.Controllers
             {
                 events.Add(new FaultTimelineEvent
                 {
-                    EventType = "In Progress",
+                    EventType = SD.InProgress,
                     Description = "Technician started working on the fault",
                     EventDate = fault.InProgressDate.Value,
                     Icon = "fas fa-tools",
@@ -1122,7 +1211,7 @@ namespace Project.Controllers
             {
                 events.Add(new FaultTimelineEvent
                 {
-                    EventType = "Resolved",
+                    EventType = SD.FaultResolved,
                     Description = "Fault has been resolved successfully",
                     EventDate = fault.ResolvedDate.Value,
                     Icon = "fas fa-check-circle",
@@ -1135,7 +1224,7 @@ namespace Project.Controllers
             {
                 events.Add(new FaultTimelineEvent
                 {
-                    EventType = "Scrapped",
+                    EventType = SD.FaultScrapped,
                     Description = "Fridge marked for replacement due to irreparable fault",
                     EventDate = fault.ScrappedDate.Value,
                     Icon = "fas fa-recycle",
@@ -1179,16 +1268,59 @@ namespace Project.Controllers
                 }
             }
 
-            // Add comment events
-            foreach (var comment in fault.FaultComments.Where(c => !c.IsInternalNote).OrderBy(c => c.CommentDate))
+            // Closed status
+            if (fault.ClosedDate.HasValue)
             {
                 events.Add(new FaultTimelineEvent
                 {
-                    EventType = comment.CommentBy == "Customer" ? "Customer Comment" : "Technician Update",
+                    EventType = SD.FaultClosed,
+                    Description = "Fault report has been closed",
+                    EventDate = fault.ClosedDate.Value,
+                    Icon = "fas fa-lock",
+                    Color = "secondary"
+                });
+            }
+
+            // Add comment events using constants
+            var customerRole = SD.CustomerRole;
+            var technicianRole = SD.FaultTechnician;
+
+            foreach (var comment in fault.FaultComments.Where(c => !c.IsInternalNote).OrderBy(c => c.CommentDate))
+            {
+                var isCustomerComment = comment.CommentBy?.Equals(customerRole, StringComparison.OrdinalIgnoreCase) == true;
+                var isTechnicianComment = comment.CommentBy?.Equals(technicianRole, StringComparison.OrdinalIgnoreCase) == true ||
+                                         comment.CommentBy?.Equals("Technician", StringComparison.OrdinalIgnoreCase) == true;
+
+                string eventType;
+                string icon;
+                string color;
+
+                if (isCustomerComment)
+                {
+                    eventType = "Customer Comment";
+                    icon = "fas fa-comment";
+                    color = "secondary";
+                }
+                else if (isTechnicianComment)
+                {
+                    eventType = "Technician Update";
+                    icon = "fas fa-clipboard-check";
+                    color = "info";
+                }
+                else
+                {
+                    eventType = $"{comment.CommentBy} Comment";
+                    icon = "fas fa-comment";
+                    color = "primary";
+                }
+
+                events.Add(new FaultTimelineEvent
+                {
+                    EventType = eventType,
                     Description = comment.Comment,
                     EventDate = comment.CommentDate,
-                    Icon = comment.CommentBy == "Customer" ? "fas fa-comment" : "fas fa-clipboard-check",
-                    Color = comment.CommentBy == "Customer" ? "secondary" : "info"
+                    Icon = icon,
+                    Color = color
                 });
             }
 

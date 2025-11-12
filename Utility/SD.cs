@@ -22,6 +22,8 @@
         public const string Relaunched = "Relaunched";
         public const string FaultResolved = "Fault Resolved";
         public const string FaultPending = "Fault Pending";
+        public const string FaultClosed = "Closed";
+        public const string FaultScrapped = "Scrapped";
         public const string Pending = "Pending";
         public const string Replaced = "Replaced";
         public const string Declined = "Decline";

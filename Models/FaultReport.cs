@@ -58,7 +58,7 @@ namespace Project.Models
         public DateTime? InProgressDate { get; set; }
         public DateTime? ResolvedDate { get; set; }
         public DateTime? ScrappedDate { get; set; }
-
+        public DateTime? ClosedDate { get; set; }
         // Navigation property for comments
         public virtual ICollection<FaultComment> FaultComments { get; set; } = new List<FaultComment>();
 

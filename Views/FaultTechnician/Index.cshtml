@@ -15,11 +15,29 @@
                     <p class="text-muted mb-0">Manage both maintenance and customer-reported faults</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <!-- Fault Type Filter -->
+                    <!-- Status Filter -->
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                                id="faultTypeFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                id="statusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-filter me-2"></i>
+                            @(string.IsNullOrEmpty(ViewBag.StatusFilter) || ViewBag.StatusFilter == "all" ? "All Statuses" :
+                                                        ViewBag.StatusFilter == "active" ? "Active Only" :
+                                                        ViewBag.StatusFilter == "resolved" ? "Resolved Only" :
+                                                        ViewBag.StatusFilter == "closed" ? "Closed Only" : "All Statuses")
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="statusFilterDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "all" })">All Statuses</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "active" })">Active Only</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "resolved" })">Resolved Only</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "closed" })">Closed Only</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Fault Type Filter -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                id="faultTypeFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bars me-2"></i>
                             @(ViewBag.FaultTypeFilter == "all" ? "All Fault Types" :
                                                         ViewBag.FaultTypeFilter == "maintenance" ? "Maintenance Only" :
                                                         ViewBag.FaultTypeFilter == "customer" ? "Customer Only" : "All Fault Types")
@@ -37,7 +55,7 @@
 
     <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
             <div class="card border-start-4 border-start-primary shadow-sm h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -52,46 +70,79 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
             <div class="card border-start-4 border-start-warning shadow-sm h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Maintenance Faults</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.MaintenanceFaults.Count</div>
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">Active</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                @(Model.CustomerReportedFaults.Count(f => f.Status == SD.Reported || f.Status == SD.InProgress) +
+                                                                Model.MaintenanceFaults.Count)
+                            </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-wrench fa-2x text-gray-300"></i>
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
             <div class="card border-start-4 border-start-info shadow-sm h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Customer Reported</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count</div>
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">In Progress</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.InProgress)</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-user fa-2x text-gray-300"></i>
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
             <div class="card border-start-4 border-start-success shadow-sm h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Ready to Assign</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@(Model.CustomerReportedFaults.Count(fr => fr.Status == SD.Reported))</div>
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">Resolved</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.FaultResolved)</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-play-circle fa-2x text-gray-300"></i>
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-secondary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Closed</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.Closed)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-lock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Scrapped</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.FaultScrapped)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-recycle fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -119,30 +170,35 @@
                                 <th class="fw-semibold text-muted small text-uppercase">Priority</th>
                                 <th class="fw-semibold text-muted small text-uppercase">Status</th>
                                 <th class="fw-semibold text-muted small text-uppercase">Reported Date</th>
+                                <th class="fw-semibold text-muted small text-uppercase">Last Updated</th>
                                 <th class="text-end pe-4 fw-semibold text-muted small text-uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var fault in Model.CustomerReportedFaults)
                             {
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded-2 p-2 me-3">
-                                                <i class="fas fa-refrigerator text-primary fs-5"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold text-dark mb-0">@fault.Customer?.ApplicationUser?.FirstName @fault.Customer?.ApplicationUser?.LastName</h6>
-                                                <small class="text-muted">@fault.FridgeInStock?.Fridge?.Brand @fault.FridgeInStock?.Fridge?.Model</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <h6 class="fw-semibold mb-0">@fault.FaultType</h6>
-                                        <small class="text-muted">@(fault.Description?.Length > 50 ? fault.Description.Substring(0, 50) + "..." : fault.Description)</small>
-                                    </td>
-                                    <td>
-                                        @if (fault.Priority == "High" || fault.Priority == "Urgent")
+                                <tr class="@(fault.Status == SD.Closed ? "table-secondary" :
+                                                                               fault.Status == SD.FaultResolved ? "table-success" :
+                                                                               fault.Status == SD.FaultScrapped ? "table-warning" : "")">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-2 p-2 me-3">
+                                        <i class="fas fa-refrigerator text-primary fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-0">@fault.Customer?.ApplicationUser?.FirstName @fault.Customer?.ApplicationUser?.LastName</h6>
+                                        <small class="text-muted">@fault.FridgeInStock?.Fridge?.Brand @fault.FridgeInStock?.Fridge?.Model</small>
+                                        <br />
+                                        <small class="text-muted">SN: @fault.FridgeInStock?.FridgeNo</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h6 class="fw-semibold mb-0">@fault.FaultType</h6>
+                                <small class="text-muted">@(fault.Description?.Length > 50 ? fault.Description.Substring(0, 50) + "..." : fault.Description)</small>
+                            </td>
+                            <td>
+                                @if (fault.Priority == "High" || fault.Priority == "Urgent")
                                         {
                                             <span class="badge bg-danger">@fault.Priority</span>
                                         }
@@ -159,13 +215,31 @@
                                         @if (fault.Status == SD.Reported)
                                         {
                                             <span class="badge bg-warning">
-                                                <i class="fas fa-clock me-1"></i>Reported
+                                                <i class="fas fa-clock me-1"></i>@SD.Reported
                                             </span>
                                         }
                                         else if (fault.Status == SD.InProgress)
                                         {
                                             <span class="badge bg-info">
-                                                <i class="fas fa-tools me-1"></i>In Progress
+                                                <i class="fas fa-tools me-1"></i>@SD.InProgress
+                                            </span>
+                                        }
+                                        else if (fault.Status == SD.FaultResolved)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>@SD.FaultResolved
+                                            </span>
+                                        }
+                                        else if (fault.Status == SD.Closed)
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-lock me-1"></i>@SD.Closed
+                                            </span>
+                                        }
+                                        else if (fault.Status == SD.FaultScrapped)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-recycle me-1"></i>@SD.FaultScrapped
                                             </span>
                                         }
                                         else
@@ -179,14 +253,23 @@
                                             <small class="text-muted">@fault.ReportedDate.ToString("hh:mm tt")</small>
                                         </div>
                                     </td>
+                                    <td>
+                                        @{
+                                            var lastUpdateDate = fault.ResolvedDate ?? fault.InProgressDate ?? fault.ReportedDate;
+                                        }
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-semibold text-dark">@lastUpdateDate.ToString("MMM dd, yyyy")</span>
+                                            <small class="text-muted">@lastUpdateDate.ToString("hh:mm tt")</small>
+                                        </div>
+                                    </td>
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
                                             <a asp-action="ProcessFault" asp-route-id="@fault.FaultReportId"
-                                               class="btn btn-sm btn-outline-primary rounded-3 px-3"
-                                               title="Process Fault">
-                                                <i class="fas fa-cogs me-1"></i> Process
+                                               class="btn btn-sm @(fault.Status == SD.Closed ? "btn-outline-secondary" : "btn-outline-primary") rounded-3 px-3"
+                                               title="View Fault Details">
+                                                <i class="fas @(fault.Status == SD.Closed ? "fa-eye" : "fa-cogs") me-1"></i>
+                                                @(fault.Status == SD.Closed ? "View" : "Process")
                                             </a>
-                                            
                                         </div>
                                     </td>
                                 </tr>
@@ -305,6 +388,19 @@
     .badge {
         font-size: 0.75em;
     }
+
+    /* Different background colors for different statuses */
+    .table-success {
+        background-color: rgba(25, 135, 84, 0.05) !important;
+    }
+
+    .table-secondary {
+        background-color: rgba(108, 117, 125, 0.05) !important;
+    }
+
+    .table-warning {
+        background-color: rgba(255, 193, 7, 0.05) !important;
+    }
 </style>
 
 <script>
@@ -317,14 +413,11 @@
             });
         }
 
-        // Add click handlers for better UX
-        const assignButtons = document.querySelectorAll('a[href*="AssignToFault"]');
-        assignButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                if (!confirm('Are you sure you want to assign this fault to yourself?')) {
-                    e.preventDefault();
-                }
-            });
-        });
+        // Add status filter functionality
+        const statusFilter = '@ViewBag.StatusFilter';
+        if (statusFilter && statusFilter !== 'all') {
+            // You can add client-side filtering here if needed
+            console.log('Status filter active:', statusFilter);
+        }
     });
 </script>
