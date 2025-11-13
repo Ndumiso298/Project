@@ -1,10 +1,12 @@
-﻿@model IEnumerable<Project.Models.FaultTechnician>
+﻿@model Project.Models.ViewModel.CalendarViewModel
+@using Project.Utility
 @{
-    Layout = "_CustomerLayout";
+    Layout = "_Layout";
     ViewData["Title"] = "Repair Schedule Calendar";
 }
 
 <style>
+    /* Keep your existing CSS styles, they are good */
     :root {
         --primary-color: #2c3e50;
         --secondary-color: #3498db;
@@ -175,22 +177,22 @@
         margin-right: 5px;
     }
 
-    .event-type-1 {
+    .event-type-customer {
         border-left-color: #3498db;
         background: #e8f4fc;
     }
 
-    .event-type-2 {
+    .event-type-maintenance {
         border-left-color: #2ecc71;
         background: #eafaf1;
     }
 
-    .event-type-3 {
+    .event-type-urgent {
         border-left-color: #e74c3c;
         background: #fdedec;
     }
 
-    .event-type-4 {
+    .event-type-progress {
         border-left-color: #f39c12;
         background: #fef5e7;
     }
@@ -237,26 +239,6 @@
         font-size: 0.9rem;
     }
 
-    .btn-loading {
-        position: relative;
-        color: transparent !important;
-    }
-
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-right-color: transparent;
-            animation: spin 0.75s linear infinite;
-        }
-
     .no-data {
         text-align: center;
         padding: 3rem;
@@ -268,20 +250,6 @@
             margin-bottom: 1rem;
             opacity: 0.5;
         }
-
-    .action-buttons {
-        margin-bottom: 1.5rem;
-    }
-
-    @@keyframes spin {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-    }
 </style>
 
 <div class="header-container">
@@ -292,30 +260,29 @@
             </div>
             <div>
                 <h1 class="h3 mb-0">Repair Schedules</h1>
-                <p class="mb-0 opacity-75">View all scheduled fridge repairs</p>
+                <p class="mb-0 opacity-75">View all scheduled fridge repairs - Customer Faults & Maintenance</p>
             </div>
         </div>
     </div>
 </div>
 
-
-
+<div class="container">
     <div class="stats-container">
         <div class="stat-card">
-            <div class="stat-number">@(Model?.Count() ?? 0)</div>
-            <div class="stat-label">Total Repairs</div>
+            <div class="stat-number">@(Model?.Repairs?.Count ?? 0)</div>
+            <div class="stat-label">Total Scheduled Repairs</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">@(Model?.Count(v => v.Bookingate.HasValue && v.Bookingate.Value.Date == DateTime.Today) ?? 0)</div>
+            <div class="stat-number">@(Model?.Repairs?.Count(r => r.Date.Date == DateTime.Today) ?? 0)</div>
             <div class="stat-label">Repairs Today</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">@(Model?.Count(v => v.Bookingate.HasValue && v.Bookingate.Value.Date > DateTime.Today) ?? 0)</div>
+            <div class="stat-number">@(Model?.Repairs?.Count(r => r.Date.Date > DateTime.Today) ?? 0)</div>
             <div class="stat-label">Upcoming Repairs</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">@(Model?.Where(v => !string.IsNullOrEmpty(v.TechnicianAssigned))?.Select(v => v.TechnicianAssigned)?.Distinct()?.Count() ?? 0)</div>
-            <div class="stat-label">Technicians</div>
+            <div class="stat-number">@(Model?.Repairs?.Select(r => r.Technician)?.Distinct()?.Count() ?? 0)</div>
+            <div class="stat-label">Active Technicians</div>
         </div>
     </div>
 
@@ -350,17 +317,18 @@
         </div>
 
         <div class="days" id="calendarDays">
+            <!-- Calendar will be rendered here by JavaScript -->
         </div>
     </div>
 
-    @if (Model == null || !Model.Any())
+    @if (Model?.Repairs == null || !Model.Repairs.Any())
     {
         <div class="no-data">
             <i class="fas fa-calendar-times"></i>
             <h4>No Repair Schedules Found</h4>
             <p>There are no repair visits scheduled yet.</p>
             <a href="@Url.Action("Index")" class="btn btn-primary">
-                <i class="fas fa-list me-2"></i>View Failed Visits to Book Repairs
+                <i class="fas fa-list me-2"></i>View Faults to Schedule Repairs
             </a>
         </div>
     }
@@ -370,11 +338,11 @@
         <div class="d-flex flex-wrap gap-3">
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #3498db;"></span>
-                <span class="ms-2">Scheduled Repairs</span>
+                <span class="ms-2">Customer Fault Repairs</span>
             </div>
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #2ecc71;"></span>
-                <span class="ms-2">Completed Repairs</span>
+                <span class="ms-2">Maintenance Repairs</span>
             </div>
             <div class="d-flex align-items-center">
                 <span class="event-dot" style="background-color: #e74c3c;"></span>
@@ -396,11 +364,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="eventDetails">
+                <!-- Event details will be loaded here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a id="editVisitLink" class="btn btn-primary" style="display: none;">
-                    <i class="fas fa-edit me-1"></i> Edit Visit
+                <a id="processFaultLink" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-cogs me-1"></i> Process Fault
                 </a>
             </div>
         </div>
@@ -408,7 +377,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const monthTitle = document.getElementById('monthTitle');
@@ -420,47 +388,42 @@
             let currentDate = new Date();
             let currentView = 'month';
 
-            // Fridge visits data with proper null checking
-            const fridgeVisits = [
-        @if (Model != null && Model.Any())
-        {
-            foreach (var visit in Model.Where(v => v.Bookingate.HasValue))
-            {
-                var status = visit.RepairStatus ?? "Not Started";
-                var technician = visit.TechnicianAssigned ?? "Unassigned";
-                var notes = visit.ResolutionNotes ?? "No notes available";
-               
-
-                <text>
+            // Repair data from server
+            const repairs = [
+                @if (Model?.Repairs != null)
+                {
+                        foreach (var repair in Model.Repairs)
                         {
-                            id: @visit.FaultId,
-                            visitId: @visit.VisitId,
-                            date: new Date('@visit.Bookingate.Value.ToString("yyyy-MM-dd")'),
-                            technician: '@Html.Raw(technician.Replace("'", "\\'"))',
-                            status: '@Html.Raw(status.Replace("'", "\\'"))',
-                            notes: '@Html.Raw(notes.Replace("'", "\\'"))',
-                          
-                            customerName: '@Html.Raw(visit.FridgeVisit?.RequestHeader?.Customer?.ApplicationUser?.UserName?.Replace("'", "\\'") ?? "Unknown Customer")',
-                            fridgeModel: '@Html.Raw(visit.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model?.Replace("'", "\\'") ?? "Unknown Fridge")'
-                        },
-                </text>
-            }
-        }
-                    ];
+                                <text>
+                                {
+                                    id: @repair.Id,
+                                    visitId: @(repair.VisitId ?? 0),
+                                    date: new Date('@repair.Date.ToString("yyyy-MM-dd")'),
+                                    technician: '@Html.Raw(repair.Technician?.Replace("'", "\\'") ?? "Unassigned")',
+                                    status: '@Html.Raw(repair.Status?.Replace("'", "\\'") ?? "Scheduled")',
+                                    notes: '@Html.Raw(repair.Notes?.Replace("'", "\\'") ?? "No notes available")',
+                                    customerName: '@Html.Raw(repair.CustomerName?.Replace("'", "\\'") ?? "Unknown Customer")',
+                                    fridgeModel: '@Html.Raw(repair.FridgeModel?.Replace("'", "\\'") ?? "Unknown Fridge")',
+                                    type: '@Html.Raw(repair.Type?.Replace("'", "\\'") ?? "Repair")'
+                                },
+                                </text>
+                        }
+                }
+            ];
 
-            console.log('Loaded visits:', fridgeVisits.length);
+            console.log('Loaded repairs:', repairs.length);
 
-            // Initialize the calendar only if we have data
-            if (fridgeVisits.length > 0) {
+            // Initialize calendar
+            if (repairs.length > 0) {
                 renderCalendar();
             } else {
                 calendarDays.innerHTML = `
-                            <div class="col-12 text-center p-5">
-                                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                                <h5>No Repair Schedules</h5>
-                                <p class="text-muted">No repair visits have been scheduled yet.</p>
-                            </div>
-                        `;
+                    <div class="col-12 text-center p-5">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h5>No Repair Schedules</h5>
+                        <p class="text-muted">No repair visits have been scheduled yet.</p>
+                    </div>
+                `;
             }
 
             // Event listeners
@@ -534,65 +497,58 @@
 
                     calendarDays.innerHTML = days;
 
-                    // Add event listeners to events
+                    // Add event listeners
                     document.querySelectorAll('.event').forEach(event => {
                         event.addEventListener('click', function () {
-                            const visitId = this.getAttribute('data-id');
-                            showEventDetails(visitId);
+                            const repairId = this.getAttribute('data-id');
+                            showEventDetails(repairId);
                         });
                     });
 
-                    // Add click listener for "more events"
-                    document.querySelectorAll('.more-events').forEach(moreEvents => {
-                        moreEvents.addEventListener('click', function () {
-                            const dateStr = this.getAttribute('data-date');
-                            showAllEventsForDate(dateStr);
-                        });
-                    });
                 } catch (error) {
                     console.error('Error rendering calendar:', error);
                     calendarDays.innerHTML = `
-                                <div class="col-12 text-center p-4">
-                                    <i class="fas fa-exclamation-triangle text-warning fa-2x mb-2"></i>
-                                    <p>Error loading calendar. Please refresh the page.</p>
-                                    <button class="btn btn-primary" onclick="location.reload()">
-                                        <i class="fas fa-redo me-2"></i>Refresh Page
-                                    </button>
-                                </div>
-                            `;
+                        <div class="col-12 text-center p-4">
+                            <i class="fas fa-exclamation-triangle text-warning fa-2x mb-2"></i>
+                            <p>Error loading calendar. Please refresh the page.</p>
+                            <button class="btn btn-primary" onclick="location.reload()">
+                                <i class="fas fa-redo me-2"></i>Refresh Page
+                            </button>
+                        </div>
+                    `;
                 }
             }
 
             function renderEventsForDate(dateStr) {
                 try {
-                    const visits = fridgeVisits.filter(visit => {
-                        if (!visit.date) return false;
-                        const visitDateStr = visit.date.toISOString().split('T')[0];
-                        return visitDateStr === dateStr;
+                    const dayRepairs = repairs.filter(repair => {
+                        if (!repair.date) return false;
+                        const repairDateStr = repair.date.toISOString().split('T')[0];
+                        return repairDateStr === dateStr;
                     });
 
                     let eventsHtml = '';
                     const maxEvents = 2;
 
-                    if (visits.length > 0) {
-                        for (let i = 0; i < Math.min(visits.length, maxEvents); i++) {
-                            const visit = visits[i];
-                            // Determine event type based on status
-                            let eventType = 'event-type-1'; // Default blue
-                            if (visit.status === 'Completed') eventType = 'event-type-2'; // Green
-                            if (visit.status === 'In Progress') eventType = 'event-type-4'; // Orange
-                            if (visit.status === 'Scrapped') eventType = 'event-type-3'; // Red
+                    if (dayRepairs.length > 0) {
+                        for (let i = 0; i < Math.min(dayRepairs.length, maxEvents); i++) {
+                            const repair = dayRepairs[i];
+                            // Determine event type based on repair type and status
+                            let eventType = 'event-type-customer';
+                            if (repair.type === 'Maintenance Repair') eventType = 'event-type-maintenance';
+                            if (repair.status === 'Urgent') eventType = 'event-type-urgent';
+                            if (repair.status === 'In Progress') eventType = 'event-type-progress';
 
                             eventsHtml += `
-                                        <div class="event ${eventType}" data-id="${visit.id}" title="${visit.technician} - ${visit.status}">
-                                            <span class="event-dot"></span>
-                                            ${visit.technician} - ${visit.status}
-                                        </div>
-                                    `;
+                                <div class="event ${eventType}" data-id="${repair.id}" title="${repair.technician} - ${repair.type}">
+                                    <span class="event-dot"></span>
+                                    ${repair.technician} - ${repair.type}
+                                </div>
+                            `;
                         }
 
-                        if (visits.length > maxEvents) {
-                            eventsHtml += `<div class="more-events" data-date="${dateStr}" title="Show all ${visits.length} events">+${visits.length - maxEvents} more</div>`;
+                        if (dayRepairs.length > maxEvents) {
+                            eventsHtml += `<div class="more-events" data-date="${dateStr}">+${dayRepairs.length - maxEvents} more</div>`;
                         }
                     }
 
@@ -603,142 +559,71 @@
                 }
             }
 
-            function showEventDetails(visitId) {
+            function showEventDetails(repairId) {
                 try {
-                    const visit = fridgeVisits.find(v => v.id == visitId);
+                    const repair = repairs.find(r => r.id == repairId);
 
-                    if (visit) {
+                    if (repair) {
                         const eventDetails = document.getElementById('eventDetails');
                         eventDetails.innerHTML = `
-                                    <div class="mb-3">
-                                        <h6>Repair Visit Details</h6>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <p><strong>Technician:</strong></p>
-                                                <p><strong>Status:</strong></p>
-                                                <p><strong>Customer:</strong></p>
-                                                <p><strong>Fridge Model:</strong></p>
-                                                <p><strong>Date:</strong></p>
-                                            </div>
-                                            <div class="col-6">
-                                                <p>${visit.technician}</p>
-                                                <p><span class="badge ${getStatusBadgeClass(visit.status)}">${visit.status}</span></p>
-                                                <p>${visit.customerName}</p>
-                                                <p>${visit.fridgeModel}</p>
-                                                <p>${visit.date.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}</p>
-                                            </div>
-                                        </div>
-                                        ${visit.notes && visit.notes !== 'No notes available' ? `
-                                            <p><strong>Notes:</strong></p>
-                                            <p class="border p-2 rounded bg-light">${visit.notes}</p>
-                                        ` : ''}
-                                        ${visit.partsUsed && visit.partsUsed !== 'No parts listed' ? `
-                                            <p><strong>Parts Used:</strong></p>
-                                            <p>${visit.partsUsed}</p>
-                                        ` : ''}
-                                        ${visit.repairCost !== "0.00" ? `
-                                            <p><strong>Repair Cost:</strong> $${visit.repairCost}</p>
-                                        ` : ''}
+                            <div class="mb-3">
+                                <h6>Repair Visit Details</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p><strong>Technician:</strong></p>
+                                        <p><strong>Status:</strong></p>
+                                        <p><strong>Type:</strong></p>
+                                        <p><strong>Customer:</strong></p>
+                                        <p><strong>Fridge Model:</strong></p>
+                                        <p><strong>Date:</strong></p>
                                     </div>
-                                `;
+                                    <div class="col-6">
+                                        <p>${repair.technician}</p>
+                                        <p><span class="badge ${getStatusBadgeClass(repair.status)}">${repair.status}</span></p>
+                                        <p>${repair.type}</p>
+                                        <p>${repair.customerName}</p>
+                                        <p>${repair.fridgeModel}</p>
+                                        <p>${repair.date.toLocaleDateString('en-US', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        })}</p>
+                                    </div>
+                                </div>
+                                ${repair.notes && repair.notes !== 'No notes available' ? `
+                                    <p><strong>Notes:</strong></p>
+                                    <p class="border p-2 rounded bg-light">${repair.notes}</p>
+                                ` : ''}
+                            </div>
+                        `;
 
-                        // Configure the edit link
-                        const editLink = document.getElementById('editVisitLink');
-                        editLink.style.display = 'block';
-                        editLink.href = '@Url.Action("BookFaultVisit", "FaultTechnician")' + `?RequestedFaultId=${visit.visitId}&visitId=${visit.id}`;
+                        // Show process fault link for customer faults
+                        const processLink = document.getElementById('processFaultLink');
+                        if (repair.type === 'Customer Fault' && repair.visitId > 0) {
+                            processLink.style.display = 'block';
+                            processLink.href = '@Url.Action("ProcessFault", "FaultTechnician")' + `?id=${repair.visitId}`;
+                        } else {
+                            processLink.style.display = 'none';
+                        }
 
                         const modal = new bootstrap.Modal(document.getElementById('eventModal'));
                         modal.show();
-                    } else {
-                        alert('Visit details not found.');
                     }
                 } catch (error) {
                     console.error('Error showing event details:', error);
-                    alert('Error loading visit details.');
-                }
-            }
-
-            function showAllEventsForDate(dateStr) {
-                try {
-                    const visits = fridgeVisits.filter(visit => {
-                        if (!visit.date) return false;
-                        const visitDateStr = visit.date.toISOString().split('T')[0];
-                        return visitDateStr === dateStr;
-                    });
-
-                    const eventDetails = document.getElementById('eventDetails');
-                    let eventsHtml = '<h6>All Repair Visits on ' + new Date(dateStr).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }) + '</h6>';
-
-                    if (visits.length === 0) {
-                        eventsHtml += '<p class="text-muted">No visits scheduled for this date.</p>';
-                    } else {
-                        visits.forEach((visit, index) => {
-                            eventsHtml += `
-                                        <div class="border-bottom pb-2 mb-2">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <strong>${visit.technician}</strong><br>
-                                                    <small class="text-muted">${visit.customerName} • ${visit.fridgeModel}</small><br>
-                                                    <span class="badge ${getStatusBadgeClass(visit.status)}">${visit.status}</span>
-                                                </div>
-                                                <button class="btn btn-sm btn-outline-primary view-visit-btn" data-id="${visit.id}">
-                                                    View Details
-                                                </button>
-                                            </div>
-                                        </div>
-                                    `;
-                        });
-                    }
-
-                    eventDetails.innerHTML = eventsHtml;
-
-                    // Add event listeners to view buttons
-                    document.querySelectorAll('.view-visit-btn').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const visitId = this.getAttribute('data-id');
-                            showEventDetails(visitId);
-                        });
-                    });
-
-                    const editLink = document.getElementById('editVisitLink');
-                    editLink.style.display = 'none';
-
-                    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                    modal.show();
-                } catch (error) {
-                    console.error('Error showing all events:', error);
-                    alert('Error loading events for this date.');
+                    alert('Error loading repair details.');
                 }
             }
 
             function getStatusBadgeClass(status) {
-                switch (status) {
-                    case 'Completed': return 'bg-success';
-                    case 'In Progress': return 'bg-warning';
-                    case 'Scrapped': return 'bg-danger';
-                    case 'Not Started': return 'bg-secondary';
-                    default: return 'bg-info';
+                switch (status?.toLowerCase()) {
+                    case 'completed': return 'bg-success';
+                    case 'in progress': return 'bg-warning';
+                    case 'scheduled': return 'bg-info';
+                    case 'urgent': return 'bg-danger';
+                    default: return 'bg-secondary';
                 }
-            }
-
-            // Reset edit link when modal is hidden
-            document.getElementById('eventModal').addEventListener('hidden.bs.modal', function () {
-                document.getElementById('editVisitLink').style.display = 'none';
-            });
-
-            // Handle page refresh after booking
-            if (performance.navigation.type === 1 || performance.getEntriesByType("navigation")[0].type === 'reload') {
-                console.log('Page was reloaded');
             }
         });
     </script>

@@ -6,117 +6,227 @@
 }
 
 <div class="container-fluid py-4">
+    <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-primary mb-0">Fault Technician Dashboard</h2>
-            <p class="text-muted mb-0">Operational insights for fault management and repair tracking.</p>
+            <h1 class="h2 fw-bold text-primary mb-1">Fault Technician Dashboard</h1>
+            <p class="text-muted mb-0">Comprehensive overview of fault management and repair operations</p>
         </div>
-        <div>
-            <small class="text-muted">Last updated: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</small>
+        <div class="text-end">
+            <div class="badge bg-light text-dark fs-6 p-2">
+                <i class="bi bi-clock me-2"></i>
+                Last updated: @DateTime.Now.ToString("MMM dd, yyyy HH:mm")
+            </div>
         </div>
     </div>
 
     <!-- KPIs Section -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 p-3">
-                <h6 class="text-muted">Total Faults</h6>
-                <h3 class="fw-bold text-dark">@Model.TotalFaults</h3>
-                <p class="text-muted small mb-0">All reported faults</p>
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="card card-kpi border-start-4 border-start-primary shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-1">Total Faults</h6>
+                            <h2 class="fw-bold text-gray-800 mb-0">@Model.TotalFaults</h2>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-primary bg-opacity-10">
+                                <i class="bi bi-clipboard-data text-primary fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 p-3">
-                <h6 class="text-muted">Pending Assignment</h6>
-                <h3 class="fw-bold text-warning">@Model.PendingAssignment</h3>
-                <p class="text-muted small mb-0">Awaiting technician assignment</p>
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="card card-kpi border-start-4 border-start-warning shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-1">Pending Assignment</h6>
+                            <h2 class="fw-bold text-gray-800 mb-0">@Model.PendingAssignment</h2>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-warning bg-opacity-10">
+                                <i class="bi bi-clock text-warning fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 p-3">
-                <h6 class="text-muted">In Progress</h6>
-                <h3 class="fw-bold text-info">@Model.InProgress</h3>
-                <p class="text-muted small mb-0">Currently being repaired</p>
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="card card-kpi border-start-4 border-start-info shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-1">In Progress</h6>
+                            <h2 class="fw-bold text-gray-800 mb-0">@Model.InProgress</h2>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-info bg-opacity-10">
+                                <i class="bi bi-gear text-info fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 p-3">
-                <h6 class="text-muted">Completed</h6>
-                <h3 class="fw-bold text-success">@Model.Completed</h3>
-                <p class="text-muted small mb-0">Successfully resolved</p>
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="card card-kpi border-start-4 border-start-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-1">Completed</h6>
+                            <h2 class="fw-bold text-gray-800 mb-0">@Model.Completed</h2>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-success bg-opacity-10">
+                                <i class="bi bi-check-circle text-success fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="card card-kpi border-start-4 border-start-secondary shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-1">Today's Bookings</h6>
+                            <h2 class="fw-bold text-gray-800 mb-0">@Model.TodaysBookings</h2>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-secondary bg-opacity-10">
+                                <i class="bi bi-calendar-check text-secondary fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6">
+            <div class="card card-kpi border-start-4 border-start-danger shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-1">Completion Rate</h6>
+                            <h2 class="fw-bold text-gray-800 mb-0">
+                                @(Model.TotalFaults > 0 ? ((Model.Completed * 100) / Model.TotalFaults) : 0)%
+                            </h2>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="icon-circle bg-danger bg-opacity-10">
+                                <i class="bi bi-graph-up text-danger fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Charts Section -->
-    <div class="row g-3">
-        <div class="col-lg-7">
-            <div class="card shadow-sm border-0 p-3 h-100">
-                <div class="d-flex justify-content-between mb-2">
-                    <h6 class="fw-bold mb-0">Faults Reported (Last 30 Days)</h6>
-                    <small class="text-muted">Trend overview</small>
+    <div class="row g-4">
+        <!-- Fault Trends Chart -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Fault Trends Analysis</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-calendar-range me-1"></i>Last 10 Days
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
+                                <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
+                                <li><a class="dropdown-item" href="#">This Month</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <canvas id="faultsChart" height="160"></canvas>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="faultsChart" height="250"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="col-lg-5">
-            <div class="card shadow-sm border-0 p-3 h-100">
-                <div class="d-flex justify-content-between mb-2">
-                    <h6 class="fw-bold mb-0">Fault Type Distribution</h6>
-                    <small class="text-muted">By category</small>
+        <!-- Fault Type Distribution -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">Fault Type Distribution</h5>
                 </div>
-                <canvas id="faultTypeChart" height="160"></canvas>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="faultTypeChart" height="250"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Second Row Charts -->
-    <div class="row g-3 mt-3">
+    <!-- Second Row - Status & Performance -->
+    <div class="row g-4 mt-2">
+        <!-- Repair Status Overview -->
         <div class="col-lg-6">
-            <div class="card shadow-sm border-0 p-3 h-100">
-                <div class="d-flex justify-content-between mb-2">
-                    <h6 class="fw-bold mb-0">Repair Status Overview</h6>
-                    <small class="text-muted">Current repair progress</small>
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">Repair Status Overview</h5>
                 </div>
-                <canvas id="repairStatusChart" height="160"></canvas>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="repairStatusChart" height="220"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Top Technicians -->
         <div class="col-lg-6">
-            <div class="card shadow-sm border-0 p-3 h-100">
-                <div class="d-flex justify-content-between mb-2">
-                    <h6 class="fw-bold mb-0">Top Technicians</h6>
-                    <small class="text-muted">By assigned faults</small>
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Top Performing Technicians</h5>
+                        <span class="badge bg-primary">This Month</span>
+                    </div>
                 </div>
-                <div class="list-group list-group-flush">
+                <div class="card-body">
                     @if (Model.TopTechnicians.Any())
                     {
-                        foreach (var technician in Model.TopTechnicians)
-                        {
-                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                        <i class="bi bi-person-gear text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <span class="fw-semibold">@technician.Key</span>
-                                        <br>
-                                        <small class="text-muted">@technician.Value assigned fault(s)</small>
+                        <div class="list-group list-group-flush">
+                            @foreach (var technician in Model.TopTechnicians)
+                            {
+                                <div class="list-group-item border-0 px-0 py-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                <i class="bi bi-person-gear text-primary fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold">@technician.Key</h6>
+                                                <small class="text-muted">@technician.Value assigned fault(s)</small>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill fs-6">@technician.Value</span>
                                     </div>
                                 </div>
-                                <span class="badge bg-primary rounded-pill">@technician.Value</span>
-                            </div>
-                        }
+                            }
+                        </div>
                     }
                     else
                     {
-                        <div class="text-center py-4">
-                            <i class="bi bi-people text-muted fs-1"></i>
-                            <p class="text-muted mt-2 mb-0">No technician assignments yet</p>
+                        <div class="text-center py-5">
+                            <div class="avatar-lg bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-people text-muted fs-1"></i>
+                            </div>
+                            <h6 class="text-muted">No Technician Assignments</h6>
+                            <p class="text-muted mb-0">Technician performance data will appear here</p>
                         </div>
                     }
                 </div>
@@ -125,81 +235,98 @@
     </div>
 
     <!-- Quick Actions & Recent Activities -->
-    <div class="row g-3 mt-3">
+    <div class="row g-4 mt-2">
+        <!-- Quick Actions -->
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0 p-3">
-                <h6 class="fw-bold mb-3">Quick Actions</h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <a asp-action="Index" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center p-3">
-                            <i class="bi bi-list-check fs-4 me-2"></i>
-                            <div class="text-start">
-                                <div class="fw-semibold">View All Faults</div>
-                                <small class="text-muted">Manage all reported issues</small>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a asp-action="PendingCustomerFaults" class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center p-3">
-                            <i class="bi bi-clock-history fs-4 me-2"></i>
-                            <div class="text-start">
-                                <div class="fw-semibold">Pending Faults</div>
-                                <small class="text-muted">@Model.PendingAssignment awaiting assignment</small>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a asp-action="Calendar" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center p-3">
-                            <i class="bi bi-calendar-week fs-4 me-2"></i>
-                            <div class="text-start">
-                                <div class="fw-semibold">Repair Calendar</div>
-                                <small class="text-muted">Schedule and view bookings</small>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a asp-action="CustomerFaultReports" class="btn btn-outline-info w-100 d-flex align-items-center justify-content-center p-3">
-                            <i class="bi bi-clipboard-check fs-4 me-2"></i>
-                            <div class="text-start">
-                                <div class="fw-semibold">Customer Reports</div>
-                                <small class="text-muted">View all customer submissions</small>
-                            </div>
-                        </a>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a asp-action="Index" class="card action-card card-hover border h-100 text-decoration-none">
+                                <div class="card-body text-center p-4">
+                                    <div class="avatar-lg bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                        <i class="bi bi-list-check text-primary fs-4"></i>
+                                    </div>
+                                    <h6 class="fw-semibold mb-1">View All Faults</h6>
+                                    <p class="text-muted small mb-0">Manage all reported technical issues</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-action="PendingCustomerFaults" class="card action-card card-hover border h-100 text-decoration-none">
+                                <div class="card-body text-center p-4">
+                                    <div class="avatar-lg bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                        <i class="bi bi-clock-history text-warning fs-4"></i>
+                                    </div>
+                                    <h6 class="fw-semibold mb-1">Pending Faults</h6>
+                                    <p class="text-muted small mb-0">@Model.PendingAssignment awaiting assignment</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-action="Calendar" class="card action-card card-hover border h-100 text-decoration-none">
+                                <div class="card-body text-center p-4">
+                                    <div class="avatar-lg bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                        <i class="bi bi-calendar-week text-success fs-4"></i>
+                                    </div>
+                                    <h6 class="fw-semibold mb-1">Repair Calendar</h6>
+                                    <p class="text-muted small mb-0">Schedule and manage appointments</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-action="CustomerFaultReports" class="card action-card card-hover border h-100 text-decoration-none">
+                                <div class="card-body text-center p-4">
+                                    <div class="avatar-lg bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                        <i class="bi bi-clipboard-check text-info fs-4"></i>
+                                    </div>
+                                    <h6 class="fw-semibold mb-1">Customer Reports</h6>
+                                    <p class="text-muted small mb-0">Review customer submissions</p>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Recent Activities -->
         <div class="col-lg-4">
-            <div class="card shadow-sm border-0 p-3 h-100">
-                <div class="d-flex justify-content-between mb-2">
-                    <h6 class="fw-bold mb-0">Recent Activities</h6>
-                    <small class="text-muted">Latest updates</small>
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Recent Activities</h5>
+                        <span class="badge bg-success">Live</span>
+                    </div>
                 </div>
-                <div class="list-group list-group-flush">
+                <div class="card-body">
                     @if (Model.RecentActivities.Any())
                     {
-                        foreach (var activity in Model.RecentActivities.Take(5))
-                        {
-                            <div class="list-group-item border-0 px-0">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                                        <i class="bi bi-activity text-success"></i>
-                                    </div>
-                                    <div>
-                                        <small class="fw-semibold text-dark">@activity.Key</small>
-                                        <br>
-                                        <small class="text-muted">Fault #@activity.Value</small>
+                        <div class="timeline">
+                            @foreach (var activity in Model.RecentActivities.Take(5))
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1 fw-semibold">@activity.Key</h6>
+                                        <p class="text-muted small mb-0">Status: <span class="badge bg-light text-dark">@activity.Value</span></p>
+                                        <small class="text-muted">@DateTime.Now.ToString("MMM dd, HH:mm")</small>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     }
                     else
                     {
                         <div class="text-center py-4">
-                            <i class="bi bi-activity text-muted fs-1"></i>
-                            <p class="text-muted mt-2 mb-0">No recent activities</p>
+                            <div class="avatar-lg bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-activity text-muted fs-1"></i>
+                            </div>
+                            <h6 class="text-muted">No Recent Activities</h6>
+                            <p class="text-muted mb-0">Activity feed will update automatically</p>
                         </div>
                     }
                 </div>
@@ -210,28 +337,88 @@
 
 @section Styles {
     <style>
-        .card {
+        .card-kpi {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
-            .card:hover {
+            .card-kpi:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
             }
 
-        .btn-outline-primary:hover,
-        .btn-outline-warning:hover,
-        .btn-outline-success:hover,
-        .btn-outline-info:hover {
-            transform: translateY(-1px);
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .list-group-item {
-            transition: background-color 0.2s ease-in-out;
+        .action-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
         }
 
-            .list-group-item:hover {
-                background-color: #f8f9fa;
+            .action-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                border-color: #007bff;
+            }
+
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+        }
+
+        .avatar-lg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 100%;
+            min-height: 200px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+            border-left: 2px solid #e9ecef;
+            padding-left: 20px;
+        }
+
+            .timeline-item:last-child {
+                border-left: 2px solid transparent;
+            }
+
+        .timeline-marker {
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+        }
+
+        .timeline-content {
+            margin-left: 0;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+            .card-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             }
     </style>
 }
@@ -239,117 +426,236 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        const faultsData = @Html.Raw(JsonSerializer.Serialize(Model.FaultsByDate));
-        const faultTypeData = @Html.Raw(JsonSerializer.Serialize(Model.FaultTypeDistribution));
-        const repairStatusData = @Html.Raw(JsonSerializer.Serialize(Model.RepairStatusDistribution));
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize charts with enhanced styling
+            initializeCharts();
 
-        // Faults Over Time Chart
-        if (faultsData.length > 0) {
-            new Chart(document.getElementById('faultsChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: faultsData.map(v => {
-                        const date = new Date(v.Key);
-                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    }),
-                    datasets: [{
-                        label: 'Faults Reported',
-                        data: faultsData.map(v => v.Value),
-                        fill: true,
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        tension: 0.3,
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
-                    }
-                }
+            // Add loading animation
+            document.querySelectorAll('.card-kpi').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
             });
-        } else {
-            document.getElementById('faultsChart').closest('.card').innerHTML = `
-                <div class="text-center py-5">
-                    <i class="bi bi-graph-up text-muted fs-1"></i>
-                    <p class="text-muted mt-2 mb-0">No fault data available for the selected period</p>
-                </div>
-            `;
+
+            // Animate cards on load
+            setTimeout(() => {
+                document.querySelectorAll('.card-kpi').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.6s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 300);
+        });
+
+        function initializeCharts() {
+            const faultsData = @Html.Raw(JsonSerializer.Serialize(Model.FaultsByDate));
+            const faultTypeData = @Html.Raw(JsonSerializer.Serialize(Model.FaultTypeDistribution));
+            const repairStatusData = @Html.Raw(JsonSerializer.Serialize(Model.RepairStatusDistribution));
+
+            // Faults Trend Chart
+            createFaultsChart(faultsData);
+
+            // Fault Type Distribution Chart
+            createFaultTypeChart(faultTypeData);
+
+            // Repair Status Chart
+            createRepairStatusChart(repairStatusData);
         }
 
-        // Fault Type Distribution Chart
-        if (faultTypeData.length > 0) {
-            new Chart(document.getElementById('faultTypeChart').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: faultTypeData.map(v => v.Key),
-                    datasets: [{
-                        data: faultTypeData.map(v => v.Value),
-                        backgroundColor: [
-                            '#007bff', '#28a745', '#ffc107', '#17a2b8',
-                            '#6f42c1', '#e83e8c', '#fd7e14', '#20c997'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 12,
-                                padding: 15
+        function createFaultsChart(data) {
+            const ctx = document.getElementById('faultsChart')?.getContext('2d');
+            if (!ctx || !data || data.length === 0) {
+                showChartError('faultsChart', 'No trend data available');
+                return;
+            }
+
+            try {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(item => {
+                            const date = new Date(item.key);
+                            return date.toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric'
+                            });
+                        }),
+                        datasets: [{
+                            label: 'Faults Reported',
+                            data: data.map(item => item.value),
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#007bff',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 12 },
+                                bodyFont: { size: 13 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating faults chart:', error);
+                showChartError('faultsChart', 'Error displaying trend data');
+            }
+        }
+
+        function createFaultTypeChart(data) {
+            const ctx = document.getElementById('faultTypeChart')?.getContext('2d');
+            if (!ctx || !data || data.length === 0) {
+                showChartError('faultTypeChart', 'No distribution data available');
+                return;
+            }
+
+            try {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.map(item => item.key),
+                        datasets: [{
+                            data: data.map(item => item.value),
+                            backgroundColor: [
+                                '#007bff', '#28a745', '#ffc107', '#17a2b8',
+                                '#6f42c1', '#e83e8c', '#fd7e14', '#20c997',
+                                '#6610f2', '#e83e8c'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating fault type chart:', error);
+                showChartError('faultTypeChart', 'Error displaying distribution data');
+            }
+        }
+
+        function createRepairStatusChart(data) {
+            const ctx = document.getElementById('repairStatusChart')?.getContext('2d');
+            if (!ctx || !data || data.length === 0) {
+                showChartError('repairStatusChart', 'No status data available');
+                return;
+            }
+
+            try {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.key),
+                        datasets: [{
+                            label: 'Number of Repairs',
+                            data: data.map(item => item.value),
+                            backgroundColor: [
+                                '#007bff', '#28a745', '#ffc107', '#17a2b8', '#6f42c1'
+                            ],
+                            borderWidth: 0,
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
                             }
                         }
-                    },
-                    cutout: '60%'
-                }
-            });
-        } else {
-            document.getElementById('faultTypeChart').closest('.card').innerHTML = `
-                <div class="text-center py-5">
-                    <i class="bi bi-pie-chart text-muted fs-1"></i>
-                    <p class="text-muted mt-2 mb-0">No fault type data available</p>
-                </div>
-            `;
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating repair status chart:', error);
+                showChartError('repairStatusChart', 'Error displaying status data');
+            }
         }
 
-        // Repair Status Chart
-        if (repairStatusData.length > 0) {
-            new Chart(document.getElementById('repairStatusChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: repairStatusData.map(v => v.Key),
-                    datasets: [{
-                        label: 'Count',
-                        data: repairStatusData.map(v => v.Value),
-                        backgroundColor: '#6610f2',
-                        borderWidth: 0,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
-                    }
-                }
-            });
-        } else {
-            document.getElementById('repairStatusChart').closest('.card').innerHTML = `
-                <div class="text-center py-5">
-                    <i class="bi bi-clipboard-data text-muted fs-1"></i>
-                    <p class="text-muted mt-2 mb-0">No repair status data available</p>
-                </div>
-            `;
+        function showChartError(canvasId, message) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#6c757d';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+            }
         }
     </script>
 }

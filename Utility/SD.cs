@@ -10,6 +10,29 @@
         public const string MaintenanceTechnician = "MaintenanceTech";
 
 
+        // Visit Status Constants
+        public const string VisitFailed = "Failed";
+        public const string VisitRepairScheduled = "Repair Scheduled";
+
+        // Priority Constants
+        public const string PriorityMedium = "Medium";
+
+        // Fault Type Constants
+        public const string FaultTypeRepair = "Maintenance Repair";
+       
+        // Technician Status
+        public const string TechnicianScheduled = "Scheduled";
+        public const string TechnicianPending = "Pending Schedule";
+        public const string Scheduled = "Scheduled";
+
+        // Time Slots
+        public static readonly string[] TimeSlots = new[]
+        {
+        "09:00-11:00",
+        "11:00-13:00",
+        "13:00-15:00",
+        "15:00-17:00"
+    };
 
 
         public const string Allocated = "Allocated";

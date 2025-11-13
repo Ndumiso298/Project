@@ -41,7 +41,7 @@
                                             <h6>Customer Details</h6>
                                             <p><strong>Name:</strong> @Model.FaultReport.Customer?.ApplicationUser?.FirstName @Model.FaultReport.Customer?.ApplicationUser?.LastName</p>
                                             <p><strong>Email:</strong> @Model.FaultReport.Customer?.ApplicationUser?.Email</p>
-                                            <p><strong>Phone:</strong> @Model.FaultReport.Customer?.ApplicationUser?.PhoneNumber</p>
+                                            <p><strong>Phone:</strong> @Model.FaultReport.Customer?.ApplicationUser?.CellNumber</p>
                                         </div>
                                         <div class="col-md-6">
                                             <h6>Fridge Details</h6>
@@ -80,6 +80,8 @@
                                                         "in progress" => "info",
                                                         "resolved" => "success",
                                                         "scrapped" => "danger",
+                                                        "scheduled" => "primary",
+                                                        "closed" => "secondary",
                                                         _ => "secondary"
                                                     };
                                                 }
@@ -88,18 +90,18 @@
                                         </div>
                                         <div class="col-md-6">
                                             <h6>Dates</h6>
-                                            <p><strong>Reported:</strong> @Model.FaultReport.ReportedDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
+                                            <p><strong>Reported Date:</strong> @Model.FaultReport.ReportedDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
                                             @if (Model.FaultReport.InProgressDate.HasValue)
                                             {
-                                                <p><strong>In Progress:</strong> @Model.FaultReport.InProgressDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
+                                                <p><strong>In Progress Date:</strong> @Model.FaultReport.InProgressDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
                                             }
                                             @if (Model.FaultReport.ResolvedDate.HasValue)
                                             {
-                                                <p><strong>Resolved:</strong> @Model.FaultReport.ResolvedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
+                                                <p><strong>Resolved Date:</strong> @Model.FaultReport.ResolvedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
                                             }
                                             @if (Model.FaultReport.ScrappedDate.HasValue)
                                             {
-                                                <p><strong>Scrapped:</strong> @Model.FaultReport.ScrappedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
+                                                <p><strong>Scrapped Date:</strong> @Model.FaultReport.ScrappedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</p>
                                             }
                                         </div>
                                     </div>
@@ -108,7 +110,7 @@
                                             <h6>Fault Description</h6>
                                             <div class="card bg-light">
                                                 <div class="card-body">
-                                                    @Model.FaultReport.Description
+                                                    <p class="mb-0">@Model.FaultReport.Description</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -151,6 +153,19 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
+                                            <!-- Book Visit Button - Only show if not already scheduled/resolved/scrapped -->
+                                            @if (Model.FaultReport.Status != SD.Scheduled &&
+                                                                                        Model.FaultReport.Status != SD.FaultResolved &&
+                                                                                        Model.FaultReport.Status != SD.FaultScrapped &&
+                                                                                        Model.FaultReport.Status != SD.FaultClosed)
+                                            {
+                                                <a asp-controller="FaultTechnician" asp-action="BookFaultVisitForReport"
+                                                   asp-route-RequestedFaultId="@Model.FaultReport.FaultReportId"
+                                                   class="btn btn-warning w-100 mb-2">
+                                                    <i class="fas fa-calendar-plus me-1"></i> Book Visit
+                                                </a>
+                                            }
+
                                             <form method="post" asp-action="UpdateFaultStatus" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="id" value="@Model.FaultReport.FaultReportId" />
@@ -172,16 +187,27 @@
                                             <form method="post" asp-action="UpdateFaultStatus" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="id" value="@Model.FaultReport.FaultReportId" />
-                                                <input type="hidden" name="status" value="Scrapped" />
+                                                <input type="hidden" name="status" value="@SD.FaultScrapped" />
                                                 <button type="submit" class="btn btn-danger w-100 mb-2" onclick="return confirm('Are you sure you want to mark this fridge as scrapped? This will automatically create a replacement request.')">
                                                     <i class="fas fa-recycle me-1"></i> Mark Scrapped
                                                 </button>
                                             </form>
-                                            @if (Model.FaultReport.Status == "Scrapped" && Model.FaultReport.ReplacementRequest != null)
+                                            @if (Model.FaultReport.Status == SD.FaultScrapped && Model.FaultReport.ReplacementRequest != null)
                                             {
                                                 <a asp-controller="Replacement" asp-action="ManageReplacements" class="btn btn-warning w-100">
                                                     <i class="fas fa-exchange-alt me-1"></i> View Replacement
                                                 </a>
+                                            }
+
+                                            <!-- Show scheduled visit info if applicable -->
+                                            @if (Model.FaultReport.Status == SD.Scheduled)
+                                            {
+                                                <div class="alert alert-info mt-2">
+                                                    <i class="fas fa-calendar-check me-2"></i>
+                                                    <strong>Visit Scheduled</strong>
+                                                    <br>
+                                                    <small>A repair visit has been scheduled for this fault.</small>
+                                                </div>
                                             }
                                         </div>
                                     </div>
@@ -198,7 +224,7 @@
                                 <div class="card-body">
                                     <div class="status-timeline">
                                         <!-- Reported Status -->
-                                        <div class="status-step @(Model.FaultReport.ReportedDate != null ? "completed" : "")">
+                                        <div class="status-step completed">
                                             <div class="status-indicator">
                                                 <i class="fas fa-flag"></i>
                                             </div>
@@ -209,8 +235,28 @@
                                             </div>
                                         </div>
 
+                                        <!-- Scheduled Status -->
+                                        <div class="status-step @(Model.FaultReport.Status == SD.Scheduled ? "current" : Model.IsScheduled ? "completed" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Scheduled</h6>
+                                                @if (Model.IsScheduled)
+                                                {
+                                                    <p class="mb-1 text-muted">Repair visit has been scheduled</p>
+                                                    <small class="text-muted">Visit scheduled for repair</small>
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Awaiting scheduling</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+                                            </div>
+                                        </div>
+
                                         <!-- In Progress Status -->
-                                        <div class="status-step @(Model.FaultReport.InProgressDate.HasValue ? "completed" : Model.FaultReport.Status == "In Progress" ? "current" : "")">
+                                        <div class="status-step @(Model.FaultReport.InProgressDate.HasValue ? "completed" : Model.FaultReport.Status == SD.InProgress ? "current" : "")">
                                             <div class="status-indicator">
                                                 <i class="fas fa-tools"></i>
                                             </div>
@@ -224,6 +270,77 @@
                                                 else
                                                 {
                                                     <p class="mb-1 text-muted">Awaiting technician action</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Resolution Status -->
+                                        <div class="status-step @(Model.FaultReport.ResolvedDate.HasValue ? "completed" : Model.FaultReport.Status == SD.FaultResolved ? "current" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Resolved</h6>
+                                                @if (Model.FaultReport.ResolvedDate.HasValue)
+                                                {
+                                                    <p class="mb-1 text-muted">Fault has been resolved successfully</p>
+                                                    <small class="text-muted">@Model.FaultReport.ResolvedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Fault resolution pending</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Scrapped Status -->
+                                        <div class="status-step @(Model.FaultReport.ScrappedDate.HasValue ? "completed" : Model.FaultReport.Status == SD.FaultScrapped ? "current" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-recycle"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Scrapped</h6>
+                                                @if (Model.FaultReport.ScrappedDate.HasValue)
+                                                {
+                                                    <p class="mb-1 text-muted">Fridge marked for replacement</p>
+                                                    <small class="text-muted">@Model.FaultReport.ScrappedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                                    @if (Model.FaultReport.ReplacementRequest != null)
+                                                    {
+                                                        <div class="replacement-info mt-2 p-2 bg-light rounded">
+                                                            <small>
+                                                                <strong>Replacement:</strong>
+                                                                <span class="badge bg-@(Model.FaultReport.ReplacementRequest.ReplacementStatus == SD.Approved ? "success" : "warning")">
+                                                                    @Model.FaultReport.ReplacementRequest.ReplacementStatus
+                                                                </span>
+                                                            </small>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Fridge replacement pending</p>
+                                                    <small class="text-muted">Pending</small>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Closed Status -->
+                                        <div class="status-step @(Model.IsClosed ? "completed" : "")">
+                                            <div class="status-indicator">
+                                                <i class="fas fa-lock"></i>
+                                            </div>
+                                            <div class="status-content">
+                                                <h6 class="mb-1">Closed</h6>
+                                                @if (Model.IsClosed)
+                                                {
+                                                    <p class="mb-1 text-muted">Fault report has been closed</p>
+                                                    <small class="text-muted">@Model.FaultReport.ClosedDate?.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                                }
+                                                else
+                                                {
+                                                    <p class="mb-1 text-muted">Fault report will be closed after resolution</p>
                                                     <small class="text-muted">Pending</small>
                                                 }
 
@@ -244,57 +361,6 @@
                                                         <i class="fas fa-lock me-2"></i>
                                                         This fault report has been @SD.FaultClosed.ToLower() and is now read-only.
                                                     </div>
-                                                }
-                                            </div>
-                                        </div>
-
-                                        <!-- Resolution Status -->
-                                        <div class="status-step @(Model.FaultReport.ResolvedDate.HasValue ? "completed" : Model.FaultReport.Status == "Resolved" ? "current" : "")">
-                                            <div class="status-indicator">
-                                                <i class="fas fa-check-circle"></i>
-                                            </div>
-                                            <div class="status-content">
-                                                <h6 class="mb-1">Resolved</h6>
-                                                @if (Model.FaultReport.ResolvedDate.HasValue)
-                                                {
-                                                    <p class="mb-1 text-muted">Fault has been resolved successfully</p>
-                                                    <small class="text-muted">@Model.FaultReport.ResolvedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
-                                                }
-                                                else
-                                                {
-                                                    <p class="mb-1 text-muted">Fault resolution pending</p>
-                                                    <small class="text-muted">Pending</small>
-                                                }
-                                            </div>
-                                        </div>
-
-                                        <!-- Scrapped Status -->
-                                        <div class="status-step @(Model.FaultReport.ScrappedDate.HasValue ? "completed" : Model.FaultReport.Status == "Scrapped" ? "current" : "")">
-                                            <div class="status-indicator">
-                                                <i class="fas fa-recycle"></i>
-                                            </div>
-                                            <div class="status-content">
-                                                <h6 class="mb-1">Scrapped</h6>
-                                                @if (Model.FaultReport.ScrappedDate.HasValue)
-                                                {
-                                                    <p class="mb-1 text-muted">Fridge marked for replacement</p>
-                                                    <small class="text-muted">@Model.FaultReport.ScrappedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
-                                                    @if (Model.FaultReport.ReplacementRequest != null)
-                                                    {
-                                                        <div class="replacement-info mt-2 p-2 bg-light rounded">
-                                                            <small>
-                                                                <strong>Replacement:</strong>
-                                                                <span class="badge bg-@(Model.FaultReport.ReplacementRequest.ReplacementStatus == "Approved" ? "success" : "warning")">
-                                                                    @Model.FaultReport.ReplacementRequest.ReplacementStatus
-                                                                </span>
-                                                            </small>
-                                                        </div>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <p class="mb-1 text-muted">Fridge replacement pending</p>
-                                                    <small class="text-muted">Pending</small>
                                                 }
                                             </div>
                                         </div>

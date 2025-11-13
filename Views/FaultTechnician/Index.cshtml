@@ -30,6 +30,7 @@
                             <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "active" })">Active Only</a></li>
                             <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "resolved" })">Resolved Only</a></li>
                             <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "closed" })">Closed Only</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Index", new { statusFilter = "scheduled" })">Scheduled Only</a></li>
                         </ul>
                     </div>
 
@@ -77,7 +78,7 @@
                         <div class="col mr-2">
                             <div class="text-xs fw-bold text-warning text-uppercase mb-1">Active</div>
                             <div class="h5 mb-0 fw-bold text-gray-800">
-                                @(Model.CustomerReportedFaults.Count(f => f.Status == SD.Reported || f.Status == SD.InProgress) +
+                                @(Model.CustomerReportedFaults.Count(f => f.Status == SD.Reported || f.Status == SD.InProgress || f.Status == SD.Scheduled) +
                                                                 Model.MaintenanceFaults.Count)
                             </div>
                         </div>
@@ -104,6 +105,21 @@
             </div>
         </div>
         <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-start-4 border-start-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Scheduled</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.Scheduled)</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
             <div class="card border-start-4 border-start-success shadow-sm h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -124,25 +140,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Closed</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.Closed)</div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.FaultClosed)</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-lock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-start-4 border-start-danger shadow-sm h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs fw-bold text-danger text-uppercase mb-1">Scrapped</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">@Model.CustomerReportedFaults.Count(f => f.Status == SD.FaultScrapped)</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-recycle fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -166,7 +167,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4 fw-semibold text-muted small text-uppercase">Customer & Fridge</th>
-                                <th class="fw-semibold text-muted small text-uppercase">Fault Type</th>
+                                <th class="fw-semibold text-muted small text-uppercase">Fault Details</th>
                                 <th class="fw-semibold text-muted small text-uppercase">Priority</th>
                                 <th class="fw-semibold text-muted small text-uppercase">Status</th>
                                 <th class="fw-semibold text-muted small text-uppercase">Reported Date</th>
@@ -177,9 +178,10 @@
                         <tbody>
                             @foreach (var fault in Model.CustomerReportedFaults)
                             {
-                                <tr class="@(fault.Status == SD.Closed ? "table-secondary" :
-                                                                               fault.Status == SD.FaultResolved ? "table-success" :
-                                                                               fault.Status == SD.FaultScrapped ? "table-warning" : "")">
+                                <tr class="@(fault.Status == SD.FaultClosed ? "table-secondary" :
+                                                                                                                   fault.Status == SD.FaultResolved ? "table-success" :
+                                                                                                                   fault.Status == SD.FaultScrapped ? "table-warning" :
+                                                                                                                   fault.Status == SD.Scheduled ? "table-primary" : "")">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-2 p-2 me-3">
@@ -190,12 +192,14 @@
                                         <small class="text-muted">@fault.FridgeInStock?.Fridge?.Brand @fault.FridgeInStock?.Fridge?.Model</small>
                                         <br />
                                         <small class="text-muted">SN: @fault.FridgeInStock?.FridgeNo</small>
+                                        <br />
+                                        <small class="text-muted">Phone: @fault.Customer?.ApplicationUser?.PhoneNumber</small>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <h6 class="fw-semibold mb-0">@fault.FaultType</h6>
-                                <small class="text-muted">@(fault.Description?.Length > 50 ? fault.Description.Substring(0, 50) + "..." : fault.Description)</small>
+                                <small class="text-muted">@fault.Description</small>
                             </td>
                             <td>
                                 @if (fault.Priority == "High" || fault.Priority == "Urgent")
@@ -218,6 +222,12 @@
                                                 <i class="fas fa-clock me-1"></i>@SD.Reported
                                             </span>
                                         }
+                                        else if (fault.Status == SD.Scheduled)
+                                        {
+                                            <span class="badge bg-primary">
+                                                <i class="fas fa-calendar-check me-1"></i>@SD.Scheduled
+                                            </span>
+                                        }
                                         else if (fault.Status == SD.InProgress)
                                         {
                                             <span class="badge bg-info">
@@ -230,10 +240,10 @@
                                                 <i class="fas fa-check-circle me-1"></i>@SD.FaultResolved
                                             </span>
                                         }
-                                        else if (fault.Status == SD.Closed)
+                                        else if (fault.Status == SD.FaultClosed)
                                         {
                                             <span class="badge bg-secondary">
-                                                <i class="fas fa-lock me-1"></i>@SD.Closed
+                                                <i class="fas fa-lock me-1"></i>@SD.FaultClosed
                                             </span>
                                         }
                                         else if (fault.Status == SD.FaultScrapped)
@@ -265,10 +275,10 @@
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
                                             <a asp-action="ProcessFault" asp-route-id="@fault.FaultReportId"
-                                               class="btn btn-sm @(fault.Status == SD.Closed ? "btn-outline-secondary" : "btn-outline-primary") rounded-3 px-3"
+                                               class="btn btn-sm @(fault.Status == SD.FaultClosed ? "btn-outline-secondary" : "btn-outline-primary") rounded-3 px-3"
                                                title="View Fault Details">
-                                                <i class="fas @(fault.Status == SD.Closed ? "fa-eye" : "fa-cogs") me-1"></i>
-                                                @(fault.Status == SD.Closed ? "View" : "Process")
+                                                <i class="fas @(fault.Status == SD.FaultClosed ? "fa-eye" : "fa-cogs") me-1"></i>
+                                                @(fault.Status == SD.FaultClosed ? "View" : "Process")
                                             </a>
                                         </div>
                                     </td>
@@ -321,6 +331,7 @@
                                     </td>
                                     <td>
                                         <h6 class="fw-semibold mb-0">@visit.RequestHeader?.Customer?.ApplicationUser?.FirstName @visit.RequestHeader?.Customer?.ApplicationUser?.LastName</h6>
+                                        <small class="text-muted">Phone: @visit.RequestHeader?.Customer?.ApplicationUser?.PhoneNumber</small>
                                     </td>
                                     <td>
                                         <h6 class="fw-semibold mb-0">@visit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand</h6>
@@ -338,7 +349,8 @@
                                         </span>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a asp-action="BookFaultVisit" asp-route-RequestedFaultId="@visit.VisitId"
+                                        <a asp-action="BookFaultVisit"
+                                           asp-route-RequestedFaultId="@visit.VisitId"
                                            class="btn btn-sm btn-outline-primary rounded-3 px-3"
                                            title="Book Repair Visit">
                                             <i class="fas fa-tools me-1"></i> Repair
@@ -365,6 +377,7 @@
     }
 </div>
 
+<!-- Keep the existing CSS styles -->
 <style>
     .border-start-4 {
         border-left-width: 4px !important;
@@ -400,6 +413,10 @@
 
     .table-warning {
         background-color: rgba(255, 193, 7, 0.05) !important;
+    }
+
+    .table-primary {
+        background-color: rgba(13, 110, 253, 0.05) !important;
     }
 </style>
 

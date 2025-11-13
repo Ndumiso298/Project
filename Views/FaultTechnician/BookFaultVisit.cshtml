@@ -1,180 +1,153 @@
-﻿@model Project.Models.FaultTechnician
-
+﻿@model Project.Models.ViewModel.BookRepairVisitViewModel
+@using Project.Utility
 @{
-    ViewData["Title"] = "Book Fault Visit";
-    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Book Repair Visit";
+    Layout = "_Layout";
 }
 
-<div class="container py-5">
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-
-        <!-- Header -->
-        <div class="card-header bg-primary text-white text-center py-4">
-            <h2 class="fw-bold mb-0">Book Fault Visit</h2>
-            <p class="mb-0 opacity-75">Assign or update a customer fault visit</p>
-        </div>
-
-        <div class="card-body p-4 p-md-5">
-            <!-- Back button -->
-            <div class="mb-4">
-                <a asp-action="Index" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-left"></i> Back to Faults
-                </a>
-            </div>
-
-            <!-- Fault Info -->
-            @if (Model.FridgeVisit != null)
-            {
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="text-primary mb-3"><i class="bi bi-info-circle me-2"></i>Fault Information</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="fw-bold text-muted small">Fridge Model</label>
-                                <p class="mb-0">@Model.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model</p>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="fw-bold text-muted small">Fridge Name</label>
-                                <p class="mb-0">@Model.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand</p>
-                            </div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-4 rounded-top-4">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="h4 mb-0">
+                                <i class="fas fa-tools me-2"></i>Book Repair Visit
+                            </h2>
+                            <p class="mb-0 opacity-75">Schedule a repair visit</p>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="fw-bold text-muted small">Customer</label>
-                                <p class="mb-0">@Model.FridgeVisit?.RequestHeader?.FirstName</p>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="fw-bold text-muted small">Customer Booking Status</label>
-                                <p class="mb-0"><span class="badge bg-warning">@Model.CustomerBookingStatus</span></p>
-                            </div>
+                        <div class="col-auto">
+                            <a href="@ViewBag.ReturnUrl" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-1"></i> Back
+                            </a>
                         </div>
                     </div>
                 </div>
-            }
-
-            <!-- Booking Form -->
-            <form asp-action="BookFaultVisit" method="post" class="needs-validation" novalidate>
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="FaultId" />
-                <input type="hidden" asp-for="VisitId" />
-
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="text-dark mb-4"><i class="bi bi-calendar-check me-2"></i>Schedule Visit</h5>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Bookingate" class="form-label fw-bold">Booking Date</label>
-                                <input asp-for="Bookingate" type="date" class="form-control" required />
-                                <span asp-validation-for="Bookingate" class="text-danger"></span>
+                <div class="card-body p-4">
+                    <!-- Visit Information -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Visit Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Customer:</strong> @Model.CustomerName</p>
+                                    <p><strong>Fridge:</strong> @Model.FridgeDetails</p>
+                                    <p><strong>Address:</strong> @Model.Address</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Report Date:</strong> @Model.OriginalVisitDate.ToString("MMM dd, yyyy")</p>
+                                    @if (Model.VisitId.HasValue)
+                                    {
+                                        <p><strong>Visit ID:</strong> #@Model.VisitId</p>
+                                    }
+                                    @if (Model.FaultReportId.HasValue)
+                                    {
+                                        <p><strong>Fault ID:</strong> #@Model.FaultReportId</p>
+                                    }
+                                </div>
                             </div>
+                            @if (!string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <strong>Notes:</strong>
+                                        <div class="card bg-light mt-2">
+                                            <div class="card-body py-2">
+                                                <p class="mb-0">@Model.Notes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Completion" class="form-label fw-bold">Completion Date</label>
-                                <input asp-for="Completion" type="date" class="form-control" />
-                                <span asp-validation-for="Completion" class="text-danger"></span>
+                    <!-- Repair Booking Form -->
+                    <form asp-action="@ViewBag.FormAction" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @if (Model.VisitId.HasValue)
+                        {
+                            <input type="hidden" asp-for="VisitId" />
+                        }
+                        @if (Model.FaultReportId.HasValue)
+                        {
+                            <input type="hidden" asp-for="FaultReportId" />
+                        }
+                        <input type="hidden" asp-for="CustomerId" />
+
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-calendar-plus me-2"></i>Schedule Repair
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="RepairDate" class="form-label">Repair Date *</label>
+                                            <input asp-for="RepairDate" type="date" class="form-control" />
+                                            <span asp-validation-for="RepairDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="TimeSlot" class="form-label">Time Slot *</label>
+                                            <select asp-for="TimeSlot" class="form-select">
+                                                <option value="">Select Time Slot</option>
+                                                @foreach (var slot in SD.TimeSlots)
+                                                {
+                                                    <option value="@slot">@slot.Replace("-", " - ")</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="TimeSlot" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="AdditionalNotes" class="form-label">Additional Notes (Optional)</label>
+                                    <textarea asp-for="AdditionalNotes" class="form-control" rows="4"
+                                              placeholder="Add any additional notes or instructions for the repair visit..."></textarea>
+                                    <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="TechnicianAssigned" class="form-label fw-bold">Technician Assigned</label>
-                                <input asp-for="TechnicianAssigned" class="form-control" placeholder="Enter technician name..." />
-                                <span asp-validation-for="TechnicianAssigned" class="text-danger"></span>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="RepairStatus" class="form-label fw-bold">Repair Status</label>
-                                <select asp-for="RepairStatus" class="form-select" asp-items="ViewBag.RepairStatusList" required>
-                                    <option value="">-- Select Status --</option>
-                                </select>
-                                <span asp-validation-for="RepairStatus" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="FaultDescription" class="form-label fw-bold">Fault Description</label>
-                            <textarea asp-for="FaultDescription" class="form-control" rows="3" placeholder="Describe the fault..."></textarea>
-                            <span asp-validation-for="FaultDescription" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="ResolutionNotes" class="form-label fw-bold">Resolution Notes</label>
-                            <textarea asp-for="ResolutionNotes" class="form-control" rows="3" placeholder="Enter any notes or resolutions..."></textarea>
-                            <span asp-validation-for="ResolutionNotes" class="text-danger"></span>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-success btn-lg px-5">
-                                <i class="bi bi-save me-2"></i> Save Booking
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="@ViewBag.ReturnUrl" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-1"></i> Book Repair Visit
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.querySelector('.needs-validation');
-            form.addEventListener('submit', function (e) {
-                if (!form.checkValidity()) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                } else {
-                    const btn = form.querySelector('button[type="submit"]');
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-2"></i> Saving...';
-                }
-                form.classList.add('was-validated');
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set date constraints
+            const repairDateInput = document.getElementById('RepairDate');
+            if (repairDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                const maxDate = new Date();
+                maxDate.setMonth(maxDate.getMonth() + 1);
+                const maxDateStr = maxDate.toISOString().split('T')[0];
 
-            // Replacement prompt functionality
-            const repairStatusDropdown = document.querySelector('select[name="RepairStatus"]');
-
-            if (repairStatusDropdown) {
-                // Check initial value on page load
-                if (repairStatusDropdown.value === 'Scrapped') {
-                    const visitId = document.querySelector('input[name="VisitId"]').value;
-                    const confirmed = confirm('⚠️ This fridge is marked as Scrapped. Do you want to initiate a replacement request?');
-
-                    if (confirmed) {
-                        window.location.href = `@Url.Action("RequestReplacement", "Replacement")?visitId=${visitId}`;
-                        return; // Stop execution since we're redirecting
-                    }
-                }
-
-                // Listen for future changes
-                repairStatusDropdown.addEventListener('change', function() {
-                    if (this.value === 'Scrapped') {
-                        const visitId = document.querySelector('input[name="VisitId"]').value;
-                        const confirmed = confirm('⚠️ This fridge is marked as Scrapped. Do you want to initiate a replacement request?');
-
-                        if (confirmed) {
-                            window.location.href = `@Url.Action("RequestReplacement", "Replacement")?visitId=${visitId}`;
-                        } else {
-                            // Revert to "In Progress" if user cancels
-                            this.value = 'In Progress';
-                        }
-                    }
-                });
+                repairDateInput.min = today;
+                repairDateInput.max = maxDateStr;
             }
         });
-
-        // Spinner animation
-        const style = document.createElement('style');
-        style.textContent = `
-            .spin { animation: spin 1s linear infinite; }
-        @@keyframes spin { 100% { transform: rotate(360deg); } }
-        `;
-        document.head.appendChild(style);
     </script>
 }

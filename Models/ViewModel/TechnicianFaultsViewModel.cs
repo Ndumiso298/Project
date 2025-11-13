@@ -13,20 +13,21 @@ namespace Project.Models.ViewModel
     public class FaultDetailsViewModel
     {
         public required FaultReport FaultReport { get; set; }
-        public List<FaultComment> Comments { get; set; } = new List<FaultComment>();
-        public List<FaultTimelineEvent> TimelineEvents { get; set; } = new List<FaultTimelineEvent>(); // Changed from TimelineEvent
 
-        // Non-hardcoded status properties with null checks
-        public bool IsClosed => FaultReport?.Status?.Equals(SD.FaultClosed, StringComparison.OrdinalIgnoreCase) == true;
+        public List<FaultComment> Comments { get; set; } = new List<FaultComment>();
+        public List<FaultTimelineEvent> TimelineEvents { get; set; } = new List<FaultTimelineEvent>();
+
+        // Status properties
         public bool IsResolved => FaultReport?.Status?.Equals(SD.FaultResolved, StringComparison.OrdinalIgnoreCase) == true;
         public bool IsScrapped => FaultReport?.Status?.Equals(SD.FaultScrapped, StringComparison.OrdinalIgnoreCase) == true;
-        public bool CanBeClosed => IsResolved && !IsClosed;
+        public bool IsScheduled => FaultReport.Status == SD.Scheduled;
+        public bool IsClosed => FaultReport.Status == SD.FaultClosed;
+        public bool CanBeClosed => FaultReport.Status == SD.FaultResolved && FaultReport.Status != SD.FaultClosed;
 
         // Role-based access properties
         public bool IsCustomerView { get; set; }
         public bool IsTechnicianView { get; set; }
     }
-
     public class FaultTimelineEvent
         {
             public string EventType { get; set; } = string.Empty;

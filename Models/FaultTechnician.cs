@@ -48,7 +48,9 @@ namespace Project.Models
         public int? ReplacementRequestId { get; set; }
         [ForeignKey("ReplacementRequestId")]
         public virtual FridgeReplacement? ReplacementRequest { get; set; }
-
+        public DateTime? ScheduledDate { get; set; } // Add this if missing
+        public string? TimeSlot { get; set; } // Add this if missing
+        public string Status { get; set; } = string.Empty; // Add this if missing
         // Scrapping tracking
         public bool IsScrapped { get; set; } = false;
         public DateTime? ScrappedDate { get; set; }

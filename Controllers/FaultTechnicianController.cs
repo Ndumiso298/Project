@@ -116,7 +116,6 @@ namespace Project.Controllers
                     FaultTypeDistribution = new List<KeyValuePair<string, int>>(),
                     RepairStatusDistribution = new List<KeyValuePair<string, int>>(),
                     TopTechnicians = new List<KeyValuePair<string, int>>(),
-                    RecentActivities = new List<KeyValuePair<string, int>>()
                 };
 
                 return View(vm);
@@ -134,7 +133,6 @@ namespace Project.Controllers
                     FaultTypeDistribution = new List<KeyValuePair<string, int>>(),
                     RepairStatusDistribution = new List<KeyValuePair<string, int>>(),
                     TopTechnicians = new List<KeyValuePair<string, int>>(),
-                    RecentActivities = new List<KeyValuePair<string, int>>()
                 };
 
                 return View(vm);
@@ -142,17 +140,85 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 2. TECHNICIAN CALENDAR
+        // 2. TECHNICIAN CALENDAR - SHOWS ALL SCHEDULED REPAIRS
         // ===================================================================
         public IActionResult Calendar()
         {
-            var visits = _db.tblFaultTechnicians
-                .Include(u => u.FridgeVisit)
-                    .ThenInclude(u => u.RequestHeader)
-                        .ThenInclude(u => u.Customer.ApplicationUser)
-                .ToList();
+            try
+            {
+                var viewModel = new CalendarViewModel();
 
-            return View(visits);
+                // Get scheduled repairs from fault assignments
+                var scheduledRepairs = _db.tblFaultAssignments
+                    .Include(fa => fa.FaultReport)
+                        .ThenInclude(fr => fr.Customer)
+                            .ThenInclude(c => c.ApplicationUser)
+                    .Include(fa => fa.FaultReport)
+                        .ThenInclude(fr => fr.FridgeInStock)
+                            .ThenInclude(fis => fis.Fridge)
+                    .Include(fa => fa.Employee)
+                    .Where(fa => fa.ScheduledDate.HasValue)
+                    .ToList();
+
+                // Get maintenance repairs from fault technicians
+                var maintenanceRepairs = _db.tblFaultTechnicians
+                    .Include(ft => ft.FridgeVisit)
+                        .ThenInclude(fv => fv.RequestHeader)
+                            .ThenInclude(rh => rh.Customer)
+                                .ThenInclude(c => c.ApplicationUser)
+                    .Include(ft => ft.FridgeVisit)
+                        .ThenInclude(fv => fv.RequestHeader)
+                            .ThenInclude(rh => rh.RequestFridges)
+                                .ThenInclude(rf => rf.Fridge)
+                    .Where(ft => ft.Bookingate.HasValue)
+                    .ToList();
+
+                // Combine both types of repairs for the calendar
+                var allRepairs = new List<CalendarRepairItem>();
+
+                // Add scheduled repairs from fault assignments
+                foreach (var assignment in scheduledRepairs)
+                {
+                    allRepairs.Add(new CalendarRepairItem
+                    {
+                        Id = assignment.FaultAssignmentId,
+                        VisitId = assignment.VisitId,
+                        Date = assignment.ScheduledDate.Value,
+                        Technician = assignment.Employee?.FirstName + " " + assignment.Employee?.LastName,
+                        Status = assignment.Status ?? "Scheduled",
+                        CustomerName = assignment.FaultReport?.Customer?.ApplicationUser?.FirstName + " " + assignment.FaultReport?.Customer?.ApplicationUser?.LastName,
+                        FridgeModel = assignment.FaultReport?.FridgeInStock?.Fridge?.Brand + " " + assignment.FaultReport?.FridgeInStock?.Fridge?.Model,
+                        Notes = assignment.FaultReport?.Description,
+                        Type = "Customer Fault"
+                    });
+                }
+
+                // Add maintenance repairs
+                foreach (var repair in maintenanceRepairs)
+                {
+                    allRepairs.Add(new CalendarRepairItem
+                    {
+                        Id = repair.FaultId,
+                        VisitId = repair.VisitId,
+                        Date = repair.Bookingate.Value,
+                        Technician = repair.TechnicianAssigned ?? "Unknown",
+                        Status = repair.RepairStatus ?? "Scheduled",
+                        CustomerName = repair.FridgeVisit?.RequestHeader?.Customer?.ApplicationUser?.FirstName + " " + repair.FridgeVisit?.RequestHeader?.Customer?.ApplicationUser?.LastName,
+                        FridgeModel = repair.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand + " " + repair.FridgeVisit?.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model,
+                        Notes = repair.ResolutionNotes,
+                        Type = "Maintenance Repair"
+                    });
+                }
+
+                viewModel.Repairs = allRepairs.OrderBy(r => r.Date).ToList();
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading calendar data");
+                TempData[SD.Error] = "Error loading calendar";
+                return View(new CalendarViewModel { Repairs = new List<CalendarRepairItem>() });
+            }
         }
 
         // ===================================================================
@@ -252,83 +318,404 @@ namespace Project.Controllers
 
             return View(viewModel);
         }
+
         // ===================================================================
-        // 4. BOOK FAULT VISIT (Technician)
+        // 4. BOOK FAULT VISIT FOR MAINTENANCE FAULTS
         // ===================================================================
-        [HttpGet]
-        public IActionResult BookFaultVisit(int RequestedFaultId, int? visitId)
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> BookFaultVisit(int RequestedFaultId)
         {
-            var requestRepair = _db.tblFridgeVisits
-                .Include(u => u.RequestHeader)
-                    .ThenInclude(r => r.RequestFridges)
-                        .ThenInclude(rf => rf.Fridge)
-                .FirstOrDefault(r => r.VisitId == RequestedFaultId && r.CheckupStatus == "Failed");
-
-            if (requestRepair == null) return NotFound();
-
-            ViewBag.RepairStatusList = new List<SelectListItem>
+            try
             {
-                new SelectListItem { Text = "Scrapped", Value = "Scrapped" },
-                new SelectListItem { Text = "In Progress", Value = "In Progress" },
-                new SelectListItem { Text = "Resolved", Value = "Resolved" },
-                new SelectListItem { Text = "Not Started", Value = "Not Started" }
-            };
+                var failedVisit = await _db.tblFridgeVisits
+                    .Include(v => v.RequestHeader)
+                        .ThenInclude(rh => rh.Customer)
+                            .ThenInclude(c => c.ApplicationUser)
+                    .Include(v => v.RequestHeader)
+                        .ThenInclude(rh => rh.RequestFridges)
+                            .ThenInclude(rf => rf.Fridge)
+                    .FirstOrDefaultAsync(v => v.VisitId == RequestedFaultId);
 
-            FaultTechnician model;
-            if (visitId.HasValue)
-            {
-                model = _db.tblFaultTechnicians
-                     .Include(u => u.FridgeVisit)
-                     .ThenInclude(u => u.RequestHeader)
-                     .ThenInclude(u => u.RequestFridges)
-                     .ThenInclude(u => u.Fridge)
-                     .FirstOrDefault(u => u.FaultId == visitId.Value);
-            }
-            else
-            {
-                model = new FaultTechnician
+                if (failedVisit == null)
                 {
-                    VisitId = RequestedFaultId,
-                    FridgeVisit = requestRepair,
-                    Bookingate = DateTime.Now.AddDays(1)
-                };
-            }
+                    TempData[SD.Error] = "Failed visit not found";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            return model == null ? NotFound() : View(model);
+                var customerName = "Unknown Customer";
+                if (failedVisit.RequestHeader?.Customer?.ApplicationUser != null)
+                {
+                    var firstName = failedVisit.RequestHeader.Customer.ApplicationUser.FirstName ?? "";
+                    var lastName = failedVisit.RequestHeader.Customer.ApplicationUser.LastName ?? "";
+                    customerName = $"{firstName} {lastName}".Trim();
+                }
+
+                var fridgeDetails = "Unknown Fridge";
+                var firstRequestFridge = failedVisit.RequestHeader?.RequestFridges?.FirstOrDefault();
+                if (firstRequestFridge?.Fridge != null)
+                {
+                    var brand = firstRequestFridge.Fridge.Brand ?? "";
+                    var modelName = firstRequestFridge.Fridge.Model ?? "";
+                    fridgeDetails = $"{brand} {modelName}".Trim();
+                }
+
+                var address = failedVisit.RequestHeader?.Customer?.ApplicationUser?.StreetAddress ?? "Address not available";
+
+                var viewModel = new BookRepairVisitViewModel
+                {
+                    VisitId = failedVisit.VisitId,
+                    CustomerName = customerName,
+                    CustomerId = failedVisit.RequestHeader?.CustomerID ?? 0,
+                    FridgeDetails = fridgeDetails,
+                    OriginalVisitDate = failedVisit.VisitDate,
+                    Notes = failedVisit.Notes,
+                    Address = address
+                };
+
+                ViewBag.FormAction = "BookRepairVisit";
+                ViewBag.ReturnUrl = Url.Action("Index");
+                return View("BookFaultVisit", viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading failed visit {VisitId} for repair booking", RequestedFaultId);
+                TempData[SD.Error] = "An error occurred while loading the visit details";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult BookFaultVisit(FaultTechnician fault)
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> BookRepairVisit(BookRepairVisitViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                ViewBag.RepairStatusList = new List<SelectListItem>
+                if (!ModelState.IsValid)
                 {
-                    new SelectListItem { Text = "Scrapped", Value = "Scrapped" },
-                    new SelectListItem { Text = "In Progress", Value = "In Progress" },
-                    new SelectListItem { Text = "Resolved", Value = "Resolved" },
-                    new SelectListItem { Text = "Not Started", Value = "Not Started" }
+                    // Repopulate model data on validation error
+                    var failedVisit = await _db.tblFridgeVisits
+                        .Include(v => v.RequestHeader)
+                            .ThenInclude(rh => rh.Customer)
+                                .ThenInclude(c => c.ApplicationUser)
+                        .Include(v => v.RequestHeader)
+                            .ThenInclude(rh => rh.RequestFridges)
+                                .ThenInclude(rf => rf.Fridge)
+                        .FirstOrDefaultAsync(v => v.VisitId == model.VisitId);
+
+                    if (failedVisit != null)
+                    {
+                        model.CustomerName = $"{failedVisit.RequestHeader?.Customer?.ApplicationUser?.FirstName} {failedVisit.RequestHeader?.Customer?.ApplicationUser?.LastName}".Trim();
+                        model.FridgeDetails = $"{failedVisit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand} {failedVisit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model}".Trim();
+                        model.Address = failedVisit.RequestHeader?.Customer?.ApplicationUser?.StreetAddress ?? "Address not available";
+                        model.OriginalVisitDate = failedVisit.VisitDate;
+                        model.Notes = failedVisit.Notes;
+                    }
+
+                    ViewBag.FormAction = "BookRepairVisit";
+                    ViewBag.ReturnUrl = Url.Action("Index");
+                    return View("BookFaultVisit", model);
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _db.AppUser.FindAsync(userId);
+
+                if (user == null)
+                {
+                    TempData[SD.Error] = "User not found";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Get the current employee (technician)
+                var employee = await _db.tblEmployee
+                    .FirstOrDefaultAsync(e => e.ApplicationUserId == userId);
+
+                if (employee == null)
+                {
+                    TempData[SD.Error] = "Employee record not found";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Get the original visit with fridge information
+                var originalVisit = await _db.tblFridgeVisits
+                    .Include(v => v.RequestHeader)
+                        .ThenInclude(rh => rh.RequestFridges)
+                            .ThenInclude(rf => rf.Fridge)
+                    .FirstOrDefaultAsync(v => v.VisitId == model.VisitId);
+
+                if (originalVisit == null)
+                {
+                    TempData[SD.Error] = "Original visit not found";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Get the fridge in stock ID from request fridges
+                int? fridgeInStockId = null;
+                var requestFridge = originalVisit.RequestHeader?.RequestFridges?.FirstOrDefault();
+                if (requestFridge != null)
+                {
+                    fridgeInStockId = requestFridge.FridgeId;
+                }
+
+                // Create fault report
+                var faultReport = new FaultReport
+                {
+                    CustomerId = model.CustomerId,
+                    FridgeInStockId = fridgeInStockId,
+                    FaultType = SD.FaultTypeRepair,
+                    Description = $"Repair visit scheduled for failed maintenance. Original visit date: {model.OriginalVisitDate:MMM dd, yyyy}. " +
+                                 $"{(string.IsNullOrEmpty(model.Notes) ? "No original notes." : $"Original notes: {model.Notes}")}" +
+                                 $"{(string.IsNullOrEmpty(model.AdditionalNotes) ? "" : $" Additional notes: {model.AdditionalNotes}")}",
+                    Priority = SD.PriorityMedium,
+                    Status = SD.Reported,
+                    ReportedDate = DateTime.Now
                 };
-                return View(fault);
-            }
 
-            if (fault.FaultId == 0)
-            {
-                _db.tblFaultTechnicians.Add(fault);
-            }
-            else
-            {
-                _db.tblFaultTechnicians.Update(fault);
-            }
+                _db.tblFaultReports.Add(faultReport);
+                await _db.SaveChangesAsync();
 
-            _db.SaveChanges();
-            TempData[SD.Success] = "Booking saved successfully";
-            return RedirectToAction(nameof(Index));
+                // Create fault assignment
+                var faultAssignment = new FaultAssignment
+                {
+                    FaultReportId = faultReport.FaultReportId,
+                    EmployeeId = userId,
+                    VisitId = model.VisitId,
+                    AssignedDate = DateTime.Now,
+                    ScheduledDate = model.RepairDate,
+                    TimeSlot = model.TimeSlot,
+                    Status = SD.Scheduled
+                };
+
+                _db.tblFaultAssignments.Add(faultAssignment);
+                await _db.SaveChangesAsync();
+
+                // Also create a FaultTechnician record for compatibility with existing system
+                var faultTechnician = new FaultTechnician
+                {
+                    VisitId = model.VisitId,
+                    TechnicianAssigned = $"{user.FirstName} {user.LastName}",
+                    RepairStatus = SD.Scheduled,
+                    Bookingate = model.RepairDate,
+                    ReportDate = DateTime.Now,
+                    CustomerBookingStatus = SD.Approved,
+                    ResolutionNotes = $"Scheduled repair visit for {model.RepairDate:MMM dd, yyyy} at {model.TimeSlot}. {model.AdditionalNotes}"
+                };
+
+                _db.tblFaultTechnicians.Add(faultTechnician);
+                await _db.SaveChangesAsync();
+
+                // Update original visit status
+                originalVisit.CheckupStatus = SD.Scheduled;
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Repair visit scheduled successfully! It will appear on the calendar.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error booking repair visit for visit {VisitId}", model.VisitId);
+                TempData[SD.Error] = "An error occurred while scheduling the repair visit";
+
+                // Repopulate model data on exception
+                var failedVisit = await _db.tblFridgeVisits
+                    .Include(v => v.RequestHeader)
+                        .ThenInclude(rh => rh.Customer)
+                            .ThenInclude(c => c.ApplicationUser)
+                    .Include(v => v.RequestHeader)
+                        .ThenInclude(rh => rh.RequestFridges)
+                            .ThenInclude(rf => rf.Fridge)
+                    .FirstOrDefaultAsync(v => v.VisitId == model.VisitId);
+
+                if (failedVisit != null)
+                {
+                    model.CustomerName = $"{failedVisit.RequestHeader?.Customer?.ApplicationUser?.FirstName} {failedVisit.RequestHeader?.Customer?.ApplicationUser?.LastName}".Trim();
+                    model.FridgeDetails = $"{failedVisit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Brand} {failedVisit.RequestHeader?.RequestFridges?.FirstOrDefault()?.Fridge?.Model}".Trim();
+                    model.Address = failedVisit.RequestHeader?.Customer?.ApplicationUser?.StreetAddress ?? "Address not available";
+                    model.OriginalVisitDate = failedVisit.VisitDate;
+                    model.Notes = failedVisit.Notes;
+                }
+
+                ViewBag.FormAction = "BookRepairVisit";
+                ViewBag.ReturnUrl = Url.Action("Index");
+                return View("BookFaultVisit", model);
+            }
         }
 
         // ===================================================================
-        // 5. CUSTOMER: CREATE FAULT REPORT
+        // 5. BOOK FAULT VISIT FOR CUSTOMER FAULT REPORTS
+        // ===================================================================
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> BookFaultVisitForReport(int RequestedFaultId)
+        {
+            try
+            {
+                var faultReport = await _db.tblFaultReports
+                    .Include(fr => fr.Customer)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(fr => fr.FridgeInStock)
+                        .ThenInclude(fis => fis.Fridge)
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == RequestedFaultId);
+
+                if (faultReport == null)
+                {
+                    TempData[SD.Error] = "Fault report not found";
+                    return RedirectToAction(nameof(AllFaults));
+                }
+
+                var customerName = "Unknown Customer";
+                if (faultReport.Customer?.ApplicationUser != null)
+                {
+                    var firstName = faultReport.Customer.ApplicationUser.FirstName ?? "";
+                    var lastName = faultReport.Customer.ApplicationUser.LastName ?? "";
+                    customerName = $"{firstName} {lastName}".Trim();
+                }
+
+                var fridgeDetails = "Unknown Fridge";
+                if (faultReport.FridgeInStock?.Fridge != null)
+                {
+                    var brand = faultReport.FridgeInStock.Fridge.Brand ?? "";
+                    var modelName = faultReport.FridgeInStock.Fridge.Model ?? "";
+                    fridgeDetails = $"{brand} {modelName}".Trim();
+                }
+
+                var address = faultReport.Customer?.ApplicationUser?.StreetAddress ?? "Address not available";
+
+                var viewModel = new BookRepairVisitViewModel
+                {
+                    FaultReportId = faultReport.FaultReportId,
+                    CustomerName = customerName,
+                    CustomerId = faultReport.CustomerId,
+                    FridgeDetails = fridgeDetails,
+                    OriginalVisitDate = faultReport.ReportedDate,
+                    Notes = faultReport.Description,
+                    Address = address
+                };
+
+                ViewBag.FormAction = "BookVisitForFaultReport";
+                ViewBag.ReturnUrl = Url.Action("ProcessFault", new { id = faultReport.FaultReportId });
+                return View("BookFaultVisit", viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading fault report {FaultReportId} for booking", RequestedFaultId);
+                TempData[SD.Error] = "An error occurred while loading the fault details";
+                return RedirectToAction(nameof(AllFaults));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
+        public async Task<IActionResult> BookVisitForFaultReport(BookRepairVisitViewModel model)
+        {
+            try
+            {
+                Console.WriteLine($"BookVisitForFaultReport called - FaultReportId: {model.FaultReportId}");
+
+                if (!ModelState.IsValid)
+                {
+                    Console.WriteLine("ModelState is invalid:");
+                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        Console.WriteLine($"Error: {error.ErrorMessage}");
+                    }
+
+                    // REPOPULATE THE VIEW MODEL WITH ORIGINAL DATA
+                    var faultReportForValidation = await _db.tblFaultReports
+                        .Include(fr => fr.Customer)
+                            .ThenInclude(c => c.ApplicationUser)
+                        .Include(fr => fr.FridgeInStock)
+                            .ThenInclude(fis => fis.Fridge)
+                        .FirstOrDefaultAsync(fr => fr.FaultReportId == model.FaultReportId);
+
+                    if (faultReportForValidation != null)
+                    {
+                        // Re-populate the model properties that might be missing
+                        model.CustomerName = $"{faultReportForValidation.Customer?.ApplicationUser?.FirstName} {faultReportForValidation.Customer?.ApplicationUser?.LastName}".Trim();
+                        model.FridgeDetails = $"{faultReportForValidation.FridgeInStock?.Fridge?.Brand} {faultReportForValidation.FridgeInStock?.Fridge?.Model}".Trim();
+                        model.Address = faultReportForValidation.Customer?.ApplicationUser?.StreetAddress ?? "Address not available";
+                        model.OriginalVisitDate = faultReportForValidation.ReportedDate;
+                        model.Notes = faultReportForValidation.Description;
+                    }
+
+                    ViewBag.FormAction = "BookVisitForFaultReport";
+                    ViewBag.ReturnUrl = Url.Action("ProcessFault", new { id = model.FaultReportId });
+                    return View("BookFaultVisit", model);
+                }
+
+                Console.WriteLine($"Processing booking for FaultReportId: {model.FaultReportId}");
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _db.AppUser.FindAsync(userId);
+
+                if (user == null)
+                {
+                    TempData[SD.Error] = "User not found";
+                    return RedirectToAction(nameof(AllFaults));
+                }
+
+                // Get the fault report - use different variable name
+                var targetFaultReport = await _db.tblFaultReports
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == model.FaultReportId);
+
+                if (targetFaultReport == null)
+                {
+                    TempData[SD.Error] = "Fault report not found";
+                    return RedirectToAction(nameof(AllFaults));
+                }
+
+                // Create fault assignment
+                var faultAssignment = new FaultAssignment
+                {
+                    FaultReportId = targetFaultReport.FaultReportId,
+                    EmployeeId = userId,
+                    ScheduledDate = model.RepairDate,
+                    TimeSlot = model.TimeSlot,
+                    Status = SD.Scheduled,
+                    AssignedDate = DateTime.Now
+                };
+
+                _db.tblFaultAssignments.Add(faultAssignment);
+
+                // Update fault report status
+                targetFaultReport.Status = SD.Scheduled;
+
+                await _db.SaveChangesAsync();
+
+                TempData[SD.Success] = "Repair visit scheduled successfully!";
+                Console.WriteLine("Booking completed successfully");
+                return RedirectToAction(nameof(ProcessFault), new { id = targetFaultReport.FaultReportId });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in BookVisitForFaultReport: {ex.Message}");
+                _logger.LogError(ex, "Error booking visit for fault report {FaultReportId}", model.FaultReportId);
+                TempData[SD.Error] = "An error occurred while scheduling the repair visit";
+
+                // REPOPULATE THE MODEL ON ERROR TOO - use different variable name
+                var faultReportForError = await _db.tblFaultReports
+                    .Include(fr => fr.Customer)
+                        .ThenInclude(c => c.ApplicationUser)
+                    .Include(fr => fr.FridgeInStock)
+                        .ThenInclude(fis => fis.Fridge)
+                    .FirstOrDefaultAsync(fr => fr.FaultReportId == model.FaultReportId);
+
+                if (faultReportForError != null)
+                {
+                    model.CustomerName = $"{faultReportForError.Customer?.ApplicationUser?.FirstName} {faultReportForError.Customer?.ApplicationUser?.LastName}".Trim();
+                    model.FridgeDetails = $"{faultReportForError.FridgeInStock?.Fridge?.Brand} {faultReportForError.FridgeInStock?.Fridge?.Model}".Trim();
+                    model.Address = faultReportForError.Customer?.ApplicationUser?.StreetAddress ?? "Address not available";
+                    model.OriginalVisitDate = faultReportForError.ReportedDate;
+                    model.Notes = faultReportForError.Description;
+                }
+
+                ViewBag.FormAction = "BookVisitForFaultReport";
+                ViewBag.ReturnUrl = Url.Action("ProcessFault", new { id = model.FaultReportId });
+                return View("BookFaultVisit", model);
+            }
+        }
+        // ===================================================================
+        // 6. CUSTOMER: CREATE FAULT REPORT
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         [HttpGet]
@@ -494,9 +881,9 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 6. CUSTOMER: VIEW MY FAULT REPORTS
+        // 7. CUSTOMER: VIEW MY FAULT REPORTS
         // ===================================================================
-        [Authorize(Roles = SD.CustomerRole)]
+        [Authorize(Roles = $"{SD.FaultTechnician},{SD.CustomerRole}")]
         public IActionResult CustomerFaultReports()
         {
             var customerId = GetCurrentCustomerId();
@@ -515,7 +902,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 7. CUSTOMER: FAULT SELECTION
+        // 8. CUSTOMER: FAULT SELECTION
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> CreateFaultSelection()
@@ -553,7 +940,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 8. TECHNICIAN: VIEW PENDING CUSTOMER FAULTS
+        // 9. TECHNICIAN: VIEW PENDING CUSTOMER FAULTS
         // ===================================================================
         public IActionResult PendingCustomerFaults()
         {
@@ -573,7 +960,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 9. TECHNICIAN: ASSIGN SELF TO FAULT
+        // 10. TECHNICIAN: ASSIGN SELF TO FAULT
         // ===================================================================
         public IActionResult AssignToFault(int faultId)
         {
@@ -594,7 +981,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 10. SUPPORT: VIEW ALL FAULT REPORTS
+        // 11. SUPPORT: VIEW ALL FAULT REPORTS
         // ===================================================================
         [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
         public async Task<IActionResult> AllFaults(string statusFilter = null)
@@ -621,7 +1008,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 11. TECHNICIAN: UPDATE FAULT STATUS (INCLUDES SCRAPPED)
+        // 12. TECHNICIAN: UPDATE FAULT STATUS (INCLUDES SCRAPPED)
         // ===================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -650,7 +1037,7 @@ namespace Project.Controllers
                     case SD.FaultResolved:
                         fault.ResolvedDate = DateTime.Now;
                         break;
-                    case "Scrapped":
+                    case SD.FaultScrapped:
                         fault.ScrappedDate = DateTime.Now;
                         // Automatically create replacement request for scrapped fridges
                         await CreateReplacementRequestForScrappedFridge(fault);
@@ -676,18 +1063,18 @@ namespace Project.Controllers
                 await _db.SaveChangesAsync();
 
                 TempData[SD.Success] = $"Fault status updated to {status} successfully.";
-                return RedirectToAction(nameof(ProcessFault));
+                return RedirectToAction(nameof(ProcessFault), new { id = id });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating fault status {FaultId} to {Status}", id, status);
                 TempData[SD.Error] = $"Error updating fault status: {ex.Message}";
-                return RedirectToAction(nameof(ProcessFault));
+                return RedirectToAction(nameof(ProcessFault), new { id = id });
             }
         }
 
         // ===================================================================
-        // 12. TECHNICIAN: CREATE REPLACEMENT FOR SCRAPPED FRIDGE
+        // 13. TECHNICIAN: CREATE REPLACEMENT FOR SCRAPPED FRIDGE
         // ===================================================================
         private async Task CreateReplacementRequestForScrappedFridge(FaultReport fault)
         {
@@ -711,7 +1098,7 @@ namespace Project.Controllers
                 {
                     FaultReportId = fault.FaultReportId,
                     CustomerID = fault.CustomerId,
-                    OldFridgeNo = fridge.FridgeNo,
+                    OldFridgeNo = fridge.FridgeNo ?? "Unknown",
                     ReasonForReplacement = $"Fridge scrapped due to: {fault.FaultType}",
                     ReplacementDate = DateTime.Now.AddDays(7), // Schedule replacement in 7 days
                     RequestDate = DateTime.Now,
@@ -741,7 +1128,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 13. CUSTOMER: VIEW FAULT STATUS
+        // 14. CUSTOMER: VIEW FAULT STATUS
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> ViewFaultStatus(string sortOrder, string currentFilter, string searchString, string statusFilter, int? page)
@@ -810,7 +1197,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 14. CUSTOMER: FAULT DETAILS WITH TIMELINE AND COMMENTS
+        // 15. CUSTOMER: FAULT DETAILS WITH TIMELINE AND COMMENTS
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         public async Task<IActionResult> FaultDetails(int id)
@@ -922,7 +1309,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 15. CUSTOMER: RELAUNCH FAULT
+        // 16. CUSTOMER: RELAUNCH FAULT
         // ===================================================================
         [Authorize(Roles = SD.CustomerRole)]
         [HttpPost]
@@ -987,7 +1374,7 @@ namespace Project.Controllers
         }
 
         // ===================================================================
-        // 16. GET FRIDGE INFO FOR AJAX CALL
+        // 17. GET FRIDGE INFO FOR AJAX CALL
         // ===================================================================
         [HttpGet]
         public async Task<IActionResult> GetFridgeInfo(int fridgeInStockId)
@@ -1027,8 +1414,9 @@ namespace Project.Controllers
                 ? Json(new { success = false, message = "Fridge not found" })
                 : Json(fridgeInfo);
         }
+
         // ===================================================================
-        // TECHNICIAN: PROCESS FAULT DETAILS
+        // 18. TECHNICIAN: PROCESS FAULT DETAILS
         // ===================================================================
         [Authorize(Roles = $"{SD.FaultTechnician},{SD.AdminRole}")]
         public async Task<IActionResult> ProcessFault(int id)
@@ -1068,7 +1456,7 @@ namespace Project.Controllers
             {
                 _logger.LogError(ex, "Error loading fault details {FaultId} for processing", id);
                 TempData[SD.Error] = "An error occurred while loading fault details";
-                return RedirectToAction(nameof(ProcessFault));
+                return RedirectToAction(nameof(AllFaults));
             }
         }
 
@@ -1150,7 +1538,7 @@ namespace Project.Controllers
                 if (faultReport.Status != resolvedStatus)
                 {
                     TempData[SD.Error] = $"Only {resolvedStatus.ToLower()} fault reports can be closed";
-                    return RedirectToAction(nameof(Details), new { id = faultReportId });
+                    return RedirectToAction(nameof(ProcessFault), new { id = faultReportId });
                 }
 
                 faultReport.Status = closedStatus;
@@ -1173,9 +1561,10 @@ namespace Project.Controllers
             {
                 _logger.LogError(ex, "Error closing fault report {FaultId}", faultReportId);
                 TempData[SD.Error] = "An error occurred while closing the fault report";
-                return RedirectToAction(nameof(Details), new { id = faultReportId });
+                return RedirectToAction(nameof(ProcessFault), new { id = faultReportId });
             }
         }
+
         // ===================================================================
         // PRIVATE HELPER METHODS
         // ===================================================================
@@ -1317,7 +1706,7 @@ namespace Project.Controllers
                 events.Add(new FaultTimelineEvent
                 {
                     EventType = eventType,
-                    Description = comment.Comment,
+                    Description = comment.Comment ?? "",
                     EventDate = comment.CommentDate,
                     Icon = icon,
                     Color = color

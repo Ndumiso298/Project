@@ -29,6 +29,7 @@ namespace Project.Data
         public DbSet<FridgeReplacement> tblFridgeReplacements { get; set; }
         public DbSet<RequestNote> tblRequestNotes { get; set; }
         public DbSet<FaultComment> tblFaultComments { get; set; }
+        public DbSet<FaultAssignment> tblFaultAssignments { get; set; }
 
 
 
