@@ -221,7 +221,7 @@ namespace Project.Controllers
                 return NotFound("Request not found.");
             }
 
-            requestHeaderFromDb.Status = SD.NeedsFeedback;
+          //  requestHeaderFromDb.Status = SD.NeedsFeedback;
             requestHeaderFromDb.RequestDate = DateTime.Now;
 
             _db.tblRequestHeaders.Update(requestHeaderFromDb);
@@ -246,7 +246,7 @@ namespace Project.Controllers
                 RequestVM.RequstHeader.RequestHeaderId);
             //RequestHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
             RequestHeader.Carrier = RequestVM.RequstHeader.Carrier;
-            RequestHeader.ShippingDate = DateTime.Now;
+           // RequestHeader.ShippingDate = DateTime.Now;
           
 
             _db.tblRequestHeaders.Update(RequestHeader);

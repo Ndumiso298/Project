@@ -23,7 +23,7 @@ namespace Project.Models
 
         public DateTime RequestDate { get; set; }
         public double RequestTotal { get; set; }
-       [Required]
+        [Required]
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
@@ -38,10 +38,16 @@ namespace Project.Models
         [Required]
         public string CellNumber { get; set; }
         public string? Carrier { get; set; }
-        public string? Status { get; set; } =SD.Pending;
-        public DateTime? ShippingDate { get; set; }
+        public string? Status { get; set; } = SD.Pending;
+        public DateTime? DeliveryDate { get; set; }
         public DateTime? PaymentDueDate { get; set; }
-
+        public string? RejectionReason { get; set; }
+        public DateTime? RejectionDate { get; set; }
+        public string? AdditionalDocumentPath { get; set; }
+        public string? AdditionalDescription { get; set; }
+        public bool IsRelaunched { get; set; } = false;
+        public bool IsReplacement { get; set; } = false;
+        public int? OriginalRequestId { get; set; }
 
 
         public ICollection<RequestDetails> RequestFridges { get; set; }

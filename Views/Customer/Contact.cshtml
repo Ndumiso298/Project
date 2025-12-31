@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "_CustomerLayout";
+}
+
+
+<div class="contact-info">
+    <div class="contact-item">
+        <strong>Business Email:</strong>
+        <a href="mailto:@ViewBag.BusinessEmail">@ViewBag.BusinessEmail</a>
+    </div>
+    <div class="contact-item">
+        <strong>Office Phone:</strong>
+        <a href="tel:@ViewBag.OfficePhoneNumber">@ViewBag.OfficePhoneNumber</a>
+    </div>
+</div>
+<style>
+    .contact-info {
+        margin: 20px 0;
+    }
+
+    .contact-item {
+        margin: 10px 0;
+    }
+
+    .form-group {
+        margin: 15px 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 8px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+    }
+</style>

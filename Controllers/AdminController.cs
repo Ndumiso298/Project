@@ -97,7 +97,7 @@ namespace Project.Controllers
                 new ChartData { Label = "Approved", Value = _db.tblRequestHeaders.Count(r => r.Status == SD.Approved) },
                 new ChartData { Label = "Pending", Value = _db.tblRequestHeaders.Count(r => r.Status == SD.Pending) },
                 new ChartData { Label = "Rejected", Value = _db.tblRequestHeaders.Count(r => r.Status == SD.Rejected) },
-                new ChartData { Label = "Needs Feedback", Value = _db.tblRequestHeaders.Count(r => r.Status == SD.NeedsFeedback) }
+               // new ChartData { Label = "Needs Feedback", Value = _db.tblRequestHeaders.Count(r => r.Status == SD.NeedsFeedback) }
             };
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project.Data;
 using Project.Models;
 using Project.Models.ViewModel;
@@ -24,30 +25,74 @@ namespace Project.Controllers
         }
         public  IActionResult CustomerList()
         {
-            var customers =  _db.tblCustomer.ToList();
+            var customers = _db.tblCustomer
+                 .Include(c => c.ApplicationUser)
+                 .Where(c => !c.ApplicationUser.IsDeleted)
+                 .ToList();
             return View(customers);
         }
         public IActionResult EmployeeList()
         {
-            var customers = _db.tblEmployee.ToList();
-            return View(customers);
+            var employees = _db.tblEmployee
+                .Include(e => e.ApplicationUser)
+                .Where(e => !e.ApplicationUser.IsDeleted)
+                .ToList();
+            return View(employees);
         }
 
 
         public async Task<IActionResult> Index()
         {
-            var userList = _db.AppUser.ToList();
+            var userList = await _db.AppUser
+                .Where(u => !u.IsDeleted)
+                .ToListAsync();
+
+            var userVMs = new List<UserVM>();
 
             foreach (var user in userList)
             {
                 var userRoles = await _userManager.GetRolesAsync(user) as List<string>;
-                user.Role = string.Join(",", userRoles);
+                var role = string.Join(",", userRoles);
 
-                var userClaims = _userManager.GetClaimsAsync(user).GetAwaiter().GetResult().Select(c => c.Type);
-                user.UserClaim = string.Join(",", userClaims);
+                var userVM = new UserVM
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Role = role,
+                    IsApproved = user.IsApproved,
+                    Status = user.Status,
+                    RejectionReason = user.RejectionReason,
+                    LockoutEnd = user.LockoutEnd?.DateTime,
+
+                };
+
+                if (userVM.IsCustomer)
+                {
+                    var customer = await _db.tblCustomer
+                        .FirstOrDefaultAsync(c => c.ApplicationUserId == user.Id);
+                    if (customer != null)
+                    {
+                        userVM.CustomerNumber = customer.CustomerNumber;
+                        userVM.BusinessDocumentPath = customer.BusinessDocumentPath;
+                    }
+                }
+
+                if (userVM.IsEmployee)
+                {
+                    var employee = await _db.tblEmployee
+                        .FirstOrDefaultAsync(e => e.ApplicationUserId == user.Id);
+                    if (employee != null)
+                    {
+                        userVM.EmployeeNumber = employee.EmployeeNumber;
+                    }
+                }
+
+                userVMs.Add(userVM);
             }
 
-            return View(userList);
+            return View(userVMs);
         }
 
         [HttpPost]

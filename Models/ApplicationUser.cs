@@ -21,10 +21,11 @@ namespace Project.Models
 
         public bool IsApproved { get; set; } = false;
         public string? RejectionReason { get; set; }
-   
+        public bool IsDeleted { get; set; } = false;
+
         //public string? BusinessDocumentPath { get; set; }
         //public byte[]? BusinessDocumentData { get; set; } 
-                                                            
+
         [NotMapped]
         public string RoleId { get; set; }
         [NotMapped]

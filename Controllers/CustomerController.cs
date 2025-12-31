@@ -17,7 +17,12 @@ namespace Project.Controllers
             _db = db;
         }
 
-
+        public IActionResult Contact()
+        {
+            ViewBag.BusinessEmail = "info@smartchillsolutions.com";
+            ViewBag.OfficePhoneNumber = "+1(555) 123 - 4567;";
+            return View();
+        }
         public IActionResult Index()
         {
             IEnumerable<Fridge> fridgesList = _db.tblFridges.ToList();

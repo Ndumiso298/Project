@@ -1,104 +1,217 @@
 ﻿@model IEnumerable<Project.Models.RequestHeader>
+@using System.Security.Claims
+@using Project.Utility
 @{
     Layout = "_CustomerLayout";
+    ViewData["Title"] = "Order Management";
+
+    // Get user role for conditional rendering
+    var claimsIdentity = (ClaimsIdentity)User.Identity;
+    var userRole = claimsIdentity.FindFirst(ClaimTypes.Role)?.Value;
+    var isCustomer = userRole == SD.CustomerRole;
+    var isCustomerSupport = userRole == SD.CustomerSupport || userRole == SD.AdminRole;
 }
 
 <div class="container-fluid py-4">
+    <!-- Header Section -->
     <div class="row mb-4">
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="h3 fw-bold text-primary mb-1">Customer Orders</h2>
-                    <p class="text-muted">Track and manage fridge Orders</p>
+                    <h1 class="h2 fw-bold text-primary mb-2">Order Management</h1>
+                    <p class="text-muted mb-0">Track and manage your refrigerator rental orders</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Order Status Filter -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                                id="statusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-filter me-2"></i>Filter by Status
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="statusFilterDropdown">
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="all">All Orders</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Pending.ToLower()">Pending</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Approved.ToLower()">Approved</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Shipped.ToLower()">Shipped</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Closed.ToLower()">Closed</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="@SD.Rejected.ToLower()">Rejected</a></li>
+                            <li><a class="dropdown-item filter-option" href="#" data-filter="relaunched">Relaunched</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
-            <h5 class="m-0 font-weight-bold text-primary">Request List</h5>
+    <!-- Status Summary Section - ONLY FOR CUSTOMERS -->
+    @if (isCustomer)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col">
+                                <span class="fw-bold text-primary">Total: @Model.Count()</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-warning">Pending: @Model.Count(r => r.Status == SD.Pending)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-success">Approved: @Model.Count(r => r.Status == SD.Approved)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-info">Shipped: @Model.Count(r => r.Status == SD.Shipped)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-dark">Closed: @Model.Count(r => r.Status == SD.Closed)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-danger">Rejected: @Model.Count(r => r.Status == SD.Rejected)</span>
+                            </div>
+                            <div class="col">
+                                <span class="fw-bold text-secondary">Relaunched: @Model.Count(r => r.IsRelaunched)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
-            <input type="text" id="requestSearch" class="form-control form-control-sm w-25 ms-auto"
-                   placeholder="Search requests...">
+    <!-- Orders Table -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h5 class="m-0 fw-bold text-primary">
+                <i class="bi bi-list-ul me-2"></i>Order Records
+            </h5>
+            <div class="d-flex align-items-center gap-2">
+                <div class="input-group input-group-sm" style="width: 300px;">
+                    <span class="input-group-text bg-transparent">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" id="orderSearch" class="form-control border-start-0"
+                           placeholder="Search orders by customer, status...">
+                </div>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover" id="requestTable">
-                    <thead>
+                <table class="table table-hover align-middle mb-0" id="orderTable">
+                    <thead class="table-light">
                         <tr>
-                            <th scope="col" class="ps-4">Customer Name</th>
-                            <th scope="col">Customer Surname</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Request Date</th>
-                            <th scope="col" class="text-end pe-4">Actions</th>
+                            <th class="ps-4 fw-semibold text-muted small text-uppercase">Order Details</th>
+                            <th class="fw-semibold text-muted small text-uppercase">Customer</th>
+                            <th class="fw-semibold text-muted small text-uppercase">Status</th>
+                            <th class="fw-semibold text-muted small text-uppercase">Order Date</th>
+                            <th class="text-end pe-4 fw-semibold text-muted small text-uppercase">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.OrderByDescending(r => r.RequestDate))
                         {
-                            <tr>
-                                <td class="ps-4 fw-semibold align-middle">
-                                    @item.Customer.ApplicationUser?.FirstName
+                            <tr class="order-row" data-status="@item.Status?.ToLower()" data-relaunched="@item.IsRelaunched.ToString().ToLower()">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded-2 p-2 me-3">
+                                            <i class="bi bi-refrigerator text-primary fs-5"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0">Order #@item.RequestHeaderId</h6>
+                                            <small class="text-muted">Refrigerator Rental</small>
+                                            @if (item.IsRelaunched)
+                                            {
+                                                <div class="mt-1">
+                                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 rounded-pill small">
+                                                        <i class="bi bi-arrow-clockwise me-1"></i>Relaunched
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="align-middle">
-                                    @item.Customer.ApplicationUser?.LastName
+                                <td>
+                                    <div>
+                                        <h6 class="fw-semibold mb-0">@item.Customer?.ApplicationUser?.FirstName @item.Customer?.ApplicationUser?.LastName</h6>
+                                        <small class="text-muted">@item.Customer?.CustomerNumber</small>
+                                    </div>
                                 </td>
-                                <td class="align-middle">
-                                    @if (item.Status == "Needs Feedback")
+                                <td>
+                                    @if (item.Status == SD.Pending)
                                     {
-                                        <span class="badge bg-warning bg-opacity-10 text-warning">
-                                            <i class="bi bi-hourglass-split me-1"></i> Needs Feedback
+                                        <span class="fw-bold text-warning">
+                                            <i class="bi bi-hourglass-split me-1"></i>Pending
                                         </span>
                                     }
-                                    else if (item.Status == "Approved")
+                                    else if (item.Status == SD.Approved)
                                     {
-                                        <span class="badge bg-success bg-opacity-10 text-success">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Approved
+                                        <span class="fw-bold text-success">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Approved
                                         </span>
                                     }
-                                    else if (item.Status == "Rejected")
+                                    else if (item.Status == SD.Shipped)
                                     {
-                                        <span class="badge bg-danger bg-opacity-10 text-danger">
-                                            <i class="bi bi-x-circle-fill me-1"></i> Rejected
+                                        <span class="fw-bold text-info">
+                                            <i class="bi bi-truck me-1"></i>Shipped
+                                        </span>
+                                    }
+                                    else if (item.Status == SD.Closed)
+                                    {
+                                        <span class="fw-bold text-dark">
+                                            <i class="bi bi-check-circle me-1"></i>Closed
+                                        </span>
+                                    }
+                                    else if (item.Status == SD.Rejected)
+                                    {
+                                        <span class="fw-bold text-danger">
+                                            <i class="bi bi-x-circle-fill me-1"></i>Rejected
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">
-                                            <i class="bi bi-question-circle me-1"></i> Unknown
+                                        <span class="fw-bold text-secondary">
+                                            <i class="bi bi-question-circle me-1"></i>@item.Status
                                         </span>
                                     }
                                 </td>
-                                <td class="align-middle">
-                                    @item.RequestDate.ToString("yyyy-MM-dd")
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-semibold text-dark">@item.RequestDate.ToString("MMM dd, yyyy")</span>
+                                        <small class="text-muted">@item.RequestDate.ToString("hh:mm tt")</small>
+                                    </div>
                                 </td>
-                                <td class="text-end pe-4 align-middle">
+                                <td class="text-end pe-4">
                                     <div class="btn-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
-                                           class="btn btn-sm btn-outline-primary rounded me-2 d-flex align-items-center">
-                                            <i class="bi bi-eye me-1"></i> Details
-                                        </a>
-
-                                        <!-- Fault Report Button -->
-                                        @if (item.Status == "Approved")
+                                        <!-- Details Button for Customers -->
+                                        @if (isCustomer)
                                         {
-                                            <a asp-controller="FaultTechnician"
-                                               asp-action="CustomerFaultReport"
-                                               asp-route-visitId="@item.RequestHeaderId"
-                                               class="btn btn-sm btn-outline-warning rounded me-2 d-flex align-items-center">
-                                                <i class="bi bi-exclamation-triangle me-1"></i> Report Fault
+                                            <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
+                                               class="btn btn-sm btn-outline-primary rounded-3 me-2 px-3"
+                                               data-bs-toggle="tooltip" data-bs-title="View Order Details">
+                                                <i class="bi bi-eye me-1"></i> Details
                                             </a>
                                         }
 
-                                        <!-- Replacement Button (if you still want this) -->
-                                        <a asp-controller="Replacement"
-                                           asp-action="RequestReplacement"
-                                           asp-route-visitId="@item.RequestHeaderId"
-                                           class="btn btn-sm btn-outline-success rounded d-flex align-items-center">
-                                            <i class="bi bi-arrow-repeat me-1"></i> Replace
-                                        </a>
+                                        <!-- Relaunch Button for Rejected Requests - CUSTOMER ONLY -->
+                                        @if (isCustomer && item.Status == SD.Rejected && !item.IsRelaunched)
+                                        {
+                                            <a asp-action="RelaunchRequest" asp-route-id="@item.RequestHeaderId"
+                                               class="btn btn-sm btn-outline-info rounded-3 me-2 px-3"
+                                               data-bs-toggle="tooltip" data-bs-title="Relaunch This Request with Additional Information">
+                                                <i class="bi bi-arrow-clockwise me-1"></i> Relaunch
+                                            </a>
+                                        }
+
+                                        <!-- Customer Support Actions -->
+                                        @if (isCustomerSupport)
+                                        {
+                                            <a asp-action="Details" asp-route-id="@item.RequestHeaderId"
+                                               class="btn btn-sm btn-outline-secondary rounded-3 px-3"
+                                               data-bs-toggle="tooltip" data-bs-title="Manage Request">
+                                                <i class="bi bi-gear me-1"></i> Manage
+                                            </a>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -109,9 +222,14 @@
                 @if (!Model.Any())
                 {
                     <div class="text-center py-5">
-                        <i class="bi bi-clipboard-data display-1 text-muted"></i>
-                        <h4 class="mt-3 text-muted">No Requests Found</h4>
-                        <p class="text-muted">Once customers submit requests, they'll appear here</p>
+                        <div class="py-5">
+                            <i class="bi bi-clipboard-x display-1 text-muted opacity-50"></i>
+                            <h4 class="mt-4 text-muted fw-semibold">No Orders Found</h4>
+                            <p class="text-muted mb-4">Customer orders will appear here once submitted</p>
+                            <a asp-controller="Customer" asp-action="Index" class="btn btn-primary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
                     </div>
                 }
             </div>
@@ -119,64 +237,65 @@
     </div>
 </div>
 
-<div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="rejectionModalLabel">
-                    <i class="bi bi-x-circle-fill me-2"></i>Reject Request
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="rejectForm" method="post">
-                <div class="modal-body">
-                    <input type="hidden" id="requestId" name="requestId" />
-                    <div class="mb-3">
-                        <label for="rejectionReason" class="form-label fw-semibold">Reason for Rejection</label>
-                        <textarea class="form-control" id="rejectionReason" name="rejectionReason"
-                                  rows="4" placeholder="Please provide the reason for rejecting this request..."
-                                  required maxlength="500"></textarea>
-                        <div class="form-text">
-                            <span id="charCount">0</span>/500 characters
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-arrow-left me-1"></i>Cancel
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-x-circle me-1"></i>Confirm Rejection
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script>
-        // Search functionality
-        document.getElementById('requestSearch').addEventListener('input', function() {
-            const searchText = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#requestTable tbody tr');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('orderSearch');
+            const orderRows = document.querySelectorAll('.order-row');
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchText) ? '' : 'none';
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+
+                    orderRows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Filter functionality
+            const filterOptions = document.querySelectorAll('.filter-option');
+
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const filter = this.getAttribute('data-filter');
+
+                    orderRows.forEach(row => {
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else if (filter === 'relaunched') {
+                            if (row.getAttribute('data-relaunched') === 'true') {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        } else {
+                            if (row.getAttribute('data-status') === filter.toLowerCase()) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // Update dropdown button text
+                    document.getElementById('statusFilterDropdown').textContent =
+                        'Filter: ' + this.textContent;
+                });
+            });
+
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
-
-        // Character count for rejection reason
-        document.getElementById('rejectionReason')?.addEventListener('input', function() {
-            document.getElementById('charCount').textContent = this.value.length;
-        });
-
-        // Set request ID when opening rejection modal
-        function setRejectionRequestId(requestId) {
-            document.getElementById('requestId').value = requestId;
-        }
     </script>
 }
