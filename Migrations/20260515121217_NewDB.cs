@@ -42,6 +42,7 @@ namespace Project.Migrations
                     CellNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsApproved = table.Column<bool>(type: "bit", nullable: true),
                     RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeclinedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -305,8 +306,15 @@ namespace Project.Migrations
                     CellNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Carrier = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShippingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PaymentDueDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PaymentDueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RejectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AdditionalDocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AdditionalDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRelaunched = table.Column<bool>(type: "bit", nullable: false),
+                    IsReplacement = table.Column<bool>(type: "bit", nullable: false),
+                    OriginalRequestId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -389,7 +397,9 @@ namespace Project.Migrations
                     Bookingate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Completion = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CustomerBookingStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VisitId = table.Column<int>(type: "int", nullable: true)
+                    VisitId = table.Column<int>(type: "int", nullable: true),
+                    ReportDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FaultType = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -12,15 +12,15 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251031000521_NewDB3")]
-    partial class NewDB3
+    [Migration("20260515121217_NewDB")]
+    partial class NewDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.12")
+                .HasAnnotation("ProductVersion", "8.0.23")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -426,8 +426,15 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FaultType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RepairStatus")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReportDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ResolutionNotes")
                         .HasColumnType("nvarchar(max)");
@@ -814,9 +821,6 @@ namespace Project.Migrations
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<int>("FridgeVisitVisitId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("NewFridgeInStockId")
                         .HasColumnType("int");
 
@@ -847,9 +851,9 @@ namespace Project.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.HasIndex("FridgeVisitVisitId");
-
                     b.HasIndex("NewFridgeInStockId");
+
+                    b.HasIndex("VisitId");
 
                     b.ToTable("tblFridgeReplacements");
                 });
@@ -926,6 +930,12 @@ namespace Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestHeaderId"));
 
+                    b.Property<string>("AdditionalDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdditionalDocumentPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Carrier")
                         .HasColumnType("nvarchar(max)");
 
@@ -940,6 +950,9 @@ namespace Project.Migrations
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("EmployeeID")
                         .HasColumnType("int");
 
@@ -947,9 +960,18 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsRelaunched")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsReplacement")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OriginalRequestId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("PaymentDueDate")
                         .HasColumnType("datetime2");
@@ -958,14 +980,17 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("RejectionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
                     b.Property<double>("RequestTotal")
                         .HasColumnType("float");
-
-                    b.Property<DateTime?>("ShippingDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("State")
                         .IsRequired()
@@ -1007,6 +1032,9 @@ namespace Project.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1035,7 +1063,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1044,7 +1072,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1053,7 +1081,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1062,13 +1090,13 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1077,7 +1105,7 @@ namespace Project.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1086,13 +1114,13 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -1105,7 +1133,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
@@ -1116,25 +1144,25 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Fridge", "Fridge")
                         .WithMany()
                         .HasForeignKey("FridgeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.FridgeInStock", "FridgeInStock")
                         .WithMany()
                         .HasForeignKey("FridgeInStockId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.RequestDetails", "RequestDetail")
                         .WithMany("CustomerFridges")
                         .HasForeignKey("RequestDetailId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -1151,7 +1179,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
@@ -1186,7 +1214,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Customer", "Customer")
@@ -1195,15 +1223,15 @@ namespace Project.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
-                        .WithMany()
-                        .HasForeignKey("FridgeVisitVisitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Project.Models.FridgeInStock", "NewFridgeInStock")
                         .WithMany()
-                        .HasForeignKey("NewFridgeInStockId");
+                        .HasForeignKey("NewFridgeInStockId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Project.Models.FridgeVisit", "FridgeVisit")
+                        .WithMany()
+                        .HasForeignKey("VisitId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ApplicationUser");
 
@@ -1219,7 +1247,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.RequestHeader", "RequestHeader")
                         .WithMany("FridgeVisits")
                         .HasForeignKey("RequestHeaderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("RequestHeader");
@@ -1236,7 +1264,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.RequestHeader", "RequestHeader")
                         .WithMany("RequestFridges")
                         .HasForeignKey("RequestHeaderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Fridge");
@@ -1249,7 +1277,7 @@ namespace Project.Migrations
                     b.HasOne("Project.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project.Models.Employee", "Employee")
