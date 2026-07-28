@@ -1,4 +1,6 @@
-﻿namespace Project.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Project.Models
 {
     public class FridgeReplacement
     {
@@ -21,5 +23,10 @@
         public DateTime RequestDate { get; set; } = DateTime.Now;
 
         public string ReplacementStatus { get; set; } = "Pending";
+
+        public string? ApplicationUserId { get; set; }
+
+        [ForeignKey(nameof(ApplicationUserId))]
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

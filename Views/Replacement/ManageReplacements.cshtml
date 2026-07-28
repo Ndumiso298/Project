@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Project.Models.FridgeReplacement>
+
+<h2>Fridge Replacement Requests</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Old Fridge No</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Requested On</th>
+            <th>Recorded By</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@(r.Customer?.ApplicationUser?.FirstName) @(r.Customer?.ApplicationUser?.LastName)</td>
+                <td>@r.OldFridgeNo</td>
+                <td>@r.ReasonForReplacement</td>
+                <td>@r.ReplacementStatus</td>
+                <td>@r.RequestDate.ToString("yyyy-MM-dd")</td>
+                <td>@(r.ApplicationUser?.FirstName) @(r.ApplicationUser?.LastName)</td>
+                <td>
+                    <!-- ✅ View Details Button -->
+                    <a asp-action="Details" asp-route-id="@r.FridgeReplacementId" class="btn btn-primary btn-sm">
+                        View Details
+                    </a>
+                    @if (r.ReplacementStatus == Project.Utility.SD.Pending)
+                    {
+                        <form asp-action="ApproveReplacement" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@r.FridgeReplacementId" />
+                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                        </form>
+                        <form asp-action="RejectReplacement" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@r.FridgeReplacementId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

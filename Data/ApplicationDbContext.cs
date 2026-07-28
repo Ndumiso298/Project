@@ -55,65 +55,70 @@ namespace Project.Data
                 .WithMany()
                 .HasForeignKey(fr => fr.NewFridgeInStockId)
                 .OnDelete(DeleteBehavior.Restrict);
-        
+            modelBuilder.Entity<RequestDetails>()
+           .HasOne(rd => rd.Fridge)
+           .WithMany()
+           .HasForeignKey(rd => rd.FridgeId)
+           .OnDelete(DeleteBehavior.Restrict);
 
-        //// Seed Admin User
-        //var hasher = new PasswordHasher<ApplicationUser>();
-        //var adminUser = new ApplicationUser
-        //{
-        //    Id = "admin-id-123",
-        //    UserName = "admin@fridgesystem.com",
-        //    NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
-        //    Email = "admin@fridgesystem.com",
-        //    NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
-        //    EmailConfirmed = true,
-        //    PhoneNumberConfirmed = true,
-        //    SecurityStamp = Guid.NewGuid().ToString("D"),
-        //    FirstName = "System",
-        //    LastName = "Administrator",
-        //    CellNumber = "+27123456789",
-        //    StreetAddress = "123 Admin Street",
-        //    City = "Johannesburg",
-        //    State = "Gauteng",
-        //    PostalCode = "2000",
-        //    Status = SD.Approved,
-        //    IsApproved = true
-        //};
-        //adminUser.PasswordHash = hasher.HashPassword(adminUser, "Sthandwa@97");
 
-        //modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
+            //// Seed Admin User
+            //var hasher = new PasswordHasher<ApplicationUser>();
+            //var adminUser = new ApplicationUser
+            //{
+            //    Id = "admin-id-123",
+            //    UserName = "admin@fridgesystem.com",
+            //    NormalizedUserName = "ADMIN@FRIDGESYSTEM.COM",
+            //    Email = "admin@fridgesystem.com",
+            //    NormalizedEmail = "ADMIN@FRIDGESYSTEM.COM",
+            //    EmailConfirmed = true,
+            //    PhoneNumberConfirmed = true,
+            //    SecurityStamp = Guid.NewGuid().ToString("D"),
+            //    FirstName = "System",
+            //    LastName = "Administrator",
+            //    CellNumber = "+27123456789",
+            //    StreetAddress = "123 Admin Street",
+            //    City = "Johannesburg",
+            //    State = "Gauteng",
+            //    PostalCode = "2000",
+            //    Status = SD.Approved,
+            //    IsApproved = true
+            //};
+            //adminUser.PasswordHash = hasher.HashPassword(adminUser, "Sthandwa@97");
 
-        //// Seed Admin Role
-        //modelBuilder.Entity<IdentityRole>().HasData(
-        //    new IdentityRole
-        //    {
-        //        Id = "admin-role-id-123",
-        //        Name = SD.AdminRole,
-        //        NormalizedName = SD.AdminRole.ToUpper()
-        //    }
-        //);
+            //modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
 
-        //// Assign Admin Role to Admin User
-        //modelBuilder.Entity<IdentityUserRole<string>>().HasData(
-        //    new IdentityUserRole<string>
-        //    {
-        //        RoleId = "admin-role-id-123",
-        //        UserId = "admin-id-123"
-        //    }
-        //);
+            //// Seed Admin Role
+            //modelBuilder.Entity<IdentityRole>().HasData(
+            //    new IdentityRole
+            //    {
+            //        Id = "admin-role-id-123",
+            //        Name = SD.AdminRole,
+            //        NormalizedName = SD.AdminRole.ToUpper()
+            //    }
+            //);
 
-        //// Seed Employee record for the admin
-        //modelBuilder.Entity<Employee>().HasData(
-        //    new Employee
-        //    {
-        //        EmployeeID = 1,
-        //        ApplicationUserId = "admin-id-123",
-        //        EmployeeNumber = "EMP001"
-        //    }
-        //);
+            //// Assign Admin Role to Admin User
+            //modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+            //    new IdentityUserRole<string>
+            //    {
+            //        RoleId = "admin-role-id-123",
+            //        UserId = "admin-id-123"
+            //    }
+            //);
 
-        // Seed Fridges
-        modelBuilder.Entity<Fridge>().HasData(
+            //// Seed Employee record for the admin
+            //modelBuilder.Entity<Employee>().HasData(
+            //    new Employee
+            //    {
+            //        EmployeeID = 1,
+            //        ApplicationUserId = "admin-id-123",
+            //        EmployeeNumber = "EMP001"
+            //    }
+            //);
+
+            // Seed Fridges
+            modelBuilder.Entity<Fridge>().HasData(
                 new Fridge { FridgeId = 1, Brand = "Samsung", Model = "RT28A", CapacityLiters = 250, Type = "Double Door", Description = "Energy efficient fridge with frost-free technology", RentalPricePerMonth = 450, ImageUrl = "/Images/Fridges/0f189537-b86b-46ed-88b0-697d64518b86.jpg", AvailabilityStatus = "Available", Location = "Durban" },
                 new Fridge { FridgeId = 2, Brand = "LG", Model = "GL-T292", CapacityLiters = 260, Type = "Top Freezer", Description = "Smart inverter compressor for energy savings", RentalPricePerMonth = 480, ImageUrl = "/Images/Fridges/3af820d9-c376-4432-8a69-db81af07350d.jpg", AvailabilityStatus = "Available", Location = "Johannesburg" },
                 new Fridge { FridgeId = 3, Brand = "Hisense", Model = "H370BI", CapacityLiters = 320, Type = "Bottom Freezer", Description = "Spacious design with humidity control", RentalPricePerMonth = 520, ImageUrl = "Images/Fridges/1bde2bd0-9345-4868-bf0e-3a568b75b45d.jpg", AvailabilityStatus = "Rented", Location = "Cape Town" },
